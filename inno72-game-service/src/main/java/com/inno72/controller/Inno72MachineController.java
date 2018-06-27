@@ -1,17 +1,22 @@
 package com.inno72.controller;
 
+import com.inno72.common.QrCodeUtil;
 import com.inno72.common.Result;
 import com.inno72.common.ResultGenerator;
 import com.inno72.model.Inno72Machine;
 import com.inno72.service.Inno72MachineService;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
+import com.google.zxing.WriterException;
+
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.annotation.Resource;
+
+import java.io.IOException;
 import java.util.List;
 
 /**
@@ -53,5 +58,22 @@ public class Inno72MachineController {
         List<Inno72Machine> list = inno72MachineService.findAll();
         PageInfo pageInfo = new PageInfo(list);
         return ResultGenerator.genSuccessResult(pageInfo);
+    }
+    
+    
+    
+    @RequestMapping(value = "/createQrCode", method = { RequestMethod.POST,  RequestMethod.GET})
+    public String createQrCode(@RequestParam Integer id) {
+        
+        String url = "http://www.baidu.com";
+        try {
+        	
+			QrCodeUtil.createQrCode("src\\main\\webapp\\qrcode\\qrcode.jpg",url,10000,"JPEG");
+		} catch (WriterException e) {
+			e.printStackTrace();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+        return url;
     }
 }
