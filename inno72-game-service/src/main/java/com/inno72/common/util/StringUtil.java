@@ -1,4 +1,4 @@
-package com.framelib.utils;
+package com.inno72.common.util;
 
 import java.util.ArrayList;
 import java.util.List;

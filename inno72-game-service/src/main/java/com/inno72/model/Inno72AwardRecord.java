@@ -6,7 +6,7 @@ import javax.persistence.*;
 @Table(name = "inno72_award_record")
 public class Inno72AwardRecord {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.IDENTITY, generator = "JDBC")
     private Long id;
 
     /**

@@ -1,4 +1,4 @@
-package com.framelib.utils;
+package com.inno72.common.util;
 
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;

@@ -1,3 +1,4 @@
+package com.inno72.common.util;
 //package com.inno72.common;
 //
 //import com.alibaba.fastjson.JSON;
