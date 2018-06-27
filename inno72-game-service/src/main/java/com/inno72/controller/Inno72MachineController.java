@@ -63,9 +63,9 @@ public class Inno72MachineController {
     
     
     @RequestMapping(value = "/createQrCode", method = { RequestMethod.POST,  RequestMethod.GET})
-    public String createQrCode(@RequestParam Integer id) {
-        
-        String url = "http://www.baidu.com";
+    public String createQrCode() {
+        System.out.println("---------------------------------------------------------------------------------------------------------------------------------------------------------------------");
+        String url = "san li tun";
         try {
         	
 			QrCodeUtil.createQrCode("src\\main\\webapp\\qrcode\\qrcode.jpg",url,10000,"JPEG");
