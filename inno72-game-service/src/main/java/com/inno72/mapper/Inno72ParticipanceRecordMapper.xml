@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.inno72.mapper.Inno72ParticipanceRecordMapper">
+  <resultMap id="BaseResultMap" type="com.inno72.model.Inno72ParticipanceRecord">
+    <!--
+      WARNING - @mbg.generated
+    -->
+    <id column="id" jdbcType="BIGINT" property="id" />
+    <result column="participant_id" jdbcType="VARCHAR" property="participantId" />
+    <result column="machine_id" jdbcType="BIGINT" property="machineId" />
+    <result column="game_id" jdbcType="BIGINT" property="gameId" />
+    <result column="participance_time" jdbcType="TIMESTAMP" property="participanceTime" />
+  </resultMap>
+</mapper>

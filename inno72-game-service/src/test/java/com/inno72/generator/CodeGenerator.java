@@ -54,7 +54,7 @@ public class CodeGenerator {
     private static final String DATE = new SimpleDateFormat("yyyy/MM/dd").format(new Date());//@date
 
     public static void main(String[] args) {
-        genCode("user");
+        genCode("inno72_award_record","inno72_game","inno72_machine","inno72_machine_game","inno72_participance_record");
         //genCodeByCustomModelName("输入表名","输入自定义Model名称");
     }
 
@@ -107,8 +107,8 @@ public class CodeGenerator {
         context.setJavaModelGeneratorConfiguration(javaModelGeneratorConfiguration);
 
         SqlMapGeneratorConfiguration sqlMapGeneratorConfiguration = new SqlMapGeneratorConfiguration();
-        sqlMapGeneratorConfiguration.setTargetProject(PROJECT_PATH + RESOURCES_PATH);
-        sqlMapGeneratorConfiguration.setTargetPackage("mapper");
+        sqlMapGeneratorConfiguration.setTargetProject(PROJECT_PATH + JAVA_PATH);
+        sqlMapGeneratorConfiguration.setTargetPackage(MAPPER_PACKAGE);
         context.setSqlMapGeneratorConfiguration(sqlMapGeneratorConfiguration);
 
         JavaClientGeneratorConfiguration javaClientGeneratorConfiguration = new JavaClientGeneratorConfiguration();
