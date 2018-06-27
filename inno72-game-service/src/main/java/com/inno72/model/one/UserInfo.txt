@@ -1,0 +1,223 @@
+目标package: com.inno72.model.one
+
+当前时间：
+2018-6-26
+18:27:41
+2018-06-26 18:27:41
+
+所有配置的属性信息:
+targetPackage - com.inno72.model.one
+templateFormatter - tk.mybatis.mapper.generator.formatter.FreemarkerTemplateFormatter
+templatePath - test-one.ftl
+targetProject - src/main/java
+fileName - ${tableClass.shortClassName}.txt
+
+实体和表的信息：
+表名：user_info
+变量名：userInfo
+小写名：userinfo
+类名：UserInfo
+全名：com.inno72.model.UserInfo
+包名：com.inno72.model
+
+列的信息：
+=====================================
+主键：
+    -------------------------------------
+    列名：id
+    列类型：INTEGER
+    字段名：id
+    注释：
+    类型包名：java.lang
+    类型短名：Integer
+    类型全名：java.lang.Integer
+    是否主键：true
+    是否可空：false
+    是否为BLOB列：false
+    是否为String列：false
+    是否为字符串列：false
+    是否为日期列：false
+    是否为时间列：false
+    是否为序列列：false
+    列长度：10
+    列精度：0
+
+基础列：
+    -------------------------------------
+    列名：username
+    列类型：VARCHAR
+    字段名：username
+    注释：
+    类型包名：java.lang
+    类型短名：String
+    类型全名：java.lang.String
+    是否主键：false
+    是否可空：false
+    是否为BLOB列：false
+    是否为String列：true
+    是否为字符串列：true
+    是否为日期列：false
+    是否为时间列：false
+    是否为序列列：false
+    列长度：32
+    列精度：0
+    -------------------------------------
+    列名：password
+    列类型：VARCHAR
+    字段名：password
+    注释：
+    类型包名：java.lang
+    类型短名：String
+    类型全名：java.lang.String
+    是否主键：false
+    是否可空：true
+    是否为BLOB列：false
+    是否为String列：true
+    是否为字符串列：true
+    是否为日期列：false
+    是否为时间列：false
+    是否为序列列：false
+    列长度：32
+    列精度：0
+    -------------------------------------
+    列名：usertype
+    列类型：VARCHAR
+    字段名：usertype
+    注释：
+    类型包名：java.lang
+    类型短名：String
+    类型全名：java.lang.String
+    是否主键：false
+    是否可空：true
+    是否为BLOB列：false
+    是否为String列：true
+    是否为字符串列：true
+    是否为日期列：false
+    是否为时间列：false
+    是否为序列列：false
+    列长度：2
+    列精度：0
+    -------------------------------------
+    列名：enabled
+    列类型：INTEGER
+    字段名：enabled
+    注释：
+    类型包名：java.lang
+    类型短名：Integer
+    类型全名：java.lang.Integer
+    是否主键：false
+    是否可空：true
+    是否为BLOB列：false
+    是否为String列：false
+    是否为字符串列：false
+    是否为日期列：false
+    是否为时间列：false
+    是否为序列列：false
+    列长度：10
+    列精度：0
+    -------------------------------------
+    列名：realname
+    列类型：VARCHAR
+    字段名：realname
+    注释：
+    类型包名：java.lang
+    类型短名：String
+    类型全名：java.lang.String
+    是否主键：false
+    是否可空：true
+    是否为BLOB列：false
+    是否为String列：true
+    是否为字符串列：true
+    是否为日期列：false
+    是否为时间列：false
+    是否为序列列：false
+    列长度：50
+    列精度：0
+    -------------------------------------
+    列名：qq
+    列类型：VARCHAR
+    字段名：qq
+    注释：
+    类型包名：java.lang
+    类型短名：String
+    类型全名：java.lang.String
+    是否主键：false
+    是否可空：true
+    是否为BLOB列：false
+    是否为String列：true
+    是否为字符串列：true
+    是否为日期列：false
+    是否为时间列：false
+    是否为序列列：false
+    列长度：12
+    列精度：0
+    -------------------------------------
+    列名：email
+    列类型：VARCHAR
+    字段名：email
+    注释：
+    类型包名：java.lang
+    类型短名：String
+    类型全名：java.lang.String
+    是否主键：false
+    是否可空：true
+    是否为BLOB列：false
+    是否为String列：true
+    是否为字符串列：true
+    是否为日期列：false
+    是否为时间列：false
+    是否为序列列：false
+    列长度：100
+    列精度：0
+    -------------------------------------
+    列名：address
+    列类型：VARCHAR
+    字段名：address
+    注释：
+    类型包名：java.lang
+    类型短名：String
+    类型全名：java.lang.String
+    是否主键：false
+    是否可空：true
+    是否为BLOB列：false
+    是否为String列：true
+    是否为字符串列：true
+    是否为日期列：false
+    是否为时间列：false
+    是否为序列列：false
+    列长度：200
+    列精度：0
+    -------------------------------------
+    列名：tel
+    列类型：VARCHAR
+    字段名：tel
+    注释：
+    类型包名：java.lang
+    类型短名：String
+    类型全名：java.lang.String
+    是否主键：false
+    是否可空：true
+    是否为BLOB列：false
+    是否为String列：true
+    是否为字符串列：true
+    是否为日期列：false
+    是否为时间列：false
+    是否为序列列：false
+    列长度：30
+    列精度：0
+
+Blob列：
+
+=====================================
+全部列：
+列名 - 字段名
+    id - id
+    username - username
+    password - password
+    usertype - usertype
+    enabled - enabled
+    realname - realname
+    qq - qq
+    email - email
+    address - address
+    tel - tel
