@@ -1,4 +1,4 @@
-package com.framelib.utils;
+package com.inno72.common.util;
 
 import org.apache.commons.lang3.time.DateUtils;
 

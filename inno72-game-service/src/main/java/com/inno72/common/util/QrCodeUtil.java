@@ -1,22 +1,16 @@
-package com.inno72.common;
+package com.inno72.common.util;
 
 import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.util.HashMap;
 import java.util.Hashtable;
-import java.util.Map;
 
 import javax.imageio.ImageIO;
-
-import org.apache.http.client.methods.HttpPost;
-import org.apache.http.impl.client.CloseableHttpClient;
 
 import com.google.zxing.BarcodeFormat;
 import com.google.zxing.BinaryBitmap;
@@ -109,15 +103,12 @@ public class QrCodeUtil {
      * 测试代码
      * @throws WriterException 
      */
-    public static void main(String[] args) throws IOException, WriterException {  
-        //createQrCode(new FileOutputStream(new File("d:\\qrcode.jpg")),"china is good",900,"JPEG");
-    	String url = "gaohuan";
-    	createQrCode("src\\main\\webapp\\qrcode\\qrcode.jpg",url,10000,"JPEG");
-        readQrCode(new FileInputStream(new File("src\\main\\webapp\\qrcode\\qrcode.jpg")));  
-        
-        
-        
-    }  
+//    public static void main(String[] args) throws IOException, WriterException {  
+//        //createQrCode(new FileOutputStream(new File("d:\\qrcode.jpg")),"china is good",900,"JPEG");
+//    	String url = "gaohuan";
+//    	createQrCode("src\\main\\webapp\\qrcode\\qrcode.jpg",url,10000,"JPEG");
+//        readQrCode(new FileInputStream(new File("src\\main\\webapp\\qrcode\\qrcode.jpg")));  
+//    }  
     
     
   

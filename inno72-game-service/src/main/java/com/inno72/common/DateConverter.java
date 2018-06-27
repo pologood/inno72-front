@@ -1,4 +1,4 @@
-package com.framelib.common;
+package com.inno72.common;
 
 import javax.persistence.AttributeConverter;
 import javax.persistence.Converter;

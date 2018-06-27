@@ -1,4 +1,4 @@
-package com.framelib.exception;
+package com.inno72.common;
 
 import java.util.HashMap;
 import java.util.Map;
