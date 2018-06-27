@@ -7,7 +7,6 @@ import com.inno72.service.Inno72GameService;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -20,6 +19,7 @@ import java.util.List;
 */
 @RestController
 @RequestMapping("/inno72/game")
+@SuppressWarnings({"rawtypes", "unchecked"})
 public class Inno72GameController {
     @Resource
     private Inno72GameService inno72GameService;
