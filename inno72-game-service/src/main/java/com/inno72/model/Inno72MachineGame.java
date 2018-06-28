@@ -2,8 +2,10 @@ package com.inno72.model;
 
 import javax.persistence.*;
 
+import com.inno72.common.BaseModel;
+
 @Table(name = "inno72_machine_game")
-public class Inno72MachineGame {
+public class Inno72MachineGame extends BaseModel{
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY, generator = "JDBC")
     private Long id;
@@ -12,7 +14,7 @@ public class Inno72MachineGame {
      * 机器id
      */
     @Column(name = "machine_id")
-    private Long machineId;
+    private Integer machineId;
 
     /**
      * 游戏id
@@ -39,7 +41,7 @@ public class Inno72MachineGame {
      *
      * @return machine_id - 机器id
      */
-    public Long getMachineId() {
+    public Integer getMachineId() {
         return machineId;
     }
 
@@ -48,7 +50,7 @@ public class Inno72MachineGame {
      *
      * @param machineId 机器id
      */
-    public void setMachineId(Long machineId) {
+    public void setMachineId(Integer machineId) {
         this.machineId = machineId;
     }
 

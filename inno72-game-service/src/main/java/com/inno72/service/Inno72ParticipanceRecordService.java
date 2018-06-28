@@ -4,7 +4,7 @@ import com.inno72.common.Service;
 
 
 /**
- * Created by CodeGenerator on 2018/06/27.
+ * Created by CodeGenerator on 2018/06/28.
  */
 public interface Inno72ParticipanceRecordService extends Service<Inno72ParticipanceRecord> {
 

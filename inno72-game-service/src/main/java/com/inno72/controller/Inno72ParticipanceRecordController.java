@@ -15,7 +15,7 @@ import javax.annotation.Resource;
 import java.util.List;
 
 /**
-* Created by CodeGenerator on 2018/06/27.
+* Created by CodeGenerator on 2018/06/28.
 */
 @RestController
 @RequestMapping("/inno72/participance/record")
