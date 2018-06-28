@@ -13,6 +13,7 @@ import org.springframework.context.support.ReloadableResourceBundleMessageSource
 import org.springframework.http.converter.json.Jackson2ObjectMapperFactoryBean;
 import org.springframework.web.servlet.View;
 import org.springframework.web.servlet.ViewResolver;
+import org.springframework.web.servlet.config.annotation.CorsRegistry;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter;
@@ -90,5 +91,14 @@ public class MvcConfiguration extends WebMvcConfigurerAdapter {
 //        logInterceptor.setRedisUtil(redisUtil);
 //        registry.addInterceptor(logInterceptor).addPathPatterns("/**");
     }
+    
+    @Override  
+    public void addCorsMappings(CorsRegistry registry) {  
+        registry.addMapping("/**")  
+                .allowedOrigins("*")  
+                .allowCredentials(true)  
+                .allowedMethods("GET", "POST", "DELETE", "PUT")  
+                .maxAge(3600);  
+    }  
 
 }

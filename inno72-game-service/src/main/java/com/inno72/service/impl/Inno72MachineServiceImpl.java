@@ -43,13 +43,13 @@ public class Inno72MachineServiceImpl extends AbstractService<Inno72Machine> imp
     private IRedisUtil redistUtil;
 
 	@Override
-	public  Result<Inno72MachineVo> findGame(Integer machineId) {
+	public  Result<Inno72MachineVo> findGame(String machineId, String gameId) {
 		LOGGER.info("查询售卖机游戏详情 - machineId -> {}", machineId);
 		Inno72Machine inno72Machine = inno72MachineMapper.selectByPrimaryKey(machineId);
 		if (inno72Machine == null) {
 			return Results.failure("机器ID错误!");
 		}
-		List<Inno72MachineGame> selectByCondition = inno72MachineGameMapper.selectByMachineId(machineId);
+		List<Inno72MachineGame> selectByCondition = inno72MachineGameMapper.selectByMachineId(Integer.parseInt(machineId));
 		if (selectByCondition.size() == 0) {
 			return Results.failure("机器ID没有绑定游戏!");
 		}
@@ -62,11 +62,15 @@ public class Inno72MachineServiceImpl extends AbstractService<Inno72Machine> imp
 		if (gameIds.substring(gameIds.length()-1) .equals(",")) {
 			gameIds = gameIds.substring(0, gameIds.length()-1);
 		}
-		List<Inno72Game> inno72Games = inno72GameMapper.selectByIds(gameIds);
+		Inno72Game inno72Games = inno72GameMapper.selectByPrimaryKey(gameIds);
 		
 		Inno72MachineVo inno72MachineVo = new Inno72MachineVo();
 		BeanUtils.copyProperties(inno72Machine, inno72MachineVo);
 		inno72MachineVo.setInno72Games(inno72Games);
+		
+		if (!gameId.equals("0") && !inno72Games.getId().equals(Long.parseLong(gameId))) {
+			inno72MachineVo.setReload(true);
+		}
 		
 		LOGGER.info("查询完成 - result -> {}", JSON.toJSONString(inno72MachineVo));
 		
