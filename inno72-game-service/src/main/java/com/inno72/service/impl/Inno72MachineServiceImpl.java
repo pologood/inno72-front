@@ -97,7 +97,7 @@ public class Inno72MachineServiceImpl extends AbstractService<Inno72Machine> imp
 				OSSUtil.uploadLocalFile(localUrl, localUrl);
 				map.put("qrCodeUrl", targetPath);
 				map.put("sessionUuid", sessionUuid);
-				LOGGER.info("二维码生成成功 - result -> {}", JSON.toJSONString(map).replace("\"", ""));
+				LOGGER.info("二维码生成成功 - result -> {}", JSON.toJSONString(map).replace("\\", "'"));
 			}else {
 				LOGGER.info("二维码生成失败");
 			}
@@ -106,7 +106,7 @@ public class Inno72MachineServiceImpl extends AbstractService<Inno72Machine> imp
 			e.printStackTrace();
 			LOGGER.info("二维码生成失败", e);
 		}
-		return Results.success(JSON.toJSONString(map).replace("\"",""));
+		return Results.success(JSON.toJSONString(map).replace("\"","'"));
 	}
 
 }
