@@ -13,8 +13,6 @@ import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import com.inno72.common.Result;
 import com.inno72.common.ResultGenerator;
-import com.inno72.common.Results;
-import com.inno72.common.util.QrCodeUtil;
 import com.inno72.model.Inno72Machine;
 import com.inno72.service.Inno72MachineService;
 

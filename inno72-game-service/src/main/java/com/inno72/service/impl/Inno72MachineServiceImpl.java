@@ -10,7 +10,6 @@ import javax.annotation.Resource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -27,7 +26,6 @@ import com.inno72.model.Inno72Game;
 import com.inno72.model.Inno72Machine;
 import com.inno72.model.Inno72MachineGame;
 import com.inno72.oss.OSSUtil;
-import com.inno72.redis.IRedisUtil;
 import com.inno72.service.Inno72MachineService;
 import com.inno72.vo.Inno72MachineVo;
 
@@ -45,8 +43,8 @@ public class Inno72MachineServiceImpl extends AbstractService<Inno72Machine> imp
     private Inno72MachineGameMapper inno72MachineGameMapper;
     @Resource
     private Inno72GameMapper inno72GameMapper;
-    @Autowired
-    private IRedisUtil redistUtil;
+//    @Autowired
+//    private IRedisUtil redistUtil;
 
 	@Override
 	public  Result<Inno72MachineVo> findGame(String machineId, String gameId) {
