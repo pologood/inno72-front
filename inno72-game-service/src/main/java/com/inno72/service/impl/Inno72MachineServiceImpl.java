@@ -1,5 +1,6 @@
 package com.inno72.service.impl;
 
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -25,6 +26,7 @@ import com.inno72.mapper.Inno72MachineMapper;
 import com.inno72.model.Inno72Game;
 import com.inno72.model.Inno72Machine;
 import com.inno72.model.Inno72MachineGame;
+import com.inno72.oss.OSSUtil;
 import com.inno72.redis.IRedisUtil;
 import com.inno72.service.Inno72MachineService;
 import com.inno72.vo.Inno72MachineVo;
@@ -86,13 +88,15 @@ public class Inno72MachineServiceImpl extends AbstractService<Inno72Machine> imp
 		LOGGER.info("根据机器id生成二维码", machineId);
 		Map<String, Object> map = new HashMap<String, Object>();
 		String url = "https://oauth.taobao.com/authorize?response_type=code&client_id=24791535&machineId="+machineId+"&redirect_uri=https://inno72test.ews.m.jaeapp.com/";
-        String targetUrl = "src\\main\\webapp\\qrcode\\qrcode.jpg";
+        String localUrl = new Date().getTime()+""+machineId+"qrcode.jpg";
+        String targetPath = "https://oss.console.aliyun.com/bucket/oss-cn-beijing/inno72-qrcode/object/"+localUrl;
 		try {
-			boolean result = QrCodeUtil.createQrCode(targetUrl,url,10000,"JPEG");
+			boolean result = QrCodeUtil.createQrCode(localUrl,url,10000,"JPEG");
 			String sessionUuid = UuidUtil.getUUID32();
 			if(result) {
-				map.put("qrCodeUrl", targetUrl);
-				map.put("sessionUuidCode", sessionUuid);
+				OSSUtil.uploadLocalFile(localUrl, localUrl);
+				map.put("qrCodeUrl", targetPath);
+				map.put("sessionUuid", sessionUuid);
 				LOGGER.info("二维码生成成功 - result -> {}", JSON.toJSONString(map));
 			}else {
 				LOGGER.info("二维码生成失败");
