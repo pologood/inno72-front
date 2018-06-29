@@ -97,7 +97,7 @@ public class Inno72MachineServiceImpl extends AbstractService<Inno72Machine> imp
 			boolean result = QrCodeUtil.createQrCode(localUrl,url,700,"JPEG");
 			String sessionUuid = UuidUtil.getUUID32();
 			if(result) {
-				OSSUtil.uploadQrCode(localUrl, objectName);
+				OSSUtil.uploadLocalFile(localUrl, objectName);
 				map.put("qrCodeUrl", returnUrl);
 				map.put("sessionUuid", sessionUuid);
 				LOGGER.info("二维码生成成功 - result -> {}", JSON.toJSONString(map).replace("\"", "'"));
