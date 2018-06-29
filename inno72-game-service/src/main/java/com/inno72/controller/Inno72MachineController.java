@@ -76,7 +76,6 @@ public class Inno72MachineController {
     @RequestMapping(value = "/createQrCode", method = { RequestMethod.POST,  RequestMethod.GET})
     public Result<String> createQrCode(@RequestParam Integer machineId) {
         
-    	inno72MachineService.createQrCode(machineId);
-        return Results.success("");
+    	return inno72MachineService.createQrCode(machineId);
     }
 }
