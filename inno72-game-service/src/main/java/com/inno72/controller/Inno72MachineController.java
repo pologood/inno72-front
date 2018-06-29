@@ -4,8 +4,6 @@ import java.util.List;
 
 import javax.annotation.Resource;
 
-import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -32,8 +30,8 @@ public class Inno72MachineController {
     
 
 
-    @RequestMapping(value = "/findGame/{machineId}/{gameId}", method = { RequestMethod.POST,  RequestMethod.GET})
-    public Result findGame(@PathVariable(name="machineId")String  mid,@PathVariable(name = "gameId") String gameId) {
+    @RequestMapping(value = "/findGame", method = { RequestMethod.POST,  RequestMethod.GET})
+    public Result findGame(@RequestParam(name="machineId")String  mid,@RequestParam(name = "gameId") String gameId) {
         return inno72MachineService.findGame(mid, gameId);
     }
     

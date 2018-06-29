@@ -1,24 +1,15 @@
 package com.inno72.model;
 
-import java.time.LocalDateTime;
-
-import javax.persistence.Column;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.Table;
-
-import com.fasterxml.jackson.databind.annotation.JsonSerialize;
-import com.inno72.common.CustomLocalDateTimeSerializer;
+import java.util.Date;
+import javax.persistence.*;
 
 @Table(name = "inno72_game")
 public class Inno72Game {
-    /**
-     * 游戏ID
-     */
+	
+    @Column(name = "Id")
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY, generator = "JDBC")
-    private Long id;
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private String id;
 
     /**
      * 游戏版本
@@ -28,7 +19,6 @@ public class Inno72Game {
     /**
      * 游戏描述
      */
-    @Column(name = "`desc`")
     private String desc;
 
     /**
@@ -38,7 +28,7 @@ public class Inno72Game {
     private String brandName;
 
     /**
-     * 原始标识
+     * 原始标示
      */
     @Column(name = "origin_flag")
     private String originFlag;
@@ -96,8 +86,7 @@ public class Inno72Game {
      * 创建时间
      */
     @Column(name = "create_time")
-    @JsonSerialize(using = CustomLocalDateTimeSerializer.class)
-    private LocalDateTime createTime;
+    private Date createTime;
 
     /**
      * 更新人
@@ -109,24 +98,25 @@ public class Inno72Game {
      * 更新时间
      */
     @Column(name = "update_time")
-    @JsonSerialize(using = CustomLocalDateTimeSerializer.class)
-    private LocalDateTime updateTime;
+    private Date updateTime;
 
     /**
-     * 获取游戏ID
-     *
-     * @return id - 游戏ID
+     * 活动id
      */
-    public Long getId() {
+    @Column(name = "activity_id")
+    private Long activityId;
+
+    /**
+     * @return Id
+     */
+    public String getId() {
         return id;
     }
 
     /**
-     * 设置游戏ID
-     *
-     * @param id 游戏ID
+     * @param id
      */
-    public void setId(Long id) {
+    public void setId(String id) {
         this.id = id;
     }
 
@@ -185,18 +175,18 @@ public class Inno72Game {
     }
 
     /**
-     * 获取原始标识
+     * 获取原始标示
      *
-     * @return origin_flag - 原始标识
+     * @return origin_flag - 原始标示
      */
     public String getOriginFlag() {
         return originFlag;
     }
 
     /**
-     * 设置原始标识
+     * 设置原始标示
      *
-     * @param originFlag 原始标识
+     * @param originFlag 原始标示
      */
     public void setOriginFlag(String originFlag) {
         this.originFlag = originFlag;
@@ -355,7 +345,7 @@ public class Inno72Game {
      *
      * @return create_time - 创建时间
      */
-    public LocalDateTime getCreateTime() {
+    public Date getCreateTime() {
         return createTime;
     }
 
@@ -364,7 +354,7 @@ public class Inno72Game {
      *
      * @param createTime 创建时间
      */
-    public void setCreateTime(LocalDateTime createTime) {
+    public void setCreateTime(Date createTime) {
         this.createTime = createTime;
     }
 
@@ -391,7 +381,7 @@ public class Inno72Game {
      *
      * @return update_time - 更新时间
      */
-    public LocalDateTime getUpdateTime() {
+    public Date getUpdateTime() {
         return updateTime;
     }
 
@@ -400,7 +390,25 @@ public class Inno72Game {
      *
      * @param updateTime 更新时间
      */
-    public void setUpdateTime(LocalDateTime updateTime) {
+    public void setUpdateTime(Date updateTime) {
         this.updateTime = updateTime;
+    }
+
+    /**
+     * 获取活动id
+     *
+     * @return activity_id - 活动id
+     */
+    public Long getActivityId() {
+        return activityId;
+    }
+
+    /**
+     * 设置活动id
+     *
+     * @param activityId 活动id
+     */
+    public void setActivityId(Long activityId) {
+        this.activityId = activityId;
     }
 }
