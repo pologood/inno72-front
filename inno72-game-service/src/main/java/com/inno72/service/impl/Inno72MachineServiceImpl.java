@@ -92,7 +92,8 @@ public class Inno72MachineServiceImpl extends AbstractService<Inno72Machine> imp
 		//存储在阿里云上的文件名
         String objectName = "qrcode/"+localUrl;
         //提供给前端用来调用二维码的地址
-        String returnUrl = "http://72solo.oss-cn-beijing.aliyuncs.com/"+objectName;
+        String returnUrl = " https://inno72.oss-cn-beijing.aliyuncs.com/"+objectName;
+        
 		try {
 			boolean result = QrCodeUtil.createQrCode(localUrl,url,700,"JPEG");
 			String sessionUuid = UuidUtil.getUUID32();
