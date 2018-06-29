@@ -87,17 +87,22 @@ public class Inno72MachineServiceImpl extends AbstractService<Inno72Machine> imp
 	public Result<String> createQrCode(Integer machineId) {
 		LOGGER.info("根据机器id生成二维码", machineId);
 		Map<String, Object> map = new HashMap<String, Object>();
+		//调用天猫的地址
 		String url = "https://oauth.taobao.com/authorize?response_type=code&client_id=24791535&machineId="+machineId+"&redirect_uri=https://inno72test.ews.m.jaeapp.com/";
-        String localUrl = new Date().getTime()+""+machineId+"qrcode.jpg";
-        String targetPath = "https://oss.console.aliyun.com/bucket/oss-cn-beijing/inno72-qrcode/object/"+localUrl;
+        //二维码存储在本地的路径
+		String localUrl = new Date().getTime()+""+machineId+"qrcode.jpg";
+		//存储在阿里云上的文件名
+        String objectName = "qrcode/"+localUrl;
+        //提供给前端用来调用二维码的地址
+        String returnUrl = "http://72solo.oss-cn-beijing.aliyuncs.com/"+objectName;
 		try {
-			boolean result = QrCodeUtil.createQrCode(localUrl,url,900,"JPEG");
+			boolean result = QrCodeUtil.createQrCode(localUrl,url,700,"JPEG");
 			String sessionUuid = UuidUtil.getUUID32();
 			if(result) {
-				OSSUtil.uploadLocalFile(localUrl, localUrl);
-				map.put("qrCodeUrl", targetPath);
+				OSSUtil.uploadQrCode(localUrl, objectName);
+				map.put("qrCodeUrl", returnUrl);
 				map.put("sessionUuid", sessionUuid);
-				LOGGER.info("二维码生成成功 - result -> {}", JSON.toJSONString(map).replace("\\", "'"));
+				LOGGER.info("二维码生成成功 - result -> {}", JSON.toJSONString(map).replace("\"", "'"));
 			}else {
 				LOGGER.info("二维码生成失败");
 			}
