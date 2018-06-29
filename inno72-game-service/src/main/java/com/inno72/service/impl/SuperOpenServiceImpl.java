@@ -12,7 +12,6 @@ import org.springframework.stereotype.Service;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.inno72.service.SuperOpenService;
-import com.inno72.service.impl.SuperOpenServiceImpl.ADPTE_METHOD;
 
 @Service
 public class SuperOpenServiceImpl implements SuperOpenService {
@@ -56,15 +55,15 @@ public class SuperOpenServiceImpl implements SuperOpenService {
 	public static enum ADPTE_METHOD{
 
 		/** 生成二维码 */
-		CREATE_QR_CODE   ("001","createQrCode",    "/machine/createQrCode", "生成二维码",  "1.0.0"),
+		CREATE_QR_CODE   ("001","createQrCode",    "/machine/createQrCode",    "生成二维码",  "1.0.0"),
 		/** 获取登录信息 */
-		SESSION_POLLING  ("002","session_polling", "/api/qrcode/polling",       "获取登录信息", "1.0.0"),
+		SESSION_POLLING  ("002","session_polling", "/api/qrcode/polling",      "获取登录信息", "1.0.0"),
 		/** */
 		FIND_GAME        ("003","findGame",        "/machine/findGame",         "生成二维码",   "1.0.0"),
 		/** 获取商品信息 */
 		FIND_PRODUCT     ("004","findProduct",     "/api/goods/findProduct",    "获取商品信息",  "1.0.0"),
 		/** 下单  */
-		CREATE_ORDER     ("005","order",           "/api/qroauth/order",        "下单",         "1.0.0"),
+		CREATE_ORDER     ("005","order",           "/api/qroauth/order",        "下单",        "1.0.0"),
 		/** 验证下单状态 */
 		ORDER_POLLING    ("006","order-polling",   "/api/qroauth/order-polling","验证下单状态",  "1.0.0"),
 		/** 抽奖 */
@@ -72,9 +71,9 @@ public class SuperOpenServiceImpl implements SuperOpenService {
 		/** 出货后调用减货 */
 		SHIPMENT_REPORT  ("008","shipmentReport",   "/api/goods/shipmentReport","出货后调用减货", "1.0.0"),
 		/** 没有方法 */
-		ERROR_NO_METHOD  ("404","ERROR_NO_METHOD",  "/api/goods/shipmentReport","出货后调用减货", "1.0.0"),
+		ERROR_NO_METHOD  ("404","ERROR_NO_METHOD",  "/inno72/noMethod/open","出货后调用减货",     "1.0.0"),
 		/** 版本不存在 */
-		ERROR_NO_VERSION ("500","ERROR_NO_VERSION", "/api/goods/shipmentReport","出货后调用减货", "1.0.0"),
+		ERROR_NO_VERSION ("500","ERROR_NO_VERSION", "/inno72/noVersion/open","出货后调用减货",    "1.0.0"),
 		;
 
 		private String code;
