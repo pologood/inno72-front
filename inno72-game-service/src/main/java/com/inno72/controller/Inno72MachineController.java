@@ -76,12 +76,7 @@ public class Inno72MachineController {
     @RequestMapping(value = "/createQrCode", method = { RequestMethod.POST,  RequestMethod.GET})
     public Result<String> createQrCode(@RequestParam Integer machineId) {
         
-    	String url = "https://oauth.taobao.com/authorize?response_type=code&client_id=24791535&machineId="+machineId+"&redirect_uri=https://inno72test.ews.m.jaeapp.com/";
-        try {
-			QrCodeUtil.createQrCode("src\\main\\webapp\\qrcode\\qrcode.jpg",url,10000,"JPEG");
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-        return Results.success(url);
+    	inno72MachineService.createQrCode(machineId);
+        return Results.success("");
     }
 }
