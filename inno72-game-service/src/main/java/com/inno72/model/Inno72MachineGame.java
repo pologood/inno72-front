@@ -2,73 +2,72 @@ package com.inno72.model;
 
 import javax.persistence.*;
 
-import com.inno72.common.BaseModel;
-
 @Table(name = "inno72_machine_game")
-public class Inno72MachineGame extends BaseModel{
+public class Inno72MachineGame {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY, generator = "JDBC")
-    private Long id;
+    @Column(name = "Id")
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private String id;
 
     /**
-     * 机器id
+     * 机器id	
      */
     @Column(name = "machine_id")
-    private Integer machineId;
+    private String machineId;
 
     /**
-     * 游戏id
+     * 游戏id	
      */
     @Column(name = "game_id")
-    private Long gameId;
+    private String gameId;
 
     /**
-     * @return id
+     * @return Id
      */
-    public Long getId() {
+    public String getId() {
         return id;
     }
 
     /**
      * @param id
      */
-    public void setId(Long id) {
+    public void setId(String id) {
         this.id = id;
     }
 
     /**
-     * 获取机器id
+     * 获取机器id	
      *
-     * @return machine_id - 机器id
+     * @return machine_id - 机器id	
      */
-    public Integer getMachineId() {
+    public String getMachineId() {
         return machineId;
     }
 
     /**
-     * 设置机器id
+     * 设置机器id	
      *
-     * @param machineId 机器id
+     * @param machineId 机器id	
      */
-    public void setMachineId(Integer machineId) {
+    public void setMachineId(String machineId) {
         this.machineId = machineId;
     }
 
     /**
-     * 获取游戏id
+     * 获取游戏id	
      *
-     * @return game_id - 游戏id
+     * @return game_id - 游戏id	
      */
-    public Long getGameId() {
+    public String getGameId() {
         return gameId;
     }
 
     /**
-     * 设置游戏id
+     * 设置游戏id	
      *
-     * @param gameId 游戏id
+     * @param gameId 游戏id	
      */
-    public void setGameId(Long gameId) {
+    public void setGameId(String gameId) {
         this.gameId = gameId;
     }
 }
