@@ -6,7 +6,7 @@ import javax.persistence.*;
 @Table(name = "inno72_machine")
 public class Inno72Machine {
     @Id
-    @Column(name = "Id")
+    @Column(name = "id")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private String id;
 
