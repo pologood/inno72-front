@@ -74,7 +74,7 @@ public class Inno72MachineServiceImpl extends AbstractService<Inno72Machine> imp
 		BeanUtils.copyProperties(inno72Machine, inno72MachineVo);
 		inno72MachineVo.setInno72Games(inno72Games);
 		
-		if (!gameId.equals("0") && !inno72Games.getId().equals(Long.parseLong(gameId))) {
+		if (!gameId.equals("0") && !inno72Games.getId().equals(gameId)) {
 			inno72MachineVo.setReload(true);
 		}
 		

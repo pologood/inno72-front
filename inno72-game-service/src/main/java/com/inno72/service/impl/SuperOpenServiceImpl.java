@@ -56,7 +56,7 @@ public class SuperOpenServiceImpl implements SuperOpenService {
 	public static enum ADPTE_METHOD{
 
 		/** 生成二维码 */
-		CREATE_QR_CODE   ("001","createQrCode",    "/api/machine/createQrCode", "生成二维码",  "1.0.0"),
+		CREATE_QR_CODE   ("001","createQrCode",    "/machine/createQrCode", "生成二维码",  "1.0.0"),
 		/** 获取登录信息 */
 		SESSION_POLLING  ("002","session_polling", "/api/qrcode/polling",       "获取登录信息", "1.0.0"),
 		/** */

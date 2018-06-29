@@ -19,6 +19,7 @@ public class Inno72Game {
     /**
      * 游戏描述
      */
+    @Column(name = "`desc`")
     private String desc;
 
     /**

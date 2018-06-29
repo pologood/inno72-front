@@ -15,15 +15,15 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 /**
  * 全局异常处理
  */
-@ControllerAdvice
-@ResponseBody
+//@ControllerAdvice
+//@ResponseBody
 public class GlobalExceptionHandler {
 
     private Logger logger = LoggerFactory.getLogger(GlobalExceptionHandler.class);
 
-    @SuppressWarnings("rawtypes")
-	@ResponseStatus(HttpStatus.OK)
-    @ExceptionHandler(Exception.class)
+//    @SuppressWarnings("rawtypes")
+//	@ResponseStatus(HttpStatus.OK)
+//    @ExceptionHandler(Exception.class)
     public Result handleServiceException(SystemException ex) {
         logger.error(ex.getMessage(), ex);
         int retCode = StatusConstants.RETURN_CODE_FAIL;
