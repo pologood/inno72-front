@@ -1,0 +1,24 @@
+package com.inno72.common.util;
+
+import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.util.UUID;
+
+/**
+ * Title:AjaxUtils Description:生成uuid工具类
+ * 
+ * @Create_by:gaohuan
+ * @Create_date:2018-6-29
+ * @Last_Edit_By:
+ * @Edit_Description
+ * @version:ShareWithUs 1.0
+ *
+ */
+public class UuidUtil {
+
+	public static String getUUID32(){
+	    String uuid = UUID.randomUUID().toString().replace("-", "").toLowerCase();
+	    return uuid;
+	}
+}
