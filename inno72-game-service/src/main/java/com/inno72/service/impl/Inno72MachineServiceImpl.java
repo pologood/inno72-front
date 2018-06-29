@@ -89,13 +89,13 @@ public class Inno72MachineServiceImpl extends AbstractService<Inno72Machine> imp
         String localUrl = new Date().getTime()+""+machineId+"qrcode.jpg";
         String targetPath = "https://oss.console.aliyun.com/bucket/oss-cn-beijing/inno72-qrcode/object/"+localUrl;
 		try {
-			boolean result = QrCodeUtil.createQrCode(localUrl,url,10000,"JPEG");
+			boolean result = QrCodeUtil.createQrCode(localUrl,url,900,"JPEG");
 			String sessionUuid = UuidUtil.getUUID32();
 			if(result) {
 				OSSUtil.uploadLocalFile(localUrl, localUrl);
 				map.put("qrCodeUrl", targetPath);
 				map.put("sessionUuid", sessionUuid);
-				LOGGER.info("二维码生成成功 - result -> {}", JSON.toJSONString(map));
+				LOGGER.info("二维码生成成功 - result -> {}", JSON.toJSONString(map).replace("\\", "'"));
 			}else {
 				LOGGER.info("二维码生成失败");
 			}
@@ -104,7 +104,7 @@ public class Inno72MachineServiceImpl extends AbstractService<Inno72Machine> imp
 			e.printStackTrace();
 			LOGGER.info("二维码生成失败", e);
 		}
-		return Results.success(JSON.toJSONString(map));
+		return Results.success(JSON.toJSONString(map).replace("\"","'"));
 	}
 
 }
