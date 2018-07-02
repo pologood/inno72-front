@@ -76,4 +76,11 @@ public class Inno72MachineController {
         
     	return inno72MachineService.createQrCode(machineId);
     }
+    
+    @RequestMapping(value = "/polling", method = { RequestMethod.POST,  RequestMethod.GET})
+    @ResponseBody
+    public Result<Object> session_polling(@RequestParam String sessionUuid) {
+        
+    	return inno72MachineService.session_polling(sessionUuid);
+    }
 }
