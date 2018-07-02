@@ -18,6 +18,7 @@ import com.inno72.common.AbstractService;
 import com.inno72.common.Result;
 import com.inno72.common.Results;
 import com.inno72.common.util.QrCodeUtil;
+import com.inno72.common.util.StringUtil;
 import com.inno72.common.util.UuidUtil;
 import com.inno72.mapper.Inno72GameMapper;
 import com.inno72.mapper.Inno72MachineGameMapper;
@@ -82,13 +83,14 @@ public class Inno72MachineServiceImpl extends AbstractService<Inno72Machine> imp
 	}
 
 	@Override
-	public Result<String> createQrCode(Integer machineId) {
+	public Result<Object> createQrCode(Integer machineId) {
 		LOGGER.info("根据机器id生成二维码", machineId);
 		Map<String, Object> map = new HashMap<String, Object>();
 		//调用天猫的地址
 		String url = "https://oauth.taobao.com/authorize?response_type=code&client_id=24791535&machineId="+machineId+"&redirect_uri=https://inno72test.ews.m.jaeapp.com/";
         //二维码存储在本地的路径
-		String localUrl = new Date().getTime()+""+machineId+"qrcode.jpg";
+		double random = Math.random() * 1000;
+		String localUrl = machineId + StringUtil.uuid() +".jpg";
 		//存储在阿里云上的文件名
         String objectName = "qrcode/"+localUrl;
         //提供给前端用来调用二维码的地址
@@ -110,7 +112,7 @@ public class Inno72MachineServiceImpl extends AbstractService<Inno72Machine> imp
 			e.printStackTrace();
 			LOGGER.info("二维码生成失败", e);
 		}
-		return Results.success(JSON.toJSONString(map).replace("\"","'"));
+		return Results.success(map);
 	}
 
 }

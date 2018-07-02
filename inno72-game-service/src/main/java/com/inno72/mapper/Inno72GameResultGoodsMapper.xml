@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.inno72.mapper.Inno72GameResultGoodsMapper">
+  <resultMap id="BaseResultMap" type="com.inno72.model.Inno72GameResultGoods">
+    <!--
+      WARNING - @mbg.generated
+    -->
+    <id column="Id" jdbcType="INTEGER" property="id" />
+    <result column="machine_id" jdbcType="VARCHAR" property="machineId" />
+    <result column="game_id" jdbcType="VARCHAR" property="gameId" />
+    <result column="result_code" jdbcType="INTEGER" property="resultCode" />
+    <result column="goods_id" jdbcType="VARCHAR" property="goodsId" />
+  </resultMap>
+</mapper>

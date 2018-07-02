@@ -7,6 +7,7 @@ import javax.annotation.Resource;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.github.pagehelper.PageHelper;
@@ -70,7 +71,8 @@ public class Inno72MachineController {
     
     
     @RequestMapping(value = "/createQrCode", method = { RequestMethod.POST,  RequestMethod.GET})
-    public Result<String> createQrCode(@RequestParam Integer machineId) {
+    @ResponseBody
+    public Result<Object> createQrCode(@RequestParam Integer machineId) {
         
     	return inno72MachineService.createQrCode(machineId);
     }
