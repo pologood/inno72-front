@@ -83,4 +83,5 @@ public class Inno72MachineController {
         
     	return inno72MachineService.session_polling(sessionUuid);
     }
+    
 }
