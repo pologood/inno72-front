@@ -1,6 +1,5 @@
 package com.inno72.service.impl;
 
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -10,6 +9,7 @@ import javax.annotation.Resource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -18,7 +18,6 @@ import com.inno72.common.AbstractService;
 import com.inno72.common.Result;
 import com.inno72.common.Results;
 import com.inno72.common.util.QrCodeUtil;
-import com.inno72.common.util.StringUtil;
 import com.inno72.common.util.UuidUtil;
 import com.inno72.mapper.Inno72GameMapper;
 import com.inno72.mapper.Inno72MachineGameMapper;
@@ -27,6 +26,7 @@ import com.inno72.model.Inno72Game;
 import com.inno72.model.Inno72Machine;
 import com.inno72.model.Inno72MachineGame;
 import com.inno72.oss.OSSUtil;
+import com.inno72.redis.StringUtil;
 import com.inno72.service.Inno72MachineService;
 import com.inno72.vo.Inno72MachineVo;
 
@@ -44,8 +44,8 @@ public class Inno72MachineServiceImpl extends AbstractService<Inno72Machine> imp
     private Inno72MachineGameMapper inno72MachineGameMapper;
     @Resource
     private Inno72GameMapper inno72GameMapper;
-//    @Autowired
-//    private IRedisUtil redistUtil;
+    @Autowired
+    private StringUtil stringUtil;
 
 	@Override
 	public  Result<Inno72MachineVo> findGame(String machineId, String gameId) {
@@ -90,7 +90,7 @@ public class Inno72MachineServiceImpl extends AbstractService<Inno72Machine> imp
 		String url = "https://oauth.taobao.com/authorize?response_type=code&client_id=24791535&machineId="+machineId+"&redirect_uri=https://inno72test.ews.m.jaeapp.com/";
         //二维码存储在本地的路径
 		double random = Math.random() * 1000;
-		String localUrl = machineId + StringUtil.uuid() +".jpg";
+		String localUrl = machineId + com.inno72.common.util.StringUtil.uuid() +".jpg";
 		//存储在阿里云上的文件名
         String objectName = "qrcode/"+localUrl;
         //提供给前端用来调用二维码的地址
@@ -113,6 +113,15 @@ public class Inno72MachineServiceImpl extends AbstractService<Inno72Machine> imp
 			LOGGER.info("二维码生成失败", e);
 		}
 		return Results.success(map);
+	}
+
+	@Override
+	public Result<Object> polling(String sessionUuid) {
+
+		
+		String userInfo = stringUtil.get(sessionUuid);
+		
+		return Results.success(userInfo);
 	}
 
 }
