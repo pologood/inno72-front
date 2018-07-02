@@ -1,6 +1,5 @@
 package com.inno72.service.impl;
 
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -89,7 +88,6 @@ public class Inno72MachineServiceImpl extends AbstractService<Inno72Machine> imp
 		//调用天猫的地址
 		String url = "https://oauth.taobao.com/authorize?response_type=code&client_id=24791535&machineId="+machineId+"&redirect_uri=https://inno72test.ews.m.jaeapp.com/";
         //二维码存储在本地的路径
-		double random = Math.random() * 1000;
 		String localUrl = machineId + StringUtil.uuid() +".jpg";
 		//存储在阿里云上的文件名
         String objectName = "qrcode/"+localUrl;
