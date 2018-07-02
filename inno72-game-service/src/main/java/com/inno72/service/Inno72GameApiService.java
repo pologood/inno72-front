@@ -1,18 +1,21 @@
 package com.inno72.service;
 
+import java.util.Map;
+
 import com.inno72.common.Result;
+import com.inno72.vo.MachineApiVo;
 
 public interface Inno72GameApiService {
 
-	Result<String> findProduct(String machineId, String gameId, String report);
+	Result<Map<String, String>> findProduct(MachineApiVo vo);
 
-	Result<String> order(String sessionUuid, String activityId, String machineId, String itemId, String gameId);
+	Result<Object> order(MachineApiVo vo);
 
-	Result<String> orderPolling(String sessionUuid, String orderId);
+	Result<String> orderPolling(MachineApiVo vo);
 
-	Result<String> luckyDraw(String userId, String gameId);
+	Result<String> luckyDraw(MachineApiVo vo);
 
-	Result<String> shipmentReport(String machineId, String gameId, String goodsId);
+	Result<String> shipmentReport(MachineApiVo vo);
 
 
 }
