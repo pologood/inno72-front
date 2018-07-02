@@ -14,6 +14,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONObject;
 import com.inno72.common.AbstractService;
 import com.inno72.common.Result;
 import com.inno72.common.Results;
@@ -26,6 +27,7 @@ import com.inno72.model.Inno72Game;
 import com.inno72.model.Inno72Machine;
 import com.inno72.model.Inno72MachineGame;
 import com.inno72.oss.OSSUtil;
+import com.inno72.redis.IRedisUtil;
 import com.inno72.redis.StringUtil;
 import com.inno72.service.Inno72MachineService;
 import com.inno72.vo.Inno72MachineVo;
@@ -45,7 +47,7 @@ public class Inno72MachineServiceImpl extends AbstractService<Inno72Machine> imp
     @Resource
     private Inno72GameMapper inno72GameMapper;
     @Autowired
-    private StringUtil stringUtil;
+    private IRedisUtil redisUtil;
 
 	@Override
 	public  Result<Inno72MachineVo> findGame(String machineId, String gameId) {
@@ -86,8 +88,10 @@ public class Inno72MachineServiceImpl extends AbstractService<Inno72Machine> imp
 	public Result<Object> createQrCode(Integer machineId) {
 		LOGGER.info("根据机器id生成二维码", machineId);
 		Map<String, Object> map = new HashMap<String, Object>();
+		//生成sessionUuid
+		String sessionUuid = UuidUtil.getUUID32();
 		//调用天猫的地址
-		String url = "https://oauth.taobao.com/authorize?response_type=code&client_id=24791535&machineId="+machineId+"&redirect_uri=https://inno72test.ews.m.jaeapp.com/";
+		String url = "https://oauth.taobao.com/authorize?response_type=code&client_id=24791535&machineId="+machineId+"&redirect_uri=https://inno72.ews.m.jaeapp.com?sessionUuid="+sessionUuid;
         //二维码存储在本地的路径
 		double random = Math.random() * 1000;
 		String localUrl = machineId + com.inno72.common.util.StringUtil.uuid() +".jpg";
@@ -98,7 +102,6 @@ public class Inno72MachineServiceImpl extends AbstractService<Inno72Machine> imp
         
 		try {
 			boolean result = QrCodeUtil.createQrCode(localUrl,url,1800,"JPEG");
-			String sessionUuid = UuidUtil.getUUID32();
 			if(result) {
 				OSSUtil.uploadLocalFile(localUrl, objectName);
 				map.put("qrCodeUrl", returnUrl);
@@ -119,9 +122,16 @@ public class Inno72MachineServiceImpl extends AbstractService<Inno72Machine> imp
 	public Result<Object> session_polling(String sessionUuid) {
 
 		
-		String userInfo = stringUtil.get(sessionUuid);
+		String userInfo = redisUtil.get(sessionUuid);
+		JSONObject jsonObject = new JSONObject();
+		JSONObject jsonObject1 = new JSONObject();
+		jsonObject1.put("sessionUuid", sessionUuid);
+		jsonObject1.put("userNick", "zhangsan");
+		jsonObject1.put("userId", 1);
+		jsonObject.put("result", "success");
+		jsonObject.put("data", jsonObject1);
 		
-		return Results.success(userInfo);
+		return Results.success(jsonObject);
 	}
 
 }

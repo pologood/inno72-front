@@ -1,5 +1,7 @@
 package com.inno72.common.shiro.filter;
 
+import javax.annotation.Resource;
+
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.apache.shiro.authc.AuthenticationException;
@@ -10,7 +12,6 @@ import org.apache.shiro.authz.AuthorizationInfo;
 import org.apache.shiro.authz.SimpleAuthorizationInfo;
 import org.apache.shiro.realm.AuthorizingRealm;
 import org.apache.shiro.subject.PrincipalCollection;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.inno72.model.Inno72User;
@@ -21,12 +22,9 @@ public class MyRealm extends AuthorizingRealm {
 
     private static final Logger LOGGER = LogManager.getLogger(MyRealm.class);
 
+    @Resource
     private Inno72UserService userService;
 
-    @Autowired
-    public void setUserService(Inno72UserService userService) {
-        this.userService = userService;
-    }
 
     /**
      * 大坑！，必须重写此方法，不然Shiro会报错
