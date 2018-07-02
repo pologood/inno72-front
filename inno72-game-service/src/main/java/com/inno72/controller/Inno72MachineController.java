@@ -79,8 +79,8 @@ public class Inno72MachineController {
     
     @RequestMapping(value = "/polling", method = { RequestMethod.POST,  RequestMethod.GET})
     @ResponseBody
-    public Result<Object> polling(@RequestParam String sessionUuid) {
+    public Result<Object> session_polling(@RequestParam String sessionUuid) {
         
-    	return inno72MachineService.polling(sessionUuid);
+    	return inno72MachineService.session_polling(sessionUuid);
     }
 }

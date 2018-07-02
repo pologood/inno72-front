@@ -14,5 +14,5 @@ public interface Inno72MachineService extends Service<Inno72Machine> {
 	
 	Result<Object> createQrCode(Integer machineId);
 
-	Result<Object> polling(String sessionUuid);
+	Result<Object> session_polling(String sessionUuid);
 }

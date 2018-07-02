@@ -116,7 +116,7 @@ public class Inno72MachineServiceImpl extends AbstractService<Inno72Machine> imp
 	}
 
 	@Override
-	public Result<Object> polling(String sessionUuid) {
+	public Result<Object> session_polling(String sessionUuid) {
 
 		
 		String userInfo = stringUtil.get(sessionUuid);
