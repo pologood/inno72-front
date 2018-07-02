@@ -97,7 +97,7 @@ public class Inno72MachineServiceImpl extends AbstractService<Inno72Machine> imp
         String returnUrl = " https://inno72.oss-cn-beijing.aliyuncs.com/"+objectName;
         
 		try {
-			boolean result = QrCodeUtil.createQrCode(localUrl,url,700,"JPEG");
+			boolean result = QrCodeUtil.createQrCode(localUrl,url,1800,"JPEG");
 			String sessionUuid = UuidUtil.getUUID32();
 			if(result) {
 				OSSUtil.uploadLocalFile(localUrl, objectName);
