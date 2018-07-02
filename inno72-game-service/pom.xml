@@ -57,6 +57,12 @@
 			<artifactId>inno72-oss</artifactId>
 			<version>${plugin.version}</version>
 		</dependency>
+		
+		<dependency>
+			<groupId>com.inno72</groupId>
+			<artifactId>inno72-shiro</artifactId>
+			<version>${plugin.version}</version>
+		</dependency>
 
 		<!-- JPA START -->
 		<dependency>
