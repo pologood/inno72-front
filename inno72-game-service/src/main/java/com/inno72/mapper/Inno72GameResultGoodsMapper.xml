@@ -11,4 +11,9 @@
     <result column="result_code" jdbcType="INTEGER" property="resultCode" />
     <result column="goods_id" jdbcType="VARCHAR" property="goodsId" />
   </resultMap>
+  
+  <select id="findGoodsId" parameterType="java.util.Map" resultType="java.lang.String">
+  	select goodsId from inno72_game_result_goods
+  	where machine_id = #{machineId} and result_code = #{report} and goods_id = #{gameId}
+  </select>
 </mapper>
