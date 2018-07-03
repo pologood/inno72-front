@@ -14,8 +14,8 @@ import org.apache.shiro.realm.AuthorizingRealm;
 import org.apache.shiro.subject.PrincipalCollection;
 import org.springframework.stereotype.Service;
 
-import com.inno72.model.Inno72User;
-import com.inno72.service.Inno72UserService;
+import com.inno72.model.Inno72Authentication;
+import com.inno72.service.Inno72AuthenticationService;
 
 @Service
 public class MyRealm extends AuthorizingRealm {
@@ -24,7 +24,7 @@ public class MyRealm extends AuthorizingRealm {
 	private static final Logger LOGGER = LogManager.getLogger(MyRealm.class);
 
     @Resource
-    private Inno72UserService userService;
+    private Inno72AuthenticationService inno72AuthenticationService;
 
 
     /**
@@ -42,7 +42,7 @@ public class MyRealm extends AuthorizingRealm {
 	@Override
     protected AuthorizationInfo doGetAuthorizationInfo(PrincipalCollection principals) {
         String username = JWTUtil.getUsername(principals.toString());
-        Inno72User user = userService.getUser(username);
+        Inno72Authentication user = inno72AuthenticationService.getUser(username);
         SimpleAuthorizationInfo simpleAuthorizationInfo = new SimpleAuthorizationInfo();
         
         return simpleAuthorizationInfo;
@@ -60,7 +60,7 @@ public class MyRealm extends AuthorizingRealm {
             throw new AuthenticationException("token invalid");
         }
 
-        Inno72User user = userService.getUser(username);
+        Inno72Authentication user = inno72AuthenticationService.getUser(username);
         if (user == null) {
             throw new AuthenticationException("User didn't existed!");
         }
