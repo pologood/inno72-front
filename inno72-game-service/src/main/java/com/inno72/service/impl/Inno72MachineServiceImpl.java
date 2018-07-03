@@ -120,15 +120,11 @@ public class Inno72MachineServiceImpl extends AbstractService<Inno72Machine> imp
 	@Override
 	public Result<Object> session_polling(String sessionUuid) {
 
-		
 		String userInfo = redisUtil.get(sessionUuid);
 		JSONObject jsonObject = new JSONObject();
-		JSONObject jsonObject1 = new JSONObject();
-		jsonObject1.put("sessionUuid", sessionUuid);
-		jsonObject1.put("userNick", "zhangsan");
-		jsonObject1.put("userId", 1);
-		jsonObject.put("result", "success");
-		jsonObject.put("data", jsonObject1);
+		jsonObject.put("sessionUuid", sessionUuid);
+		jsonObject.put("userNick", "zhangsan");
+		jsonObject.put("userId", 1);
 		
 		return Results.success(jsonObject);
 	}
