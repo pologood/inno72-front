@@ -1,5 +1,6 @@
 package com.inno72.service.impl;
 
+import java.io.File;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -102,6 +103,9 @@ public class Inno72MachineServiceImpl extends AbstractService<Inno72Machine> imp
 			boolean result = QrCodeUtil.createQrCode(localUrl,url,1800,"JPEG");
 			if(result) {
 				OSSUtil.uploadLocalFile(localUrl, objectName);
+				//删除文件
+				File f=new File(localUrl);
+				f.delete();
 				map.put("qrCodeUrl", returnUrl);
 				map.put("sessionUuid", sessionUuid);
 				LOGGER.info("二维码生成成功 - result -> {}", JSON.toJSONString(map).replace("\"", "'"));
@@ -130,5 +134,5 @@ public class Inno72MachineServiceImpl extends AbstractService<Inno72Machine> imp
 		
 		return Results.success(JSON.parseObject(sessionStr));
 	}
-
+	
 }
