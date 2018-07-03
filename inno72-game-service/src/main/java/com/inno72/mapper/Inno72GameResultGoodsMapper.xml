@@ -14,6 +14,6 @@
   
   <select id="findGoodsId" parameterType="java.util.Map" resultType="java.lang.String">
   	select goodsId from inno72_game_result_goods
-  	where machine_id = #{machineId} and result_code = #{report} and goods_id = #{gameId}
+  	where machine_id = #{machineId} and result_code = #{report} and game_id = #{gameId}
   </select>
 </mapper>

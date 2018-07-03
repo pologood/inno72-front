@@ -7,5 +7,5 @@ import com.inno72.model.Inno72MachineGame;
 
 public interface Inno72MachineGameMapper extends Mapper<Inno72MachineGame> {
 
-	List<Inno72MachineGame> selectByMachineId(Integer machineId);
+	List<Inno72MachineGame> selectByMachineId(String machineId);
 }

@@ -28,7 +28,6 @@ import com.inno72.model.Inno72Machine;
 import com.inno72.model.Inno72MachineGame;
 import com.inno72.oss.OSSUtil;
 import com.inno72.redis.IRedisUtil;
-import com.inno72.redis.StringUtil;
 import com.inno72.service.Inno72MachineService;
 import com.inno72.vo.Inno72MachineVo;
 
@@ -56,7 +55,7 @@ public class Inno72MachineServiceImpl extends AbstractService<Inno72Machine> imp
 		if (inno72Machine == null) {
 			return Results.failure("机器ID错误!");
 		}
-		List<Inno72MachineGame> selectByCondition = inno72MachineGameMapper.selectByMachineId(Integer.parseInt(machineId));
+		List<Inno72MachineGame> selectByCondition = inno72MachineGameMapper.selectByMachineId(machineId);
 		if (selectByCondition.size() == 0) {
 			return Results.failure("机器ID没有绑定游戏!");
 		}

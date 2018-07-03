@@ -13,9 +13,11 @@ public interface Inno72GameApiService {
 
 	Result<String> orderPolling(MachineApiVo vo);
 
-	Result<String> luckyDraw(MachineApiVo vo);
+	Result<Object> luckyDraw(MachineApiVo vo);
 
 	Result<String> shipmentReport(MachineApiVo vo);
+
+	Result<String> sessionRedirect(String json);
 
 
 }

@@ -27,7 +27,7 @@ public class Inno72GameApiController {
 	 * @return
 	 */
 	@RequestMapping(value = "/goods/findProduct", method = { RequestMethod.POST,  RequestMethod.GET})
-	public Result<Map<String, String>> findProduct(@RequestBody MachineApiVo vo){
+	public Result<Map<String, String>> findProduct(MachineApiVo vo){
 		return inno72GameApiService.findProduct(vo);
 	}
 	
@@ -63,7 +63,7 @@ public class Inno72GameApiController {
 	 * @return
 	 */
 	@RequestMapping(value = "/special/luckyDraw", method = { RequestMethod.POST,  RequestMethod.GET})
-	public Result<String>  luckyDraw(@RequestBody MachineApiVo vo){
+	public Result<Object>  luckyDraw(@RequestBody MachineApiVo vo){
 		return inno72GameApiService.luckyDraw(vo);
 	}
 	
@@ -74,9 +74,14 @@ public class Inno72GameApiController {
 	 * @param goodsId
 	 * @return
 	 */
-	@RequestMapping(value = "/api/shipmentReport", method = { RequestMethod.POST,  RequestMethod.GET})
+	@RequestMapping(value = "/shipmentReport", method = { RequestMethod.POST,  RequestMethod.GET})
 	public Result<String>  shipmentReport(@RequestBody MachineApiVo vo){
 		return inno72GameApiService.shipmentReport(vo);
+	}
+	
+	@RequestMapping(value = "/sessionRedirect", method = { RequestMethod.POST,  RequestMethod.GET})
+	public Result<String>  sessionRedirect(@RequestBody String json){
+		return inno72GameApiService.sessionRedirect(json);
 	}
 	
 	

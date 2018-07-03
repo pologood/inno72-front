@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.inno72.mapper.Inno72GameUserMapper">
+  <resultMap id="BaseResultMap" type="com.inno72.model.Inno72GameUser">
+    <!--
+      WARNING - @mbg.generated
+    -->
+    <id column="id" jdbcType="VARCHAR" property="id" />
+    <result column="user_nick" jdbcType="VARCHAR" property="userNick" />
+    <result column="phone" jdbcType="VARCHAR" property="phone" />
+    <result column="channel" jdbcType="VARCHAR" property="channel" />
+    <result column="channel_user_key" jdbcType="VARCHAR" property="channelUserKey" />
+    <result column="create_time" jdbcType="TIMESTAMP" property="createTime" javaType="java.time.LocalDateTime" typeHandler="org.apache.ibatis.type.LocalDateTimeTypeHandler"/>
+    <result column="update_time" jdbcType="TIMESTAMP" property="updateTime" javaType="java.time.LocalDateTime" typeHandler="org.apache.ibatis.type.LocalDateTimeTypeHandler"/>
+    <result column="operator" jdbcType="VARCHAR" property="operator" />
+    <result column="operator_id" jdbcType="VARCHAR" property="operatorId" />
+  </resultMap>
+  <select id="selectByChannelUserKey" resultMap="BaseResultMap" parameterType="java.lang.String">
+  select * from inno72_game_user where channel_user_key = #{userId}
+  </select>
+</mapper>

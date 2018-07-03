@@ -6,7 +6,7 @@ import javax.persistence.*;
 public class Inno72MachineGame {
     @Id
     @Column(name = "Id")
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.IDENTITY,generator = "select uuid()")
     private String id;
 
     /**

@@ -1,6 +1,8 @@
 package com.inno72.service.impl;
 
+import java.time.LocalDateTime;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
@@ -17,10 +19,15 @@ import com.inno72.common.Inno72GameServiceProperties;
 import com.inno72.common.Result;
 import com.inno72.common.Results;
 import com.inno72.mapper.Inno72GameResultGoodsMapper;
+import com.inno72.mapper.Inno72GameUserMapper;
+import com.inno72.mapper.Inno72MachineGameMapper;
+import com.inno72.model.Inno72GameUser;
+import com.inno72.model.Inno72MachineGame;
 import com.inno72.plugin.http.HttpClient;
 import com.inno72.redis.IRedisUtil;
 import com.inno72.service.Inno72GameApiService;
 import com.inno72.vo.MachineApiVo;
+import com.inno72.vo.UserSessionVo;
 
 @Service
 public class Inno72GameApiServiceImpl implements Inno72GameApiService {
@@ -32,6 +39,9 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 	
 	@Resource
 	private Inno72GameServiceProperties inno72GameServiceProperties;
+	
+	@Resource
+	private Inno72MachineGameMapper inno72MachineGameMapper;
 	
 	@Resource
 	private IRedisUtil redisUtil;
@@ -160,9 +170,55 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 	 * @return
 	 */
 	@Override
-	public Result<String> luckyDraw(MachineApiVo vo) {
-		// TODO Auto-generated method stub
-		return null;
+	public Result<Object> luckyDraw(MachineApiVo vo) {
+		String jstUrl = inno72GameServiceProperties.get("jstUrl");
+		if ( StringUtils.isEmpty(jstUrl)) {
+			return Results.failure("配置中心无聚石塔配置路径!");
+		}
+		
+		String sessionUuid = vo.getSessionUuid();
+		String shopId = vo.getShopId();
+		String ua = vo.getUa();
+		String umid = vo.getUmid();
+		String interactId = vo.getInteractId();
+		
+		String sessionUUIDObjectJSON = redisUtil.get(sessionUuid);
+		if ( StringUtils.isEmpty(sessionUUIDObjectJSON) ) {
+			return Results.failure("登录失效!");
+		}
+		
+		JSONObject sessionObject = JSON.parseObject(sessionUUIDObjectJSON);
+		String accessToken = Optional.ofNullable(sessionObject.get("accessToken")).map(Object::toString).orElse("");
+		
+		Map<String, String> requestForm = new HashMap<>();
+		
+		requestForm.put("accessToken", accessToken);
+		requestForm.put("ua", ua); //安全ua
+		requestForm.put("umid", umid);//umid
+		requestForm.put("interactId", interactId);//互动实例ID
+		requestForm.put("shopId", shopId);//店铺ID
+		
+		String respJson = HttpClient.form(jstUrl+"/api/qroauth/lottery", requestForm, null);
+		if (StringUtils.isEmpty(respJson)) {
+			return Results.failure("聚石塔无返回数据!");
+		}
+		try {
+			JSONObject parseObjectRoot = JSON.parseObject(respJson);
+			String tmall_interact_isvlottery_draw_response = 
+					Optional.ofNullable(parseObjectRoot.get("tmall_interact_isvlottery_draw_response")).map(Object::toString).orElse("");
+			JSONObject parseObject = JSON.parseObject(tmall_interact_isvlottery_draw_response);
+			String msg_code = Optional.ofNullable(parseObject.get("code")).map(Object::toString).orElse("");
+			if (!msg_code.equals("CE001")) {
+				String msg_info = Optional.ofNullable(parseObject.get("msg_info")).map(Object::toString).orElse("");
+				return Results.failure(msg_info);
+			}
+			String data = Optional.ofNullable(parseObject.get("data")).map(Object::toString).orElse("");
+			JSONObject parseDataObject = JSON.parseObject(data);
+			
+			return Results.success(parseDataObject);
+		} catch (Exception e) {
+			return Results.failure(e.getMessage());
+		}
 	}
 
 	/**
@@ -177,5 +233,97 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 		// TODO Auto-generated method stub
 		return null;
 	}
+
+	/**
+	 * {
+		    "sessionUuid":"sessionUuid",
+		    "mid":"mid",
+		    "authInfo":{
+		        "code":"code",
+		        "userNick":"null",
+		        "userId":"result.taobao_user_id",
+		        "token":{
+		            "w1_expires_in":"1494",
+		            "refresh_token_valid_time":"1530521339000",
+		            "taobao_user_nick":"t01sNMnCfkSGKksyq9su9nKdqToIqawc1J4IkhX131bUgk%3D",
+		            "re_expires_in":0,
+		            "expire_time":1531385339000,
+		            "token_type":"Bearer",
+		            "access_token":"6202b145dbdead2fbf6c3dfhde257f5215fec00d68b5d36525671323",
+		            "taobao_open_uid":"AAGxHGf-AF4DUnGwDrNbhtyW",
+		            "w1_valid":1530523139844,
+		            "refresh_token":"62022142256fba186bbb0bdf30463037218905f210646d6525671323",
+		            "w2_expires_in":0,
+		            "w2_valid":1530521339844,
+		            "r1_expires_in":1494,
+		            "r2_expires_in":0,
+		            "r2_valid":1530521339844,
+		            "r1_valid":1530523139844,
+		            "taobao_user_id":"-1",
+		            "expires_in":863693
+		        }
+		    }
+		}
+	 */
+	@Override
+	public Result<String> sessionRedirect(String json) {
+		LOGGER.info("redirect session : paramJSON ===> {}", json);
+		if ( StringUtils.isEmpty(json) ) {
+			return Results.failure("参数不存在！");
+		}
+		
+		JSONObject parseRootObject = JSON.parseObject(json);
+		String sessionUuid = Optional.ofNullable(parseRootObject.get("sessionUuid")).map(Object::toString).orElse("");
+		String mid = Optional.ofNullable(parseRootObject.get("mid")).map(Object::toString).orElse("");
+		String authInfo = Optional.ofNullable(parseRootObject.get("authInfo")).map(Object::toString).orElse("");
+		
+		if (StringUtils.isEmpty(sessionUuid) || StringUtils.isEmpty(mid) || StringUtils.isEmpty(authInfo)) {
+			return Results.failure("参数缺失！");
+		}
+		
+		JSONObject parseAuthInfoObject = JSON.parseObject(authInfo);
+		
+		String userNick = Optional.ofNullable(parseAuthInfoObject.get("userNick")).map(Object::toString).orElse("");
+		String userId = Optional.ofNullable(parseAuthInfoObject.get("userId")).map(Object::toString).orElse("");
+		
+		String token = Optional.ofNullable(parseRootObject.get("token")).map(Object::toString).orElse("");
+		if ( StringUtils.isNotEmpty(userNick) || StringUtils.isNotEmpty(userId) || StringUtils.isNotEmpty(token) ) {
+			return Results.failure("Token参数缺失！");
+		}
+		JSONObject parseTokenObject = JSON.parseObject(token);
+		String access_token = Optional.ofNullable(parseTokenObject.get("access_token")).map(Object::toString).orElse("");
+		
+		if ( StringUtils.isEmpty(access_token)) {
+			return Results.failure("access_token 参数缺失！");
+		}
+		List<Inno72MachineGame> inno72MachineGames = inno72MachineGameMapper.selectByMachineId(mid);
+		String gameId = "";
+		if (inno72MachineGames.size() > 0) {
+			gameId = inno72MachineGames.get(0).getGameId();
+		}
+		
+		UserSessionVo sessionVo = new UserSessionVo(mid, userNick, userId, access_token, gameId,  sessionUuid);
+		
+		LocalDateTime now = LocalDateTime.now();
+		redisUtil.set(sessionUuid, JSON.toJSONString(sessionVo));
+		redisUtil.expire(sessionUuid, 1800);//超时
+		
+		Inno72GameUser inno72GameUser = inno72GameUserMapper.selectByChannelUserKey(userId);
+		if (inno72GameUser == null ) {
+			inno72GameUser = new Inno72GameUser();
+			inno72GameUser.setUserNick(userNick);
+			inno72GameUser.setPhone("");
+			inno72GameUser.setChannel("1000");
+			inno72GameUser.setChannelUserKey(userId);
+			inno72GameUser.setCreateTime(now);
+			inno72GameUser.setUpdateTime(now);
+			inno72GameUserMapper.insert(inno72GameUser);
+		}
+		
+		return Results.success();
+	}
+	
+	@Resource
+	private Inno72GameUserMapper inno72GameUserMapper;
 
 }

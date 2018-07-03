@@ -1,13 +1,23 @@
 package com.inno72.model;
 
-import java.util.Date;
-import javax.persistence.*;
+import java.time.LocalDateTime;
+
+import javax.persistence.Column;
+import javax.persistence.Convert;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.Table;
+
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.inno72.common.CustomLocalDateTimeSerializer;
+import com.inno72.common.LocalDateConverter;
 
 @Table(name = "inno72_machine")
 public class Inno72Machine {
     @Id
     @Column(name = "id")
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.IDENTITY,generator = "select uuid()")
     private String id;
 
     /**
@@ -49,13 +59,15 @@ public class Inno72Machine {
      * 创建时间
      */
     @Column(name = "create_time")
-    private Date createTime;
+    private LocalDateTime createTime;
 
     /**
      * 更新时间
      */
     @Column(name = "update_time")
-    private Date updateTime;
+	@JsonSerialize(using = CustomLocalDateTimeSerializer.class)
+	@Convert(converter = LocalDateConverter.class)
+    private LocalDateTime updateTime;
 
     /**
      * @return Id
@@ -184,7 +196,7 @@ public class Inno72Machine {
      *
      * @return create_time - 创建时间
      */
-    public Date getCreateTime() {
+    public LocalDateTime getCreateTime() {
         return createTime;
     }
 
@@ -193,7 +205,7 @@ public class Inno72Machine {
      *
      * @param createTime 创建时间
      */
-    public void setCreateTime(Date createTime) {
+    public void setCreateTime(LocalDateTime createTime) {
         this.createTime = createTime;
     }
 
@@ -202,7 +214,7 @@ public class Inno72Machine {
      *
      * @return update_time - 更新时间
      */
-    public Date getUpdateTime() {
+    public LocalDateTime getUpdateTime() {
         return updateTime;
     }
 
@@ -211,7 +223,7 @@ public class Inno72Machine {
      *
      * @param updateTime 更新时间
      */
-    public void setUpdateTime(Date updateTime) {
+    public void setUpdateTime(LocalDateTime updateTime) {
         this.updateTime = updateTime;
     }
 }

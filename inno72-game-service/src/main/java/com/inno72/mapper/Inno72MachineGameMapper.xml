@@ -13,7 +13,7 @@
   id, machine_id , game_id
   </sql>
   
-  <select id="selectByMachineId" resultMap="BaseResultMap" parameterType="int">
+  <select id="selectByMachineId" resultMap="BaseResultMap" parameterType="java.lang.String">
   	select <include refid="Base_Column"/> from inno72_machine_game where machine_id = #{machineId}
   </select>
 </mapper>

@@ -57,7 +57,7 @@ public class SuperOpenServiceImpl implements SuperOpenService {
 		/** 生成二维码 */
 		CREATE_QR_CODE   ("001","createQrCode",    "/machine/createQrCode",    "生成二维码",  "1.0.0"),
 		/** 获取登录信息 */
-		SESSION_POLLING  ("002","session_polling", "/machine/polling",      "获取登录信息", "1.0.0"),
+		SESSION_POLLING  ("002","polling", "/machine/polling",      "获取登录信息", "1.0.0"),
 		/** */
 		FIND_GAME        ("003","findGame",        "/machine/findGame",         "生成二维码",   "1.0.0"),
 		/** 获取商品信息 */
