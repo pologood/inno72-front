@@ -38,6 +38,7 @@ public class Inno72UserController {
              jsonObject.put("code", "200");
              jsonObject.put("result", "Login success");
              jsonObject.put("Authorization", JWTUtil.sign(username, password));
+             jsonObject.put("isLogin", true);
          } else {
              throw new UnauthorizedException();
          }
