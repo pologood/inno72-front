@@ -124,6 +124,7 @@ public class Inno72MachineServiceImpl extends AbstractService<Inno72Machine> imp
 		jsonObject.put("sessionUuid", sessionUuid);
 		jsonObject.put("userNick", "zhangsan");
 		jsonObject.put("userId", 1);
+		jsonObject.put("isLogin", true);
 		
 		return Results.success(jsonObject);
 	}
