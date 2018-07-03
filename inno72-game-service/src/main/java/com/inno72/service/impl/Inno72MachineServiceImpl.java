@@ -105,7 +105,9 @@ public class Inno72MachineServiceImpl extends AbstractService<Inno72Machine> imp
 				OSSUtil.uploadLocalFile(localUrl, objectName);
 				//删除文件
 				File f=new File(localUrl);
-				f.delete();
+				if(f.exists()) {
+					f.delete();
+				}
 				map.put("qrCodeUrl", returnUrl);
 				map.put("sessionUuid", sessionUuid);
 				LOGGER.info("二维码生成成功 - result -> {}", JSON.toJSONString(map).replace("\"", "'"));
