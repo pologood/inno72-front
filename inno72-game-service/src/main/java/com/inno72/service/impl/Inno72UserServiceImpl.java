@@ -7,6 +7,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.alibaba.fastjson.JSON;
 import com.inno72.common.AbstractService;
 import com.inno72.mapper.Inno72UserMapper;
 import com.inno72.model.Inno72User;
@@ -26,7 +27,9 @@ public class Inno72UserServiceImpl extends AbstractService<Inno72User> implement
 
 	@Override
 	public Inno72User getUser(String username) {
+		LOGGER.info("根据用户名获取用户", username);
 		Inno72User user = inno72UserMapper.selectByUsername(username);
+		LOGGER.info("获取完成 - result -> {}", JSON.toJSONString(user));
 		return user;
 	}
 

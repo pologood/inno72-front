@@ -20,7 +20,8 @@ import com.inno72.service.Inno72UserService;
 @Service
 public class MyRealm extends AuthorizingRealm {
 
-    private static final Logger LOGGER = LogManager.getLogger(MyRealm.class);
+    @SuppressWarnings("unused")
+	private static final Logger LOGGER = LogManager.getLogger(MyRealm.class);
 
     @Resource
     private Inno72UserService userService;
@@ -37,7 +38,8 @@ public class MyRealm extends AuthorizingRealm {
     /**
      * 只有当需要检测用户权限的时候才会调用此方法，例如checkRole,checkPermission之类的
      */
-    @Override
+    @SuppressWarnings("unused")
+	@Override
     protected AuthorizationInfo doGetAuthorizationInfo(PrincipalCollection principals) {
         String username = JWTUtil.getUsername(principals.toString());
         Inno72User user = userService.getUser(username);

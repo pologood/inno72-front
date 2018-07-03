@@ -21,7 +21,6 @@ import com.inno72.service.Inno72UserService;
 */
 @RestController
 @RequestMapping("/user")
-@SuppressWarnings({"rawtypes", "unchecked"})
 public class Inno72UserController {
     @Resource
     private Inno72UserService inno72UserService;

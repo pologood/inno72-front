@@ -2,6 +2,7 @@ package com.inno72.common.shiro.filter;
 
 import org.apache.shiro.authc.AuthenticationToken;
 
+@SuppressWarnings("serial")
 public class JWTToken implements AuthenticationToken {
 
     // 密钥
