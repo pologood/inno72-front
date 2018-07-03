@@ -6,6 +6,7 @@ import java.util.Map;
 
 import javax.annotation.Resource;
 
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
@@ -14,7 +15,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.alibaba.fastjson.JSON;
-import com.alibaba.fastjson.JSONObject;
 import com.inno72.common.AbstractService;
 import com.inno72.common.Result;
 import com.inno72.common.Results;
@@ -118,15 +118,17 @@ public class Inno72MachineServiceImpl extends AbstractService<Inno72Machine> imp
 
 	@Override
 	public Result<Object> session_polling(String sessionUuid) {
-
-		String userInfo = redisUtil.get(sessionUuid);
-		JSONObject jsonObject = new JSONObject();
-		jsonObject.put("sessionUuid", sessionUuid);
-		jsonObject.put("userNick", "zhangsan");
-		jsonObject.put("userId", 1);
-		jsonObject.put("isLogin", true);
+		if (StringUtils.isEmpty(sessionUuid)) {
+			return Results.failure("参数缺失！");
+		}
 		
-		return Results.success(jsonObject);
+		String sessionStr = redisUtil.get(sessionUuid);
+
+		if (StringUtils.isEmpty(sessionStr)) {
+			return Results.failure("未登录！");
+		}
+		
+		return Results.success(JSON.parseObject(sessionStr));
 	}
 
 }
