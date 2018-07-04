@@ -341,7 +341,7 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 		 *     <model>e****丫</model>
 		 * </tmall_fans_automachine_getmaskusernick_response>
 		 */
-		String respJson = HttpClient.form("http://172.16.23.215:8081/api/top/getMaskUserNick", requestForm, null);
+		String respJson = HttpClient.form(jstUrl + "/api/top/getMaskUserNick", requestForm, null);
 		LOGGER.info("请求NikeName ==> {}", respJson);
 		JSONObject jsonNikeNameObject = JSON.parseObject(respJson);
 		String tmall_fans_automachine_getmaskusernick_response = Optional.ofNullable(jsonNikeNameObject.get(
