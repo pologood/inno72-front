@@ -274,6 +274,7 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 	 */
 	@Override
 	public Result<String> sessionRedirect(String sessionUuid, String mid, String token, String code, String userId) {
+		LOGGER.info("session 回执请求 => sessionUuid:{}; mid:{}; token:{}; code:{}; userId:{}", sessionUuid, mid, token ,code, userId);
 //		LOGGER.info("redirect session : paramJSON ===> {}", json);
 //		if ( StringUtils.isEmpty(json) ) {
 //			return Results.failure("参数不存在！");
@@ -297,6 +298,7 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 //		if ( StringUtils.isEmpty(userId) || StringUtils.isEmpty(token) ) {
 //			return Results.failure("Token参数缺失！");
 //		}
+		LOGGER.info("session 回执请求 => ");
 		JSONObject parseTokenObject = JSON.parseObject(token);
 		String access_token = Optional.ofNullable(parseTokenObject.get("access_token")).map(Object::toString).orElse("");
 
