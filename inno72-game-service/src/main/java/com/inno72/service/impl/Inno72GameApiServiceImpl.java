@@ -8,6 +8,8 @@ import java.util.Optional;
 
 import javax.annotation.Resource;
 
+import com.inno72.mapper.Inno72GameMapper;
+import com.inno72.model.Inno72Game;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -43,6 +45,9 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 	
 	@Resource
 	private Inno72MachineGameMapper inno72MachineGameMapper;
+
+	@Resource
+	private Inno72GameMapper inno72GameMapper;
 	
 	@Resource
 	private IRedisUtil redisUtil;
@@ -310,8 +315,52 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 		if (inno72MachineGames.size() > 0) {
 			gameId = inno72MachineGames.get(0).getGameId();
 		}
-		
-		UserSessionVo sessionVo = new UserSessionVo(mid, null, userId, access_token, gameId,  sessionUuid);
+
+		if ( StringUtils.isEmpty(gameId) ){
+			return Results.failure("没有绑定的游戏！");
+		}
+
+		Inno72Game inno72Game = inno72GameMapper.selectByPrimaryKey(gameId);
+		if ( inno72Game == null ){
+			return Results.failure("不存在的游戏！");
+		}
+		Long sellerId = inno72Game.getSellerId();
+
+		String jstUrl = inno72GameServiceProperties.get("jstUrl");
+		if ( StringUtils.isEmpty(jstUrl)) {
+			return Results.failure("配置中心无聚石塔配置路径!");
+		}
+		Map<String, String> requestForm = new HashMap<>();
+		requestForm.put("accessToken", access_token);
+		requestForm.put("mid", mid);
+		requestForm.put("sellerId", sellerId+"");
+		/**
+		 * <tmall_fans_automachine_getmaskusernick_response>
+		 *     <msg_code>200</msg_code>
+		 *     <msg_info>用户不存在</msg_info>
+		 *     <model>e****丫</model>
+		 * </tmall_fans_automachine_getmaskusernick_response>
+		 */
+		String respJson = HttpClient.form("http://172.16.23.215:8081/api/top/getMaskUserNick", requestForm, null);
+		LOGGER.info("请求NikeName ==> {}", respJson);
+		JSONObject jsonNikeNameObject = JSON.parseObject(respJson);
+		String tmall_fans_automachine_getmaskusernick_response = Optional.ofNullable(jsonNikeNameObject.get(
+				"tmall_fans_automachine_getmaskusernick_response")).map(Object::toString).orElse("");
+		if (StringUtils.isEmpty(tmall_fans_automachine_getmaskusernick_response)){
+			return Results.failure("请求用户名失败!");
+		}
+		JSONObject responseJson = JSON.parseObject(tmall_fans_automachine_getmaskusernick_response);
+		String msg_code = Optional.ofNullable(responseJson.get(
+				"msg_code")).map(Object::toString).orElse("");
+
+//		if (!msg_code.equals("200")){
+//			LOGGER.info("请求NickName失败");
+//			return Results.failure("请求NickName失败");
+//		}
+		String nickName = Optional.ofNullable(responseJson.get(
+				"model")).map(Object::toString).orElse("");
+
+		UserSessionVo sessionVo = new UserSessionVo(mid, nickName, userId, access_token, gameId,  sessionUuid);
 		
 		LocalDateTime now = LocalDateTime.now();
 		redisUtil.set(CommonBean.SESSION_KEY + sessionUuid, JSON.toJSONString(sessionVo));
@@ -320,7 +369,7 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 		Inno72GameUser inno72GameUser = inno72GameUserMapper.selectByChannelUserKey(userId);
 		if (inno72GameUser == null ) {
 			inno72GameUser = new Inno72GameUser();
-			inno72GameUser.setUserNick(null);
+			inno72GameUser.setUserNick(nickName);
 			inno72GameUser.setPhone("");
 			inno72GameUser.setChannel("1000");
 			inno72GameUser.setChannelUserKey(userId);
