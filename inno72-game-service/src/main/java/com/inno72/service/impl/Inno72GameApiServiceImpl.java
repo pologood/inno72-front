@@ -15,6 +15,7 @@ import org.springframework.stereotype.Service;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
+import com.inno72.common.CommonBean;
 import com.inno72.common.Inno72GameServiceProperties;
 import com.inno72.common.Result;
 import com.inno72.common.Results;
@@ -45,6 +46,8 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 	
 	@Resource
 	private IRedisUtil redisUtil;
+	
+	
 
 	@Override
 	public Result<Map<String, String>> findProduct(MachineApiVo vo) {
@@ -77,7 +80,7 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 		String sessionUuid = vo.getSessionUuid();
 		String itemId = vo.getItemId();
 		
-		String sessionUUIDObjectJSON = redisUtil.get(sessionUuid);
+		String sessionUUIDObjectJSON = redisUtil.get(CommonBean.SESSION_KEY + sessionUuid);
 		if ( StringUtils.isEmpty(sessionUUIDObjectJSON) ) {
 			return Results.failure("登录失效!");
 		}
@@ -128,7 +131,7 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 		String sessionUuid = vo.getSessionUuid();
 		String orderId = vo.getSessionUuid();
 		
-		String sessionUUIDObjectJSON = redisUtil.get(sessionUuid);
+		String sessionUUIDObjectJSON = redisUtil.get(CommonBean.SESSION_KEY + sessionUuid);
 		if ( StringUtils.isEmpty(sessionUUIDObjectJSON) ) {
 			return Results.failure("登录失效!");
 		}
@@ -182,7 +185,7 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 		String umid = vo.getUmid();
 		String interactId = vo.getInteractId();
 		
-		String sessionUUIDObjectJSON = redisUtil.get(sessionUuid);
+		String sessionUUIDObjectJSON = redisUtil.get(CommonBean.SESSION_KEY + sessionUuid);
 		if ( StringUtils.isEmpty(sessionUUIDObjectJSON) ) {
 			return Results.failure("登录失效!");
 		}
@@ -286,8 +289,8 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 		String userNick = Optional.ofNullable(parseAuthInfoObject.get("userNick")).map(Object::toString).orElse("");
 		String userId = Optional.ofNullable(parseAuthInfoObject.get("userId")).map(Object::toString).orElse("");
 		
-		String token = Optional.ofNullable(parseRootObject.get("token")).map(Object::toString).orElse("");
-		if ( StringUtils.isNotEmpty(userNick) || StringUtils.isNotEmpty(userId) || StringUtils.isNotEmpty(token) ) {
+		String token = Optional.ofNullable(parseAuthInfoObject.get("token")).map(Object::toString).orElse("");
+		if ( StringUtils.isEmpty(userId) || StringUtils.isEmpty(token) ) {
 			return Results.failure("Token参数缺失！");
 		}
 		JSONObject parseTokenObject = JSON.parseObject(token);
@@ -305,8 +308,8 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 		UserSessionVo sessionVo = new UserSessionVo(mid, userNick, userId, access_token, gameId,  sessionUuid);
 		
 		LocalDateTime now = LocalDateTime.now();
-		redisUtil.set(sessionUuid, JSON.toJSONString(sessionVo));
-		redisUtil.expire(sessionUuid, 1800);//超时
+		redisUtil.set(CommonBean.SESSION_KEY + sessionUuid, JSON.toJSONString(sessionVo));
+		redisUtil.expire(CommonBean.SESSION_KEY + sessionUuid, 1800);//超时
 		
 		Inno72GameUser inno72GameUser = inno72GameUserMapper.selectByChannelUserKey(userId);
 		if (inno72GameUser == null ) {

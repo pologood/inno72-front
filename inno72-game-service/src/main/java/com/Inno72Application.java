@@ -28,11 +28,11 @@ public class Inno72Application extends SpringBootServletInitializer {
      * @Author gaoxingang
      */
     public static void main(String[] args) {
-        new SpringApplicationBuilder(Inno72Application.class, "inno72-service", args);
+        new SpringApplicationBuilder(Inno72Application.class, "inno72-game-service", args);
     }
 
     @Override
     public String setAppNameForLog() {
-        return "order-service";
+        return "inno72-game-service";
     }
 }
