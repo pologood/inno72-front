@@ -85,7 +85,7 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 		String sessionUuid = vo.getSessionUuid();
 		String itemId = vo.getItemId();
 		
-		String sessionUUIDObjectJSON = redisUtil.get(CommonBean.SESSION_KEY + sessionUuid);
+		String sessionUUIDObjectJSON = redisUtil.get(sessionUuid);
 		if ( StringUtils.isEmpty(sessionUUIDObjectJSON) ) {
 			return Results.failure("登录失效!");
 		}
@@ -137,7 +137,7 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 		String sessionUuid = vo.getSessionUuid();
 		String orderId = vo.getSessionUuid();
 		
-		String sessionUUIDObjectJSON = redisUtil.get(CommonBean.SESSION_KEY + sessionUuid);
+		String sessionUUIDObjectJSON = redisUtil.get(sessionUuid);
 		if ( StringUtils.isEmpty(sessionUUIDObjectJSON) ) {
 			return Results.failure("登录失效!");
 		}
@@ -192,7 +192,7 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 		String umid = vo.getUmid();
 		String interactId = vo.getInteractId();
 		
-		String sessionUUIDObjectJSON = redisUtil.get(CommonBean.SESSION_KEY + sessionUuid);
+		String sessionUUIDObjectJSON = redisUtil.get(sessionUuid);
 		if ( StringUtils.isEmpty(sessionUUIDObjectJSON) ) {
 			return Results.failure("登录失效!");
 		}
@@ -363,9 +363,8 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 		UserSessionVo sessionVo = new UserSessionVo(mid, nickName, userId, access_token, gameId,  sessionUuid);
 		
 		LocalDateTime now = LocalDateTime.now();
-		redisUtil.set(CommonBean.SESSION_KEY + sessionUuid, JSON.toJSONString(sessionVo));
-		redisUtil.expire(CommonBean.SESSION_KEY + sessionUuid, 1800);//超时
-		
+		redisUtil.setex(sessionUuid, 1800, JSON.toJSONString(sessionVo));
+
 		Inno72GameUser inno72GameUser = inno72GameUserMapper.selectByChannelUserKey(userId);
 		if (inno72GameUser == null ) {
 			inno72GameUser = new Inno72GameUser();
