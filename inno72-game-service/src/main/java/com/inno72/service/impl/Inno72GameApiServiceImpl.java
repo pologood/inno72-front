@@ -297,19 +297,19 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 //		if ( StringUtils.isEmpty(userId) || StringUtils.isEmpty(token) ) {
 //			return Results.failure("Token参数缺失！");
 //		}
-//		JSONObject parseTokenObject = JSON.parseObject(token);
-//		String access_token = Optional.ofNullable(parseTokenObject.get("access_token")).map(Object::toString).orElse("");
-//
-//		if ( StringUtils.isEmpty(access_token)) {
-//			return Results.failure("access_token 参数缺失！");
-//		}
+		JSONObject parseTokenObject = JSON.parseObject(token);
+		String access_token = Optional.ofNullable(parseTokenObject.get("access_token")).map(Object::toString).orElse("");
+
+		if ( StringUtils.isEmpty(access_token)) {
+			return Results.failure("access_token 参数缺失！");
+		}
 		List<Inno72MachineGame> inno72MachineGames = inno72MachineGameMapper.selectByMachineId(mid);
 		String gameId = "";
 		if (inno72MachineGames.size() > 0) {
 			gameId = inno72MachineGames.get(0).getGameId();
 		}
 		
-		UserSessionVo sessionVo = new UserSessionVo(mid, null, userId, token, gameId,  sessionUuid);
+		UserSessionVo sessionVo = new UserSessionVo(mid, null, userId, access_token, gameId,  sessionUuid);
 		
 		LocalDateTime now = LocalDateTime.now();
 		redisUtil.set(CommonBean.SESSION_KEY + sessionUuid, JSON.toJSONString(sessionVo));

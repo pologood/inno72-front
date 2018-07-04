@@ -12,6 +12,7 @@ import javax.persistence.Table;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.inno72.common.CustomLocalDateTimeSerializer;
 import com.inno72.common.LocalDateConverter;
+import org.springframework.format.annotation.DateTimeFormat;
 
 @Table(name = "inno72_machine")
 public class Inno72Machine {
@@ -59,6 +60,8 @@ public class Inno72Machine {
      * 创建时间
      */
     @Column(name = "create_time")
+    @JsonSerialize(using = CustomLocalDateTimeSerializer.class)
+    @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime createTime;
 
     /**
@@ -66,7 +69,7 @@ public class Inno72Machine {
      */
     @Column(name = "update_time")
 	@JsonSerialize(using = CustomLocalDateTimeSerializer.class)
-	@Convert(converter = LocalDateConverter.class)
+	@DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime updateTime;
 
     /**

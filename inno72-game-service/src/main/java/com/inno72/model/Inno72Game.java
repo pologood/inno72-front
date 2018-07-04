@@ -1,5 +1,11 @@
 package com.inno72.model;
 
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.inno72.common.CustomLocalDateTimeSerializer;
+import com.inno72.common.LocalDateTimeConverter;
+import org.springframework.format.annotation.DateTimeFormat;
+
+import java.time.LocalDateTime;
 import java.util.Date;
 import javax.persistence.*;
 
@@ -87,7 +93,9 @@ public class Inno72Game {
      * 创建时间
      */
     @Column(name = "create_time")
-    private Date createTime;
+    @JsonSerialize(using = CustomLocalDateTimeSerializer.class)
+    @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+    private LocalDateTime createTime;
 
     /**
      * 更新人
@@ -99,6 +107,8 @@ public class Inno72Game {
      * 更新时间
      */
     @Column(name = "update_time")
+    @JsonSerialize(using = CustomLocalDateTimeSerializer.class)
+    @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private Date updateTime;
 
     /**
@@ -346,7 +356,7 @@ public class Inno72Game {
      *
      * @return create_time - 创建时间
      */
-    public Date getCreateTime() {
+    public LocalDateTime getCreateTime() {
         return createTime;
     }
 
@@ -355,7 +365,7 @@ public class Inno72Game {
      *
      * @param createTime 创建时间
      */
-    public void setCreateTime(Date createTime) {
+    public void setCreateTime(LocalDateTime createTime) {
         this.createTime = createTime;
     }
 
