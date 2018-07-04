@@ -24,8 +24,8 @@ public class Inno72Machine {
     /**
      * 机器id
      */
-    @Column(name = "machine_id")
-    private String machineId;
+    @Column(name = "machine_code")
+    private String machineCode;
 
     /**
      * 机器名称
@@ -72,6 +72,15 @@ public class Inno72Machine {
 	@DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime updateTime;
 
+    @Column(name = "machine_status")
+    private Integer machineStatus;
+
+    @Column(name = "net_status")
+    private Integer netStatus;
+
+    @Column(name = "device_id")
+    private String deviceId;
+
     /**
      * @return Id
      */
@@ -91,17 +100,17 @@ public class Inno72Machine {
      *
      * @return machine_id - 机器id
      */
-    public String getMachineId() {
-        return machineId;
+    public String getMachineCode() {
+        return machineCode;
     }
 
     /**
      * 设置机器id
      *
-     * @param machineId 机器id
+     * @param machineCode 机器id
      */
-    public void setMachineId(String machineId) {
-        this.machineId = machineId;
+    public void setMachineCode(String machineCode) {
+        this.machineCode = machineCode;
     }
 
     /**

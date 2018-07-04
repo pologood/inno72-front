@@ -109,7 +109,7 @@ public class Inno72Game {
     @Column(name = "update_time")
     @JsonSerialize(using = CustomLocalDateTimeSerializer.class)
     @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
-    private Date updateTime;
+    private LocalDateTime updateTime;
 
     /**
      * 活动id
@@ -392,7 +392,7 @@ public class Inno72Game {
      *
      * @return update_time - 更新时间
      */
-    public Date getUpdateTime() {
+    public LocalDateTime getUpdateTime() {
         return updateTime;
     }
 
@@ -401,7 +401,7 @@ public class Inno72Game {
      *
      * @param updateTime 更新时间
      */
-    public void setUpdateTime(Date updateTime) {
+    public void setUpdateTime(LocalDateTime updateTime) {
         this.updateTime = updateTime;
     }
 
