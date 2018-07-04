@@ -17,7 +17,7 @@ public interface Inno72GameApiService {
 
 	Result<String> shipmentReport(MachineApiVo vo);
 
-	Result<String> sessionRedirect(String json);
+	Result<String> sessionRedirect(String sessionUuid, String mid, String token, String code, String userId);
 
 
 }

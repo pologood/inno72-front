@@ -117,9 +117,10 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 
 	/**
 	 * 
-	 * @param sessionUuid
-	 * @param orderId
-	 * @return
+	 * @param vo
+	 * sessionUuid
+	 * orderId
+	 * @return string
 	 */
 	@Override
 	public Result<String> orderPolling(MachineApiVo vo) {
@@ -168,9 +169,10 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 
 	/**
 	 * 
-	 * @param userId
-	 * @param gameId
-	 * @return
+	 * @param vo
+	 * userId 用户id
+	 * gameId 游戏id
+	 * @return Object
 	 */
 	@Override
 	public Result<Object> luckyDraw(MachineApiVo vo) {
@@ -226,10 +228,12 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 
 	/**
 	 * 
-	 * @param machineId
-	 * @param gameId
-	 * @param goodsId
-	 * @return
+	 *
+	 * @param vo
+	 * 	machineId 机器id
+	 *  gameId    游戏id
+	 *  goodsId   商品ID
+	 * @return String
 	 */
 	@Override
 	public Result<String> shipmentReport(MachineApiVo vo) {
@@ -269,43 +273,43 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 		}
 	 */
 	@Override
-	public Result<String> sessionRedirect(String json) {
-		LOGGER.info("redirect session : paramJSON ===> {}", json);
-		if ( StringUtils.isEmpty(json) ) {
-			return Results.failure("参数不存在！");
-		}
-		
-		JSONObject parseRootObject = JSON.parseObject(json);
-		String sessionUuid = Optional.ofNullable(parseRootObject.get("sessionUuid")).map(Object::toString).orElse("");
-		String mid = Optional.ofNullable(parseRootObject.get("mid")).map(Object::toString).orElse("");
-		String authInfo = Optional.ofNullable(parseRootObject.get("authInfo")).map(Object::toString).orElse("");
-		
-		if (StringUtils.isEmpty(sessionUuid) || StringUtils.isEmpty(mid) || StringUtils.isEmpty(authInfo)) {
-			return Results.failure("参数缺失！");
-		}
-		
-		JSONObject parseAuthInfoObject = JSON.parseObject(authInfo);
-		
-		String userNick = Optional.ofNullable(parseAuthInfoObject.get("userNick")).map(Object::toString).orElse("");
-		String userId = Optional.ofNullable(parseAuthInfoObject.get("userId")).map(Object::toString).orElse("");
-		
-		String token = Optional.ofNullable(parseAuthInfoObject.get("token")).map(Object::toString).orElse("");
-		if ( StringUtils.isEmpty(userId) || StringUtils.isEmpty(token) ) {
-			return Results.failure("Token参数缺失！");
-		}
-		JSONObject parseTokenObject = JSON.parseObject(token);
-		String access_token = Optional.ofNullable(parseTokenObject.get("access_token")).map(Object::toString).orElse("");
-		
-		if ( StringUtils.isEmpty(access_token)) {
-			return Results.failure("access_token 参数缺失！");
-		}
+	public Result<String> sessionRedirect(String sessionUuid, String mid, String token, String code, String userId) {
+//		LOGGER.info("redirect session : paramJSON ===> {}", json);
+//		if ( StringUtils.isEmpty(json) ) {
+//			return Results.failure("参数不存在！");
+//		}
+//
+//		JSONObject parseRootObject = JSON.parseObject(json);
+//		String sessionUuid = Optional.ofNullable(parseRootObject.get("sessionUuid")).map(Object::toString).orElse("");
+//		String mid = Optional.ofNullable(parseRootObject.get("mid")).map(Object::toString).orElse("");
+//		String authInfo = Optional.ofNullable(parseRootObject.get("authInfo")).map(Object::toString).orElse("");
+//
+//		if (StringUtils.isEmpty(sessionUuid) || StringUtils.isEmpty(mid) || StringUtils.isEmpty(authInfo)) {
+//			return Results.failure("参数缺失！");
+//		}
+//
+//		JSONObject parseAuthInfoObject = JSON.parseObject(authInfo);
+//
+//		String userNick = Optional.ofNullable(parseAuthInfoObject.get("userNick")).map(Object::toString).orElse("");
+//		String userId = Optional.ofNullable(parseAuthInfoObject.get("userId")).map(Object::toString).orElse("");
+//
+//		String token = Optional.ofNullable(parseAuthInfoObject.get("token")).map(Object::toString).orElse("");
+//		if ( StringUtils.isEmpty(userId) || StringUtils.isEmpty(token) ) {
+//			return Results.failure("Token参数缺失！");
+//		}
+//		JSONObject parseTokenObject = JSON.parseObject(token);
+//		String access_token = Optional.ofNullable(parseTokenObject.get("access_token")).map(Object::toString).orElse("");
+//
+//		if ( StringUtils.isEmpty(access_token)) {
+//			return Results.failure("access_token 参数缺失！");
+//		}
 		List<Inno72MachineGame> inno72MachineGames = inno72MachineGameMapper.selectByMachineId(mid);
 		String gameId = "";
 		if (inno72MachineGames.size() > 0) {
 			gameId = inno72MachineGames.get(0).getGameId();
 		}
 		
-		UserSessionVo sessionVo = new UserSessionVo(mid, userNick, userId, access_token, gameId,  sessionUuid);
+		UserSessionVo sessionVo = new UserSessionVo(mid, null, userId, token, gameId,  sessionUuid);
 		
 		LocalDateTime now = LocalDateTime.now();
 		redisUtil.set(CommonBean.SESSION_KEY + sessionUuid, JSON.toJSONString(sessionVo));
@@ -314,7 +318,7 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 		Inno72GameUser inno72GameUser = inno72GameUserMapper.selectByChannelUserKey(userId);
 		if (inno72GameUser == null ) {
 			inno72GameUser = new Inno72GameUser();
-			inno72GameUser.setUserNick(userNick);
+			inno72GameUser.setUserNick(null);
 			inno72GameUser.setPhone("");
 			inno72GameUser.setChannel("1000");
 			inno72GameUser.setChannelUserKey(userId);

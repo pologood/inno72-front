@@ -80,8 +80,8 @@ public class Inno72GameApiController {
 	}
 	
 	@RequestMapping(value = "/sessionRedirect", method = { RequestMethod.POST,  RequestMethod.GET})
-	public Result<String>  sessionRedirect(@RequestBody String json){
-		return inno72GameApiService.sessionRedirect(json);
+	public Result<String>  sessionRedirect(String sessionUuid, String mid, String token, String code, String userId){
+		return inno72GameApiService.sessionRedirect(sessionUuid, mid, token, code, userId);
 	}
 	
 	
