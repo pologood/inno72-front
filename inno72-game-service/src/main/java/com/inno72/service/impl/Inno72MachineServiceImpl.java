@@ -86,7 +86,7 @@ public class Inno72MachineServiceImpl extends AbstractService<Inno72Machine> imp
 	}
 
 	@Override
-	public Result<Object> createQrCode(Integer machineId) {
+	public Result<Object> createQrCode(String machineId) {
 		LOGGER.info("根据机器id生成二维码", machineId);
 		Map<String, Object> map = new HashMap<String, Object>();
 		//生成sessionUuid

@@ -12,7 +12,7 @@ public interface Inno72MachineService extends Service<Inno72Machine> {
 
 	Result<Inno72MachineVo> findGame(String mid, String gameId);
 	
-	Result<Object> createQrCode(Integer machineId);
+	Result<Object> createQrCode(String machineId);
 
 	Result<Object> session_polling(String sessionUuid);
 }
