@@ -9,6 +9,6 @@
     <result column="participant_id" jdbcType="VARCHAR" property="participantId" />
     <result column="machine_id" jdbcType="BIGINT" property="machineId" />
     <result column="game_id" jdbcType="BIGINT" property="gameId" />
-    <result column="participance_time" jdbcType="TIMESTAMP" property="participanceTime" />
+    <result column="participance_time" jdbcType="TIMESTAMP" property="participanceTime" javaType="java.time.LocalDateTime" typeHandler="org.apache.ibatis.type.LocalDateTimeTypeHandler" />
   </resultMap>
 </mapper>

@@ -5,12 +5,11 @@ import javax.persistence.*;
 
 @Table(name = "inno72_game")
 public class Inno72Game {
-    /**
-     * 游戏ID
-     */
+	
+    @Column(name = "Id")
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    private String id;
 
     /**
      * 游戏版本
@@ -20,6 +19,7 @@ public class Inno72Game {
     /**
      * 游戏描述
      */
+    @Column(name = "`desc`")
     private String desc;
 
     /**
@@ -29,7 +29,7 @@ public class Inno72Game {
     private String brandName;
 
     /**
-     * 原始标识
+     * 原始标示
      */
     @Column(name = "origin_flag")
     private String originFlag;
@@ -102,20 +102,22 @@ public class Inno72Game {
     private Date updateTime;
 
     /**
-     * 获取游戏ID
-     *
-     * @return id - 游戏ID
+     * 活动id
      */
-    public Long getId() {
+    @Column(name = "activity_id")
+    private Long activityId;
+
+    /**
+     * @return Id
+     */
+    public String getId() {
         return id;
     }
 
     /**
-     * 设置游戏ID
-     *
-     * @param id 游戏ID
+     * @param id
      */
-    public void setId(Long id) {
+    public void setId(String id) {
         this.id = id;
     }
 
@@ -174,18 +176,18 @@ public class Inno72Game {
     }
 
     /**
-     * 获取原始标识
+     * 获取原始标示
      *
-     * @return origin_flag - 原始标识
+     * @return origin_flag - 原始标示
      */
     public String getOriginFlag() {
         return originFlag;
     }
 
     /**
-     * 设置原始标识
+     * 设置原始标示
      *
-     * @param originFlag 原始标识
+     * @param originFlag 原始标示
      */
     public void setOriginFlag(String originFlag) {
         this.originFlag = originFlag;
@@ -391,5 +393,23 @@ public class Inno72Game {
      */
     public void setUpdateTime(Date updateTime) {
         this.updateTime = updateTime;
+    }
+
+    /**
+     * 获取活动id
+     *
+     * @return activity_id - 活动id
+     */
+    public Long getActivityId() {
+        return activityId;
+    }
+
+    /**
+     * 设置活动id
+     *
+     * @param activityId 活动id
+     */
+    public void setActivityId(Long activityId) {
+        this.activityId = activityId;
     }
 }

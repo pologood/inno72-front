@@ -1,7 +1,15 @@
 package com.inno72.model;
 
-import java.util.Date;
-import javax.persistence.*;
+import java.time.LocalDateTime;
+
+import javax.persistence.Column;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.Table;
+
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.inno72.common.CustomLocalDateTimeSerializer;
 
 @Table(name = "inno72_participance_record")
 public class Inno72ParticipanceRecord {
@@ -31,7 +39,8 @@ public class Inno72ParticipanceRecord {
      * 参与时间
      */
     @Column(name = "participance_time")
-    private Date participanceTime;
+    @JsonSerialize(using = CustomLocalDateTimeSerializer.class)
+    private LocalDateTime participanceTime;
 
     /**
      * @return id
@@ -106,7 +115,7 @@ public class Inno72ParticipanceRecord {
      *
      * @return participance_time - 参与时间
      */
-    public Date getParticipanceTime() {
+    public LocalDateTime getParticipanceTime() {
         return participanceTime;
     }
 
@@ -115,7 +124,7 @@ public class Inno72ParticipanceRecord {
      *
      * @param participanceTime 参与时间
      */
-    public void setParticipanceTime(Date participanceTime) {
+    public void setParticipanceTime(LocalDateTime participanceTime) {
         this.participanceTime = participanceTime;
     }
 }

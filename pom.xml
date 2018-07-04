@@ -23,58 +23,6 @@
 	</properties>
 
 	<dependencies>
-		<!-- plugin -->
-		<dependency>
-			<groupId>com.inno72</groupId>
-			<artifactId>inno72-core</artifactId>
-			<version>${frame.version}</version>
-		</dependency>
-
-		<dependency>
-			<groupId>com.inno72</groupId>
-			<artifactId>inno72-redis</artifactId>
-			<version>${plugin.version}</version>
-		</dependency>
-
-		<!-- plugin -->
-		<dependency>
-			<groupId>com.inno72</groupId>
-			<artifactId>inno72-memcached</artifactId>
-			<version>${plugin.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>com.inno72</groupId>
-			<artifactId>inno72-http</artifactId>
-			<version>${plugin.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>com.inno72</groupId>
-			<artifactId>inno72-alimq</artifactId>
-			<version>${plugin.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>com.inno72</groupId>
-			<artifactId>inno72-msg</artifactId>
-			<version>${plugin.version}</version>
-		</dependency>
-
-		<dependency>
-			<groupId>javax.mail</groupId>
-			<artifactId>mail</artifactId>
-			<version>1.4.1</version>
-		</dependency>
-
-
-		<dependency>
-			<groupId>javax.activation</groupId>
-			<artifactId>activation</artifactId>
-		</dependency>
-
-		<dependency>
-			<groupId>org.freemarker</groupId>
-			<artifactId>freemarker</artifactId>
-			<scope>provided</scope>
-		</dependency>
 		<dependency>
 			<groupId>org.mybatis.generator</groupId>
 			<artifactId>mybatis-generator-core</artifactId>
@@ -154,55 +102,6 @@
 			<version>2.6.2</version>
 		</dependency>
 
-		<!-- excel poi -->
-		<dependency>
-			<groupId>org.apache.poi</groupId>
-			<artifactId>poi</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>org.apache.poi</groupId>
-			<artifactId>poi-ooxml</artifactId>
-		</dependency>
-
-		<dependency>
-			<groupId>com.inno72</groupId>
-			<artifactId>inno72-memcached</artifactId>
-			<version>${plugin.version}</version>
-		</dependency>
-
-		<dependency>
-			<groupId>org.springframework.data</groupId>
-			<artifactId>spring-data-mongodb</artifactId>
-			<exclusions>
-				<exclusion>
-					<groupId>org.mongodb</groupId>
-					<artifactId>mongo-java-driver</artifactId>
-				</exclusion>
-			</exclusions>
-		</dependency>
-
-		<dependency>
-			<groupId>org.mongodb</groupId>
-			<artifactId>mongo-java-driver</artifactId>
-		</dependency>
-
-		<dependency>
-			<groupId>com.amcare</groupId>
-			<artifactId>tools</artifactId>
-			<version>0.2</version>
-		</dependency>
-
-		<dependency>
-			<groupId>com.amcare</groupId>
-			<artifactId>wx-api</artifactId>
-			<version>0.1.9</version>
-		</dependency>
-
-		<dependency>
-			<groupId>org.apache.httpcomponents</groupId>
-			<artifactId>httpmime</artifactId>
-		</dependency>
-
 		<dependency>
 			<groupId>commons-beanutils</groupId>
 			<artifactId>commons-beanutils</artifactId>
@@ -215,54 +114,6 @@
 		<dependency>
 			<groupId>org.springframework.cloud</groupId>
 			<artifactId>spring-cloud-starter-feign</artifactId>
-		</dependency>
-
-		<!-- alimq -->
-		<dependency>
-			<groupId>com.alibaba.ons</groupId>
-			<artifactId>ons-client</artifactId>
-			<version>1.2.5</version>
-		</dependency>
-
-
-		<dependency>
-			<groupId>org.mongodb</groupId>
-			<artifactId>mongo-java-driver</artifactId>
-		</dependency>
-
-		<!-- JPA START -->
-		<dependency>
-			<groupId>org.springframework.data</groupId>
-			<artifactId>spring-data-jpa</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>org.hibernate</groupId>
-			<artifactId>hibernate-core</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>org.hibernate</groupId>
-			<artifactId>hibernate-entitymanager</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>org.jboss.logging</groupId>
-			<artifactId>jboss-logging</artifactId>
-		</dependency>
-		<!-- JPA END -->
-
-		<dependency>
-			<groupId>com.gexin.platform</groupId>
-			<artifactId>gexin-rp-sdk-http</artifactId>
-			<version>4.0.1.2</version>
-		</dependency>
-		<dependency>
-			<groupId>com.gexin.platform</groupId>
-			<artifactId>gexin-rp-sdk-base</artifactId>
-			<version>4.0.0.7</version>
-		</dependency>
-		<dependency>
-			<groupId>com.gexin.platform</groupId>
-			<artifactId>gexin-rp-sdk-template</artifactId>
-			<version>4.0.0.4</version>
 		</dependency>
 
 		<dependency>
@@ -285,5 +136,6 @@
 	
 	<modules>
 		<module>inno72-game-service</module>
+		<module>inno72-top-service</module>
 	</modules>
 </project>

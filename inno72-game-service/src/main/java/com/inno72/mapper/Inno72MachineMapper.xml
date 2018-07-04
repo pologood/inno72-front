@@ -8,8 +8,8 @@
     <id column="id" jdbcType="BIGINT" property="id" />
     <result column="desc" jdbcType="VARCHAR" property="desc" />
     <result column="create_id" jdbcType="BIGINT" property="createId" />
-    <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
+    <result column="create_time" jdbcType="TIMESTAMP" property="createTime" javaType="java.time.LocalDateTime" typeHandler="org.apache.ibatis.type.LocalDateTimeTypeHandler" />
     <result column="update_id" jdbcType="BIGINT" property="updateId" />
-    <result column="update_time" jdbcType="TIMESTAMP" property="updateTime" />
+    <result column="update_time" jdbcType="TIMESTAMP" property="updateTime" javaType="java.time.LocalDateTime" typeHandler="org.apache.ibatis.type.LocalDateTimeTypeHandler"/>
   </resultMap>
 </mapper>

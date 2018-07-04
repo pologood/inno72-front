@@ -1,12 +1,17 @@
 package com.inno72.model;
 
-import java.util.Date;
-import javax.persistence.*;
+import java.time.LocalDateTime;
+
+import javax.persistence.Column;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.Table;
 
 @Table(name = "inno72_award_record")
 public class Inno72AwardRecord {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.IDENTITY, generator = "JDBC")
     private Long id;
 
     /**
@@ -31,7 +36,7 @@ public class Inno72AwardRecord {
      * 获奖时间
      */
     @Column(name = "award_time")
-    private Date awardTime;
+    private LocalDateTime awardTime;
 
     /**
      * 分数(不需要分数体现的游戏-1)
@@ -111,7 +116,7 @@ public class Inno72AwardRecord {
      *
      * @return award_time - 获奖时间
      */
-    public Date getAwardTime() {
+    public LocalDateTime getAwardTime() {
         return awardTime;
     }
 
@@ -120,7 +125,7 @@ public class Inno72AwardRecord {
      *
      * @param awardTime 获奖时间
      */
-    public void setAwardTime(Date awardTime) {
+    public void setAwardTime(LocalDateTime awardTime) {
         this.awardTime = awardTime;
     }
 

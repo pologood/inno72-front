@@ -1,28 +1,39 @@
 package com.inno72.controller;
 
+import java.util.List;
+
+import javax.annotation.Resource;
+
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.RestController;
+
+import com.github.pagehelper.PageHelper;
+import com.github.pagehelper.PageInfo;
 import com.inno72.common.Result;
 import com.inno72.common.ResultGenerator;
 import com.inno72.model.Inno72Machine;
 import com.inno72.service.Inno72MachineService;
-import com.github.pagehelper.PageHelper;
-import com.github.pagehelper.PageInfo;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
-
-import javax.annotation.Resource;
-import java.util.List;
 
 /**
 * Created by CodeGenerator on 2018/06/27.
 */
 @RestController
-@RequestMapping("/inno72/machine")
+@RequestMapping("/machine")
 @SuppressWarnings({"rawtypes", "unchecked"})
 public class Inno72MachineController {
     @Resource
     private Inno72MachineService inno72MachineService;
+    
+
+
+    @RequestMapping(value = "/findGame", method = { RequestMethod.POST,  RequestMethod.GET})
+    public Result findGame(@RequestParam(name="machineId")String  mid,@RequestParam(name = "gameId") String gameId) {
+        return inno72MachineService.findGame(mid, gameId);
+    }
+    
 
     @RequestMapping(value = "/add", method = { RequestMethod.POST,  RequestMethod.GET})
     public Result add(Inno72Machine inno72Machine) {
@@ -54,4 +65,23 @@ public class Inno72MachineController {
         PageInfo pageInfo = new PageInfo(list);
         return ResultGenerator.genSuccessResult(pageInfo);
     }
+    
+    
+    
+    
+    
+    @RequestMapping(value = "/createQrCode", method = { RequestMethod.POST,  RequestMethod.GET})
+    @ResponseBody
+    public Result<Object> createQrCode(@RequestParam Integer machineId) {
+        
+    	return inno72MachineService.createQrCode(machineId);
+    }
+    
+    @RequestMapping(value = "/polling", method = { RequestMethod.POST,  RequestMethod.GET})
+    @ResponseBody
+    public Result<Object> session_polling(@RequestParam String sessionUuid) {
+        
+    	return inno72MachineService.session_polling(sessionUuid);
+    }
+    
 }

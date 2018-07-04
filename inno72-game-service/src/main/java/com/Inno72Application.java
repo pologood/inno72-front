@@ -1,10 +1,12 @@
 package com;
 
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.cloud.client.circuitbreaker.EnableCircuitBreaker;
 import org.springframework.cloud.netflix.eureka.EnableEurekaClient;
 import org.springframework.cloud.netflix.feign.EnableFeignClients;
 
+import com.inno72.common.Inno72GameServiceProperties;
 import com.inno72.springboot.web.SpringApplicationBuilder;
 import com.inno72.springboot.web.SpringBootServletInitializer;
 
@@ -15,6 +17,7 @@ import com.inno72.springboot.web.SpringBootServletInitializer;
 @EnableFeignClients
 @EnableEurekaClient
 @EnableCircuitBreaker // 开启熔断
+@EnableConfigurationProperties({Inno72GameServiceProperties.class})
 public class Inno72Application extends SpringBootServletInitializer {
 
     /**
@@ -25,11 +28,11 @@ public class Inno72Application extends SpringBootServletInitializer {
      * @Author gaoxingang
      */
     public static void main(String[] args) {
-        new SpringApplicationBuilder(Inno72Application.class, "inno72-service", args);
+        new SpringApplicationBuilder(Inno72Application.class, "inno72-game-service", args);
     }
 
     @Override
     public String setAppNameForLog() {
-        return "order-service";
+        return "inno72-game-service";
     }
 }
