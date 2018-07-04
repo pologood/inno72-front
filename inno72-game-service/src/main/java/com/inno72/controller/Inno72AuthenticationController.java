@@ -14,9 +14,7 @@ import com.inno72.common.Result;
 import com.inno72.common.ResultGenerator;
 import com.inno72.common.shiro.filter.JWTUtil;
 import com.inno72.model.Inno72Authentication;
-import com.inno72.model.Inno72User;
 import com.inno72.service.Inno72AuthenticationService;
-import com.inno72.service.Inno72UserService;
 
 /**
 * Created by CodeGenerator on 2018/06/27.

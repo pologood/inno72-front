@@ -11,7 +11,6 @@ import com.alibaba.fastjson.JSON;
 import com.inno72.common.AbstractService;
 import com.inno72.mapper.Inno72AuthenticationMapper;
 import com.inno72.model.Inno72Authentication;
-import com.inno72.model.Inno72User;
 import com.inno72.service.Inno72AuthenticationService;
 
 
