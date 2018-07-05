@@ -1,20 +1,24 @@
 package com.inno72.model;
 
-import com.fasterxml.jackson.databind.annotation.JsonSerialize;
-import com.inno72.common.CustomLocalDateTimeSerializer;
-import com.inno72.common.LocalDateTimeConverter;
+import java.time.LocalDateTime;
+
+import javax.persistence.Column;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.Table;
+
 import org.springframework.format.annotation.DateTimeFormat;
 
-import java.time.LocalDateTime;
-import java.util.Date;
-import javax.persistence.*;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.inno72.common.CustomLocalDateTimeSerializer;
 
 @Table(name = "inno72_game")
 public class Inno72Game {
 	
     @Column(name = "Id")
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.IDENTITY,generator = "select uuid()")
     private String id;
 
     /**
@@ -27,18 +31,6 @@ public class Inno72Game {
      */
     @Column(name = "`desc`")
     private String desc;
-
-    /**
-     * 品牌名称
-     */
-    @Column(name = "brand_name")
-    private String brandName;
-
-    /**
-     * 原始标示
-     */
-    @Column(name = "origin_flag")
-    private String originFlag;
 
     /**
      * 售卖者id
@@ -167,41 +159,6 @@ public class Inno72Game {
         this.desc = desc;
     }
 
-    /**
-     * 获取品牌名称
-     *
-     * @return brand_name - 品牌名称
-     */
-    public String getBrandName() {
-        return brandName;
-    }
-
-    /**
-     * 设置品牌名称
-     *
-     * @param brandName 品牌名称
-     */
-    public void setBrandName(String brandName) {
-        this.brandName = brandName;
-    }
-
-    /**
-     * 获取原始标示
-     *
-     * @return origin_flag - 原始标示
-     */
-    public String getOriginFlag() {
-        return originFlag;
-    }
-
-    /**
-     * 设置原始标示
-     *
-     * @param originFlag 原始标示
-     */
-    public void setOriginFlag(String originFlag) {
-        this.originFlag = originFlag;
-    }
 
     /**
      * 获取售卖者id

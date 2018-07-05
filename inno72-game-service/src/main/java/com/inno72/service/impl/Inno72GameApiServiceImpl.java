@@ -1,6 +1,7 @@
 package com.inno72.service.impl;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -8,8 +9,6 @@ import java.util.Optional;
 
 import javax.annotation.Resource;
 
-import com.inno72.mapper.Inno72GameMapper;
-import com.inno72.model.Inno72Game;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -17,15 +16,18 @@ import org.springframework.stereotype.Service;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
-import com.inno72.common.CommonBean;
 import com.inno72.common.Inno72GameServiceProperties;
 import com.inno72.common.Result;
 import com.inno72.common.Results;
+import com.inno72.feign.MachineBackgroundFeignClient;
+import com.inno72.mapper.Inno72GameMapper;
 import com.inno72.mapper.Inno72GameResultGoodsMapper;
 import com.inno72.mapper.Inno72GameUserMapper;
 import com.inno72.mapper.Inno72MachineGameMapper;
+import com.inno72.model.Inno72Game;
 import com.inno72.model.Inno72GameUser;
 import com.inno72.model.Inno72MachineGame;
+import com.inno72.model.Inno72SupplyChannel;
 import com.inno72.plugin.http.HttpClient;
 import com.inno72.redis.IRedisUtil;
 import com.inno72.service.Inno72GameApiService;
@@ -51,22 +53,41 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 	
 	@Resource
 	private IRedisUtil redisUtil;
-	
-	
 
+	@Resource
+	private MachineBackgroundFeignClient machineBackgroundFeignClient;
+
+	@SuppressWarnings({ "unchecked", "rawtypes" })
 	@Override
-	public Result<Map<String, String>> findProduct(MachineApiVo vo) {
+	public Result<Map<String, List<Inno72SupplyChannel>>> findProduct(MachineApiVo vo) {
 		
 		Map<String, String> requestParam = new HashMap<>();
 		requestParam.put("machineId", vo.getMachineId());
 		requestParam.put("gameId", vo.getGameId());
 		requestParam.put("report", vo.getReport());
 		
-		String resultGoodsId = inno72GameResultGoodsMapper.findGoodsId(requestParam);
-		//TODO 请求接口 获取出货 货道号
-		requestParam.put("chnnelId", resultGoodsId);
+		List<String> resultGoodsId = inno72GameResultGoodsMapper.findGoodsId(requestParam);
+        Object[] objects = resultGoodsId.toArray();
+        //TODO 请求接口 获取出货 货道号
+        Result supplyChannel = machineBackgroundFeignClient.getSupplyChannel(new Inno72SupplyChannel(vo.getMachineId(), resultGoodsId.toArray(new String[resultGoodsId.size()]) , ""));
+        
+        Map<String, List<Inno72SupplyChannel>> result = new HashMap<>();
+        if (supplyChannel.getCode() == Result.SUCCESS) {
+        	List<Inno72SupplyChannel> data =(List<Inno72SupplyChannel>) supplyChannel.getData();
+        	if (data.size() > 0) {
+				for (Inno72SupplyChannel inno72SupplyChannel : data) {
+					String goodsCode = inno72SupplyChannel.getGoodsCode();
+					List<Inno72SupplyChannel> list = result.get(goodsCode);
+					if ( list == null) {
+						list = new ArrayList<>();
+					}
+					list.add(inno72SupplyChannel);
+					result.put(goodsCode, list);
+				}
+			}
+		}
 		LOGGER.info("查询 货道号 结果 ==> {}", JSON.toJSONString(requestParam));
-		return Results.success(requestParam);
+		return Results.success(result);
 	}
 
 	/**
@@ -240,10 +261,28 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 	 *  goodsId   商品ID
 	 * @return String
 	 */
+	@SuppressWarnings("rawtypes")
 	@Override
 	public Result<String> shipmentReport(MachineApiVo vo) {
-		// TODO Auto-generated method stub
-		return null;
+		
+		String machineId = vo.getMachineId();
+		String chnnelId = vo.getChnnelId();
+		
+		if (StringUtils.isEmpty(machineId) || StringUtils.isEmpty(chnnelId)) {
+			return Results.failure("参数缺失！");
+		}
+		
+		Result subCount = machineBackgroundFeignClient.subCount(new Inno72SupplyChannel(machineId, null, chnnelId));
+		
+		if ( subCount.getCode() == Result.FAILURE) {
+			return Results.failure(subCount.getMsg());
+		}
+		
+		Inno72SupplyChannel data = (Inno72SupplyChannel)subCount.getData();
+		
+		LOGGER.info("减货结果 ==> {}", JSON.toJSONString(data));
+		
+		return Results.success();
 	}
 
 	/**

@@ -1,13 +1,15 @@
 package com.inno72.service;
 
+import java.util.List;
 import java.util.Map;
 
 import com.inno72.common.Result;
+import com.inno72.model.Inno72SupplyChannel;
 import com.inno72.vo.MachineApiVo;
 
 public interface Inno72GameApiService {
 
-	Result<Map<String, String>> findProduct(MachineApiVo vo);
+	Result<Map<String, List<Inno72SupplyChannel>>> findProduct(MachineApiVo vo);
 
 	Result<Object> order(MachineApiVo vo);
 
