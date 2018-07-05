@@ -3,6 +3,7 @@ package com.inno72.controller;
 import java.util.List;
 
 import javax.annotation.Resource;
+import javax.servlet.http.HttpServletRequest;
 
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -80,7 +81,6 @@ public class Inno72MachineController {
     @RequestMapping(value = "/polling", method = { RequestMethod.POST,  RequestMethod.GET})
     @ResponseBody
     public Result<Object> session_polling(@RequestParam String sessionUuid) {
-        
     	return inno72MachineService.session_polling(sessionUuid);
     }
     
