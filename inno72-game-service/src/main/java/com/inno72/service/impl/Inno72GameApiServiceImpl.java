@@ -73,9 +73,10 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
         
         Map<String, List<Inno72SupplyChannel>> result = new HashMap<>();
         if (supplyChannel.getCode() == Result.SUCCESS) {
-        	List<Inno72SupplyChannel> data =(List<Inno72SupplyChannel>) supplyChannel.getData();
-        	if (data.size() > 0) {
-				for (Inno72SupplyChannel inno72SupplyChannel : data) {
+        	String data = JSON.toJSONString(supplyChannel.getData());
+        	if (StringUtils.isNotEmpty(data)) {
+        		List<Inno72SupplyChannel> parseArray = JSON.parseArray(data,Inno72SupplyChannel.class);
+				for (Inno72SupplyChannel inno72SupplyChannel : parseArray) {
 					String goodsCode = inno72SupplyChannel.getGoodsCode();
 					List<Inno72SupplyChannel> list = result.get(goodsCode);
 					if ( list == null) {
