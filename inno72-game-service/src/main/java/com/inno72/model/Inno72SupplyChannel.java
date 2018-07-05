@@ -107,7 +107,7 @@ public class Inno72SupplyChannel implements Serializable {
     public Inno72SupplyChannel(String machineId, String[] goodsCodes, String code) {
         this.machineId = machineId;
         this.goodsCodes = goodsCodes;
-        this.goodsCode = code;
+        this.code = code;
     }
 
     /**
