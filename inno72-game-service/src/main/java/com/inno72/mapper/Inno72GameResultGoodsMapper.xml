@@ -13,7 +13,10 @@
   </resultMap>
   
   <select id="findGoodsId" parameterType="java.util.Map" resultType="java.lang.String">
-  	select goodsId from inno72_game_result_goods
-  	where machine_id = #{machineId} and result_code = #{report} and game_id = #{gameId}
+  	select goods_id from inno72_game_result_goods
+  	where machine_id = #{machineId} and game_id = #{gameId}
+  	<if test="report != null and report != ''">
+  		and result_code = #{report}
+  	</if>
   </select>
 </mapper>

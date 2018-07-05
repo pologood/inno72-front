@@ -1,6 +1,7 @@
 package com.inno72.service.impl;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -15,15 +16,18 @@ import org.springframework.stereotype.Service;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
-import com.inno72.common.CommonBean;
 import com.inno72.common.Inno72GameServiceProperties;
 import com.inno72.common.Result;
 import com.inno72.common.Results;
+import com.inno72.feign.MachineBackgroundFeignClient;
+import com.inno72.mapper.Inno72GameMapper;
 import com.inno72.mapper.Inno72GameResultGoodsMapper;
 import com.inno72.mapper.Inno72GameUserMapper;
 import com.inno72.mapper.Inno72MachineGameMapper;
+import com.inno72.model.Inno72Game;
 import com.inno72.model.Inno72GameUser;
 import com.inno72.model.Inno72MachineGame;
+import com.inno72.model.Inno72SupplyChannel;
 import com.inno72.plugin.http.HttpClient;
 import com.inno72.redis.IRedisUtil;
 import com.inno72.service.Inno72GameApiService;
@@ -43,25 +47,47 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 	
 	@Resource
 	private Inno72MachineGameMapper inno72MachineGameMapper;
+
+	@Resource
+	private Inno72GameMapper inno72GameMapper;
 	
 	@Resource
 	private IRedisUtil redisUtil;
-	
-	
 
+	@Resource
+	private MachineBackgroundFeignClient machineBackgroundFeignClient;
+
+	@SuppressWarnings({ "unchecked", "rawtypes" })
 	@Override
-	public Result<Map<String, String>> findProduct(MachineApiVo vo) {
+	public Result<Map<String, List<Inno72SupplyChannel>>> findProduct(MachineApiVo vo) {
 		
 		Map<String, String> requestParam = new HashMap<>();
 		requestParam.put("machineId", vo.getMachineId());
 		requestParam.put("gameId", vo.getGameId());
 		requestParam.put("report", vo.getReport());
 		
-		String resultGoodsId = inno72GameResultGoodsMapper.findGoodsId(requestParam);
-		//TODO 请求接口 获取出货 货道号
-		requestParam.put("chnnelId", resultGoodsId);
+		List<String> resultGoodsId = inno72GameResultGoodsMapper.findGoodsId(requestParam);
+        Object[] objects = resultGoodsId.toArray();
+        //TODO 请求接口 获取出货 货道号
+        Result supplyChannel = machineBackgroundFeignClient.getSupplyChannel(new Inno72SupplyChannel(vo.getMachineId(), resultGoodsId.toArray(new String[resultGoodsId.size()]) , ""));
+        
+        Map<String, List<Inno72SupplyChannel>> result = new HashMap<>();
+        if (supplyChannel.getCode() == Result.SUCCESS) {
+        	List<Inno72SupplyChannel> data =(List<Inno72SupplyChannel>) supplyChannel.getData();
+        	if (data.size() > 0) {
+				for (Inno72SupplyChannel inno72SupplyChannel : data) {
+					String goodsCode = inno72SupplyChannel.getGoodsCode();
+					List<Inno72SupplyChannel> list = result.get(goodsCode);
+					if ( list == null) {
+						list = new ArrayList<>();
+					}
+					list.add(inno72SupplyChannel);
+					result.put(goodsCode, list);
+				}
+			}
+		}
 		LOGGER.info("查询 货道号 结果 ==> {}", JSON.toJSONString(requestParam));
-		return Results.success(requestParam);
+		return Results.success(result);
 	}
 
 	/**
@@ -80,7 +106,7 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 		String sessionUuid = vo.getSessionUuid();
 		String itemId = vo.getItemId();
 		
-		String sessionUUIDObjectJSON = redisUtil.get(CommonBean.SESSION_KEY + sessionUuid);
+		String sessionUUIDObjectJSON = redisUtil.get(sessionUuid);
 		if ( StringUtils.isEmpty(sessionUUIDObjectJSON) ) {
 			return Results.failure("登录失效!");
 		}
@@ -117,9 +143,10 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 
 	/**
 	 * 
-	 * @param sessionUuid
-	 * @param orderId
-	 * @return
+	 * @param vo
+	 * sessionUuid
+	 * orderId
+	 * @return string
 	 */
 	@Override
 	public Result<String> orderPolling(MachineApiVo vo) {
@@ -131,7 +158,7 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 		String sessionUuid = vo.getSessionUuid();
 		String orderId = vo.getSessionUuid();
 		
-		String sessionUUIDObjectJSON = redisUtil.get(CommonBean.SESSION_KEY + sessionUuid);
+		String sessionUUIDObjectJSON = redisUtil.get(sessionUuid);
 		if ( StringUtils.isEmpty(sessionUUIDObjectJSON) ) {
 			return Results.failure("登录失效!");
 		}
@@ -168,9 +195,10 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 
 	/**
 	 * 
-	 * @param userId
-	 * @param gameId
-	 * @return
+	 * @param vo
+	 * userId 用户id
+	 * gameId 游戏id
+	 * @return Object
 	 */
 	@Override
 	public Result<Object> luckyDraw(MachineApiVo vo) {
@@ -185,7 +213,7 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 		String umid = vo.getUmid();
 		String interactId = vo.getInteractId();
 		
-		String sessionUUIDObjectJSON = redisUtil.get(CommonBean.SESSION_KEY + sessionUuid);
+		String sessionUUIDObjectJSON = redisUtil.get(sessionUuid);
 		if ( StringUtils.isEmpty(sessionUUIDObjectJSON) ) {
 			return Results.failure("登录失效!");
 		}
@@ -226,15 +254,35 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 
 	/**
 	 * 
-	 * @param machineId
-	 * @param gameId
-	 * @param goodsId
-	 * @return
+	 *
+	 * @param vo
+	 * 	machineId 机器id
+	 *  gameId    游戏id
+	 *  goodsId   商品ID
+	 * @return String
 	 */
+	@SuppressWarnings("rawtypes")
 	@Override
 	public Result<String> shipmentReport(MachineApiVo vo) {
-		// TODO Auto-generated method stub
-		return null;
+		
+		String machineId = vo.getMachineId();
+		String chnnelId = vo.getChnnelId();
+		
+		if (StringUtils.isEmpty(machineId) || StringUtils.isEmpty(chnnelId)) {
+			return Results.failure("参数缺失！");
+		}
+		
+		Result subCount = machineBackgroundFeignClient.subCount(new Inno72SupplyChannel(machineId, null, chnnelId));
+		
+		if ( subCount.getCode() == Result.FAILURE) {
+			return Results.failure(subCount.getMsg());
+		}
+		
+		Inno72SupplyChannel data = (Inno72SupplyChannel)subCount.getData();
+		
+		LOGGER.info("减货结果 ==> {}", JSON.toJSONString(data));
+		
+		return Results.success();
 	}
 
 	/**
@@ -269,33 +317,35 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 		}
 	 */
 	@Override
-	public Result<String> sessionRedirect(String json) {
-		LOGGER.info("redirect session : paramJSON ===> {}", json);
-		if ( StringUtils.isEmpty(json) ) {
-			return Results.failure("参数不存在！");
-		}
-		
-		JSONObject parseRootObject = JSON.parseObject(json);
-		String sessionUuid = Optional.ofNullable(parseRootObject.get("sessionUuid")).map(Object::toString).orElse("");
-		String mid = Optional.ofNullable(parseRootObject.get("mid")).map(Object::toString).orElse("");
-		String authInfo = Optional.ofNullable(parseRootObject.get("authInfo")).map(Object::toString).orElse("");
-		
-		if (StringUtils.isEmpty(sessionUuid) || StringUtils.isEmpty(mid) || StringUtils.isEmpty(authInfo)) {
-			return Results.failure("参数缺失！");
-		}
-		
-		JSONObject parseAuthInfoObject = JSON.parseObject(authInfo);
-		
-		String userNick = Optional.ofNullable(parseAuthInfoObject.get("userNick")).map(Object::toString).orElse("");
-		String userId = Optional.ofNullable(parseAuthInfoObject.get("userId")).map(Object::toString).orElse("");
-		
-		String token = Optional.ofNullable(parseAuthInfoObject.get("token")).map(Object::toString).orElse("");
-		if ( StringUtils.isEmpty(userId) || StringUtils.isEmpty(token) ) {
-			return Results.failure("Token参数缺失！");
-		}
+	public Result<String> sessionRedirect(String sessionUuid, String mid, String token, String code, String userId) {
+		LOGGER.info("session 回执请求 => sessionUuid:{}; mid:{}; token:{}; code:{}; userId:{}", sessionUuid, mid, token ,code, userId);
+//		LOGGER.info("redirect session : paramJSON ===> {}", json);
+//		if ( StringUtils.isEmpty(json) ) {
+//			return Results.failure("参数不存在！");
+//		}
+//
+//		JSONObject parseRootObject = JSON.parseObject(json);
+//		String sessionUuid = Optional.ofNullable(parseRootObject.get("sessionUuid")).map(Object::toString).orElse("");
+//		String mid = Optional.ofNullable(parseRootObject.get("mid")).map(Object::toString).orElse("");
+//		String authInfo = Optional.ofNullable(parseRootObject.get("authInfo")).map(Object::toString).orElse("");
+//
+//		if (StringUtils.isEmpty(sessionUuid) || StringUtils.isEmpty(mid) || StringUtils.isEmpty(authInfo)) {
+//			return Results.failure("参数缺失！");
+//		}
+//
+//		JSONObject parseAuthInfoObject = JSON.parseObject(authInfo);
+//
+//		String userNick = Optional.ofNullable(parseAuthInfoObject.get("userNick")).map(Object::toString).orElse("");
+//		String userId = Optional.ofNullable(parseAuthInfoObject.get("userId")).map(Object::toString).orElse("");
+//
+//		String token = Optional.ofNullable(parseAuthInfoObject.get("token")).map(Object::toString).orElse("");
+//		if ( StringUtils.isEmpty(userId) || StringUtils.isEmpty(token) ) {
+//			return Results.failure("Token参数缺失！");
+//		}
+		LOGGER.info("session 回执请求 => ");
 		JSONObject parseTokenObject = JSON.parseObject(token);
 		String access_token = Optional.ofNullable(parseTokenObject.get("access_token")).map(Object::toString).orElse("");
-		
+
 		if ( StringUtils.isEmpty(access_token)) {
 			return Results.failure("access_token 参数缺失！");
 		}
@@ -304,17 +354,60 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 		if (inno72MachineGames.size() > 0) {
 			gameId = inno72MachineGames.get(0).getGameId();
 		}
-		
-		UserSessionVo sessionVo = new UserSessionVo(mid, userNick, userId, access_token, gameId,  sessionUuid);
+
+		if ( StringUtils.isEmpty(gameId) ){
+			return Results.failure("没有绑定的游戏！");
+		}
+
+		Inno72Game inno72Game = inno72GameMapper.selectByPrimaryKey(gameId);
+		if ( inno72Game == null ){
+			return Results.failure("不存在的游戏！");
+		}
+		Long sellerId = inno72Game.getSellerId();
+
+		String jstUrl = inno72GameServiceProperties.get("jstUrl");
+		if ( StringUtils.isEmpty(jstUrl)) {
+			return Results.failure("配置中心无聚石塔配置路径!");
+		}
+		Map<String, String> requestForm = new HashMap<>();
+		requestForm.put("accessToken", access_token);
+		requestForm.put("mid", mid);
+		requestForm.put("sellerId", sellerId+"");
+		/**
+		 * <tmall_fans_automachine_getmaskusernick_response>
+		 *     <msg_code>200</msg_code>
+		 *     <msg_info>用户不存在</msg_info>
+		 *     <model>e****丫</model>
+		 * </tmall_fans_automachine_getmaskusernick_response>
+		 */
+		String respJson = HttpClient.form(jstUrl + "/api/top/getMaskUserNick", requestForm, null);
+		LOGGER.info("请求NikeName ==> {}", respJson);
+		JSONObject jsonNikeNameObject = JSON.parseObject(respJson);
+		String tmall_fans_automachine_getmaskusernick_response = Optional.ofNullable(jsonNikeNameObject.get(
+				"tmall_fans_automachine_getmaskusernick_response")).map(Object::toString).orElse("");
+		if (StringUtils.isEmpty(tmall_fans_automachine_getmaskusernick_response)){
+			return Results.failure("请求用户名失败!");
+		}
+		JSONObject responseJson = JSON.parseObject(tmall_fans_automachine_getmaskusernick_response);
+		String msg_code = Optional.ofNullable(responseJson.get(
+				"msg_code")).map(Object::toString).orElse("");
+
+//		if (!msg_code.equals("200")){
+//			LOGGER.info("请求NickName失败");
+//			return Results.failure("请求NickName失败");
+//		}
+		String nickName = Optional.ofNullable(responseJson.get(
+				"model")).map(Object::toString).orElse("");
+
+		UserSessionVo sessionVo = new UserSessionVo(mid, nickName, userId, access_token, gameId,  sessionUuid);
 		
 		LocalDateTime now = LocalDateTime.now();
-		redisUtil.set(CommonBean.SESSION_KEY + sessionUuid, JSON.toJSONString(sessionVo));
-		redisUtil.expire(CommonBean.SESSION_KEY + sessionUuid, 1800);//超时
-		
+		redisUtil.setex(sessionUuid, 1800, JSON.toJSONString(sessionVo));
+
 		Inno72GameUser inno72GameUser = inno72GameUserMapper.selectByChannelUserKey(userId);
 		if (inno72GameUser == null ) {
 			inno72GameUser = new Inno72GameUser();
-			inno72GameUser.setUserNick(userNick);
+			inno72GameUser.setUserNick(nickName);
 			inno72GameUser.setPhone("");
 			inno72GameUser.setChannel("1000");
 			inno72GameUser.setChannelUserKey(userId);

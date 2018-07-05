@@ -1,5 +1,6 @@
 package com.inno72.controller;
 
+import java.util.List;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -9,6 +10,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.inno72.common.Result;
+import com.inno72.model.Inno72SupplyChannel;
 import com.inno72.service.Inno72GameApiService;
 import com.inno72.vo.MachineApiVo;
 
@@ -27,7 +29,7 @@ public class Inno72GameApiController {
 	 * @return
 	 */
 	@RequestMapping(value = "/goods/findProduct", method = { RequestMethod.POST,  RequestMethod.GET})
-	public Result<Map<String, String>> findProduct(MachineApiVo vo){
+	public Result<Map<String, List<Inno72SupplyChannel>>> findProduct(MachineApiVo vo){
 		return inno72GameApiService.findProduct(vo);
 	}
 	
@@ -80,8 +82,8 @@ public class Inno72GameApiController {
 	}
 	
 	@RequestMapping(value = "/sessionRedirect", method = { RequestMethod.POST,  RequestMethod.GET})
-	public Result<String>  sessionRedirect(@RequestBody String json){
-		return inno72GameApiService.sessionRedirect(json);
+	public Result<String>  sessionRedirect(String sessionUuid, String mid, String token, String code, String userId){
+		return inno72GameApiService.sessionRedirect(sessionUuid, mid, token, code, userId);
 	}
 	
 	

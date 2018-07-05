@@ -29,19 +29,8 @@ public class Inno72AuthenticationController {
     @ResponseBody
     public Result<Object> login(@RequestParam("username") String username,
             @RequestParam("password") String password) {
-        
-    	Inno72Authentication inno72Authentication = inno72AuthenticationService.getUser(username);
-    	 JSONObject jsonObject = new JSONObject();
-         if (inno72Authentication.getuPassword().equals(password)) {
-             
-             jsonObject.put("code", "200");
-             jsonObject.put("result", "Login success");
-             jsonObject.put("Authorization", JWTUtil.sign(username, password));
-             jsonObject.put("isLogin", true);
-         } else {
-             throw new UnauthorizedException();
-         }
-         return ResultGenerator.genSuccessResult(jsonObject);
+
+    	return inno72AuthenticationService.login(username,password);
     }
     
 }

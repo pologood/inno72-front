@@ -1,14 +1,24 @@
 package com.inno72.model;
 
-import java.util.Date;
-import javax.persistence.*;
+import java.time.LocalDateTime;
+
+import javax.persistence.Column;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.Table;
+
+import org.springframework.format.annotation.DateTimeFormat;
+
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.inno72.common.CustomLocalDateTimeSerializer;
 
 @Table(name = "inno72_game")
 public class Inno72Game {
 	
     @Column(name = "Id")
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.IDENTITY,generator = "select uuid()")
     private String id;
 
     /**
@@ -21,18 +31,6 @@ public class Inno72Game {
      */
     @Column(name = "`desc`")
     private String desc;
-
-    /**
-     * 品牌名称
-     */
-    @Column(name = "brand_name")
-    private String brandName;
-
-    /**
-     * 原始标示
-     */
-    @Column(name = "origin_flag")
-    private String originFlag;
 
     /**
      * 售卖者id
@@ -87,7 +85,9 @@ public class Inno72Game {
      * 创建时间
      */
     @Column(name = "create_time")
-    private Date createTime;
+    @JsonSerialize(using = CustomLocalDateTimeSerializer.class)
+    @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+    private LocalDateTime createTime;
 
     /**
      * 更新人
@@ -99,7 +99,9 @@ public class Inno72Game {
      * 更新时间
      */
     @Column(name = "update_time")
-    private Date updateTime;
+    @JsonSerialize(using = CustomLocalDateTimeSerializer.class)
+    @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+    private LocalDateTime updateTime;
 
     /**
      * 活动id
@@ -157,41 +159,6 @@ public class Inno72Game {
         this.desc = desc;
     }
 
-    /**
-     * 获取品牌名称
-     *
-     * @return brand_name - 品牌名称
-     */
-    public String getBrandName() {
-        return brandName;
-    }
-
-    /**
-     * 设置品牌名称
-     *
-     * @param brandName 品牌名称
-     */
-    public void setBrandName(String brandName) {
-        this.brandName = brandName;
-    }
-
-    /**
-     * 获取原始标示
-     *
-     * @return origin_flag - 原始标示
-     */
-    public String getOriginFlag() {
-        return originFlag;
-    }
-
-    /**
-     * 设置原始标示
-     *
-     * @param originFlag 原始标示
-     */
-    public void setOriginFlag(String originFlag) {
-        this.originFlag = originFlag;
-    }
 
     /**
      * 获取售卖者id
@@ -346,7 +313,7 @@ public class Inno72Game {
      *
      * @return create_time - 创建时间
      */
-    public Date getCreateTime() {
+    public LocalDateTime getCreateTime() {
         return createTime;
     }
 
@@ -355,7 +322,7 @@ public class Inno72Game {
      *
      * @param createTime 创建时间
      */
-    public void setCreateTime(Date createTime) {
+    public void setCreateTime(LocalDateTime createTime) {
         this.createTime = createTime;
     }
 
@@ -382,7 +349,7 @@ public class Inno72Game {
      *
      * @return update_time - 更新时间
      */
-    public Date getUpdateTime() {
+    public LocalDateTime getUpdateTime() {
         return updateTime;
     }
 
@@ -391,7 +358,7 @@ public class Inno72Game {
      *
      * @param updateTime 更新时间
      */
-    public void setUpdateTime(Date updateTime) {
+    public void setUpdateTime(LocalDateTime updateTime) {
         this.updateTime = updateTime;
     }
 
