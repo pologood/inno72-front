@@ -57,7 +57,7 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 	@Resource
 	private MachineBackgroundFeignClient machineBackgroundFeignClient;
 
-	@SuppressWarnings({ "unchecked", "rawtypes" })
+	@SuppressWarnings({ "rawtypes" })
 	@Override
 	public Result<Map<String, List<Inno72SupplyChannel>>> findProduct(MachineApiVo vo) {
 		
@@ -67,7 +67,6 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 		requestParam.put("report", vo.getReport());
 		
 		List<String> resultGoodsId = inno72GameResultGoodsMapper.findGoodsId(requestParam);
-        Object[] objects = resultGoodsId.toArray();
         //TODO 请求接口 获取出货 货道号
         Result supplyChannel = machineBackgroundFeignClient.getSupplyChannel(new Inno72SupplyChannel(vo.getMachineId(), resultGoodsId.toArray(new String[resultGoodsId.size()]) , ""));
         
@@ -113,7 +112,7 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 		}
 		
 		JSONObject sessionObject = JSON.parseObject(sessionUUIDObjectJSON);
-		String accessToken = Optional.ofNullable(sessionObject.get("")).map(Object::toString).orElse("");
+		String accessToken = Optional.ofNullable(sessionObject.get("accessToken")).map(Object::toString).orElse("");
 		Map<String, String> requestForm = new HashMap<>();
 		requestForm.put("accessToken", accessToken);
 		requestForm.put("activityId", activityId);
@@ -390,8 +389,8 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 			return Results.failure("请求用户名失败!");
 		}
 		JSONObject responseJson = JSON.parseObject(tmall_fans_automachine_getmaskusernick_response);
-		String msg_code = Optional.ofNullable(responseJson.get(
-				"msg_code")).map(Object::toString).orElse("");
+//		String msg_code = Optional.ofNullable(responseJson.get(
+//				"msg_code")).map(Object::toString).orElse("");
 
 //		if (!msg_code.equals("200")){
 //			LOGGER.info("请求NickName失败");
