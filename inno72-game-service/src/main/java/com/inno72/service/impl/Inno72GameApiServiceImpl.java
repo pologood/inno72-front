@@ -405,10 +405,10 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 
 		requestForm.put("accessToken", accessToken);
 		requestForm.put("orderId", orderId); //安全ua
-		requestForm.put("umid", machineId);//umid
+		requestForm.put("mid", machineId);//umid
 		requestForm.put("channelId", channelId);//互动实例ID
 		
-		String respJson = HttpClient.form(jstUrl+"/api/top/lottery", requestForm, null);
+		String respJson = HttpClient.form(jstUrl+"/api/top/deliveryRecord", requestForm, null);
 		if (StringUtils.isEmpty(respJson)) {
 			return Results.failure("聚石塔无返回数据!");
 		}
