@@ -32,7 +32,6 @@ import com.inno72.redis.IRedisUtil;
 import com.inno72.service.Inno72MachineService;
 import com.inno72.vo.Inno72MachineVo;
 
-
 /**
  * Created by CodeGenerator on 2018/06/27.
  */
@@ -40,17 +39,17 @@ import com.inno72.vo.Inno72MachineVo;
 @Transactional
 public class Inno72MachineServiceImpl extends AbstractService<Inno72Machine> implements Inno72MachineService {
 	private static final Logger LOGGER = LoggerFactory.getLogger(Inno72MachineServiceImpl.class);
-    @Resource
-    private Inno72MachineMapper inno72MachineMapper;
-    @Resource
-    private Inno72MachineGameMapper inno72MachineGameMapper;
-    @Resource
-    private Inno72GameMapper inno72GameMapper;
-    @Autowired
-    private IRedisUtil redisUtil;
+	@Resource
+	private Inno72MachineMapper inno72MachineMapper;
+	@Resource
+	private Inno72MachineGameMapper inno72MachineGameMapper;
+	@Resource
+	private Inno72GameMapper inno72GameMapper;
+	@Autowired
+	private IRedisUtil redisUtil;
 
 	@Override
-	public  Result<Inno72MachineVo> findGame(String machineId, String gameId, String version, String versionInno72) {
+	public Result<Inno72MachineVo> findGame(String machineId, String gameId, String version, String versionInno72) {
 		LOGGER.info("查询售卖机游戏详情 - machineId -> {}", machineId);
 		Inno72Machine inno72Machine = inno72MachineMapper.selectByPrimaryKey(machineId);
 		if (inno72Machine == null) {
@@ -60,32 +59,31 @@ public class Inno72MachineServiceImpl extends AbstractService<Inno72Machine> imp
 		if (selectByCondition.size() == 0) {
 			return Results.failure("机器ID没有绑定游戏!");
 		}
-		
+
 		String gameIds = "";
-		
+
 		for (Inno72MachineGame inno72MachineGame : selectByCondition) {
-			gameIds+=inno72MachineGame.getGameId()+",";
+			gameIds += inno72MachineGame.getGameId() + ",";
 		}
-		if (gameIds.substring(gameIds.length()-1) .equals(",")) {
-			gameIds = gameIds.substring(0, gameIds.length()-1);
+		if (gameIds.substring(gameIds.length() - 1).equals(",")) {
+			gameIds = gameIds.substring(0, gameIds.length() - 1);
 		}
 		Inno72Game inno72Games = inno72GameMapper.selectByPrimaryKey(gameIds);
-		
+
 		Inno72MachineVo inno72MachineVo = new Inno72MachineVo();
 		BeanUtils.copyProperties(inno72Machine, inno72MachineVo);
 		inno72MachineVo.setInno72Games(inno72Games);
-		
+
 		String brandName = inno72GameMapper.selectBoundName(inno72Games.getSellerId());
 		inno72MachineVo.setBrandName(brandName);
-		
-		if (!gameId.equals("0") 
-				&& (!inno72Games.getId().equals(gameId) || !inno72Games.getVersion().equals(version) || !inno72Games.getVersionInno72().equals(versionInno72))
-				) {
+
+		if (!gameId.equals("0") && (!inno72Games.getId().equals(gameId) || !inno72Games.getVersion().equals(version)
+				|| !inno72Games.getVersionInno72().equals(versionInno72))) {
 			inno72MachineVo.setReload(true);
 		}
-		
+
 		LOGGER.info("查询完成 - result -> {}", JSON.toJSONString(inno72MachineVo));
-		
+
 		return Results.success(inno72MachineVo);
 	}
 
@@ -93,33 +91,34 @@ public class Inno72MachineServiceImpl extends AbstractService<Inno72Machine> imp
 	public Result<Object> createQrCode(String machineId) {
 		LOGGER.info("根据机器id生成二维码", machineId);
 		Map<String, Object> map = new HashMap<String, Object>();
-		//生成sessionUuid
+		// 生成sessionUuid
 		String sessionUuid = UuidUtil.getUUID32();
-		//调用天猫的地址
-		String url = "https://oauth.taobao.com/authorize?response_type=code&client_id=24791535&redirect_uri=https://inno72.ews.m.jaeapp.com/api/top/"+machineId+"/"+sessionUuid;
-		//二维码存储在本地的路径
-		String localUrl = machineId + com.inno72.common.util.StringUtil.uuid() +".png";
-		//存储在阿里云上的文件名
-        String objectName = "qrcode/"+localUrl;
-        //提供给前端用来调用二维码的地址
-        String returnUrl = " https://inno72.oss-cn-beijing.aliyuncs.com/"+objectName;
-        
+		// 调用天猫的地址
+		String url = "https://oauth.taobao.com/authorize?response_type=code&client_id=24791535&redirect_uri=https://inno72.ews.m.jaeapp.com/api/top/"
+				+ machineId + "/" + sessionUuid;
+		// 二维码存储在本地的路径
+		String localUrl = machineId + com.inno72.common.util.StringUtil.uuid() + ".png";
+		// 存储在阿里云上的文件名
+		String objectName = "qrcode/" + localUrl;
+		// 提供给前端用来调用二维码的地址
+		String returnUrl = " https://inno72.oss-cn-beijing.aliyuncs.com/" + objectName;
+
 		try {
-			boolean result = QrCodeUtil.createQrCode(localUrl,url,1800,"png");
-			if(result) {
+			boolean result = QrCodeUtil.createQrCode(localUrl, url, 1800, "png");
+			if (result) {
 				OSSUtil.uploadLocalFile(localUrl, objectName);
-				//删除文件
-				File f=new File(localUrl);
-				if(f.exists()) {
+				// 删除文件
+				File f = new File(localUrl);
+				if (f.exists()) {
 					f.delete();
 				}
 				map.put("qrCodeUrl", returnUrl);
 				map.put("sessionUuid", sessionUuid);
 				LOGGER.info("二维码生成成功 - result -> {}", JSON.toJSONString(map).replace("\"", "'"));
-			}else {
+			} else {
 				LOGGER.info("二维码生成失败");
 			}
-			
+
 		} catch (Exception e) {
 			e.printStackTrace();
 			LOGGER.info("二维码生成失败", e);
@@ -132,14 +131,14 @@ public class Inno72MachineServiceImpl extends AbstractService<Inno72Machine> imp
 		if (StringUtils.isEmpty(sessionUuid)) {
 			return Results.failure("参数缺失！");
 		}
-		
+
 		String sessionStr = redisUtil.get(sessionUuid);
 
 		if (StringUtils.isEmpty(sessionStr)) {
 			return Results.failure("未登录！");
 		}
-		
+
 		return Results.success(JSON.parseObject(sessionStr));
 	}
-	
+
 }
