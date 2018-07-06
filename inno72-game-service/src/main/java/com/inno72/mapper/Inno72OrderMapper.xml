@@ -20,6 +20,6 @@
     <result column="ref_order_id" jdbcType="VARCHAR" property="refOrderId" />
   </resultMap>
   <select id="selectByRefOrderId" parameterType="java.lang.String" resultMap="BaseResultMap">
-  	select * from inno72_game where ref_order_id = #{orderId}
+  	select * from inno72_order where ref_order_id = #{orderId}
   </select>
 </mapper>
