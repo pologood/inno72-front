@@ -7,7 +7,6 @@ import java.util.Map;
 
 import javax.annotation.Resource;
 
-import com.inno72.common.CommonBean;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -92,7 +91,7 @@ public class Inno72MachineServiceImpl extends AbstractService<Inno72Machine> imp
 		//生成sessionUuid
 		String sessionUuid = UuidUtil.getUUID32();
 		//调用天猫的地址
-		String url = "https://oauth.taobao.com/authorize?response_type=code&client_id=24791535&redirect_uri=https://inno72.ews.m.jaeapp.com/api/top/"+machineId+"?sessionUuid="+sessionUuid;
+		String url = "https://oauth.taobao.com/authorize?response_type=code&client_id=24791535&redirect_uri=https://inno72.ews.m.jaeapp.com/api/top/"+machineId+"/"+sessionUuid;
 		//二维码存储在本地的路径
 		String localUrl = machineId + com.inno72.common.util.StringUtil.uuid() +".png";
 		//存储在阿里云上的文件名

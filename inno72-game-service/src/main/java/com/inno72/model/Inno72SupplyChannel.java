@@ -41,8 +41,8 @@ public class Inno72SupplyChannel implements Serializable {
     /**
      * 机器编号
      */
-    @Column(name = "merchant_id")
-    private String merchantId;
+    @Column(name = "machine_id")
+    private String machineId;
 
     /**
      * 父货道编号
@@ -104,10 +104,10 @@ public class Inno72SupplyChannel implements Serializable {
     public Inno72SupplyChannel() {
     }
 
-    public Inno72SupplyChannel(String merchantId, String[] goodsCodes, String code) {
-        this.merchantId = merchantId;
+    public Inno72SupplyChannel(String machineId, String[] goodsCodes, String code) {
+        this.machineId = machineId;
         this.goodsCodes = goodsCodes;
-        this.goodsCode = code;
+        this.code = code;
     }
 
     /**
@@ -187,8 +187,8 @@ public class Inno72SupplyChannel implements Serializable {
      *
      * @return merchant_id - 机器编号
      */
-    public String getMerchantId() {
-        return merchantId;
+    public String getMachineId() {
+        return machineId;
     }
 
     /**
@@ -196,8 +196,8 @@ public class Inno72SupplyChannel implements Serializable {
      *
      * @param merchantId 机器编号
      */
-    public void setMerchantId(String merchantId) {
-        this.merchantId = merchantId;
+    public void setMachineId(String machineId) {
+        this.machineId = machineId;
     }
 
     /**

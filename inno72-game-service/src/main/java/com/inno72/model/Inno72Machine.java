@@ -3,16 +3,15 @@ package com.inno72.model;
 import java.time.LocalDateTime;
 
 import javax.persistence.Column;
-import javax.persistence.Convert;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
 
+import org.springframework.format.annotation.DateTimeFormat;
+
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.inno72.common.CustomLocalDateTimeSerializer;
-import com.inno72.common.LocalDateConverter;
-import org.springframework.format.annotation.DateTimeFormat;
 
 @Table(name = "inno72_machine")
 public class Inno72Machine {

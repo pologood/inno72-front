@@ -16,7 +16,7 @@ public class MachineApiVo {
 	  /**
 	   * 货道号
 	   */
-	  private String chnnelId;
+	  private String channelId;
 	  /**
 	   * sessionUuid
 	   */

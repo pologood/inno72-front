@@ -1,10 +1,8 @@
 package com.inno72.controller;
 
 import java.util.List;
-import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
@@ -29,7 +27,7 @@ public class Inno72GameApiController {
 	 * @return
 	 */
 	@RequestMapping(value = "/goods/findProduct", method = { RequestMethod.POST,  RequestMethod.GET})
-	public Result<Map<String, List<Inno72SupplyChannel>>> findProduct(MachineApiVo vo){
+	public Result<List<Inno72SupplyChannel>> findProduct(MachineApiVo vo){
 		return inno72GameApiService.findProduct(vo);
 	}
 	
@@ -43,7 +41,7 @@ public class Inno72GameApiController {
 	 * @return
 	 */
 	@RequestMapping(value = "/qroauth/order", method = { RequestMethod.POST,  RequestMethod.GET})
-	public Result<Object>  order(@RequestBody MachineApiVo vo){
+	public Result<Object>  order(MachineApiVo vo){
 		return inno72GameApiService.order(vo);
 	}
 	
@@ -54,7 +52,7 @@ public class Inno72GameApiController {
 	 * @return
 	 */
 	@RequestMapping(value = "/qroauth/order-polling", method = { RequestMethod.POST,  RequestMethod.GET})
-	public Result<String>  orderPolling(@RequestBody MachineApiVo vo){
+	public Result<String>  orderPolling(MachineApiVo vo){
 		return inno72GameApiService.orderPolling(vo);
 	}
 	
@@ -65,7 +63,7 @@ public class Inno72GameApiController {
 	 * @return
 	 */
 	@RequestMapping(value = "/special/luckyDraw", method = { RequestMethod.POST,  RequestMethod.GET})
-	public Result<Object>  luckyDraw(@RequestBody MachineApiVo vo){
+	public Result<Object>  luckyDraw(MachineApiVo vo){
 		return inno72GameApiService.luckyDraw(vo);
 	}
 	
@@ -76,8 +74,8 @@ public class Inno72GameApiController {
 	 * @param goodsId
 	 * @return
 	 */
-	@RequestMapping(value = "/shipmentReport", method = { RequestMethod.POST,  RequestMethod.GET})
-	public Result<String>  shipmentReport(@RequestBody MachineApiVo vo){
+	@RequestMapping(value = "/goods/shipmentReport", method = { RequestMethod.POST,  RequestMethod.GET})
+	public Result<String>  shipmentReport(MachineApiVo vo){
 		return inno72GameApiService.shipmentReport(vo);
 	}
 	
