@@ -50,7 +50,7 @@ public class Inno72MachineServiceImpl extends AbstractService<Inno72Machine> imp
     private IRedisUtil redisUtil;
 
 	@Override
-	public  Result<Inno72MachineVo> findGame(String machineId, String gameId) {
+	public  Result<Inno72MachineVo> findGame(String machineId, String gameId, String version, String versionInno72) {
 		LOGGER.info("查询售卖机游戏详情 - machineId -> {}", machineId);
 		Inno72Machine inno72Machine = inno72MachineMapper.selectByPrimaryKey(machineId);
 		if (inno72Machine == null) {
@@ -75,7 +75,12 @@ public class Inno72MachineServiceImpl extends AbstractService<Inno72Machine> imp
 		BeanUtils.copyProperties(inno72Machine, inno72MachineVo);
 		inno72MachineVo.setInno72Games(inno72Games);
 		
-		if (!gameId.equals("0") && !inno72Games.getId().equals(gameId)) {
+		String brandName = inno72GameMapper.selectBoundName(inno72Games.getSellerId());
+		inno72MachineVo.setBrandName(brandName);
+		
+		if (!gameId.equals("0") 
+				&& (!inno72Games.getId().equals(gameId) || !inno72Games.getVersion().equals(version) || !inno72Games.getVersionInno72().equals(versionInno72))
+				) {
 			inno72MachineVo.setReload(true);
 		}
 		

@@ -24,4 +24,8 @@
     <result column="update_time" jdbcType="TIMESTAMP" property="updateTime" javaType="java.time.LocalDateTime" typeHandler="org.apache.ibatis.type.LocalDateTimeTypeHandler" />
   </resultMap>
   
+  <select id="selectBoundName" resultType="string" parameterType="long">
+  	select brand_name from inno72_merchant where id = #{brandId}
+  </select>
+  
 </mapper>

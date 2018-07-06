@@ -12,7 +12,7 @@ public interface Inno72GameApiService {
 
 	Result<Object> order(MachineApiVo vo);
 
-	Result<String> orderPolling(MachineApiVo vo);
+	Result<Boolean> orderPolling(MachineApiVo vo);
 
 	Result<Object> luckyDraw(MachineApiVo vo);
 

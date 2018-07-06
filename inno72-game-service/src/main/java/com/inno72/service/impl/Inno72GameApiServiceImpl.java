@@ -134,6 +134,8 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 			return Results.failure("聚石塔无返回数据!");
 		}
 		
+		LOGGER.info("调用聚石塔接口  【下单】返回 ===> {}",JSON.toJSONString(respJson));
+		
 		try {
 			
 			JSONObject parseObjectRoot = JSON.parseObject(respJson);
@@ -217,7 +219,7 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 	 * @return string
 	 */
 	@Override
-	public Result<String> orderPolling(MachineApiVo vo) {
+	public Result<Boolean> orderPolling(MachineApiVo vo) {
 		String jstUrl = inno72GameServiceProperties.get("jstUrl");
 		if ( StringUtils.isEmpty(jstUrl)) {
 			return Results.failure("配置中心无聚石塔配置路径!");
@@ -243,6 +245,8 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 		if (StringUtils.isEmpty(respJson)) {
 			return Results.failure("聚石塔无返回数据!");
 		}
+		
+		LOGGER.info("调用聚石塔接口  【下单支付状态】返回 ===> {}",JSON.toJSONString(respJson));
 
 		try {
 			JSONObject parseObjectRoot = JSON.parseObject(respJson);
@@ -254,15 +258,18 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 				String msg_info = Optional.ofNullable(parseObject.get("msg_info")).map(Object::toString).orElse("");
 				return Results.failure(msg_info);
 			}
-			
-			Inno72Order inno72Order = inno72OrderMapper.selectByRefOrderId(orderId);
-			if ( inno72Order != null) {
-				inno72Order.setPayStatus("1");
-				inno72Order.setPayTime(LocalDateTime.now());
-				inno72OrderMapper.updateByPrimaryKeySelective(inno72Order);
+			boolean model = (boolean)parseObject.get("model");
+			if (model) {
+				Inno72Order inno72Order = inno72OrderMapper.selectByRefOrderId(orderId);
+				if ( inno72Order != null) {
+					inno72Order.setPayStatus("1");
+					inno72Order.setPayTime(LocalDateTime.now());
+					inno72OrderMapper.updateByPrimaryKeySelective(inno72Order);
+				}
 			}
+			return Results.success(model);
 			
-			return Results.success();
+			
 			
 		} catch (Exception e) {
 			LOGGER.info("解析聚石塔返回数据异常! ===>  {}",e.getMessage(), e);
@@ -310,6 +317,9 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 		if (StringUtils.isEmpty(respJson)) {
 			return Results.failure("聚石塔无返回数据!");
 		}
+		
+		LOGGER.info("调用聚石塔接口  【抽奖】返回 ===> {}",JSON.toJSONString(respJson));
+		
 		try {
 			JSONObject parseObjectRoot = JSON.parseObject(respJson);
 			String tmall_interact_isvlottery_draw_response = 
@@ -379,7 +389,8 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 		if (StringUtils.isEmpty(respJson)) {
 			return Results.failure("聚石塔无返回数据!");
 		}
-		LOGGER.info("调用聚石塔 通知出货 请求结果 ===> {}", JSON.toJSONString(respJson));
+		
+		LOGGER.info("调用聚石塔接口  【通知出货】返回 ===> {}",JSON.toJSONString(respJson));
 		
 		JSONObject parseObjectRoot = JSON.parseObject(respJson);
 		String tmall_fans_automachine_deliveryrecord_response = 
@@ -486,6 +497,8 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 		if ( StringUtils.isEmpty(jstUrl)) {
 			return Results.failure("配置中心无聚石塔配置路径!");
 		}
+		
+		
 		Map<String, String> requestForm = new HashMap<>();
 		requestForm.put("accessToken", access_token);
 		requestForm.put("mid", mid);
@@ -498,7 +511,7 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 		 * </tmall_fans_automachine_getmaskusernick_response>
 		 */
 		String respJson = HttpClient.form(jstUrl + "/api/top/getMaskUserNick", requestForm, null);
-		LOGGER.info("请求NikeName ==> {}", respJson);
+		LOGGER.info("调用聚石塔接口  【请求nickName】返回 ===> {}",JSON.toJSONString(respJson));
 		JSONObject jsonNikeNameObject = JSON.parseObject(respJson);
 		String tmall_fans_automachine_getmaskusernick_response = Optional.ofNullable(jsonNikeNameObject.get(
 				"tmall_fans_automachine_getmaskusernick_response")).map(Object::toString).orElse("");

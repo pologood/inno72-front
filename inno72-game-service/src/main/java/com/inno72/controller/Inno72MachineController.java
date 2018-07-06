@@ -30,8 +30,8 @@ public class Inno72MachineController {
 
 
     @RequestMapping(value = "/findGame", method = { RequestMethod.POST,  RequestMethod.GET})
-    public Result findGame(@RequestParam(name="machineId")String  mid,@RequestParam(name = "gameId") String gameId) {
-        return inno72MachineService.findGame(mid, gameId);
+    public Result findGame(@RequestParam(name="machineId")String  mid,@RequestParam(name = "gameId") String gameId, String version, String versionInno72) {
+        return inno72MachineService.findGame(mid, gameId, version, versionInno72);
     }
     
 

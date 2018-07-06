@@ -5,4 +5,6 @@ import com.inno72.model.Inno72Game;
 
 public interface Inno72GameMapper extends Mapper<Inno72Game> {
 
+	String selectBoundName(Long brandId);
+
 }

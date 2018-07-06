@@ -10,7 +10,7 @@ import com.inno72.common.Service;
  */
 public interface Inno72MachineService extends Service<Inno72Machine> {
 
-	Result<Inno72MachineVo> findGame(String mid, String gameId);
+	Result<Inno72MachineVo> findGame(String mid, String gameId, String version, String versionInno72);
 	
 	Result<Object> createQrCode(String machineId);
 

@@ -9,6 +9,17 @@ public class Inno72MachineVo extends Inno72Machine{
 	
 	private Inno72Game inno72Games;
 
+	private String brandName;
+	
+	
+	public String getBrandName() {
+		return brandName;
+	}
+
+	public void setBrandName(String brandName) {
+		this.brandName = brandName;
+	}
+
 	public boolean isReload() {
 		return isReload;
 	}
