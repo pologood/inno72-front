@@ -196,7 +196,7 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 				
 			}
 			
-			return Results.success(parseModelObject);
+			return Results.success(mapToUpperCase(parseModelObject));
 			
 		} catch (Exception e) {
 			
@@ -206,7 +206,30 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 		}
 		
 	}
+	private Map<String, Object> mapToUpperCase(JSONObject jObject){
+		Map<String, Object> result = new HashMap<>();
+		if ( jObject != null) {
+			for (Map.Entry<String, Object> element : jObject.entrySet()) {
+				result.put(strToUpperCase(element.getKey()), element.getValue());
+			}
+		}
+		return result;
+	}
 	
+	private String strToUpperCase(String str) {
+		String newKey = "";
+		for(int i = 0 ; i < str.length() ; i++ ) {
+			String keyChar = String.valueOf(str.charAt(i));
+			if ( keyChar.equals("_") && i < str.length() - 1 ) {
+				 keyChar = String.valueOf(str.charAt(i+1)).toUpperCase();
+				 i++;
+			}
+			if ( !keyChar.equals("_")) {
+				newKey += keyChar;
+			}
+		}
+		return newKey;
+	}
 	
 	@Resource
 	private Inno72OrderDetailMapper inno72OrderDetailMapper;
@@ -333,7 +356,7 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 			String data = Optional.ofNullable(parseObject.get("data")).map(Object::toString).orElse("");
 			JSONObject parseDataObject = JSON.parseObject(data);
 
-			return Results.success(parseDataObject);
+			return Results.success(mapToUpperCase(parseDataObject));
 		} catch (Exception e) {
 			return Results.failure(e.getMessage());
 		}

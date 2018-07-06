@@ -65,7 +65,7 @@ public class SuperOpenServiceImpl implements SuperOpenService {
 		/** 下单  */
 		CREATE_ORDER     ("005","order",           "/api/qroauth/order",        "下单",        "1.0.0"),
 		/** 验证下单状态 */
-		ORDER_POLLING    ("006","order-polling",   "/api/qroauth/order-polling","验证下单状态",  "1.0.0"),
+		ORDER_POLLING    ("006","orderPolling",   "/api/qroauth/order-polling","验证下单状态",  "1.0.0"),
 		/** 抽奖 */
 		LUCKY_DRAW       ("007","luckyDraw",       "/api/special/luckyDraw",    "抽奖",         "1.0.0"),
 		/** 出货后调用减货 */
