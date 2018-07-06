@@ -7,13 +7,12 @@
 	<parent>
 		<groupId>org.springframework.boot</groupId>
 		<artifactId>spring-boot-starter-parent</artifactId>
-		<version>1.1.4.RELEASE</version>
+		<version>1.5.1.RELEASE</version>
 	</parent>
 
 	<artifactId>inno72-top-service</artifactId>
 	<groupId>com.inno72</groupId>
-	<name>inno72-game-service</name>
-	<description>game-front</description>
+	<name>inno72-top-service</name>
 	<version>1.0-SNAPSHOT</version>
 	<packaging>war</packaging>
 	<modelVersion>4.0.0</modelVersion>
@@ -37,6 +36,22 @@
 
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter</artifactId>
+			<exclusions>
+				<exclusion>
+					<groupId>org.springframework.boot</groupId>
+					<artifactId>spring-boot-starter-logging</artifactId>
+				</exclusion>
+			</exclusions>
+		</dependency>
+
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-log4j2</artifactId>
+		</dependency>
+
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-tomcat</artifactId>
 			<scope>provided</scope>
 		</dependency>
@@ -54,6 +69,21 @@
 		</dependency>
 
 	</dependencies>
+
+	<!-- 依赖仓库地址 -->
+	<repositories>
+		<repository>
+			<id>nexus</id>
+			<url>http://47.95.217.215:8094/repository/maven-public</url>
+			<releases>
+				<enabled>true</enabled>
+			</releases>
+			<snapshots>
+				<enabled>true</enabled>
+			</snapshots>
+		</repository>
+	</repositories>
+
 	<!-- 配置插件的仓库地址 -->
 	<pluginRepositories>
 		<pluginRepository>
@@ -101,6 +131,18 @@
 						</configuration>
 					</execution>
 				</executions>
+			</plugin>
+
+			<plugin>
+				<artifactId>maven-compiler-plugin</artifactId>
+				<version>3.5.1</version>
+				<configuration>
+					<source>1.8</source>
+					<target>1.8</target>
+					<compilerVersion>1.8</compilerVersion>
+					<showDeprecation>true</showDeprecation>
+					<showWarnings>true</showWarnings>
+				</configuration>
 			</plugin>
 		</plugins>
 	</build>

@@ -9,14 +9,10 @@ import org.apache.commons.lang.StringUtils;
 import java.util.HashMap;
 import java.util.Set;
 
-/**
- * Created by Yang.jing on 18/4/13.
- */
 @SuppressWarnings({"unused", "rawtypes", "unchecked"})
 public class JsonUtils {
 
-   
-	private static final SerializerFeature[] FEATURES = {
+    private static final SerializerFeature[] FEATURES = {
             // 输出空置字段
             SerializerFeature.WriteMapNullValue,
             // list字段如果为null，输出为[]，而不是null
@@ -44,7 +40,7 @@ public class JsonUtils {
         return getString(payloadJson, key);
     }
 
-	public static String getString(JSONObject payloadJson, String key) {
+    public static String getString(JSONObject payloadJson, String key) {
         Set entrySet = payloadJson.entrySet();
 
         String result;
@@ -140,7 +136,7 @@ public class JsonUtils {
     }
 
 
-	public static <T> T getValue(JSONObject payloadJson, String key, Class<T> clazz) {
+    public static <T> T getValue(JSONObject payloadJson, String key, Class<T> clazz) {
         Set entrySet = payloadJson.entrySet();
 
         T result;
@@ -174,11 +170,8 @@ public class JsonUtils {
     }
 
     /**
-     *
-     * @param object
-     *            对象
-     * @param dateFormat
-     *            日期字符串
+     * @param object     对象
+     * @param dateFormat 日期字符串
      * @return
      */
     public static String toJson(Object object, String dateFormat) {
