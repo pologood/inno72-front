@@ -61,6 +61,9 @@ public class Inno72Order {
 
     @Column(name = "activity_id")
     private String activityId;
+    
+    @Column(name = "ref_order_id")
+    private String refOrderId;
 
     /**
      * @return id
@@ -247,6 +250,16 @@ public class Inno72Order {
 	public void setActivityId(String activityId) {
 		this.activityId = activityId;
 	}
+
+	public String getRefOrderId() {
+		return refOrderId;
+	}
+
+	public void setRefOrderId(String refOrderId) {
+		this.refOrderId = refOrderId;
+	}
+	
+	
     
     
 }

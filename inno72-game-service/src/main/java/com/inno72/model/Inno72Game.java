@@ -24,13 +24,24 @@ public class Inno72Game {
     /**
      * 游戏版本
      */
-    private String version;
+    private String version;   
+    
+    /**
+     * 名称
+     */
+    private String name;
 
     /**
      * 游戏描述
      */
-    @Column(name = "`desc`")
-    private String desc;
+    @Column(name = "version_inno72")
+    private String versionInno72;
+    
+
+    /**
+     * 备注
+     */
+    private String remark;
 
     /**
      * 售卖者id
@@ -74,6 +85,12 @@ public class Inno72Game {
      */
     @Column(name = "max_prize_total")
     private Integer maxPrizeTotal;
+    
+    /**
+     * 最大奖品数量(-1表示不限制数量)
+     */
+    @Column(name = "is_delete")
+    private Integer isDelete;
 
     /**
      * 创建人
@@ -146,8 +163,8 @@ public class Inno72Game {
      *
      * @return desc - 游戏描述
      */
-    public String getDesc() {
-        return desc;
+    public String getVersionInno72() {
+        return versionInno72;
     }
 
     /**
@@ -155,8 +172,8 @@ public class Inno72Game {
      *
      * @param desc 游戏描述
      */
-    public void setDesc(String desc) {
-        this.desc = desc;
+    public void setVersionInno72(String versionInno72) {
+        this.versionInno72 = versionInno72;
     }
 
 
@@ -379,4 +396,29 @@ public class Inno72Game {
     public void setActivityId(Long activityId) {
         this.activityId = activityId;
     }
+
+	public String getName() {
+		return name;
+	}
+
+	public void setName(String name) {
+		this.name = name;
+	}
+
+	public String getRemark() {
+		return remark;
+	}
+
+	public void setRemark(String remark) {
+		this.remark = remark;
+	}
+
+	public Integer getIsDelete() {
+		return isDelete;
+	}
+
+	public void setIsDelete(Integer isDelete) {
+		this.isDelete = isDelete;
+	}
+    
 }

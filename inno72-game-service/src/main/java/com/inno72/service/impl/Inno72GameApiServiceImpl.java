@@ -99,10 +99,13 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 	 */
 	@Override
 	public Result<Object> order(MachineApiVo vo) {
+		
 		String jstUrl = inno72GameServiceProperties.get("jstUrl");
+		
 		if ( StringUtils.isEmpty(jstUrl)) {
 			return Results.failure("配置中心无聚石塔配置路径!");
 		}
+		
 		String machineId = vo.getMachineId();
 		String activityId = vo.getActivityId();
 		String sessionUuid = vo.getSessionUuid();
@@ -124,65 +127,82 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 		requestForm.put("activityId", activityId);
 		requestForm.put("mid", machineId);
 		requestForm.put("goodsId", itemId);
+		
 		String respJson = HttpClient.form(jstUrl+"/api/top/order", requestForm, null);
+		
 		if (StringUtils.isEmpty(respJson)) {
 			return Results.failure("聚石塔无返回数据!");
 		}
+		
 		try {
+			
 			JSONObject parseObjectRoot = JSON.parseObject(respJson);
 			String tmall_fans_automachine_order_createorderbyitemid_response = 
 					Optional.ofNullable(parseObjectRoot.get("tmall_fans_automachine_order_createorderbyitemid_response")).map(Object::toString).orElse("");
 			JSONObject parseObject = JSON.parseObject(tmall_fans_automachine_order_createorderbyitemid_response);
-			String msg_code = Optional.ofNullable(parseObject.get("msg_code")).map(Object::toString).orElse("");
+			String result = Optional.ofNullable(parseObject.get("result")).map(Object::toString).orElse("");
+			JSONObject parseResultObject = JSON.parseObject(result);
+			String msg_code = Optional.ofNullable(parseResultObject.get("msg_code")).map(Object::toString).orElse("");
+//			String result = Optional.ofNullable(parseObject.get("result")).map(Object::toString).orElse("");
 			if (!msg_code.equals("SUCCESS")) {
 				String msg_info = Optional.ofNullable(parseObject.get("msg_info")).map(Object::toString).orElse("");
 				return Results.failure(msg_info);
 			}
 			
-			String model = Optional.ofNullable(parseObject.get("model")).map(Object::toString).orElse("");
+			String model = Optional.ofNullable(parseResultObject.get("model")).map(Object::toString).orElse("");
 			JSONObject parseModelObject = JSON.parseObject(model);
 			LocalDateTime now = LocalDateTime.now();
-			Inno72Order inno72Order = new Inno72Order();
 			
-			String userId = Optional.ofNullable(sessionObject.get("userId")).map(Object::toString).orElse("");
+			String orderId = Optional.ofNullable(parseModelObject.getString("order_id")).map(Object :: toString).orElse("");
 			
-			Map<String, Object> infoMap = new HashMap<>();
-			if (StringUtils.isNotEmpty(userId)) {
-				Inno72GameUser selectByChannelUserKey = inno72GameUserMapper.selectByChannelUserKey(userId);
-				if (selectByChannelUserKey != null) {
-					infoMap.put("inno72GameUser", selectByChannelUserKey);
-					inno72Order.setUserId(selectByChannelUserKey.getId());//session中userId查询inno72_game_user主键
+			Inno72Order inno72Order = inno72OrderMapper.selectByRefOrderId(orderId);
+			if ( inno72Order == null) {
+				inno72Order = new Inno72Order();
+				String userId = Optional.ofNullable(sessionObject.get("userId")).map(Object::toString).orElse("");
+				
+				Map<String, Object> infoMap = new HashMap<>();
+				if (StringUtils.isNotEmpty(userId)) {
+					Inno72GameUser selectByChannelUserKey = inno72GameUserMapper.selectByChannelUserKey(userId);
+					if (selectByChannelUserKey != null) {
+						infoMap.put("inno72GameUser", selectByChannelUserKey);
+						inno72Order.setUserId(selectByChannelUserKey.getId());//session中userId查询inno72_game_user主键
+					}
 				}
+				
+				Inno72Game inno72Game = inno72GameMapper.selectByPrimaryKey(gameId);
+				infoMap.put("inno72Game", inno72Game);
+				
+				Inno72Machine inno72Machine = inno72MachineMapper.selectByPrimaryKey(machineId);
+				infoMap.put("inno72Machine", inno72Machine);
+				
+				inno72Order.setActivityId(activityId);
+				inno72Order.setChannelId(channelId);
+				inno72Order.setGameId(gameId);
+				inno72Order.setMachineId(machineId);
+				inno72Order.setOrderTime(now);
+//				inno72Order.setOrderNum(orderNum);
+				inno72Order.setPayStatus("0");
+				inno72Order.setOrderType("1000");
+				inno72Order.setRefOrderId(orderId);
+				
+				inno72OrderMapper.insert(inno72Order);
+				Inno72OrderDetail inno72OrderDetail = new Inno72OrderDetail();
+				inno72OrderDetail.setDetail(JSON.toJSONString(infoMap));
+				inno72OrderDetail.setId(inno72Order.getId());
+				inno72OrderDetail.setOrderNum(inno72Order.getOrderNum());
+				inno72OrderDetailMapper.insert(inno72OrderDetail);
+				
 			}
 			
-			Inno72Game inno72Game = inno72GameMapper.selectByPrimaryKey(gameId);
-			infoMap.put("inno72Game", inno72Game);
-			
-			Inno72Machine inno72Machine = inno72MachineMapper.selectByPrimaryKey(machineId);
-			infoMap.put("inno72Machine", inno72Machine);
-			
-			inno72Order.setActivityId(activityId);
-			inno72Order.setChannelId(channelId);
-			inno72Order.setGameId(gameId);
-			inno72Order.setMachineId(machineId);
-			inno72Order.setOrderTime(now);
-//			inno72Order.setOrderNum(orderNum);
-			inno72Order.setPayStatus("0");
-			inno72Order.setOrderType("1000");
-			
-			inno72OrderMapper.insert(inno72Order);
-			
-			Inno72OrderDetail inno72OrderDetail = new Inno72OrderDetail();
-			inno72OrderDetail.setDetail(JSON.toJSONString(infoMap));
-			inno72OrderDetail.setId(inno72Order.getId());
-			inno72OrderDetail.setOrderNum(inno72Order.getOrderNum());
-			inno72OrderDetailMapper.insert(inno72OrderDetail);
-			
 			return Results.success(parseModelObject);
+			
 		} catch (Exception e) {
+			
 			LOGGER.info("解析聚石塔返回数据异常! ===>  {}",e.getMessage(), e);
 			return Results.failure("解析聚石塔返回数据异常!");
+			
 		}
+		
 	}
 	
 	
@@ -204,7 +224,7 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 		}
 
 		String sessionUuid = vo.getSessionUuid();
-		String orderId = vo.getSessionUuid();
+		String orderId = vo.getOrderId();
 
 		String sessionUUIDObjectJSON = redisUtil.get(sessionUuid);
 		if ( StringUtils.isEmpty(sessionUUIDObjectJSON) ) {
@@ -212,7 +232,7 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 		}
 
 		JSONObject sessionObject = JSON.parseObject(sessionUUIDObjectJSON);
-		String accessToken = Optional.ofNullable(sessionObject.get("")).map(Object::toString).orElse("");
+		String accessToken = Optional.ofNullable(sessionObject.get("accessToken")).map(Object::toString).orElse("");
 
 		Map<String, String> requestForm = new HashMap<>();
 
@@ -234,7 +254,16 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 				String msg_info = Optional.ofNullable(parseObject.get("msg_info")).map(Object::toString).orElse("");
 				return Results.failure(msg_info);
 			}
+			
+			Inno72Order inno72Order = inno72OrderMapper.selectByRefOrderId(orderId);
+			if ( inno72Order != null) {
+				inno72Order.setPayStatus("1");
+				inno72Order.setPayTime(LocalDateTime.now());
+				inno72OrderMapper.updateByPrimaryKeySelective(inno72Order);
+			}
+			
 			return Results.success();
+			
 		} catch (Exception e) {
 			LOGGER.info("解析聚石塔返回数据异常! ===>  {}",e.getMessage(), e);
 			return Results.failure("解析聚石塔返回数据异常!");

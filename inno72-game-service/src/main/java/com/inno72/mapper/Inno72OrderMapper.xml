@@ -17,5 +17,9 @@
     <result column="pay_status" jdbcType="VARCHAR" property="payStatus" />
     <result column="pay_time" jdbcType="TIMESTAMP" property="payTime" javaType="java.time.LocalDateTime" typeHandler="org.apache.ibatis.type.LocalDateTimeTypeHandler"/>
     <result column="activity_id" jdbcType="VARCHAR" property="activityId" />
+    <result column="ref_order_id" jdbcType="VARCHAR" property="refOrderId" />
   </resultMap>
+  <select id="selectByRefOrderId" parameterType="java.lang.String" resultMap="BaseResultMap">
+  	select * from inno72_game where ref_order_id = #{orderId}
+  </select>
 </mapper>
