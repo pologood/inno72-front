@@ -17,7 +17,7 @@ public class CustomLocalDateTimeSerializer extends
 			SerializerProvider provider) throws IOException,
 			JsonProcessingException {
 		DateTimeFormatter formatter = DateTimeFormatter
-				.ofPattern("uuuu-MM-dd HH:mm:ss");
+				.ofPattern("yyyy-MM-dd HH:mm:ss");
 		String str = value.format(formatter);
 
 		jgen.writeString(str);

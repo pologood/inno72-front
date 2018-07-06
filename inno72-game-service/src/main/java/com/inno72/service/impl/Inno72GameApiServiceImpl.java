@@ -87,11 +87,14 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 		if (supplyChannel.getCode() == Result.FAILURE) {
 			return Results.failure(supplyChannel.getMsg());
 		}
+		String jsonString = JSON.toJSONString(supplyChannel.getData());
+		LOGGER.info(jsonString);
+		
 		List<Inno72SupplyChannel> parseArray = JSON.parseArray(JSON.toJSONString(supplyChannel.getData()),Inno72SupplyChannel.class);
 		LOGGER.info("查询 货道号 结果 ==> {}", JSON.toJSONString(parseArray));
 		return Results.success(parseArray);
 	}
-
+	
 	/**
 	 * String machineId, 
 	 * String gameId, 
