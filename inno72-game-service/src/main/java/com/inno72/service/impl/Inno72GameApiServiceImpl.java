@@ -92,6 +92,9 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 		
 		List<Inno72SupplyChannel> parseArray = JSON.parseArray(JSON.toJSONString(supplyChannel.getData()),Inno72SupplyChannel.class);
 		LOGGER.info("查询 货道号 结果 ==> {}", JSON.toJSONString(parseArray));
+		if (parseArray == null || parseArray.size() == 0 ) {
+			return Results.failure("没有商品!");
+		}
 		return Results.success(parseArray);
 	}
 	
