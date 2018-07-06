@@ -49,5 +49,4 @@ public class Inno72Authentication {
 		this.uPassword = uPassword;
 	}
 
-   
 }

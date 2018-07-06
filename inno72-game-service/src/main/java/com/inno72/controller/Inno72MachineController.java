@@ -18,69 +18,64 @@ import com.inno72.model.Inno72Machine;
 import com.inno72.service.Inno72MachineService;
 
 /**
-* Created by CodeGenerator on 2018/06/27.
-*/
+ * Created by CodeGenerator on 2018/06/27.
+ */
 @RestController
 @RequestMapping("/machine")
-@SuppressWarnings({"rawtypes", "unchecked"})
+@SuppressWarnings({ "rawtypes", "unchecked" })
 public class Inno72MachineController {
-    @Resource
-    private Inno72MachineService inno72MachineService;
-    
+	@Resource
+	private Inno72MachineService inno72MachineService;
 
+	@RequestMapping(value = "/findGame", method = { RequestMethod.POST, RequestMethod.GET })
+	public Result findGame(@RequestParam(name = "machineId") String mid, @RequestParam(name = "gameId") String gameId,
+			String version, String versionInno72) {
+		return inno72MachineService.findGame(mid, gameId, version, versionInno72);
+	}
 
-    @RequestMapping(value = "/findGame", method = { RequestMethod.POST,  RequestMethod.GET})
-    public Result findGame(@RequestParam(name="machineId")String  mid,@RequestParam(name = "gameId") String gameId, String version, String versionInno72) {
-        return inno72MachineService.findGame(mid, gameId, version, versionInno72);
-    }
-    
+	@RequestMapping(value = "/add", method = { RequestMethod.POST, RequestMethod.GET })
+	public Result add(Inno72Machine inno72Machine) {
+		inno72MachineService.save(inno72Machine);
+		return ResultGenerator.genSuccessResult();
+	}
 
-    @RequestMapping(value = "/add", method = { RequestMethod.POST,  RequestMethod.GET})
-    public Result add(Inno72Machine inno72Machine) {
-        inno72MachineService.save(inno72Machine);
-        return ResultGenerator.genSuccessResult();
-    }
-    @RequestMapping(value = "/delete", method = { RequestMethod.POST,  RequestMethod.GET})
-    public Result delete(@RequestParam Integer id) {
-        inno72MachineService.deleteById(id);
-        return ResultGenerator.genSuccessResult();
-    }
-    
-    @RequestMapping(value = "/update", method = { RequestMethod.POST,  RequestMethod.GET})
-    public Result update(Inno72Machine inno72Machine) {
-        inno72MachineService.update(inno72Machine);
-        return ResultGenerator.genSuccessResult();
-    }
-    
-    @RequestMapping(value = "/detail", method = { RequestMethod.POST,  RequestMethod.GET})
-    public Result detail(@RequestParam Integer id) {
-        Inno72Machine inno72Machine = inno72MachineService.findById(id);
-        return ResultGenerator.genSuccessResult(inno72Machine);
-    }
-    
-    @RequestMapping(value = "/list", method = { RequestMethod.POST,  RequestMethod.GET})
-    public Result list(@RequestParam(defaultValue = "0") Integer page, @RequestParam(defaultValue = "0") Integer size) {
-        PageHelper.startPage(page, size);
-        List<Inno72Machine> list = inno72MachineService.findAll();
-        PageInfo pageInfo = new PageInfo(list);
-        return ResultGenerator.genSuccessResult(pageInfo);
-    }
-    
-    
-    
-    
-    
-    @RequestMapping(value = "/createQrCode", method = { RequestMethod.POST,  RequestMethod.GET})
-    @ResponseBody
-    public Result<Object> createQrCode(@RequestParam String machineId) {
-        
-    	return inno72MachineService.createQrCode(machineId);
-    }
-    
-    @RequestMapping(value = "/polling", method = { RequestMethod.POST,  RequestMethod.GET})
-    @ResponseBody
-    public Result<Object> session_polling(@RequestParam String sessionUuid) {
-    	return inno72MachineService.session_polling(sessionUuid);
-    }
-    
+	@RequestMapping(value = "/delete", method = { RequestMethod.POST, RequestMethod.GET })
+	public Result delete(@RequestParam Integer id) {
+		inno72MachineService.deleteById(id);
+		return ResultGenerator.genSuccessResult();
+	}
+
+	@RequestMapping(value = "/update", method = { RequestMethod.POST, RequestMethod.GET })
+	public Result update(Inno72Machine inno72Machine) {
+		inno72MachineService.update(inno72Machine);
+		return ResultGenerator.genSuccessResult();
+	}
+
+	@RequestMapping(value = "/detail", method = { RequestMethod.POST, RequestMethod.GET })
+	public Result detail(@RequestParam Integer id) {
+		Inno72Machine inno72Machine = inno72MachineService.findById(id);
+		return ResultGenerator.genSuccessResult(inno72Machine);
+	}
+
+	@RequestMapping(value = "/list", method = { RequestMethod.POST, RequestMethod.GET })
+	public Result list(@RequestParam(defaultValue = "0") Integer page, @RequestParam(defaultValue = "0") Integer size) {
+		PageHelper.startPage(page, size);
+		List<Inno72Machine> list = inno72MachineService.findAll();
+		PageInfo pageInfo = new PageInfo(list);
+		return ResultGenerator.genSuccessResult(pageInfo);
+	}
+
+	@RequestMapping(value = "/createQrCode", method = { RequestMethod.POST, RequestMethod.GET })
+	@ResponseBody
+	public Result<Object> createQrCode(@RequestParam String machineId) {
+
+		return inno72MachineService.createQrCode(machineId);
+	}
+
+	@RequestMapping(value = "/polling", method = { RequestMethod.POST, RequestMethod.GET })
+	@ResponseBody
+	public Result<Object> session_polling(@RequestParam String sessionUuid) {
+		return inno72MachineService.session_polling(sessionUuid);
+	}
+
 }
