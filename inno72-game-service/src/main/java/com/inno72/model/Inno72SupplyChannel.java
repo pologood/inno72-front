@@ -1,7 +1,6 @@
 package com.inno72.model;
 
 import java.io.Serializable;
-import java.time.LocalDateTime;
 import java.util.Date;
 
 import javax.persistence.Column;
@@ -12,9 +11,6 @@ import javax.persistence.Table;
 import javax.persistence.Transient;
 
 import org.springframework.format.annotation.DateTimeFormat;
-
-import com.fasterxml.jackson.databind.annotation.JsonSerialize;
-import com.inno72.common.CustomLocalDateTimeSerializer;
 
 @Table(name = "inno72_supply_channel")
 public class Inno72SupplyChannel implements Serializable {
