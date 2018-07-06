@@ -1,13 +1,21 @@
 package com.inno72.model;
 
-import com.fasterxml.jackson.databind.annotation.JsonSerialize;
-import com.inno72.common.datetime.CustomLocalDateTimeSerializer;
+import java.io.Serializable;
+import java.time.LocalDateTime;
+
+import javax.persistence.Column;
+import javax.persistence.Convert;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.Table;
+import javax.persistence.Transient;
+
 import org.springframework.data.jpa.convert.threeten.Jsr310JpaConverters;
 import org.springframework.format.annotation.DateTimeFormat;
 
-import java.io.Serializable;
-import java.util.Date;
-import javax.persistence.*;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.inno72.common.datetime.CustomLocalDateTimeSerializer;
 
 @Table(name = "inno72_supply_channel")
 public class Inno72SupplyChannel implements Serializable {
@@ -76,7 +84,7 @@ public class Inno72SupplyChannel implements Serializable {
     @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     @Convert(converter = Jsr310JpaConverters.LocalDateTimeConverter.class)
     @Column(name = "create_time")
-    private Date createTime;
+    private LocalDateTime createTime;
 
     /**
      * 修改人ID
@@ -90,7 +98,7 @@ public class Inno72SupplyChannel implements Serializable {
     @JsonSerialize(using = CustomLocalDateTimeSerializer.class)
     @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     @Column(name = "update_time")
-    private Date updateTime;
+    private LocalDateTime updateTime;
 
     @Transient
     private String goodsName;
@@ -278,7 +286,7 @@ public class Inno72SupplyChannel implements Serializable {
      *
      * @return create_time - 创建时间
      */
-    public Date getCreateTime() {
+    public LocalDateTime getCreateTime() {
         return createTime;
     }
 
@@ -287,7 +295,7 @@ public class Inno72SupplyChannel implements Serializable {
      *
      * @param createTime 创建时间
      */
-    public void setCreateTime(Date createTime) {
+    public void setCreateTime(LocalDateTime createTime) {
         this.createTime = createTime;
     }
 
@@ -314,7 +322,7 @@ public class Inno72SupplyChannel implements Serializable {
      *
      * @return update_time - 修改时间
      */
-    public Date getUpdateTime() {
+    public LocalDateTime getUpdateTime() {
         return updateTime;
     }
 
@@ -323,7 +331,7 @@ public class Inno72SupplyChannel implements Serializable {
      *
      * @param updateTime 修改时间
      */
-    public void setUpdateTime(Date updateTime) {
+    public void setUpdateTime(LocalDateTime updateTime) {
         this.updateTime = updateTime;
     }
 
