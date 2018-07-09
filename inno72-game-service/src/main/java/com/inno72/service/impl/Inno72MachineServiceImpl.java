@@ -128,7 +128,7 @@ public class Inno72MachineServiceImpl extends AbstractService<Inno72Machine> imp
 	}
 
 	@Override
-	public Result<Object> session_polling(String sessionUuid) {
+	public Result<Object> sessionPolling(String sessionUuid) {
 		if (StringUtils.isEmpty(sessionUuid)) {
 			return Results.failure("参数缺失！");
 		}
