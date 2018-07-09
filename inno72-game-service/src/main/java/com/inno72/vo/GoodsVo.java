@@ -8,7 +8,7 @@ public class GoodsVo {
 	private String goodsId;
 	private int goodsNum;
 	private String goodsName;
-	private List<String> chanelIds;
+	private List<String> chanelId;
 
 
 	public GoodsVo(String goodsId, int goodsNum, String goodsName) {
@@ -16,7 +16,7 @@ public class GoodsVo {
 		this.goodsId = goodsId;
 		this.goodsNum = goodsNum;
 		this.goodsName = goodsName;
-		this.chanelIds = new ArrayList<>();
+		this.chanelId = new ArrayList<>();
 	}
 
 	public GoodsVo() {
@@ -47,11 +47,11 @@ public class GoodsVo {
 		this.goodsName = goodsName;
 	}
 
-	public List<String> getChanelIds() {
-		return chanelIds;
+	public List<String> getChanelId() {
+		return chanelId;
 	}
 
-	public void setChanelIds(List<String> chanelIds) {
-		this.chanelIds = chanelIds;
+	public void setChanelId(List<String> chanelId) {
+		this.chanelId = chanelId;
 	}
 }
