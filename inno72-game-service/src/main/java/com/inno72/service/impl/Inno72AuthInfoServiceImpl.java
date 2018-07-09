@@ -18,6 +18,7 @@ import com.inno72.common.AbstractService;
 import com.inno72.common.Inno72GameServiceProperties;
 import com.inno72.common.Result;
 import com.inno72.common.Results;
+import com.inno72.common.json.JsonUtil;
 import com.inno72.common.util.QrCodeUtil;
 import com.inno72.common.util.UuidUtil;
 import com.inno72.model.Inno72Machine;
@@ -72,7 +73,8 @@ public class Inno72AuthInfoServiceImpl extends AbstractService<Inno72Machine> im
 				}
 				map.put("qrCodeUrl", returnUrl);
 				map.put("sessionUuid", sessionUuid);
-				LOGGER.info("二维码生成成功 - result -> {}", JSON.toJSONString(map).replace("\"", "'"));
+				//LOGGER.info("二维码生成成功 - result -> {}", JSON.toJSONString(map).replace("\"", "'"));
+				LOGGER.info("二维码生成成功 - result -> {}", JsonUtil.toJson(map));
 			} else {
 				LOGGER.info("二维码生成失败");
 			}
