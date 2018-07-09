@@ -1,45 +1,27 @@
 package com.inno72.service.impl;
 
-import java.time.LocalDateTime;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-
-import javax.annotation.Resource;
-
-import org.apache.commons.lang3.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.stereotype.Service;
-
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.inno72.common.Inno72GameServiceProperties;
 import com.inno72.common.Result;
 import com.inno72.common.Results;
 import com.inno72.feign.MachineBackgroundFeignClient;
-import com.inno72.mapper.Inno72GameMapper;
-import com.inno72.mapper.Inno72GameResultGoodsMapper;
-import com.inno72.mapper.Inno72GameUserMapper;
-import com.inno72.mapper.Inno72MachineGameMapper;
-import com.inno72.mapper.Inno72MachineMapper;
-import com.inno72.mapper.Inno72OrderDetailMapper;
-import com.inno72.mapper.Inno72OrderMapper;
-import com.inno72.model.Inno72Game;
-import com.inno72.model.Inno72GameUser;
-import com.inno72.model.Inno72Machine;
-import com.inno72.model.Inno72MachineGame;
-import com.inno72.model.Inno72Order;
-import com.inno72.model.Inno72OrderDetail;
-import com.inno72.model.Inno72SupplyChannel;
+import com.inno72.mapper.*;
+import com.inno72.model.*;
 import com.inno72.plugin.http.HttpClient;
 import com.inno72.redis.IRedisUtil;
 import com.inno72.service.Inno72GameApiService;
 import com.inno72.vo.GoodsVo;
 import com.inno72.vo.MachineApiVo;
 import com.inno72.vo.UserSessionVo;
+import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Service;
+
+import javax.annotation.Resource;
+import java.time.LocalDateTime;
+import java.util.*;
 
 @Service
 public class Inno72GameApiServiceImpl implements Inno72GameApiService {
@@ -127,12 +109,12 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 
 			int goodsNum = goodsVo.getGoodsNum();
 
-			List<String> chanelIds = goodsVo.getChannelId();
+			List<String> chanelIds = goodsVo.getChannelIds();
 
 			if (goodsCount != null && goodsCount > 0) {
 				goodsVo.setGoodsNum(goodsNum += goodsCount);
 				chanelIds.add(code);
-				goodsVo.setChannelId(chanelIds);
+				goodsVo.setChannelIds(chanelIds);
 			}
 
 			goodsVoMap.put(goodsCode, goodsVo);

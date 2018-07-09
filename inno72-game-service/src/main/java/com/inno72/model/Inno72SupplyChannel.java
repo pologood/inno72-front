@@ -193,7 +193,7 @@ public class Inno72SupplyChannel implements Serializable {
 	/**
 	 * 设置机器编号
 	 *
-	 * @param merchantId 机器编号
+	 * @param machineId 机器编号
 	 */
 	public void setMachineId(String machineId) {
 		this.machineId = machineId;
