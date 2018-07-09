@@ -10,7 +10,7 @@ import java.util.HashMap;
 import java.util.Set;
 
 @SuppressWarnings({"unused", "rawtypes", "unchecked"})
-public class JsonUtils {
+public class FastJsonUtils {
 
 	private static final SerializerFeature[] FEATURES = {
 			// 输出空置字段

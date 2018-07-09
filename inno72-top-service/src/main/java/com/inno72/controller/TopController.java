@@ -23,7 +23,7 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.client.RestTemplate;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.inno72.util.JsonUtils;
+import com.inno72.util.FastJsonUtils;
 import com.inno72.vo.UserInfo;
 import com.taobao.api.ApiException;
 
@@ -33,7 +33,7 @@ import org.slf4j.LoggerFactory;
 @RestController
 public class TopController {
 
-	Logger logger = LoggerFactory.getLogger(TopController.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(TopController.class);
 
 	public static final String URL = "https://eco.taobao.com/router/rest";
 	public static final String APPKEY = "24791535";
@@ -55,18 +55,18 @@ public class TopController {
 	@RequestMapping("/api/top/{mid}/{sessionUuid}")
 	public void home(HttpServletRequest request, HttpServletResponse response, @PathVariable("mid") String mid,
 			@PathVariable("sessionUuid") String sessionUuid, String code) throws Exception {
-		logger.info("mid is {}, code is {}, sessionUuid is {}", new String[]{mid, code, sessionUuid});
+		LOGGER.info("mid is {}, code is {}, sessionUuid is {}", new String[]{mid, code, sessionUuid});
 
 		if (!StringUtils.isEmpty(code) && !StringUtils.isEmpty(sessionUuid)) {
 
 			String authInfo = getAuthInfo(code);
-			logger.info("authInfo is {}", authInfo);
+			LOGGER.info("authInfo is {}", authInfo);
 
-			String tokenResult = JsonUtils.getString(authInfo, "token_result");
-			logger.info("tokenResult is {}", tokenResult);
+			String tokenResult = FastJsonUtils.getString(authInfo, "token_result");
+			LOGGER.info("tokenResult is {}", tokenResult);
 
-			String taobaoUserId = JsonUtils.getString(tokenResult, "taobao_user_nick");
-			logger.info("taobaoUserId is {}", taobaoUserId);
+			String taobaoUserId = FastJsonUtils.getString(tokenResult, "taobao_user_nick");
+			LOGGER.info("taobaoUserId is {}", taobaoUserId);
 
 			UserInfo userInfo = new UserInfo();
 			userInfo.setMid(mid);
@@ -82,7 +82,7 @@ public class TopController {
 			// 跳转到游戏页面 手机端redirect
 			response.sendRedirect(h5MobileUrl);
 		} catch (IOException e) {
-			logger.error(e.getMessage(), e);
+			LOGGER.error(e.getMessage(), e);
 		}
 	}
 
@@ -92,7 +92,7 @@ public class TopController {
 	 */
 	@RequestMapping(value = "/api/top/getMaskUserNick", method = RequestMethod.POST)
 	private String getMaskUserNick(String accessToken, String mid, Long sellerId) throws ApiException {
-		logger.info("getMaskUserNick accessToken is {}, mid is {}, sellerId is {}",
+		LOGGER.info("getMaskUserNick accessToken is {}, mid is {}, sellerId is {}",
 				new Object[]{accessToken, mid, sellerId});
 		Validators.checkParamNotNull(accessToken, mid, sellerId);
 
@@ -102,7 +102,7 @@ public class TopController {
 		req.setAppName(APP_NAME);
 		TmallFansAutomachineGetmaskusernickResponse rsp = client.execute(req, accessToken);
 		String result = rsp.getBody();
-		logger.info("getMaskUserNick result is {}", result);
+		LOGGER.info("getMaskUserNick result is {}", result);
 		return result;
 	}
 
@@ -123,9 +123,9 @@ public class TopController {
 		try {
 			HttpEntity<MultiValueMap<String, Object>> requestEntity = new HttpEntity<>(postParameters, headers);
 			result = client.postForObject(gameServerUrl, requestEntity, String.class);
-			logger.info("setUserInfo result is {} ", result);
+			LOGGER.info("setUserInfo result is {} ", result);
 		} catch (Exception e) {
-			logger.error(e.getMessage(), e);
+			LOGGER.error(e.getMessage(), e);
 		}
 	}
 
@@ -136,20 +136,20 @@ public class TopController {
 	@RequestMapping(value = "/api/top/addLog", method = RequestMethod.POST)
 	public String addLog(String accessToken, TmallFansAutomachineOrderAddlogRequest.LogReqrest logReqrest)
 			throws ApiException {
-		logger.info("addLog accessToken is {}", accessToken);
+		LOGGER.info("addLog accessToken is {}", accessToken);
 		Validators.checkParamNotNull(accessToken, logReqrest);
 
 		TmallFansAutomachineOrderAddlogRequest req = new TmallFansAutomachineOrderAddlogRequest();
 		req.setLogRequest(logReqrest);
 		TmallFansAutomachineOrderAddlogResponse rsp = client.execute(req, accessToken);
 		String result = rsp.getBody();
-		logger.info("addLog result is {}", result);
+		LOGGER.info("addLog result is {}", result);
 		return result;
 	}
 
 	@RequestMapping(value = "/api/top/order", method = RequestMethod.POST)
 	public String order(String accessToken, String mid, String activityId, Long goodsId) throws ApiException {
-		logger.info("order accessToken is {}, mid is {}, activityId is {}, goodsId is {}",
+		LOGGER.info("order accessToken is {}, mid is {}, activityId is {}, goodsId is {}",
 				new Object[]{accessToken, mid, activityId, goodsId});
 		Validators.checkParamNotNull(accessToken, mid, activityId, goodsId);
 
@@ -161,7 +161,7 @@ public class TopController {
 		req.setMachineId(mid);
 		TmallFansAutomachineOrderCreateorderbyitemidResponse rsp = client.execute(req, accessToken);
 		String result = rsp.getBody();
-		logger.info("order result is {}", result);
+		LOGGER.info("order result is {}", result);
 		return result;
 	}
 
@@ -171,7 +171,7 @@ public class TopController {
 	 */
 	@RequestMapping(value = "/api/top/order-polling", method = RequestMethod.POST)
 	public String orderPolling(String accessToken, String orderId) throws ApiException {
-		logger.info("orderPolling accessToken is {}, orderId is {}", accessToken, orderId);
+		LOGGER.info("orderPolling accessToken is {}, orderId is {}", accessToken, orderId);
 		Validators.checkParamNotNull(accessToken, orderId);
 
 		TmallFansAutomachineOrderCheckpaystatusRequest req = new TmallFansAutomachineOrderCheckpaystatusRequest();
@@ -179,7 +179,7 @@ public class TopController {
 		TmallFansAutomachineOrderCheckpaystatusResponse rsp = null;
 		rsp = client.execute(req, accessToken);
 		String result = rsp.getBody();
-		logger.info("orderPolling result is {}", result);
+		LOGGER.info("orderPolling result is {}", result);
 		return result;
 	}
 
@@ -190,7 +190,7 @@ public class TopController {
 	@RequestMapping(value = "/api/top/lottory", method = RequestMethod.POST)
 	public String lottory(String accessToken, String interactId, Long shopId, String ua, String umid)
 			throws ApiException {
-		logger.info("lottory accessToken is {}, interactId is {}, shopId is {}, ua is {}, umid is {}", accessToken,
+		LOGGER.info("lottory accessToken is {}, interactId is {}, shopId is {}, ua is {}, umid is {}", accessToken,
 				interactId, shopId, ua, umid);
 		Validators.checkParamNotNull(accessToken, interactId, shopId, ua, umid);
 
@@ -203,7 +203,7 @@ public class TopController {
 		TmallInteractIsvlotteryDrawResponse rsp = null;
 		rsp = client.execute(req, accessToken);
 		String result = rsp.getBody();
-		logger.info("lottory result is {}", result);
+		LOGGER.info("lottory result is {}", result);
 		return result;
 	}
 
@@ -212,7 +212,7 @@ public class TopController {
 	 * http://open.taobao.com/api.htm?spm=a219a.7386797.0.0.ZOlSkP&source=search&docId=25388&docType=2
 	 */
 	public String getAuthInfo(String code) throws ApiException {
-		logger.info("getAuthInfo code is {}", code);
+		LOGGER.info("getAuthInfo code is {}", code);
 		Validators.checkParamNotNull(code);
 
 		TopAuthTokenCreateRequest req = new TopAuthTokenCreateRequest();
@@ -220,7 +220,7 @@ public class TopController {
 		TopAuthTokenCreateResponse rsp;
 		rsp = client.execute(req);
 		String result = rsp.getBody();
-		logger.info("getAuthInfo result is {}", result);
+		LOGGER.info("getAuthInfo result is {}", result);
 		return result;
 	}
 
@@ -230,7 +230,7 @@ public class TopController {
 	 */
 	@RequestMapping(value = "/api/top/deliveryRecord", method = RequestMethod.POST)
 	public String deliveryRecord(String accessToken, String mid, String orderId, String channelId) throws ApiException {
-		logger.info("deliveryRecord accessToken is {}, mid is {}, orderId is {}, channelId is {}",
+		LOGGER.info("deliveryRecord accessToken is {}, mid is {}, orderId is {}, channelId is {}",
 				new String[]{accessToken, mid, orderId, channelId});
 		Validators.checkParamNotNull(accessToken, mid, orderId, channelId);
 
@@ -240,14 +240,14 @@ public class TopController {
 		req.setChannelId(channelId);
 		TmallFansAutomachineDeliveryrecordResponse rsp = client.execute(req, accessToken);
 		String result = rsp.getBody();
-		logger.info("deliveryRecord result is", result);
+		LOGGER.info("deliveryRecord result is", result);
 		return result;
 	}
 
 	@RequestMapping("/api/top/index")
 	public String index(HttpServletRequest request, String test) throws JsonProcessingException {
 		Validators.checkParamNotNull(test);
-		logger.info("index");
+		LOGGER.info("index");
 		return "index";
 	}
 
