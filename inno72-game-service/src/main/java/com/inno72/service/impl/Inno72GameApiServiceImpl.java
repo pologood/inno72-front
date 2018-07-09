@@ -127,12 +127,12 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 
 			int goodsNum = goodsVo.getGoodsNum();
 
-			List<String> chanelIds = goodsVo.getChanelIds();
+			List<String> chanelIds = goodsVo.getChannelId();
 
 			if (goodsCount != null && goodsCount > 0) {
 				goodsVo.setGoodsNum(goodsNum += goodsCount);
 				chanelIds.add(code);
-				goodsVo.setChanelIds(chanelIds);
+				goodsVo.setChannelId(chanelIds);
 			}
 
 			goodsVoMap.put(goodsCode, goodsVo);
