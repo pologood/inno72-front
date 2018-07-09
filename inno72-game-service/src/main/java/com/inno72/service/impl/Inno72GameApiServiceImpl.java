@@ -1,6 +1,7 @@
 package com.inno72.service.impl;
 
 import java.time.LocalDateTime;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -36,6 +37,7 @@ import com.inno72.model.Inno72SupplyChannel;
 import com.inno72.plugin.http.HttpClient;
 import com.inno72.redis.IRedisUtil;
 import com.inno72.service.Inno72GameApiService;
+import com.inno72.vo.GoodsVo;
 import com.inno72.vo.MachineApiVo;
 import com.inno72.vo.UserSessionVo;
 
@@ -71,9 +73,19 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 	@Resource
 	private MachineBackgroundFeignClient machineBackgroundFeignClient;
 
+	
+	
+	/**
+	 * {
+		 goodsId: 1,
+		 goodsNum: 1,
+		 goodsName: '哈啤',
+		 chanelId: [1,2]
+		}
+	 */
 	@SuppressWarnings({ "rawtypes" })
 	@Override
-	public Result<List<Inno72SupplyChannel>> findProduct(MachineApiVo vo) {
+	public Result<Object> findProduct(MachineApiVo vo) {
 
 		Map<String, String> requestParam = new HashMap<>();
 		requestParam.put("machineId", vo.getMachineId());
@@ -95,7 +107,39 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 		if (parseArray == null || parseArray.size() == 0 ) {
 			return Results.failure("没有商品!");
 		}
-		return Results.success(parseArray);
+		
+		Map<String, GoodsVo> goodsVoMap = new HashMap<>();
+		
+		for (Inno72SupplyChannel inno72SupplyChannel : parseArray) {
+			
+			String goodsCode = inno72SupplyChannel.getGoodsCode();
+			String code = inno72SupplyChannel.getCode();
+			Integer goodsCount = inno72SupplyChannel.getGoodsCount();
+			String goodsName2 = inno72SupplyChannel.getGoodsName();
+			
+			GoodsVo goodsVo = goodsVoMap.get(goodsCode);
+			
+			if (goodsVo == null) {
+				goodsVo = new GoodsVo(goodsCode, 0, goodsName2);
+			}
+			
+			int goodsNum = goodsVo.getGoodsNum();
+			
+			List<String> chanelIds = goodsVo.getChanelIds();
+			
+			if (goodsCount != null && goodsCount > 0) {
+				goodsVo.setGoodsNum(goodsNum += goodsCount);
+				chanelIds.add(code);
+				goodsVo.setChanelIds(chanelIds);
+			}
+			
+			goodsVoMap.put(goodsCode, goodsVo);
+			
+		}
+		
+		Collection<GoodsVo> values = goodsVoMap.values();
+		
+		return Results.success(values);
 	}
 	
 	/**
