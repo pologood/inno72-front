@@ -65,17 +65,4 @@ public class Inno72MachineController {
 		return ResultGenerator.genSuccessResult(pageInfo);
 	}
 
-	@RequestMapping(value = "/createQrCode", method = {RequestMethod.POST, RequestMethod.GET})
-	@ResponseBody
-	public Result<Object> createQrCode(@RequestParam String machineId) {
-
-		return inno72MachineService.createQrCode(machineId);
-	}
-
-	@RequestMapping(value = "/polling", method = {RequestMethod.POST, RequestMethod.GET})
-	@ResponseBody
-	public Result<Object> sessionPolling(@RequestParam String sessionUuid) {
-		return inno72MachineService.sessionPolling(sessionUuid);
-	}
-
 }
