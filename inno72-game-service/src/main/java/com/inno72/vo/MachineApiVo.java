@@ -1,8 +1,5 @@
 package com.inno72.vo;
 
-import lombok.Data;
-
-@Data
 public class MachineApiVo {
 
 	/**
@@ -58,5 +55,107 @@ public class MachineApiVo {
 	 */
 	private String interactId;
 
+	public String getGameId() {
+		return gameId;
+	}
 
+	public void setGameId(String gameId) {
+		this.gameId = gameId;
+	}
+
+	public String getMachineId() {
+		return machineId;
+	}
+
+	public void setMachineId(String machineId) {
+		this.machineId = machineId;
+	}
+
+	public String getChannelId() {
+		return channelId;
+	}
+
+	public void setChannelId(String channelId) {
+		this.channelId = channelId;
+	}
+
+	public String getSessionUuid() {
+		return sessionUuid;
+	}
+
+	public void setSessionUuid(String sessionUuid) {
+		this.sessionUuid = sessionUuid;
+	}
+
+	public String getReport() {
+		return report;
+	}
+
+	public void setReport(String report) {
+		this.report = report;
+	}
+
+	public String getUserId() {
+		return userId;
+	}
+
+	public void setUserId(String userId) {
+		this.userId = userId;
+	}
+
+	public String getItemId() {
+		return itemId;
+	}
+
+	public void setItemId(String itemId) {
+		this.itemId = itemId;
+	}
+
+	public String getOrderId() {
+		return orderId;
+	}
+
+	public void setOrderId(String orderId) {
+		this.orderId = orderId;
+	}
+
+	public String getActivityId() {
+		return activityId;
+	}
+
+	public void setActivityId(String activityId) {
+		this.activityId = activityId;
+	}
+
+	public String getShopId() {
+		return shopId;
+	}
+
+	public void setShopId(String shopId) {
+		this.shopId = shopId;
+	}
+
+	public String getUa() {
+		return ua;
+	}
+
+	public void setUa(String ua) {
+		this.ua = ua;
+	}
+
+	public String getUmid() {
+		return umid;
+	}
+
+	public void setUmid(String umid) {
+		this.umid = umid;
+	}
+
+	public String getInteractId() {
+		return interactId;
+	}
+
+	public void setInteractId(String interactId) {
+		this.interactId = interactId;
+	}
 }
