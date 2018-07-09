@@ -1,25 +1,27 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.inno72.mapper.Inno72OrderMapper">
-  <resultMap id="BaseResultMap" type="com.inno72.model.Inno72Order">
-    <!--
-      WARNING - @mbg.generated
-    -->
-    <id column="id" jdbcType="VARCHAR" property="id" />
-    <result column="order_num" jdbcType="VARCHAR" property="orderNum" />
-    <result column="user_id" jdbcType="VARCHAR" property="userId" />
-    <result column="channel_id" jdbcType="VARCHAR" property="channelId" />
-    <result column="machine_id" jdbcType="VARCHAR" property="machineId" />
-    <result column="game_id" jdbcType="VARCHAR" property="gameId" />
-    <result column="order_time" jdbcType="TIMESTAMP" property="orderTime" javaType="java.time.LocalDateTime" typeHandler="org.apache.ibatis.type.LocalDateTimeTypeHandler"/>
-    <result column="order_price" jdbcType="DECIMAL" property="orderPrice" />
-    <result column="order_type" jdbcType="VARCHAR" property="orderType" />
-    <result column="pay_status" jdbcType="VARCHAR" property="payStatus" />
-    <result column="pay_time" jdbcType="TIMESTAMP" property="payTime" javaType="java.time.LocalDateTime" typeHandler="org.apache.ibatis.type.LocalDateTimeTypeHandler"/>
-    <result column="activity_id" jdbcType="VARCHAR" property="activityId" />
-    <result column="ref_order_id" jdbcType="VARCHAR" property="refOrderId" />
-  </resultMap>
-  <select id="selectByRefOrderId" parameterType="java.lang.String" resultMap="BaseResultMap">
+    <resultMap id="BaseResultMap" type="com.inno72.model.Inno72Order">
+        <!--
+          WARNING - @mbg.generated
+        -->
+        <id column="id" jdbcType="VARCHAR" property="id"/>
+        <result column="order_num" jdbcType="VARCHAR" property="orderNum"/>
+        <result column="user_id" jdbcType="VARCHAR" property="userId"/>
+        <result column="channel_id" jdbcType="VARCHAR" property="channelId"/>
+        <result column="machine_id" jdbcType="VARCHAR" property="machineId"/>
+        <result column="game_id" jdbcType="VARCHAR" property="gameId"/>
+        <result column="order_time" jdbcType="TIMESTAMP" property="orderTime" javaType="java.time.LocalDateTime"
+                typeHandler="org.apache.ibatis.type.LocalDateTimeTypeHandler"/>
+        <result column="order_price" jdbcType="DECIMAL" property="orderPrice"/>
+        <result column="order_type" jdbcType="VARCHAR" property="orderType"/>
+        <result column="pay_status" jdbcType="VARCHAR" property="payStatus"/>
+        <result column="pay_time" jdbcType="TIMESTAMP" property="payTime" javaType="java.time.LocalDateTime"
+                typeHandler="org.apache.ibatis.type.LocalDateTimeTypeHandler"/>
+        <result column="activity_id" jdbcType="VARCHAR" property="activityId"/>
+        <result column="ref_order_id" jdbcType="VARCHAR" property="refOrderId"/>
+    </resultMap>
+    <select id="selectByRefOrderId" parameterType="java.lang.String" resultMap="BaseResultMap">
   	select * from inno72_order where ref_order_id = #{orderId}
   </select>
 </mapper>

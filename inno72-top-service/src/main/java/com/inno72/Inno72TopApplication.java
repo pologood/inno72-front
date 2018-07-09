@@ -9,10 +9,10 @@ import org.springframework.context.annotation.ComponentScan;
 @ComponentScan
 public class Inno72TopApplication extends SpringBootServletInitializer {
 
-    @Override
-    protected SpringApplicationBuilder configure(SpringApplicationBuilder builder) {
-        // 设置启动类,用于独立tomcat运行的入口
-        return builder.sources(Inno72TopApplication.class);
-    }
+	@Override
+	protected SpringApplicationBuilder configure(SpringApplicationBuilder builder) {
+		// 设置启动类,用于独立tomcat运行的入口
+		return builder.sources(Inno72TopApplication.class);
+	}
 
 }

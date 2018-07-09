@@ -17,7 +17,7 @@ import com.inno72.service.Inno72GameService;
 @Service
 @Transactional
 public class Inno72GameServiceImpl extends AbstractService<Inno72Game> implements Inno72GameService {
-    @Resource
-    private Inno72GameMapper inno72GameMapper;
+	@Resource
+	private Inno72GameMapper inno72GameMapper;
 
 }

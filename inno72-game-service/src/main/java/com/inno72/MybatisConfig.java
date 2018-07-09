@@ -88,15 +88,17 @@ public class MybatisConfig {
 		//配置通用Mapper，详情请查阅官方文档
 		Properties properties = new Properties();
 		properties.setProperty("mappers", "tk.mybatis.mapper.common.Mapper");
-		properties.setProperty("notEmpty", "false");//insert、update是否判断字符串类型!='' 即 test="str != null"表达式内是否追加 and str != ''
+		properties.setProperty("notEmpty",
+				"false");//insert、update是否判断字符串类型!='' 即 test="str != null"表达式内是否追加 and str != ''
 		properties.setProperty("IDENTITY", "MYSQL");
 		properties.setProperty("notEmpty", "false");
 		//主键UUID回写方法执行顺序,默认AFTER,可选值为(BEFORE|AFTER)
-		properties.setProperty("ORDER","BEFORE");
+		properties.setProperty("ORDER", "BEFORE");
 		mapperScannerConfigurer.setProperties(properties);
 
 		return mapperScannerConfigurer;
 	}
+
 	@Bean
 	public SqlSessionTemplate sqlSessionTemplate(SqlSessionFactory sqlSessionFactory) {
 		return new SqlSessionTemplate(sqlSessionFactory);

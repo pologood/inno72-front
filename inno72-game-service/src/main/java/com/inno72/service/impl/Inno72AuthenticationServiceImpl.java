@@ -24,25 +24,26 @@ import com.inno72.service.Inno72AuthenticationService;
  */
 @Service
 @Transactional
-public class Inno72AuthenticationServiceImpl extends AbstractService<Inno72Authentication> implements Inno72AuthenticationService {
+public class Inno72AuthenticationServiceImpl extends AbstractService<Inno72Authentication>
+		implements Inno72AuthenticationService {
 	private static final Logger LOGGER = LoggerFactory.getLogger(Inno72AuthenticationServiceImpl.class);
-    @Resource
-    private Inno72AuthenticationMapper inno72AuthenticationMapper;
-    
+	@Resource
+	private Inno72AuthenticationMapper inno72AuthenticationMapper;
+
 
 	@Override
-	public Result<Object> login(String username,String password) {
+	public Result<Object> login(String username, String password) {
 		LOGGER.info("根据用户名和用户密码验证登陆", username);
 		Inno72Authentication inno72Authentication = getUser(username);
-		
+
 		JSONObject jsonObject = new JSONObject();
 		if (inno72Authentication.getuPassword().equals(password)) {
-            jsonObject.put("result", "Login success");
-            jsonObject.put("Authorization", JWTUtil.sign(username, password));
-            jsonObject.put("isLogin", true);
-        } else {
-            throw new UnauthorizedException();
-        }
+			jsonObject.put("result", "Login success");
+			jsonObject.put("Authorization", JWTUtil.sign(username, password));
+			jsonObject.put("isLogin", true);
+		} else {
+			throw new UnauthorizedException();
+		}
 		LOGGER.info("验证完成 - result -> {}", JSON.toJSONString(jsonObject));
 		return Results.success(jsonObject);
 	}
@@ -51,7 +52,7 @@ public class Inno72AuthenticationServiceImpl extends AbstractService<Inno72Authe
 	public Inno72Authentication getUser(String username) {
 		LOGGER.info("根据用户名获取用户", username);
 		Inno72Authentication inno72Authentication = inno72AuthenticationMapper.selectByUsername(username);
-		
+
 		LOGGER.info("获取完成 - result -> {}", JSON.toJSONString(inno72Authentication));
 		return inno72Authentication;
 	}

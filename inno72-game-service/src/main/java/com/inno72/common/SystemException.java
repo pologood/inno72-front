@@ -9,23 +9,23 @@ import org.slf4j.LoggerFactory;
 
 /**
  * SystemException继承了java.lang.RuntimeException，标志着该类并非强制后续开发人员来处理的异常
- * 
+ *
  * System更多的意味着框架的概念，而非传统的业务逻辑概念，所以本类更多是面向框架角度来封装异常行为
- * 
- * 
+ *
+ *
  * 类设计的初衷是为了满足以下两点需求： 与Struts的ActionMessage能够方便的整合
- * 
+ *
  * 能够全面的保留系统产生异常的所有信息，以便用户调试程序
- * 
+ *
  * 故此，我们在类中引入了两个常用的实例变量：
- * 
+ *
  * ActionMessage actionError Throwable throwable
- * 
- * 
+ *
+ *
  */
 public class SystemException extends RuntimeException {
 	/**
-	 * 
+	 *
 	 */
 	private static final long serialVersionUID = -4175077003917831650L;
 	private static Logger log = LoggerFactory.getLogger(SystemException.class);
@@ -49,7 +49,7 @@ public class SystemException extends RuntimeException {
 
 	/**
 	 * 为抛出的错误信息中传入参数
-	 * 
+	 *
 	 * @param msgId
 	 *            参数ID
 	 * @param obj
@@ -72,7 +72,7 @@ public class SystemException extends RuntimeException {
 
 	/**
 	 * 为抛出的错误信息中传入参数
-	 * 
+	 *
 	 * @Create_by:yinsy
 	 * @Create_date:2013-8-16
 	 * @param msgId
@@ -94,8 +94,8 @@ public class SystemException extends RuntimeException {
 
 	/**
 	 * 构造函数
-	 * 
-	 * 
+	 *
+	 *
 	 * @param msgId
 	 *            String 资源文件中的信息编号
 	 * @throws Exception
@@ -109,14 +109,14 @@ public class SystemException extends RuntimeException {
 
 	/**
 	 * 构造函数
-	 * 
-	 * 
+	 *
+	 *
 	 * @param msgId
 	 *            String 资源文件中的信息编号
 	 * @param arguments
 	 *            Object[] 资源文件中的信息所需的额外参数
 	 * @throws Exception
-	 * 
+	 *
 	 */
 	public SystemException(String msgId, Object arguments[]) {
 		// 调用父类的构造函数
@@ -126,13 +126,13 @@ public class SystemException extends RuntimeException {
 
 	/**
 	 * 构造函数
-	 * 
-	 * 
+	 *
+	 *
 	 * @param msgId
 	 *            String 资源文件中的信息编号
 	 * @param throwable
 	 *            Throwable 抛出的异常信息
-	 * 
+	 *
 	 */
 	public SystemException(String msgId, Throwable throwable) {
 		// 调用父类的构造函数
@@ -144,18 +144,18 @@ public class SystemException extends RuntimeException {
 
 	/**
 	 * 构造函数
-	 * 
+	 *
 	 * 根据输入参数，初始化类实例变量
-	 * 
-	 * 
+	 *
+	 *
 	 * @param msgId
 	 *            String 资源文件中的信息编号
 	 * @param arguments
 	 *            Object[] 资源文件中的信息所需的额外参数
-	 * 
+	 *
 	 * @param throwable
 	 *            Throwable 抛出的异常信息
-	 * 
+	 *
 	 */
 	public SystemException(String msgId, Object arguments[], Throwable throwable) {
 		super(makeError(msgId, arguments));
@@ -166,7 +166,7 @@ public class SystemException extends RuntimeException {
 
 	/**
 	 * 返回异常对象
-	 * 
+	 *
 	 * @return Throwable 异常对象
 	 */
 	public Throwable getThrowable() {
@@ -175,7 +175,7 @@ public class SystemException extends RuntimeException {
 
 	/**
 	 * 设置异常对象
-	 * 
+	 *
 	 * @param throwable
 	 *            Throwable 异常对象
 	 */

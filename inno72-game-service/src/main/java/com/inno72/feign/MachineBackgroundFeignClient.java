@@ -10,7 +10,7 @@ import com.inno72.model.Inno72SupplyChannel;
 @FeignClient(value = "machine-backend", url = "http://172.16.19.218:8880")
 @SuppressWarnings("rawtypes")
 public interface MachineBackgroundFeignClient {
-	
+
 	@RequestMapping(value = "/machine/channel/out/subCount", method = RequestMethod.POST)
 	Result subCount(Inno72SupplyChannel supplyChannel);
 

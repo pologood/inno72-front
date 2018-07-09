@@ -21,9 +21,9 @@ import com.inno72.service.Inno72UserService;
 @Transactional
 public class Inno72UserServiceImpl extends AbstractService<Inno72User> implements Inno72UserService {
 	private static final Logger LOGGER = LoggerFactory.getLogger(Inno72UserServiceImpl.class);
-    @Resource
-    private Inno72UserMapper inno72UserMapper;
-    
+	@Resource
+	private Inno72UserMapper inno72UserMapper;
+
 
 	@Override
 	public Inno72User getUser(String username) {
@@ -33,6 +33,5 @@ public class Inno72UserServiceImpl extends AbstractService<Inno72User> implement
 		return user;
 	}
 
-	
 
 }

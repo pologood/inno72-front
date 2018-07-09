@@ -118,7 +118,7 @@
 		</dependency>
 
 	</dependencies>
-	
+
 	<build>
 		<plugins>
 			<!-- war包插件 -->
@@ -128,7 +128,7 @@
 			</plugin>
 		</plugins>
 	</build>
-	
+
 	<modules>
 		<module>inno72-game-service</module>
 		<module>inno72-top-service</module>

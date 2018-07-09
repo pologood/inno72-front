@@ -10,28 +10,29 @@ import org.springframework.context.ApplicationContextAware;
 public class ApplicationContextHandle implements ApplicationContextAware {
 
 
-    private static ApplicationContext applicationContext;
+	private static ApplicationContext applicationContext;
 
-    @Override
-    public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
-    	ApplicationContextHandle.applicationContext = applicationContext;
-    }
-    
-    /** 
-     * @return ApplicationContext 
-     */  
-    public static ApplicationContext getApplicationContext() {
-        return applicationContext;  
-    }  
-    /** 
-     * 获取对象 
-     *  
-     * @param name 
-     * @return Object
-     * @throws BeansException
-     */  
-    public static Object getBean(String name) throws BeansException {
-        return applicationContext.getBean(name);  
-    }  
+	@Override
+	public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
+		ApplicationContextHandle.applicationContext = applicationContext;
+	}
+
+	/**
+	 * @return ApplicationContext
+	 */
+	public static ApplicationContext getApplicationContext() {
+		return applicationContext;
+	}
+
+	/**
+	 * 获取对象
+	 *
+	 * @param name
+	 * @return Object
+	 * @throws BeansException
+	 */
+	public static Object getBean(String name) throws BeansException {
+		return applicationContext.getBean(name);
+	}
 
 }

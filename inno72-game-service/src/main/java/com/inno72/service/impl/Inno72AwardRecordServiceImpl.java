@@ -16,8 +16,9 @@ import com.inno72.service.Inno72AwardRecordService;
  */
 @Service
 @Transactional
-public class Inno72AwardRecordServiceImpl extends AbstractService<Inno72AwardRecord> implements Inno72AwardRecordService {
-    @Resource
-    private Inno72AwardRecordMapper inno72AwardRecordMapper;
+public class Inno72AwardRecordServiceImpl extends AbstractService<Inno72AwardRecord>
+		implements Inno72AwardRecordService {
+	@Resource
+	private Inno72AwardRecordMapper inno72AwardRecordMapper;
 
 }

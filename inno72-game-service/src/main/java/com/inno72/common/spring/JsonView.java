@@ -18,12 +18,12 @@ public class JsonView extends MappingJackson2JsonView {
 
 		Map.Entry entry;
 		do {
-			if(!var2.hasNext()) {
+			if (!var2.hasNext()) {
 				return super.filterModel(model);
 			}
 
-			entry = (Map.Entry)var2.next();
-		} while(!entry.getValue().getClass().getName().equals(Result.class.getName()));
+			entry = (Map.Entry) var2.next();
+		} while (!entry.getValue().getClass().getName().equals(Result.class.getName()));
 
 		return entry.getValue();
 	}

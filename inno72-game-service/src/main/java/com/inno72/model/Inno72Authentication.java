@@ -8,22 +8,22 @@ import javax.persistence.Table;
 
 @Table(name = "inno72_authentication")
 public class Inno72Authentication {
-    @Id
-    @Column(name = "id")
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private String id;
+	@Id
+	@Column(name = "id")
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	private String id;
 
-    /**
-     * 用户名
-     */
-    @Column(name = "uName")
-    private String uName;
+	/**
+	 * 用户名
+	 */
+	@Column(name = "uName")
+	private String uName;
 
-    /**
-     * 用户密码
-     */
-    @Column(name = "uPassword")
-    private String uPassword;
+	/**
+	 * 用户密码
+	 */
+	@Column(name = "uPassword")
+	private String uPassword;
 
 	public String getId() {
 		return id;

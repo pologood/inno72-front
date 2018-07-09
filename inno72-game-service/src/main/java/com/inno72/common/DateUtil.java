@@ -1,8 +1,8 @@
-/**   
- * @Title: DateUtil.java 
- * @Package com.myapp.security.util 
- * @Description: 
- * @author wulei   
+/**
+ * @Title: DateUtil.java
+ * @Package com.myapp.security.util
+ * @Description:
+ * @author wulei
  * @date 2011-8-31 下午08:39:37  
  */
 package com.inno72.common;
@@ -50,8 +50,8 @@ public class DateUtil {
 		return simpleDateFormat.format(date);
 	}
 
-	public static String nowStr(){
-		return toTimeStr(LocalDateTime.now(),DF_FULL_S1);
+	public static String nowStr() {
+		return toTimeStr(LocalDateTime.now(), DF_FULL_S1);
 	}
 
 }

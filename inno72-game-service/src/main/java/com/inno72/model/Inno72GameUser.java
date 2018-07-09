@@ -15,165 +15,165 @@ import com.inno72.common.LocalDateConverter;
 
 @Table(name = "inno72_game_user")
 public class Inno72GameUser {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY,generator = "select uuid()")
-    private String id;
+	@Id
+	@GeneratedValue(strategy = GenerationType.IDENTITY, generator = "select uuid()")
+	private String id;
 
-    @Column(name = "user_nick")
-    private String userNick;
+	@Column(name = "user_nick")
+	private String userNick;
 
-    private String phone;
+	private String phone;
 
-    /**
-     * 来源（1000:淘宝....）
-     */
-    private String channel;
+	/**
+	 * 来源（1000:淘宝....）
+	 */
+	private String channel;
 
-    @Column(name = "channel_user_key")
-    private String channelUserKey;
+	@Column(name = "channel_user_key")
+	private String channelUserKey;
 
-    @Column(name = "create_time")
-    @JsonSerialize(using = CustomLocalDateTimeSerializer.class)
+	@Column(name = "create_time")
+	@JsonSerialize(using = CustomLocalDateTimeSerializer.class)
 	@Convert(converter = LocalDateConverter.class)
-    private LocalDateTime createTime;
+	private LocalDateTime createTime;
 
-    @Column(name = "update_time")
-    @JsonSerialize(using = CustomLocalDateTimeSerializer.class)
+	@Column(name = "update_time")
+	@JsonSerialize(using = CustomLocalDateTimeSerializer.class)
 	@Convert(converter = LocalDateConverter.class)
-    private LocalDateTime updateTime;
+	private LocalDateTime updateTime;
 
-    private String operator;
+	private String operator;
 
-    @Column(name = "operator_id")
-    private String operatorId;
+	@Column(name = "operator_id")
+	private String operatorId;
 
-    /**
-     * @return id
-     */
-    public String getId() {
-        return id;
-    }
+	/**
+	 * @return id
+	 */
+	public String getId() {
+		return id;
+	}
 
-    /**
-     * @param id
-     */
-    public void setId(String id) {
-        this.id = id;
-    }
+	/**
+	 * @param id
+	 */
+	public void setId(String id) {
+		this.id = id;
+	}
 
-    /**
-     * @return user_nick
-     */
-    public String getUserNick() {
-        return userNick;
-    }
+	/**
+	 * @return user_nick
+	 */
+	public String getUserNick() {
+		return userNick;
+	}
 
-    /**
-     * @param userNick
-     */
-    public void setUserNick(String userNick) {
-        this.userNick = userNick;
-    }
+	/**
+	 * @param userNick
+	 */
+	public void setUserNick(String userNick) {
+		this.userNick = userNick;
+	}
 
-    /**
-     * @return phone
-     */
-    public String getPhone() {
-        return phone;
-    }
+	/**
+	 * @return phone
+	 */
+	public String getPhone() {
+		return phone;
+	}
 
-    /**
-     * @param phone
-     */
-    public void setPhone(String phone) {
-        this.phone = phone;
-    }
+	/**
+	 * @param phone
+	 */
+	public void setPhone(String phone) {
+		this.phone = phone;
+	}
 
-    /**
-     * 获取来源（1000:淘宝....）
-     *
-     * @return channel - 来源（1000:淘宝....）
-     */
-    public String getChannel() {
-        return channel;
-    }
+	/**
+	 * 获取来源（1000:淘宝....）
+	 *
+	 * @return channel - 来源（1000:淘宝....）
+	 */
+	public String getChannel() {
+		return channel;
+	}
 
-    /**
-     * 设置来源（1000:淘宝....）
-     *
-     * @param channel 来源（1000:淘宝....）
-     */
-    public void setChannel(String channel) {
-        this.channel = channel;
-    }
+	/**
+	 * 设置来源（1000:淘宝....）
+	 *
+	 * @param channel 来源（1000:淘宝....）
+	 */
+	public void setChannel(String channel) {
+		this.channel = channel;
+	}
 
-    /**
-     * @return channel_user_key
-     */
-    public String getChannelUserKey() {
-        return channelUserKey;
-    }
+	/**
+	 * @return channel_user_key
+	 */
+	public String getChannelUserKey() {
+		return channelUserKey;
+	}
 
-    /**
-     * @param channelUserKey
-     */
-    public void setChannelUserKey(String channelUserKey) {
-        this.channelUserKey = channelUserKey;
-    }
+	/**
+	 * @param channelUserKey
+	 */
+	public void setChannelUserKey(String channelUserKey) {
+		this.channelUserKey = channelUserKey;
+	}
 
-    /**
-     * @return create_time
-     */
-    public LocalDateTime getCreateTime() {
-        return createTime;
-    }
+	/**
+	 * @return create_time
+	 */
+	public LocalDateTime getCreateTime() {
+		return createTime;
+	}
 
-    /**
-     * @param createTime
-     */
-    public void setCreateTime(LocalDateTime createTime) {
-        this.createTime = createTime;
-    }
+	/**
+	 * @param createTime
+	 */
+	public void setCreateTime(LocalDateTime createTime) {
+		this.createTime = createTime;
+	}
 
-    /**
-     * @return update_time
-     */
-    public LocalDateTime getUpdateTime() {
-        return updateTime;
-    }
+	/**
+	 * @return update_time
+	 */
+	public LocalDateTime getUpdateTime() {
+		return updateTime;
+	}
 
-    /**
-     * @param updateTime
-     */
-    public void setUpdateTime(LocalDateTime updateTime) {
-        this.updateTime = updateTime;
-    }
+	/**
+	 * @param updateTime
+	 */
+	public void setUpdateTime(LocalDateTime updateTime) {
+		this.updateTime = updateTime;
+	}
 
-    /**
-     * @return operator
-     */
-    public String getOperator() {
-        return operator;
-    }
+	/**
+	 * @return operator
+	 */
+	public String getOperator() {
+		return operator;
+	}
 
-    /**
-     * @param operator
-     */
-    public void setOperator(String operator) {
-        this.operator = operator;
-    }
+	/**
+	 * @param operator
+	 */
+	public void setOperator(String operator) {
+		this.operator = operator;
+	}
 
-    /**
-     * @return operator_id
-     */
-    public String getOperatorId() {
-        return operatorId;
-    }
+	/**
+	 * @return operator_id
+	 */
+	public String getOperatorId() {
+		return operatorId;
+	}
 
-    /**
-     * @param operatorId
-     */
-    public void setOperatorId(String operatorId) {
-        this.operatorId = operatorId;
-    }
+	/**
+	 * @param operatorId
+	 */
+	public void setOperatorId(String operatorId) {
+		this.operatorId = operatorId;
+	}
 }

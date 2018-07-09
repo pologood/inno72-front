@@ -9,7 +9,7 @@ import org.apache.commons.lang3.StringUtils;
 
 /**
  * 字符串处理工具类
- * 
+ *
  * @Project : maxtp.framelib
  * @Program Name: com.framelib.utils.StringUtil.java
  * @ClassName : StringUtil
@@ -19,7 +19,7 @@ import org.apache.commons.lang3.StringUtils;
 public class StringUtil extends StringUtils {
 	/**
 	 * 将传入字符中的指定位置字符替换为新的字符 newChar
-	 * 
+	 *
 	 * @Method_Name : replace
 	 * @param str
 	 *            原字符串
@@ -61,7 +61,7 @@ public class StringUtil extends StringUtils {
 
 	/**
 	 * 把手机号码的第3位到第8位替换成*
-	 * 
+	 *
 	 * @Method_Name : replacePhone
 	 * @param mobile
 	 * @return
@@ -78,7 +78,7 @@ public class StringUtil extends StringUtils {
 
 	/**
 	 * 将身份证号码的第4位到第16位替换成* ，身份证号必须18位
-	 * 
+	 *
 	 * @Method_Name : replaceIdCard
 	 * @param idCard
 	 * @return
@@ -95,7 +95,7 @@ public class StringUtil extends StringUtils {
 
 	/**
 	 * 将邮箱@之前的字符串首尾之间的字符替换为*，如536455458@qq.com 替换后为 5*****8@qq.com
-	 * 
+	 *
 	 * @Method_Name : replaceEamil
 	 * @param email
 	 * @return
@@ -121,7 +121,7 @@ public class StringUtil extends StringUtils {
 
 	/**
 	 * 字符串为空
-	 * 
+	 *
 	 * @Create_by:yinsy
 	 * @Create_date:2014-4-29
 	 * @param src
@@ -140,7 +140,7 @@ public class StringUtil extends StringUtils {
 
 	/**
 	 * 字符串不为空
-	 * 
+	 *
 	 * @Create_by:yinsy
 	 * @Create_date:2014-4-29
 	 * @param src
@@ -159,7 +159,7 @@ public class StringUtil extends StringUtils {
 
 	/**
 	 * 数组转换成字符串 “,”号隔开
-	 * 
+	 *
 	 * @Create_by:yinsy
 	 * @Create_date:2014-4-29
 	 * @param str
@@ -180,7 +180,7 @@ public class StringUtil extends StringUtils {
 
 	/**
 	 * 逗号隔开的数字字符串，转成long类型集合
-	 * 
+	 *
 	 * @Method_Name : String2LongList
 	 * @param str
 	 * @return
@@ -210,7 +210,7 @@ public class StringUtil extends StringUtils {
 
 	/**
 	 * UUID
-	 * 
+	 *
 	 * @Create_by: Houkemian
 	 * @Create_date:2016年11月15日
 	 * @param
@@ -221,10 +221,10 @@ public class StringUtil extends StringUtils {
 	public static String uuid() {
 		return UUID.randomUUID().toString().replaceAll("-", "");
 	}
-	
+
 	/**
 	 * 加密医生推荐医生id
-	 * 
+	 *
 	 * @Create_by:lizh
 	 * @Create_date:2017年2月9日下午4:35:55
 	 * @param doctorId
@@ -235,7 +235,7 @@ public class StringUtil extends StringUtils {
 	 */
 	public static String encryDoctorRecomeDoctorId(String doctorId) {
 		if (!StringUtil.isBlank(doctorId)) {
-			if (doctorId.length() <= 3){
+			if (doctorId.length() <= 3) {
 
 				if (doctorId.length() == 1) {
 					doctorId = "00" + doctorId;
@@ -258,27 +258,27 @@ public class StringUtil extends StringUtils {
 					return null;
 				}
 				return sb.toString();
-			}else if(doctorId.length() == 4){
-				
-				String substring4_1 = doctorId.substring(0,1);
-				String substring6_2 = doctorId.substring(1,2);
-				String substring1_3 = doctorId.substring(2,3);
-				String substring3_4 = doctorId.substring(3,4);
-				
+			} else if (doctorId.length() == 4) {
+
+				String substring4_1 = doctorId.substring(0, 1);
+				String substring6_2 = doctorId.substring(1, 2);
+				String substring1_3 = doctorId.substring(2, 3);
+				String substring3_4 = doctorId.substring(3, 4);
+
 				String substring2 = "2";
 				String substring5 = "9";
-				
-				return substring1_3+substring2+substring3_4+substring4_1+substring5+substring6_2;
-				
+
+				return substring1_3 + substring2 + substring3_4 + substring4_1 + substring5 + substring6_2;
+
 			}
 		}
 		return null;
 	}
-	
+
 
 	/**
 	 * 解密医生推荐医生id
-	 * 
+	 *
 	 * @Create_by:lizh
 	 * @Create_date:2017年2月9日下午4:36:19
 	 * @param doctorId
@@ -296,12 +296,12 @@ public class StringUtil extends StringUtils {
 				int a4 = Integer.parseInt(doctorId.substring(3, 4));
 				int a5 = Integer.parseInt(doctorId.substring(4, 5));
 				int a6 = Integer.parseInt(doctorId.substring(5, 6));
-				
+
 				StringBuffer sb = new StringBuffer();
-				if (a2 == 2 && a5 == 9){
+				if (a2 == 2 && a5 == 9) {
 					return sb.append(a4).append(a6).append(a1).append(a3).toString();
 				}
-				
+
 
 				int s1 = a3 - a4;
 				int s2 = a1 - a6;

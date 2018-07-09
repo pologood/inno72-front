@@ -189,8 +189,7 @@ public class DateUtil extends DateUtils {
 		gcLast.setTime(theDate);
 		gcLast.set(Calendar.DAY_OF_MONTH, 1);
 		String dayFirstMonth = format(gcLast.getTime());
-		StringBuffer str = new StringBuffer().append(dayFirstMonth).append(
-				" 00:00:00");
+		StringBuffer str = new StringBuffer().append(dayFirstMonth).append(" 00:00:00");
 		return parse(str.toString(), "yyyy-MM-dd HH:mm:ss");
 	}
 
@@ -204,8 +203,7 @@ public class DateUtil extends DateUtils {
 		cal.set(Calendar.DATE, 1);
 		cal.add(Calendar.DATE, -1);
 		String dayEndMonth = format(cal.getTime());
-		StringBuffer str = new StringBuffer().append(dayEndMonth).append(
-				" 23:59:59");
+		StringBuffer str = new StringBuffer().append(dayEndMonth).append(" 23:59:59");
 		return parse(str.toString(), "yyyy-MM-dd HH:mm:ss");
 	}
 
@@ -445,11 +443,11 @@ public class DateUtil extends DateUtils {
 	 * @Edit_Description:
 	 * @Create_Version:maxtp.framelib 1.0
 	 */
-	public static Date getGMTDate(Date date,String pattern){
+	public static Date getGMTDate(Date date, String pattern) {
 		SimpleDateFormat format = new SimpleDateFormat(pattern);
 		format.setTimeZone(TimeZone.getTimeZone("GMT"));
 		String time = format.format(date);
-		return DateUtil.parse(time,pattern);
+		return DateUtil.parse(time, pattern);
 	}
 
 	/**
@@ -458,17 +456,17 @@ public class DateUtil extends DateUtils {
 	 * @Create_date:2016年1月20日
 	 * @return
 	 * @Last_Edit_By:
-	 * @Edit_Description: 
+	 * @Edit_Description:
 	 * @Create_Version:gblw-framelib 1.0
-	 */ 
-	public static Date getMondayOfWeek(){
+	 */
+	public static Date getMondayOfWeek() {
 		Calendar c = Calendar.getInstance();
 		int day_of_week = c.get(Calendar.DAY_OF_WEEK) - 1;
-		if (day_of_week == 0){
+		if (day_of_week == 0) {
 			day_of_week = 7;
 		}
 		c.add(Calendar.DATE, -day_of_week + 1);
-		return DateUtil.parse(format(c.getTime()),datePatternShort);
+		return DateUtil.parse(format(c.getTime()), datePatternShort);
 	}
 
 	/**
@@ -483,11 +481,11 @@ public class DateUtil extends DateUtils {
 	public static Date getSundayOfWeek() {
 		Calendar c = Calendar.getInstance();
 		int day_of_week = c.get(Calendar.DAY_OF_WEEK) - 1;
-		if (day_of_week == 0){
+		if (day_of_week == 0) {
 			day_of_week = 7;
 		}
 		c.add(Calendar.DATE, -day_of_week + 7);
-		return DateUtil.parse(format(c.getTime()),datePatternShort);
+		return DateUtil.parse(format(c.getTime()), datePatternShort);
 	}
 
 	public static String getDatePattern() {
@@ -509,7 +507,7 @@ public class DateUtil extends DateUtils {
 	 * @Edit_Description:
 	 * @Create_Version:gblw-framelib 1.0
 	 */
-	public static boolean afterDate(Date date1,Date date2){
+	public static boolean afterDate(Date date1, Date date2) {
 		Calendar c1 = Calendar.getInstance();
 		Calendar c2 = Calendar.getInstance();
 		c1.setTime(date1);
@@ -533,7 +531,7 @@ public class DateUtil extends DateUtils {
 	 * @Edit_Description:
 	 * @Create_Version:gblw-framelib 1.0
 	 */
-	public static boolean beforeDate(Date date1,Date date2){
+	public static boolean beforeDate(Date date1, Date date2) {
 		Calendar c1 = Calendar.getInstance();
 		Calendar c2 = Calendar.getInstance();
 		c1.setTime(date1);
@@ -550,7 +548,7 @@ public class DateUtil extends DateUtils {
 	 * 根据身份证号获取年龄
 	 *  @Method_Name    : getAgeByIdCard
 	 *  @param idCard
-	 *  @return 
+	 *  @return
 	 *  @return         : int
 	 *  @Creation Date  : 2014年6月19日 上午11:52:36
 	 *  @version        : v1.00
@@ -558,46 +556,51 @@ public class DateUtil extends DateUtils {
 	 *  @Update Date    : 
 	 *  @Update Author  :
 	 */
-	public static int getAgeByIdCard(String idCard){
+	public static int getAgeByIdCard(String idCard) {
 
-		int age =0;
-		String birth=idCard.substring(6, 10);
-		int birthday=Integer.parseInt(birth);
-		int year=0;
-		year=Integer.parseInt(format(new Date(), "yyyy"));
-		age=year-birthday;
+		int age = 0;
+		String birth = idCard.substring(6, 10);
+		int birthday = Integer.parseInt(birth);
+		int year = 0;
+		year = Integer.parseInt(format(new Date(), "yyyy"));
+		age = year - birthday;
 		return age;
 	}
 
-	public static String getHourAndMinute(Date date){
+	public static String getHourAndMinute(Date date) {
 		String hour = format(date, "HH");
-		String minute = format(date,"mm");
-		String hourAndMinute = hour+"点"+minute+"分";
+		String minute = format(date, "mm");
+		String hourAndMinute = hour + "点" + minute + "分";
 		return hourAndMinute;
 	}
 
 	//获取当天
-	public static LocalDate getTodayLocalDate() {  
+	public static LocalDate getTodayLocalDate() {
 		return LocalDate.now();
-	}  
+	}
+
 	//获取当天
-	public static String getTodayLocalDateTimeStr() {  
+	public static String getTodayLocalDateTimeStr() {
 		return LocalDateTime.now().format(DF_ONLY_YMDHMS_S2);
-	}  
+	}
+
 	//获取 分钟的加减结果
-	public static String getLocalDateTimePlusMinutes(int time){
+	public static String getLocalDateTimePlusMinutes(int time) {
 		return LocalDateTime.now().plusMinutes(time).format(DF_ONLY_YMDHMS_S2);
 	}
+
 	//获取以当前时间为标准的 计算Time时间前后的时间str
-	public static String getLocalDateTimePlusSeconds(int time){
+	public static String getLocalDateTimePlusSeconds(int time) {
 		return LocalDateTime.now().plusSeconds(time).format(DF_ONLY_YMDHMS_S2);
 	}
+
 	//获取昨天
-	public static LocalDate getYesterdayLocalDate() {  
-		return  getTodayLocalDate().minusDays(1);
-	}  
+	public static LocalDate getYesterdayLocalDate() {
+		return getTodayLocalDate().minusDays(1);
+	}
+
 	//获取明天
-	public static LocalDate getTomorrowLocalDate() {  
-		return getTodayLocalDate().plusDays(1);  
-	} 
+	public static LocalDate getTomorrowLocalDate() {
+		return getTodayLocalDate().plusDays(1);
+	}
 }
