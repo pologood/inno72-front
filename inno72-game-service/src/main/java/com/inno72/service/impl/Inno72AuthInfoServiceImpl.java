@@ -6,6 +6,7 @@ import java.util.Map;
 
 import javax.annotation.Resource;
 
+import com.inno72.common.utils.StringUtil;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -48,7 +49,7 @@ public class Inno72AuthInfoServiceImpl extends AbstractService<Inno72Machine> im
 		// 调用天猫的地址
 		String url = inno72GameServiceProperties.get("tmallUrl")+ machineId + "/" + sessionUuid;
 		// 二维码存储在本地的路径
-		String localUrl = machineId + com.inno72.common.util.StringUtil.uuid() + ".png";
+		String localUrl = machineId + StringUtil.uuid() + ".png";
 		// 存储在阿里云上的文件名
 		String objectName = "qrcode/" + localUrl;
 		// 提供给前端用来调用二维码的地址
