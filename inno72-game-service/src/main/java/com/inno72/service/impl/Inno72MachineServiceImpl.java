@@ -32,6 +32,8 @@ import com.inno72.redis.IRedisUtil;
 import com.inno72.service.Inno72MachineService;
 import com.inno72.vo.Inno72MachineVo;
 
+import net.coobird.thumbnailator.Thumbnails;
+
 /**
  * Created by CodeGenerator on 2018/06/27.
  */
@@ -107,11 +109,17 @@ public class Inno72MachineServiceImpl extends AbstractService<Inno72Machine> imp
 		try {
 			boolean result = QrCodeUtil.createQrCode(localUrl, url, 1800, "png");
 			if (result) {
-				OSSUtil.uploadLocalFile(localUrl, objectName);
-				// 删除文件
 				File f = new File(localUrl);
 				if (f.exists()) {
-					f.delete();
+					//压缩图片
+					Thumbnails.of(localUrl) 
+			           .scale(0.5f) 
+			           .outputQuality(0f) 
+			           .toFile(localUrl);
+				     //上传阿里云
+				     OSSUtil.uploadLocalFile(localUrl, objectName);
+				     // 删除本地文件
+				     f.delete();
 				}
 				map.put("qrCodeUrl", returnUrl);
 				map.put("sessionUuid", sessionUuid);
