@@ -49,6 +49,7 @@ public class Inno72AuthInfoServiceImpl extends AbstractService<Inno72Machine> im
 		String url = inno72GameServiceProperties.get("tmallUrl")+ machineId + "/" + sessionUuid;
 		// 二维码存储在本地的路径
 		String localUrl = machineId + sessionUuid + ".png";
+
 		// 存储在阿里云上的文件名
 		String objectName = "qrcode/" + localUrl;
 		// 提供给前端用来调用二维码的地址
