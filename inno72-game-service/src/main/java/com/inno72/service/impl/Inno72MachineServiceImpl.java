@@ -1,18 +1,12 @@
 package com.inno72.service.impl;
 
-import java.io.File;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import javax.annotation.Resource;
 
-import com.inno72.common.utils.StringUtil;
-import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -21,20 +15,14 @@ import com.inno72.common.AbstractService;
 import com.inno72.common.Inno72GameServiceProperties;
 import com.inno72.common.Result;
 import com.inno72.common.Results;
-import com.inno72.common.util.QrCodeUtil;
-import com.inno72.common.util.UuidUtil;
 import com.inno72.mapper.Inno72GameMapper;
 import com.inno72.mapper.Inno72MachineGameMapper;
 import com.inno72.mapper.Inno72MachineMapper;
 import com.inno72.model.Inno72Game;
 import com.inno72.model.Inno72Machine;
 import com.inno72.model.Inno72MachineGame;
-import com.inno72.oss.OSSUtil;
-import com.inno72.redis.IRedisUtil;
 import com.inno72.service.Inno72MachineService;
 import com.inno72.vo.Inno72MachineVo;
-
-import net.coobird.thumbnailator.Thumbnails;
 
 /**
  * Created by CodeGenerator on 2018/06/27.
@@ -49,8 +37,6 @@ public class Inno72MachineServiceImpl extends AbstractService<Inno72Machine> imp
 	private Inno72MachineGameMapper inno72MachineGameMapper;
 	@Resource
 	private Inno72GameMapper inno72GameMapper;
-	@Autowired
-	private IRedisUtil redisUtil;
 	@Resource
 	private Inno72GameServiceProperties inno72GameServiceProperties;
 
