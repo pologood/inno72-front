@@ -47,7 +47,7 @@ public class Inno72SuperOpenConrolelr {
 	 *	}
 	 */
 	@RequestMapping(value = "/service/open", method = {RequestMethod.GET , RequestMethod.POST})
-	public void open(
+	public Result<String> open(
 			HttpServletRequest request, 
 			HttpServletResponse response, 
 			@RequestBody String requestJson) {
@@ -57,6 +57,7 @@ public class Inno72SuperOpenConrolelr {
 		} catch (Exception e) {
 			LOGGER.info("公共开放接口异常 ===> {} ", e.getMessage(), e);
 		}
+		return Results.failure("调用服务失败！");
 	}
 	
 	/**
