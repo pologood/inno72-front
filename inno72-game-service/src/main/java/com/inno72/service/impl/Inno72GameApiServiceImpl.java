@@ -578,7 +578,7 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 			inno72GameUserMapper.insert(inno72GameUser);
 		}
 
-		return Results.success();
+		return Results.success(gameId);
 	}
 
 }
