@@ -97,14 +97,14 @@ public class Inno72MachineServiceImpl extends AbstractService<Inno72Machine> imp
 		String url = "https://oauth.taobao.com/authorize?response_type=code&client_id=24791535&redirect_uri=https://inno72.ews.m.jaeapp.com/api/top/"
 				+ machineId + "/" + sessionUuid;
 		// 二维码存储在本地的路径
-		String localUrl = machineId + com.inno72.common.util.StringUtil.uuid() + ".bmp";
+		String localUrl = machineId + com.inno72.common.util.StringUtil.uuid() + ".png";
 		// 存储在阿里云上的文件名
 		String objectName = "qrcode/" + localUrl;
 		// 提供给前端用来调用二维码的地址
 		String returnUrl = " https://inno72.oss-cn-beijing.aliyuncs.com/" + objectName;
 
 		try {
-			boolean result = QrCodeUtil.createQrCode(localUrl, url, 1800, "bmp");
+			boolean result = QrCodeUtil.createQrCode(localUrl, url, 1800, "png");
 			if (result) {
 				OSSUtil.uploadLocalFile(localUrl, objectName);
 				// 删除文件
