@@ -1,5 +1,6 @@
 package com.inno72.controller;
 
+import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
@@ -17,7 +18,7 @@ import com.inno72.service.SuperOpenService;
 
 /**
  * inno72 统一开放接口，负责所有客户端交互代理转发。
- * 增加接口时候 增加{@link com.inno72.service.impl.ADPTE_METHOD}
+ * 增加接口时候 增加{@see com.inno72.service.impl.ADPTE_METHOD}
  *
  * @author zb.zhou
  *
@@ -28,7 +29,7 @@ public class Inno72SuperOpenConrolelr {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(Inno72SuperOpenConrolelr.class);
 
-	@Autowired
+	@Resource
 	private SuperOpenService superOpenService;
 
 	/**
@@ -60,9 +61,6 @@ public class Inno72SuperOpenConrolelr {
 
 	/**
 	 * 定义转发开放接口错误信息
-	 *
-	 * @param request reques
-	 * @param response response
 	 */
 	@RequestMapping(value = "/noMethod/open", method = {RequestMethod.GET, RequestMethod.POST})
 	public Result<String> noMethod() {
@@ -71,9 +69,6 @@ public class Inno72SuperOpenConrolelr {
 
 	/**
 	 *  定义转发开放接口错误信息
-	 *
-	 * @param request reques
-	 * @param response response
 	 */
 	@RequestMapping(value = "/noVersion/open", method = {RequestMethod.GET, RequestMethod.POST})
 	public Result<String> noVersion() {

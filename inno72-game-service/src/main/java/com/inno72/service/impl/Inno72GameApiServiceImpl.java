@@ -55,6 +55,8 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 	@Resource
 	private MachineBackgroundFeignClient machineBackgroundFeignClient;
 
+	@Resource
+	private Inno72OrderDetailMapper inno72OrderDetailMapper;
 
 	/**
 	 * {
@@ -74,7 +76,7 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 		requestParam.put("report", vo.getReport());
 
 		List<String> resultGoodsId = inno72GameResultGoodsMapper.findGoodsId(requestParam);
-		//TODO 请求接口 获取出货 货道号
+		//请求接口 获取出货 货道号
 		Result supplyChannel = machineBackgroundFeignClient.getSupplyChannel(
 				new Inno72SupplyChannel(vo.getMachineId(), resultGoodsId.toArray(new String[resultGoodsId.size()]),
 						""));
@@ -88,6 +90,7 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 		List<Inno72SupplyChannel> parseArray = JSON
 				.parseArray(JSON.toJSONString(supplyChannel.getData()), Inno72SupplyChannel.class);
 		LOGGER.info("查询 货道号 结果 ==> {}", JSON.toJSONString(parseArray));
+
 		if (parseArray == null || parseArray.size() == 0) {
 			return Results.failure("没有商品!");
 		}
@@ -99,12 +102,11 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 			String goodsCode = inno72SupplyChannel.getGoodsCode();
 			String code = inno72SupplyChannel.getCode();
 			Integer goodsCount = inno72SupplyChannel.getGoodsCount();
-			String goodsName2 = inno72SupplyChannel.getGoodsName();
 
 			GoodsVo goodsVo = goodsVoMap.get(goodsCode);
 
 			if (goodsVo == null) {
-				goodsVo = new GoodsVo(goodsCode, 0, goodsName2);
+				goodsVo = new GoodsVo(goodsCode, 0, inno72SupplyChannel.getGoodsName());
 			}
 
 			int goodsNum = goodsVo.getGoodsNum();
@@ -112,7 +114,7 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 			List<String> chanelIds = goodsVo.getChannelIds();
 
 			if (goodsCount != null && goodsCount > 0) {
-				goodsVo.setGoodsNum(goodsNum += goodsCount);
+				goodsVo.setGoodsNum(goodsNum + goodsCount);
 				chanelIds.add(code);
 				goodsVo.setChannelIds(chanelIds);
 			}
@@ -120,10 +122,9 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 			goodsVoMap.put(goodsCode, goodsVo);
 
 		}
+		LOGGER.debug("查询商品结果 ==> {}", JSON.toJSONString(goodsVoMap.values()));
+		return Results.success(goodsVoMap.values());
 
-		Collection<GoodsVo> values = goodsVoMap.values();
-
-		return Results.success(values);
 	}
 
 	/**
@@ -236,7 +237,7 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 
 		} catch (Exception e) {
 
-			LOGGER.info("解析聚石塔返回数据异常! ===>  {}", e.getMessage(), e);
+			LOGGER.error("解析聚石塔返回数据异常! ===>  {}", e.getMessage(), e);
 			return Results.failure("解析聚石塔返回数据异常!");
 
 		}
@@ -252,11 +253,6 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 		}
 		return result;
 	}
-
-
-
-	@Resource
-	private Inno72OrderDetailMapper inno72OrderDetailMapper;
 
 	/**
 	 *
@@ -297,16 +293,21 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 
 		try {
 			JSONObject parseObjectRoot = JSON.parseObject(respJson);
+
 			String tmall_fans_automachine_order_createorderbyitemid_response = Optional
 					.ofNullable(parseObjectRoot.get("tmall_fans_automachine_order_checkpaystatus_response"))
 					.map(Object::toString).orElse("");
+
 			JSONObject parseObject = JSON.parseObject(tmall_fans_automachine_order_createorderbyitemid_response);
 			String msg_code = Optional.ofNullable(parseObject.get("msg_code")).map(Object::toString).orElse("");
+
 			if (!msg_code.equals("SUCCESS")) {
 				String msg_info = Optional.ofNullable(parseObject.get("msg_info")).map(Object::toString).orElse("");
 				return Results.failure(msg_info);
 			}
+
 			boolean model = (boolean) parseObject.get("model");
+
 			if (model) {
 				Inno72Order inno72Order = inno72OrderMapper.selectByRefOrderId(orderId);
 				if (inno72Order != null) {
@@ -315,8 +316,8 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 					inno72OrderMapper.updateByPrimaryKeySelective(inno72Order);
 				}
 			}
-			return Results.success(model);
 
+			return Results.success(model);
 
 		} catch (Exception e) {
 			LOGGER.info("解析聚石塔返回数据异常! ===>  {}", e.getMessage(), e);
