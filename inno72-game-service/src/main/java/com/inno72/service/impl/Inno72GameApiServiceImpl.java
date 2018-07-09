@@ -5,6 +5,7 @@ import com.alibaba.fastjson.JSONObject;
 import com.inno72.common.Inno72GameServiceProperties;
 import com.inno72.common.Result;
 import com.inno72.common.Results;
+import com.inno72.common.StringUtils;
 import com.inno72.feign.MachineBackgroundFeignClient;
 import com.inno72.mapper.*;
 import com.inno72.model.*;
@@ -14,7 +15,6 @@ import com.inno72.service.Inno72GameApiService;
 import com.inno72.vo.GoodsVo;
 import com.inno72.vo.MachineApiVo;
 import com.inno72.vo.UserSessionVo;
-import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -247,26 +247,13 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 		Map<String, Object> result = new HashMap<>();
 		if (jObject != null) {
 			for (Map.Entry<String, Object> element : jObject.entrySet()) {
-				result.put(strToUpperCase(element.getKey()), element.getValue());
+				result.put(StringUtils.strToUpperCase(element.getKey()), element.getValue());
 			}
 		}
 		return result;
 	}
 
-	private String strToUpperCase(String str) {
-		String newKey = "";
-		for (int i = 0; i < str.length(); i++) {
-			String keyChar = String.valueOf(str.charAt(i));
-			if (keyChar.equals("_") && i < str.length() - 1) {
-				keyChar = String.valueOf(str.charAt(i + 1)).toUpperCase();
-				i++;
-			}
-			if (!keyChar.equals("_")) {
-				newKey += keyChar;
-			}
-		}
-		return newKey;
-	}
+
 
 	@Resource
 	private Inno72OrderDetailMapper inno72OrderDetailMapper;
@@ -381,28 +368,30 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 		LOGGER.info("调用聚石塔接口  【抽奖】返回 ===> {}", JSON.toJSONString(respJson));
 
 		try {
+
 			JSONObject parseObjectRoot = JSON.parseObject(respJson);
 			String tmall_interact_isvlottery_draw_response = Optional
 					.ofNullable(parseObjectRoot.get("tmall_interact_isvlottery_draw_response")).map(Object::toString)
 					.orElse("");
 			JSONObject parseObject = JSON.parseObject(tmall_interact_isvlottery_draw_response);
+
 			String msg_code = Optional.ofNullable(parseObject.get("code")).map(Object::toString).orElse("");
 			if (!msg_code.equals("CE001")) {
 				String msg_info = Optional.ofNullable(parseObject.get("msg_info")).map(Object::toString).orElse("");
 				return Results.failure(msg_info);
 			}
+
 			String data = Optional.ofNullable(parseObject.get("data")).map(Object::toString).orElse("");
 			JSONObject parseDataObject = JSON.parseObject(data);
 
 			return Results.success(mapToUpperCase(parseDataObject));
+
 		} catch (Exception e) {
 			return Results.failure(e.getMessage());
 		}
 	}
 
 	/**
-	 *
-	 *
 	 * @param vo
 	 * 	machineId 机器id
 	 *  gameId    游戏id
@@ -422,7 +411,6 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 				|| StringUtils.isEmpty(orderId)) {
 			return Results.failure("参数缺失！");
 		}
-
 
 		String jstUrl = inno72GameServiceProperties.get("jstUrl");
 		if (StringUtils.isEmpty(jstUrl)) {
@@ -456,6 +444,7 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 				.ofNullable(parseObjectRoot.get("tmall_fans_automachine_deliveryrecord_response")).map(Object::toString)
 				.orElse("");
 		JSONObject parseObject = JSON.parseObject(tmall_fans_automachine_deliveryrecord_response);
+
 		String msg_code = Optional.ofNullable(parseObject.get("msg_code")).map(Object::toString).orElse("");
 		if (!msg_code.equals("SUCCESS")) {
 			String msg_info = Optional.ofNullable(parseObject.get("msg_info")).map(Object::toString).orElse("");
@@ -508,30 +497,7 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 	public Result<String> sessionRedirect(String sessionUuid, String mid, String token, String code, String userId) {
 		LOGGER.info("session 回执请求 => sessionUuid:{}; mid:{}; token:{}; code:{}; userId:{}", sessionUuid, mid, token,
 				code, userId);
-		//		LOGGER.info("redirect session : paramJSON ===> {}", json);
-		//		if ( StringUtils.isEmpty(json) ) {
-		//			return Results.failure("参数不存在！");
-		//		}
-		//
-		//		JSONObject parseRootObject = JSON.parseObject(json);
-		//		String sessionUuid = Optional.ofNullable(parseRootObject.get("sessionUuid")).map(Object::toString).orElse("");
-		//		String mid = Optional.ofNullable(parseRootObject.get("mid")).map(Object::toString).orElse("");
-		//		String authInfo = Optional.ofNullable(parseRootObject.get("authInfo")).map(Object::toString).orElse("");
-		//
-		//		if (StringUtils.isEmpty(sessionUuid) || StringUtils.isEmpty(mid) || StringUtils.isEmpty(authInfo)) {
-		//			return Results.failure("参数缺失！");
-		//		}
-		//
-		//		JSONObject parseAuthInfoObject = JSON.parseObject(authInfo);
-		//
-		//		String userNick = Optional.ofNullable(parseAuthInfoObject.get("userNick")).map(Object::toString).orElse("");
-		//		String userId = Optional.ofNullable(parseAuthInfoObject.get("userId")).map(Object::toString).orElse("");
-		//
-		//		String token = Optional.ofNullable(parseAuthInfoObject.get("token")).map(Object::toString).orElse("");
-		//		if ( StringUtils.isEmpty(userId) || StringUtils.isEmpty(token) ) {
-		//			return Results.failure("Token参数缺失！");
-		//		}
-		LOGGER.info("session 回执请求 => ");
+
 		JSONObject parseTokenObject = JSON.parseObject(token);
 		String access_token = Optional.ofNullable(parseTokenObject.get("access_token")).map(Object::toString)
 				.orElse("");
@@ -539,8 +505,10 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 		if (StringUtils.isEmpty(access_token)) {
 			return Results.failure("access_token 参数缺失！");
 		}
+
 		List<Inno72MachineGame> inno72MachineGames = inno72MachineGameMapper.selectByMachineId(mid);
 		String gameId = "";
+
 		if (inno72MachineGames.size() > 0) {
 			gameId = inno72MachineGames.get(0).getGameId();
 		}
@@ -560,7 +528,6 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 			return Results.failure("配置中心无聚石塔配置路径!");
 		}
 
-
 		Map<String, String> requestForm = new HashMap<>();
 		requestForm.put("accessToken", access_token);
 		requestForm.put("mid", mid);
@@ -574,10 +541,12 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 		 */
 		String respJson = HttpClient.form(jstUrl + "/api/top/getMaskUserNick", requestForm, null);
 		LOGGER.info("调用聚石塔接口  【请求nickName】返回 ===> {}", JSON.toJSONString(respJson));
+
 		JSONObject jsonNikeNameObject = JSON.parseObject(respJson);
 		String tmall_fans_automachine_getmaskusernick_response = Optional
 				.ofNullable(jsonNikeNameObject.get("tmall_fans_automachine_getmaskusernick_response"))
 				.map(Object::toString).orElse("");
+
 		if (StringUtils.isEmpty(tmall_fans_automachine_getmaskusernick_response)) {
 			return Results.failure("请求用户名失败!");
 		}
