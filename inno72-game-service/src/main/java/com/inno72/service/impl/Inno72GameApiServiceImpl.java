@@ -5,7 +5,7 @@ import com.alibaba.fastjson.JSONObject;
 import com.inno72.common.Inno72GameServiceProperties;
 import com.inno72.common.Result;
 import com.inno72.common.Results;
-import com.inno72.common.StringUtils;
+import com.inno72.common.utils.StringUtil;
 import com.inno72.feign.MachineBackgroundFeignClient;
 import com.inno72.mapper.*;
 import com.inno72.model.*;
@@ -140,7 +140,7 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 
 		String jstUrl = inno72GameServiceProperties.get("jstUrl");
 
-		if (StringUtils.isEmpty(jstUrl)) {
+		if (StringUtil.isEmpty(jstUrl)) {
 			return Results.failure("配置中心无聚石塔配置路径!");
 		}
 
@@ -153,7 +153,7 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 		String channelId = vo.getChannelId();
 
 		String sessionUUIDObjectJSON = redisUtil.get(sessionUuid);
-		if (StringUtils.isEmpty(sessionUUIDObjectJSON)) {
+		if (StringUtil.isEmpty(sessionUUIDObjectJSON)) {
 			return Results.failure("登录失效!");
 		}
 
@@ -168,7 +168,7 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 
 		String respJson = HttpClient.form(jstUrl + "/api/top/order", requestForm, null);
 
-		if (StringUtils.isEmpty(respJson)) {
+		if (StringUtil.isEmpty(respJson)) {
 			return Results.failure("聚石塔无返回数据!");
 		}
 
@@ -203,7 +203,7 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 				String userId = Optional.ofNullable(sessionObject.get("userId")).map(Object::toString).orElse("");
 
 				Map<String, Object> infoMap = new HashMap<>();
-				if (StringUtils.isNotEmpty(userId)) {
+				if (StringUtil.isNotEmpty(userId)) {
 					Inno72GameUser selectByChannelUserKey = inno72GameUserMapper.selectByChannelUserKey(userId);
 					if (selectByChannelUserKey != null) {
 						infoMap.put("inno72GameUser", selectByChannelUserKey);
@@ -251,7 +251,7 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 		Map<String, Object> result = new HashMap<>();
 		if (jObject != null) {
 			for (Map.Entry<String, Object> element : jObject.entrySet()) {
-				result.put(StringUtils.strToUpperCase(element.getKey()), element.getValue());
+				result.put(StringUtil.strToUpperCase(element.getKey()), element.getValue());
 			}
 		}
 		return result;
@@ -267,7 +267,7 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 	@Override
 	public Result<Boolean> orderPolling(MachineApiVo vo) {
 		String jstUrl = inno72GameServiceProperties.get("jstUrl");
-		if (StringUtils.isEmpty(jstUrl)) {
+		if (StringUtil.isEmpty(jstUrl)) {
 			return Results.failure("配置中心无聚石塔配置路径!");
 		}
 
@@ -275,7 +275,7 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 		String orderId = vo.getOrderId();
 
 		String sessionUUIDObjectJSON = redisUtil.get(sessionUuid);
-		if (StringUtils.isEmpty(sessionUUIDObjectJSON)) {
+		if (StringUtil.isEmpty(sessionUUIDObjectJSON)) {
 			return Results.failure("登录失效!");
 		}
 
@@ -288,7 +288,7 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 		requestForm.put("orderId", orderId);
 
 		String respJson = HttpClient.form(jstUrl + "/api/top/order-polling", requestForm, null);
-		if (StringUtils.isEmpty(respJson)) {
+		if (StringUtil.isEmpty(respJson)) {
 			return Results.failure("聚石塔无返回数据!");
 		}
 
@@ -338,7 +338,7 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 	@Override
 	public Result<Object> luckyDraw(MachineApiVo vo) {
 		String jstUrl = inno72GameServiceProperties.get("jstUrl");
-		if (StringUtils.isEmpty(jstUrl)) {
+		if (StringUtil.isEmpty(jstUrl)) {
 			return Results.failure("配置中心无聚石塔配置路径!");
 		}
 
@@ -349,7 +349,7 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 		String interactId = vo.getInteractId();
 
 		String sessionUUIDObjectJSON = redisUtil.get(sessionUuid);
-		if (StringUtils.isEmpty(sessionUUIDObjectJSON)) {
+		if (StringUtil.isEmpty(sessionUUIDObjectJSON)) {
 			return Results.failure("登录失效!");
 		}
 
@@ -365,7 +365,7 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 		requestForm.put("shopId", shopId);//店铺ID
 
 		String respJson = HttpClient.form(jstUrl + "/api/top/lottery", requestForm, null);
-		if (StringUtils.isEmpty(respJson)) {
+		if (StringUtil.isEmpty(respJson)) {
 			return Results.failure("聚石塔无返回数据!");
 		}
 
@@ -411,18 +411,18 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 		String sessionUuid = vo.getSessionUuid();
 		String orderId = vo.getOrderId();
 
-		if (StringUtils.isEmpty(machineId) || StringUtils.isEmpty(channelId) || StringUtils.isEmpty(sessionUuid)
-				|| StringUtils.isEmpty(orderId)) {
+		if (StringUtil.isEmpty(machineId) || StringUtil.isEmpty(channelId) || StringUtil.isEmpty(sessionUuid)
+				|| StringUtil.isEmpty(orderId)) {
 			return Results.failure("参数缺失！");
 		}
 
 		String jstUrl = inno72GameServiceProperties.get("jstUrl");
-		if (StringUtils.isEmpty(jstUrl)) {
+		if (StringUtil.isEmpty(jstUrl)) {
 			return Results.failure("配置中心无聚石塔配置路径!");
 		}
 
 		String sessionUUIDObjectJSON = redisUtil.get(sessionUuid);
-		if (StringUtils.isEmpty(sessionUUIDObjectJSON)) {
+		if (StringUtil.isEmpty(sessionUUIDObjectJSON)) {
 			return Results.failure("登录失效!");
 		}
 
@@ -437,7 +437,7 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 		requestForm.put("channelId", channelId);//互动实例ID
 
 		String respJson = HttpClient.form(jstUrl + "/api/top/deliveryRecord", requestForm, null);
-		if (StringUtils.isEmpty(respJson)) {
+		if (StringUtil.isEmpty(respJson)) {
 			return Results.failure("聚石塔无返回数据!");
 		}
 
@@ -506,7 +506,7 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 		String access_token = Optional.ofNullable(parseTokenObject.get("access_token")).map(Object::toString)
 				.orElse("");
 
-		if (StringUtils.isEmpty(access_token)) {
+		if (StringUtil.isEmpty(access_token)) {
 			return Results.failure("access_token 参数缺失！");
 		}
 
@@ -517,7 +517,7 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 			gameId = inno72MachineGames.get(0).getGameId();
 		}
 
-		if (StringUtils.isEmpty(gameId)) {
+		if (StringUtil.isEmpty(gameId)) {
 			return Results.failure("没有绑定的游戏！");
 		}
 
@@ -528,7 +528,7 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 		Long sellerId = inno72Game.getSellerId();
 
 		String jstUrl = inno72GameServiceProperties.get("jstUrl");
-		if (StringUtils.isEmpty(jstUrl)) {
+		if (StringUtil.isEmpty(jstUrl)) {
 			return Results.failure("配置中心无聚石塔配置路径!");
 		}
 
@@ -551,7 +551,7 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 				.ofNullable(jsonNikeNameObject.get("tmall_fans_automachine_getmaskusernick_response"))
 				.map(Object::toString).orElse("");
 
-		if (StringUtils.isEmpty(tmall_fans_automachine_getmaskusernick_response)) {
+		if (StringUtil.isEmpty(tmall_fans_automachine_getmaskusernick_response)) {
 			return Results.failure("请求用户名失败!");
 		}
 		JSONObject responseJson = JSON.parseObject(tmall_fans_automachine_getmaskusernick_response);
