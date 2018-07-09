@@ -1,5 +1,11 @@
 package com.inno72.generator;
-import static com.inno72.generator.ProjectConstant.*;
+import static com.inno72.generator.ProjectConstant.BASE_PACKAGE;
+import static com.inno72.generator.ProjectConstant.CONTROLLER_PACKAGE;
+import static com.inno72.generator.ProjectConstant.MAPPER_INTERFACE_REFERENCE;
+import static com.inno72.generator.ProjectConstant.MAPPER_PACKAGE;
+import static com.inno72.generator.ProjectConstant.MODEL_PACKAGE;
+import static com.inno72.generator.ProjectConstant.SERVICE_IMPL_PACKAGE;
+import static com.inno72.generator.ProjectConstant.SERVICE_PACKAGE;
 
 import java.io.File;
 import java.io.FileWriter;
