@@ -18,6 +18,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.alibaba.fastjson.JSON;
 import com.inno72.common.AbstractService;
+import com.inno72.common.Inno72GameServiceProperties;
 import com.inno72.common.Result;
 import com.inno72.common.Results;
 import com.inno72.common.util.QrCodeUtil;
@@ -50,6 +51,8 @@ public class Inno72MachineServiceImpl extends AbstractService<Inno72Machine> imp
 	private Inno72GameMapper inno72GameMapper;
 	@Autowired
 	private IRedisUtil redisUtil;
+	@Resource
+	private Inno72GameServiceProperties inno72GameServiceProperties;
 
 	@Override
 	public Result<Inno72MachineVo> findGame(String machineId, String gameId, String version, String versionInno72) {
@@ -97,15 +100,14 @@ public class Inno72MachineServiceImpl extends AbstractService<Inno72Machine> imp
 		// 生成sessionUuid
 		String sessionUuid = UuidUtil.getUUID32();
 		// 调用天猫的地址
-		String url =
-				"https://oauth.taobao.com/authorize?response_type=code&client_id=24791535&redirect_uri=https://inno72.ews.m.jaeapp.com/api/top/"
+		String url =inno72GameServiceProperties.get("tmallUrl")
 						+ machineId + "/" + sessionUuid;
 		// 二维码存储在本地的路径
 		String localUrl = machineId + StringUtil.uuid() + ".png";
 		// 存储在阿里云上的文件名
 		String objectName = "qrcode/" + localUrl;
 		// 提供给前端用来调用二维码的地址
-		String returnUrl = " https://inno72.oss-cn-beijing.aliyuncs.com/" + objectName;
+		String returnUrl = inno72GameServiceProperties.get("returnUrl") + objectName;
 
 		try {
 			boolean result = QrCodeUtil.createQrCode(localUrl, url, 1800, "png");
@@ -130,7 +132,7 @@ public class Inno72MachineServiceImpl extends AbstractService<Inno72Machine> imp
 			}
 
 		} catch (Exception e) {
-			LOGGER.info("二维码生成失败", e);
+			LOGGER.error(e.getMessage(),e);
 		}
 		return Results.success(map);
 	}
