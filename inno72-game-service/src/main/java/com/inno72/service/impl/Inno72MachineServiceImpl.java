@@ -129,7 +129,6 @@ public class Inno72MachineServiceImpl extends AbstractService<Inno72Machine> imp
 			}
 
 		} catch (Exception e) {
-			e.printStackTrace();
 			LOGGER.info("二维码生成失败", e);
 		}
 		return Results.success(map);
