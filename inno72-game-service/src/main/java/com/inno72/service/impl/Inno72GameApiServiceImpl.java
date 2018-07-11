@@ -5,6 +5,7 @@ import com.alibaba.fastjson.JSONObject;
 import com.inno72.common.Inno72GameServiceProperties;
 import com.inno72.common.Result;
 import com.inno72.common.Results;
+import com.inno72.common.util.FastJsonUtils;
 import com.inno72.common.utils.StringUtil;
 import com.inno72.feign.MachineBackgroundFeignClient;
 import com.inno72.mapper.*;
@@ -157,8 +158,7 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 			return Results.failure("登录失效!");
 		}
 
-		JSONObject sessionObject = JSON.parseObject(sessionUUIDObjectJSON);
-		String accessToken = Optional.ofNullable(sessionObject.get("accessToken")).map(Object::toString).orElse("");
+		String accessToken = FastJsonUtils.getString(sessionUUIDObjectJSON, "accessToken");
 
 		Map<String, String> requestForm = new HashMap<>();
 		requestForm.put("accessToken", accessToken);
@@ -176,31 +176,20 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 
 		try {
 
-			JSONObject parseObjectRoot = JSON.parseObject(respJson);
-			String tmall_fans_automachine_order_createorderbyitemid_response = Optional
-					.ofNullable(parseObjectRoot.get("tmall_fans_automachine_order_createorderbyitemid_response"))
-					.map(Object::toString).orElse("");
-			JSONObject parseObject = JSON.parseObject(tmall_fans_automachine_order_createorderbyitemid_response);
-			String result = Optional.ofNullable(parseObject.get("result")).map(Object::toString).orElse("");
-			JSONObject parseResultObject = JSON.parseObject(result);
-			String msg_code = Optional.ofNullable(parseResultObject.get("msg_code")).map(Object::toString).orElse("");
-			//			String result = Optional.ofNullable(parseObject.get("result")).map(Object::toString).orElse("");
+			String msg_code = FastJsonUtils.getString(respJson, "msdg_code");
 			if (!msg_code.equals("SUCCESS")) {
-				String msg_info = Optional.ofNullable(parseObject.get("msg_info")).map(Object::toString).orElse("");
+				String msg_info = FastJsonUtils.getString(respJson, "msdg_info");
 				return Results.failure(msg_info);
 			}
 
-			String model = Optional.ofNullable(parseResultObject.get("model")).map(Object::toString).orElse("");
-			JSONObject parseModelObject = JSON.parseObject(model);
 			LocalDateTime now = LocalDateTime.now();
 
-			String orderId = Optional.ofNullable(parseModelObject.getString("order_id")).map(Object::toString)
-					.orElse("");
+			String orderId = FastJsonUtils.getString(respJson, "order_id");
 
 			Inno72Order inno72Order = inno72OrderMapper.selectByRefOrderId(orderId);
 			if (inno72Order == null) {
 				inno72Order = new Inno72Order();
-				String userId = Optional.ofNullable(sessionObject.get("userId")).map(Object::toString).orElse("");
+				String userId = FastJsonUtils.getString(sessionUUIDObjectJSON, "userId");
 
 				Map<String, Object> infoMap = new HashMap<>();
 				if (StringUtil.isNotEmpty(userId)) {
@@ -236,7 +225,7 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 
 			}
 
-			return Results.success(mapToUpperCase(parseModelObject));
+			return Results.success(mapToUpperCase(JSON.parseObject(FastJsonUtils.getString(respJson, "model"))));
 
 		} catch (Exception e) {
 
@@ -279,8 +268,7 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 			return Results.failure("登录失效!");
 		}
 
-		JSONObject sessionObject = JSON.parseObject(sessionUUIDObjectJSON);
-		String accessToken = Optional.ofNullable(sessionObject.get("accessToken")).map(Object::toString).orElse("");
+		String accessToken = FastJsonUtils.getString(sessionUUIDObjectJSON, "accessToken");
 
 		Map<String, String> requestForm = new HashMap<>();
 
@@ -295,21 +283,14 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 		LOGGER.info("调用聚石塔接口  【下单支付状态】返回 ===> {}", JSON.toJSONString(respJson));
 
 		try {
-			JSONObject parseObjectRoot = JSON.parseObject(respJson);
-
-			String tmall_fans_automachine_order_createorderbyitemid_response = Optional
-					.ofNullable(parseObjectRoot.get("tmall_fans_automachine_order_checkpaystatus_response"))
-					.map(Object::toString).orElse("");
-
-			JSONObject parseObject = JSON.parseObject(tmall_fans_automachine_order_createorderbyitemid_response);
-			String msg_code = Optional.ofNullable(parseObject.get("msg_code")).map(Object::toString).orElse("");
+			String msg_code = FastJsonUtils.getString(respJson, "msg_code");
 
 			if (!msg_code.equals("SUCCESS")) {
-				String msg_info = Optional.ofNullable(parseObject.get("msg_info")).map(Object::toString).orElse("");
+				String msg_info = FastJsonUtils.getString(respJson, "msg_info");
 				return Results.failure(msg_info);
 			}
 
-			boolean model = (boolean) parseObject.get("model");
+			boolean model = Boolean.valueOf(FastJsonUtils.getString(respJson, "model"));
 
 			if (model) {
 				Inno72Order inno72Order = inno72OrderMapper.selectByRefOrderId(orderId);
@@ -353,8 +334,7 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 			return Results.failure("登录失效!");
 		}
 
-		JSONObject sessionObject = JSON.parseObject(sessionUUIDObjectJSON);
-		String accessToken = Optional.ofNullable(sessionObject.get("accessToken")).map(Object::toString).orElse("");
+		String accessToken = FastJsonUtils.getString(sessionUUIDObjectJSON, "accessToken");
 
 		Map<String, String> requestForm = new HashMap<>();
 
@@ -373,19 +353,13 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 
 		try {
 
-			JSONObject parseObjectRoot = JSON.parseObject(respJson);
-			String tmall_interact_isvlottery_draw_response = Optional
-					.ofNullable(parseObjectRoot.get("tmall_interact_isvlottery_draw_response")).map(Object::toString)
-					.orElse("");
-			JSONObject parseObject = JSON.parseObject(tmall_interact_isvlottery_draw_response);
-
-			String msg_code = Optional.ofNullable(parseObject.get("code")).map(Object::toString).orElse("");
+			String msg_code = FastJsonUtils.getString(respJson,"code");
 			if (!msg_code.equals("CE001")) {
-				String msg_info = Optional.ofNullable(parseObject.get("msg_info")).map(Object::toString).orElse("");
+				String msg_info = FastJsonUtils.getString(respJson,"msg_info");
 				return Results.failure(msg_info);
 			}
 
-			String data = Optional.ofNullable(parseObject.get("data")).map(Object::toString).orElse("");
+			String data = FastJsonUtils.getString(respJson,"data");
 			JSONObject parseDataObject = JSON.parseObject(data);
 
 			return Results.success(mapToUpperCase(parseDataObject));
@@ -426,8 +400,7 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 			return Results.failure("登录失效!");
 		}
 
-		JSONObject sessionObject = JSON.parseObject(sessionUUIDObjectJSON);
-		String accessToken = Optional.ofNullable(sessionObject.get("accessToken")).map(Object::toString).orElse("");
+		String accessToken = FastJsonUtils.getString(sessionUUIDObjectJSON, "accessToken");
 
 		Map<String, String> requestForm = new HashMap<>();
 
@@ -443,15 +416,9 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 
 		LOGGER.info("调用聚石塔接口  【通知出货】返回 ===> {}", JSON.toJSONString(respJson));
 
-		JSONObject parseObjectRoot = JSON.parseObject(respJson);
-		String tmall_fans_automachine_deliveryrecord_response = Optional
-				.ofNullable(parseObjectRoot.get("tmall_fans_automachine_deliveryrecord_response")).map(Object::toString)
-				.orElse("");
-		JSONObject parseObject = JSON.parseObject(tmall_fans_automachine_deliveryrecord_response);
-
-		String msg_code = Optional.ofNullable(parseObject.get("msg_code")).map(Object::toString).orElse("");
+		String msg_code = FastJsonUtils.getString(respJson, "msg_code");
 		if (!msg_code.equals("SUCCESS")) {
-			String msg_info = Optional.ofNullable(parseObject.get("msg_info")).map(Object::toString).orElse("");
+			String msg_info = FastJsonUtils.getString(respJson, "msg_info");
 			return Results.failure(msg_info);
 		}
 
@@ -546,23 +513,11 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 		String respJson = HttpClient.form(jstUrl + "/api/top/getMaskUserNick", requestForm, null);
 		LOGGER.info("调用聚石塔接口  【请求nickName】返回 ===> {}", JSON.toJSONString(respJson));
 
-		JSONObject jsonNikeNameObject = JSON.parseObject(respJson);
-		String tmall_fans_automachine_getmaskusernick_response = Optional
-				.ofNullable(jsonNikeNameObject.get("tmall_fans_automachine_getmaskusernick_response"))
-				.map(Object::toString).orElse("");
-
-		if (StringUtil.isEmpty(tmall_fans_automachine_getmaskusernick_response)) {
+		if (StringUtil.isEmpty(respJson)) {
 			return Results.failure("请求用户名失败!");
 		}
-		JSONObject responseJson = JSON.parseObject(tmall_fans_automachine_getmaskusernick_response);
-		//		String msg_code = Optional.ofNullable(responseJson.get(
-		//				"msg_code")).map(Object::toString).orElse("");
 
-		//		if (!msg_code.equals("200")){
-		//			LOGGER.info("请求NickName失败");
-		//			return Results.failure("请求NickName失败");
-		//		}
-		String nickName = Optional.ofNullable(responseJson.get("model")).map(Object::toString).orElse("");
+		String nickName = FastJsonUtils.getString(respJson,"model");
 
 		UserSessionVo sessionVo = new UserSessionVo(mid, nickName, userId, access_token, gameId, sessionUuid);
 
