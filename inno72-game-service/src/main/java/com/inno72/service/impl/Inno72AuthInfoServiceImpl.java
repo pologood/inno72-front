@@ -33,9 +33,9 @@ import net.coobird.thumbnailator.Thumbnails;
  */
 @Service
 @Transactional
-public class Inno72AuthInfoServiceImpl extends AbstractService<Inno72Machine> implements Inno72AuthInfoService {
+public class Inno72AuthInfoServiceImpl implements Inno72AuthInfoService {
 	private static final Logger LOGGER = LoggerFactory.getLogger(Inno72AuthInfoServiceImpl.class);
-	@Autowired
+	@Resource
 	private IRedisUtil redisUtil;
 	@Resource
 	private Inno72GameServiceProperties inno72GameServiceProperties;

@@ -7,8 +7,7 @@ import com.inno72.model.Inno72Machine;
 /**
  * Created by CodeGenerator on 2018/06/27.
  */
-public interface Inno72AuthInfoService extends Service<Inno72Machine> {
-
+public interface Inno72AuthInfoService {
 
 	Result<Object> createQrCode(String machineId);
 
