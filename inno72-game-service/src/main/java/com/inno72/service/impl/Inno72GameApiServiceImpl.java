@@ -6,6 +6,7 @@ import com.inno72.common.Inno72GameServiceProperties;
 import com.inno72.common.Result;
 import com.inno72.common.Results;
 import com.inno72.common.util.FastJsonUtils;
+import com.inno72.common.util.Inno72OrderNumGenUtil;
 import com.inno72.common.utils.StringUtil;
 import com.inno72.feign.MachineBackgroundFeignClient;
 import com.inno72.mapper.*;
@@ -21,6 +22,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.List;
@@ -33,34 +35,45 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 	private static final Logger LOGGER = LoggerFactory.getLogger(Inno72GameApiServiceImpl.class);
 
 	@Resource
-	private Inno72GameResultGoodsMapper inno72GameResultGoodsMapper;
-
-	@Resource
 	private Inno72GameServiceProperties inno72GameServiceProperties;
-
 	@Resource
 	private Inno72MachineGameMapper inno72MachineGameMapper;
-
 	@Resource
 	private Inno72GameMapper inno72GameMapper;
-
 	@Resource
 	private Inno72OrderMapper inno72OrderMapper;
-
 	@Resource
 	private IRedisUtil redisUtil;
-
 	@Resource
 	private Inno72GameUserMapper inno72GameUserMapper;
-
 	@Resource
 	private Inno72MachineMapper inno72MachineMapper;
-
 	@Resource
 	private MachineBackgroundFeignClient machineBackgroundFeignClient;
-
 	@Resource
-	private Inno72OrderDetailMapper inno72OrderDetailMapper;
+	private Inno72ActivityPlanGameResultMapper inno72ActivityPlanGameResultMapper;
+	@Resource
+	private Inno72GameUserChannelMapper inno72GameUserChannelMapper;
+	@Resource
+	private Inno72ActivityPlanMapper inno72ActivityPlanMapper;
+	@Resource
+	private Inno72ActivityPlanMachineMapper inno72ActivityPlanMachineMapper;
+	@Resource
+	private Inno72MerchantMapper inno72MerchantMapper;
+	@Resource
+	private Inno72ActivityMapper inno72ActivityMapper;
+	@Resource
+	private Inno72ChannelMapper inno72ChannelMapper;
+	@Resource
+	private Inno72ShopsMapper inno72ShopsMapper;
+	@Resource
+	private Inno72GoodsMapper inno72GoodsMapper;
+	@Resource
+	private Inno72OrderGoodsMapper inno72OrderGoodsMapper;
+	@Resource
+	private Inno72OrderHistoryMapper inno72OrderHistoryMapper;
+
+
 
 	/**
 	 * {
@@ -74,16 +87,18 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 	@Override
 	public Result<Object> findProduct(MachineApiVo vo) {
 
-		Map<String, String> requestParam = new HashMap<>();
-		requestParam.put("machineId", vo.getMachineId());
-		requestParam.put("gameId", vo.getGameId());
-		requestParam.put("report", vo.getReport());
+		String activityPlanId = vo.getActivityPlanId();
+		String report = vo.getReport();
 
-		List<String> resultGoodsId = inno72GameResultGoodsMapper.findGoodsId(requestParam);
+		Map<String, String> params = new HashMap<>();
+		params.put("activityPlanId", activityPlanId);
+		params.put("report", report);
+
+		List<String> resultGoodsId = inno72ActivityPlanGameResultMapper.selectByActivityPlanId(params);
+
 		//请求接口 获取出货 货道号
 		Result supplyChannel = machineBackgroundFeignClient.getSupplyChannel(
-				new Inno72SupplyChannel(vo.getMachineId(), resultGoodsId.toArray(new String[resultGoodsId.size()]),
-						""));
+				new Inno72SupplyChannel(vo.getMachineId(), resultGoodsId.toArray(new String[resultGoodsId.size()]), ""));
 
 		if (supplyChannel.getCode() == Result.FAILURE) {
 			return Results.failure(supplyChannel.getMsg());
@@ -144,19 +159,22 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 		if (StringUtil.isEmpty(jstUrl)) {
 			return Results.failure("配置中心无聚石塔配置路径!");
 		}
-
+		//新增参数
+		String activityPlanId = vo.getActivityPlanId();
+		String channelId = vo.getChannelId();
 		String machineId = vo.getMachineId();
 		String activityId = vo.getActivityId();
 		String sessionUuid = vo.getSessionUuid();
 		String itemId = vo.getItemId();
-		String gameId = vo.getGameId();
 		//新增
-		String channelId = vo.getChannelId();
 
 		String sessionUUIDObjectJSON = redisUtil.get(sessionUuid);
 		if (StringUtil.isEmpty(sessionUUIDObjectJSON)) {
 			return Results.failure("登录失效!");
 		}
+
+		//下单 inno72_Order
+		String inno72OrderId = genInno72Order(channelId, activityPlanId, machineId, itemId, FastJsonUtils.getString(sessionUUIDObjectJSON, "userId"));
 
 		String accessToken = FastJsonUtils.getString(sessionUUIDObjectJSON, "accessToken");
 
@@ -182,48 +200,8 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 				return Results.failure(msg_info);
 			}
 
-			LocalDateTime now = LocalDateTime.now();
-
-			String orderId = FastJsonUtils.getString(respJson, "order_id");
-
-			Inno72Order inno72Order = inno72OrderMapper.selectByRefOrderId(orderId);
-			if (inno72Order == null) {
-				inno72Order = new Inno72Order();
-				String userId = FastJsonUtils.getString(sessionUUIDObjectJSON, "userId");
-
-				Map<String, Object> infoMap = new HashMap<>();
-				if (StringUtil.isNotEmpty(userId)) {
-					Inno72GameUser selectByChannelUserKey = inno72GameUserMapper.selectByChannelUserKey(userId);
-					if (selectByChannelUserKey != null) {
-						infoMap.put("inno72GameUser", selectByChannelUserKey);
-						inno72Order.setUserId(selectByChannelUserKey.getId());//session中userId查询inno72_game_user主键
-					}
-				}
-
-				Inno72Game inno72Game = inno72GameMapper.selectByPrimaryKey(gameId);
-				infoMap.put("inno72Game", inno72Game);
-
-				Inno72Machine inno72Machine = inno72MachineMapper.selectByPrimaryKey(machineId);
-				infoMap.put("inno72Machine", inno72Machine);
-
-				inno72Order.setActivityId(activityId);
-				inno72Order.setChannelId(channelId);
-				inno72Order.setGameId(gameId);
-				inno72Order.setMachineId(machineId);
-				inno72Order.setOrderTime(now);
-				//				inno72Order.setOrderNum(orderNum);
-				inno72Order.setPayStatus("0");
-				inno72Order.setOrderType("1000");
-				inno72Order.setRefOrderId(orderId);
-
-				inno72OrderMapper.insert(inno72Order);
-				Inno72OrderDetail inno72OrderDetail = new Inno72OrderDetail();
-				inno72OrderDetail.setDetail(JSON.toJSONString(infoMap));
-				inno72OrderDetail.setId(inno72Order.getId());
-				inno72OrderDetail.setOrderNum(inno72Order.getOrderNum());
-				inno72OrderDetailMapper.insert(inno72OrderDetail);
-
-			}
+			//更新第三方订单号进inno72 order
+			this.updateRefOrderId(inno72OrderId, respJson);
 
 			return Results.success(mapToUpperCase(JSON.parseObject(FastJsonUtils.getString(respJson, "model"))));
 
@@ -234,16 +212,6 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 
 		}
 
-	}
-
-	private Map<String, Object> mapToUpperCase(JSONObject jObject) {
-		Map<String, Object> result = new HashMap<>();
-		if (jObject != null) {
-			for (Map.Entry<String, Object> element : jObject.entrySet()) {
-				result.put(StringUtil.strToUpperCase(element.getKey()), element.getValue());
-			}
-		}
-		return result;
 	}
 
 	/**
@@ -295,9 +263,12 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 			if (model) {
 				Inno72Order inno72Order = inno72OrderMapper.selectByRefOrderId(orderId);
 				if (inno72Order != null) {
-					inno72Order.setPayStatus("1");
+					inno72Order.setPayStatus(Inno72Order.INNO72ORDER_PAYSTATUS.SUCC.getKey());
 					inno72Order.setPayTime(LocalDateTime.now());
 					inno72OrderMapper.updateByPrimaryKeySelective(inno72Order);
+					inno72OrderHistoryMapper.insert(
+							new Inno72OrderHistory(inno72Order.getId(), inno72Order.getOrderNum(), JSON.toJSONString(inno72Order), "修改状态为已支付")
+					);
 				}
 			}
 
@@ -476,12 +447,14 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 		if (StringUtil.isEmpty(access_token)) {
 			return Results.failure("access_token 参数缺失！");
 		}
+		List<Inno72ActivityPlan> inno72ActivityPlans = inno72ActivityPlanMapper.selectByMachineId(mid);
 
-		List<Inno72MachineGame> inno72MachineGames = inno72MachineGameMapper.selectByMachineId(mid);
 		String gameId = "";
 
-		if (inno72MachineGames.size() > 0) {
-			gameId = inno72MachineGames.get(0).getGameId();
+		Inno72ActivityPlan inno72ActivityPlan = null;
+		if (inno72ActivityPlans.size() > 0) {
+			inno72ActivityPlan = inno72ActivityPlans.get(0);
+			gameId = inno72ActivityPlan.getGameId();
 		}
 
 		if (StringUtil.isEmpty(gameId)) {
@@ -492,7 +465,10 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 		if (inno72Game == null) {
 			return Results.failure("不存在的游戏！");
 		}
-		Long sellerId = inno72Game.getSellerId();
+
+		assert inno72ActivityPlan != null;
+		Inno72Activity inno72Activity = inno72ActivityMapper.selectByPrimaryKey(inno72ActivityPlan.getActivityId());
+		String sellerId = inno72Activity.getSellerId();
 
 		String jstUrl = inno72GameServiceProperties.get("jstUrl");
 		if (StringUtil.isEmpty(jstUrl)) {
@@ -524,19 +500,118 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 		LocalDateTime now = LocalDateTime.now();
 		redisUtil.setex(sessionUuid, 1800, JSON.toJSONString(sessionVo));
 
-		Inno72GameUser inno72GameUser = inno72GameUserMapper.selectByChannelUserKey(userId);
-		if (inno72GameUser == null) {
-			inno72GameUser = new Inno72GameUser();
-			inno72GameUser.setUserNick(nickName);
-			inno72GameUser.setPhone("");
-			inno72GameUser.setChannel("1000");
-			inno72GameUser.setChannelUserKey(userId);
-			inno72GameUser.setCreateTime(now);
-			inno72GameUser.setUpdateTime(now);
+		Inno72Merchant inno72Merchant = inno72MerchantMapper.selectByPrimaryKey(sellerId);
+		String channelId = inno72Merchant.getChannelId();
+
+		Inno72Channel inno72Channel = inno72ChannelMapper.selectByPrimaryKey(channelId);
+
+		Map<String, String> userChannelParams = new HashMap<>();
+		userChannelParams.put("channelId", channelId);
+		userChannelParams.put("channelUserKey", userId);
+		Inno72GameUserChannel userChannel = inno72GameUserChannelMapper.selectByChannelUserKey(userChannelParams);
+
+		if (userChannel == null){
+			Inno72GameUser inno72GameUser = new Inno72GameUser();
 			inno72GameUserMapper.insert(inno72GameUser);
+			userChannel = new Inno72GameUserChannel(nickName
+			, "", channelId, inno72GameUser.getId(), inno72Channel.getChannelName(), userId);
+			inno72GameUserChannelMapper.insert(userChannel);
 		}
 
+
 		return Results.success(gameId);
+	}
+
+	private void updateRefOrderId(String inno72OrderId, String respJson) {
+		Inno72Order inno72Order = inno72OrderMapper.selectByPrimaryKey(inno72OrderId);
+		String orderId = FastJsonUtils.getString(respJson, "order_id");
+		inno72Order.setId(inno72OrderId);
+		inno72Order.setRefOrderId(orderId);
+		inno72OrderMapper.updateByPrimaryKeySelective(inno72Order);
+		Inno72OrderHistory history = new Inno72OrderHistory();
+		history.setDetails("更新第三方订单号");
+		history.setHistoryOrder(JSON.toJSONString(inno72Order));
+		history.setOrderId(inno72Order.getId());
+		history.setOrderNum(inno72Order.getOrderNum());
+	}
+
+	private String genInno72Order(String channelId, String activityPlanId, String machineId, String goodsId, String channelUserKey) {
+
+		Map<String, String> paramsChannel = new HashMap<>();
+		paramsChannel.put("channelId", channelId);
+		paramsChannel.put("channelUserKey", channelUserKey);
+		Inno72GameUserChannel userChannel = inno72GameUserChannelMapper.selectByChannelUserKey(paramsChannel);
+		String gameUserId = userChannel.getGameUserId();
+
+		//活动计划
+		Inno72ActivityPlan inno72ActivityPlan = inno72ActivityPlanMapper.selectByPrimaryKey(activityPlanId);
+		// 活动
+		Inno72Activity inno72Activity = inno72ActivityMapper.selectByPrimaryKey(inno72ActivityPlan.getActivityId());
+
+		Inno72Machine inno72Machine = inno72MachineMapper.selectByPrimaryKey(machineId);
+
+		Inno72Channel inno72Channel = inno72ChannelMapper.selectByPrimaryKey(channelId);
+
+		Inno72Shops inno72Shops = inno72ShopsMapper.selectByPrimaryKey(inno72Activity.getShopId());
+
+		String orderNum = Inno72OrderNumGenUtil.genOrderNum(inno72Channel.getChannelCode(),inno72Machine.getMachineCode());
+		LocalDateTime now = LocalDateTime.now();
+
+		Map<String, String> orderParams = new HashMap<>();
+		orderParams.put("activityPlanId", activityPlanId);
+		orderParams.put("gameUserId", gameUserId);
+		List<Inno72Order> inno72Orders = inno72OrderMapper.findGoodsStatusSucc(orderParams);
+
+		Inno72Order inno72Order = new Inno72Order();
+		inno72Order.setChannelId(channelId);
+		inno72Order.setGoodsStatus(Inno72Order.INNO72ORDER_GOODSSTATUS.WAIT.getKey());
+		inno72Order.setInno72ActivityId(inno72ActivityPlan.getActivityId());
+		inno72Order.setInno72ActivityPlanId(activityPlanId);
+		inno72Order.setMachineId(machineId);
+		inno72Order.setMerchantId(inno72Activity.getSellerId());
+		inno72Order.setOrderNum(orderNum);
+		inno72Order.setOrderPrice(BigDecimal.ZERO);
+		inno72Order.setOrderTime(now);
+		inno72Order.setOrderType(Inno72Order.INNO72ORDER_ORDERTYPE.DEFAULT.getKey());
+		inno72Order.setPayPrice(BigDecimal.ZERO);
+		inno72Order.setPayStatus(Inno72Order.INNO72ORDER_PAYSTATUS.WAIT.getKey());
+		inno72Order.setPayTime(null);
+		inno72Order.setRefOrderId(null);
+		inno72Order.setRefOrderStatus(null);
+		inno72Order.setRepetition(inno72Orders.size() >= inno72ActivityPlan.getUserMaxTimes() ?
+				Inno72Order.INNO72ORDER_REPETITION.REPETITION.getKey(): Inno72Order.INNO72ORDER_REPETITION.NOT.getKey());
+		inno72Order.setShopsId(inno72Shops.getId());
+		inno72Order.setShopsName(inno72Shops.getShopName());
+		inno72Order.setUserId(gameUserId);
+		inno72OrderMapper.insert(inno72Order);
+
+		Inno72Goods inno72Goods = inno72GoodsMapper.selectByPrimaryKey(goodsId);
+		Inno72OrderGoods orderGoods = new Inno72OrderGoods();
+		orderGoods.setGoodsCode(inno72Goods.getCode());
+		orderGoods.setGoodsId(inno72Goods.getId());
+		orderGoods.setGoodsName(inno72Goods.getName());
+		orderGoods.setGoodsPrice(inno72Goods.getPrice());
+		orderGoods.setGoodsType(Inno72OrderGoods.INNO72ORDERGOODS_GOODSTYPE.PRODUCT.getKey());
+		orderGoods.setOrderId(inno72Order.getId());
+		orderGoods.setOrderNum(inno72Order.getOrderNum());
+		orderGoods.setStatus(Inno72Order.INNO72ORDER_GOODSSTATUS.WAIT.getKey());
+		inno72OrderGoodsMapper.insert(orderGoods);
+
+		inno72OrderHistoryMapper.insert(
+				new Inno72OrderHistory(inno72Order.getId(), inno72Order.getOrderNum(), JSON.toJSONString(inno72Order), "初始化插入订单!")
+		);
+
+		return inno72Order.getId();
+	}
+
+	private Map<String, Object> mapToUpperCase(JSONObject jObject) {
+		Map<String, Object> result = new HashMap<>();
+		if (jObject != null) {
+			for (Map.Entry<String, Object> element : jObject.entrySet()) {
+				result.put(StringUtil.strToUpperCase(element.getKey()), element.getValue());
+			}
+		}
+		return result;
 	}
 
 }

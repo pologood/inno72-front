@@ -1,50 +1,56 @@
 package com.inno72.model;
 
+import javax.persistence.*;
 import java.time.LocalDateTime;
 
-import javax.persistence.Column;
-import javax.persistence.Convert;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.Table;
-
-import com.fasterxml.jackson.databind.annotation.JsonSerialize;
-import com.inno72.common.CustomLocalDateTimeSerializer;
-import com.inno72.common.LocalDateConverter;
-
-@Table(name = "inno72_game")
-public class Inno72Game {
+@Table(name = "inno72_activity")
+public class Inno72Activity {
+    /**
+     * 活动ID
+     */
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private String id;
 
     /**
-     * 游戏名称
+     * 活动名称
      */
     private String name;
 
     /**
-     * 游戏版本
+     * 店铺ID
      */
-    private String version;
+    @Column(name = "shop_id")
+    private String shopId;
 
     /**
-     * 游戏版本（点72）
+     * 商户ID
      */
-    @Column(name = "version_inno72")
-    private String versionInno72;
+    @Column(name = "seller_id")
+    private String sellerId;
 
     /**
-     * 游戏描述
+     * 奖品类型
      */
-    private String remark;
+    @Column(name = "prize_type")
+    private String prizeType;
 
     /**
-     * 是否删除：0未删除，1已删除
+     * 负责人
+     */
+    @Column(name = "manager_id")
+    private String managerId;
+
+    /**
+     * 状态：0正常，1停止
      */
     @Column(name = "is_delete")
     private Integer isDelete;
+
+    /**
+     * 备注描述
+     */
+    private String remark;
 
     /**
      * 创建人
@@ -56,8 +62,6 @@ public class Inno72Game {
      * 创建时间
      */
     @Column(name = "create_time")
-    @JsonSerialize(using = CustomLocalDateTimeSerializer.class)
-	@Convert(converter = LocalDateConverter.class)
     private LocalDateTime createTime;
 
     /**
@@ -70,112 +74,150 @@ public class Inno72Game {
      * 更新时间
      */
     @Column(name = "update_time")
-    @JsonSerialize(using = CustomLocalDateTimeSerializer.class)
-	@Convert(converter = LocalDateConverter.class)
     private LocalDateTime updateTime;
 
     /**
-     * @return id
+     * 获取活动ID
+     *
+     * @return id - 活动ID
      */
     public String getId() {
         return id;
     }
 
     /**
-     * @param id
+     * 设置活动ID
+     *
+     * @param id 活动ID
      */
     public void setId(String id) {
         this.id = id;
     }
 
     /**
-     * 获取游戏名称
+     * 获取活动名称
      *
-     * @return name - 游戏名称
+     * @return name - 活动名称
      */
     public String getName() {
         return name;
     }
 
     /**
-     * 设置游戏名称
+     * 设置活动名称
      *
-     * @param name 游戏名称
+     * @param name 活动名称
      */
     public void setName(String name) {
         this.name = name;
     }
 
     /**
-     * 获取游戏版本
+     * 获取店铺ID
      *
-     * @return version - 游戏版本
+     * @return shop_id - 店铺ID
      */
-    public String getVersion() {
-        return version;
+    public String getShopId() {
+        return shopId;
     }
 
     /**
-     * 设置游戏版本
+     * 设置店铺ID
      *
-     * @param version 游戏版本
+     * @param shopId 店铺ID
      */
-    public void setVersion(String version) {
-        this.version = version;
+    public void setShopId(String shopId) {
+        this.shopId = shopId;
     }
 
     /**
-     * 获取游戏版本（点72）
+     * 获取商户ID
      *
-     * @return version_inno72 - 游戏版本（点72）
+     * @return seller_id - 商户ID
      */
-    public String getVersionInno72() {
-        return versionInno72;
+    public String getSellerId() {
+        return sellerId;
     }
 
     /**
-     * 设置游戏版本（点72）
+     * 设置商户ID
      *
-     * @param versionInno72 游戏版本（点72）
+     * @param sellerId 商户ID
      */
-    public void setVersionInno72(String versionInno72) {
-        this.versionInno72 = versionInno72;
+    public void setSellerId(String sellerId) {
+        this.sellerId = sellerId;
     }
 
     /**
-     * 获取游戏描述
+     * 获取奖品类型
      *
-     * @return remark - 游戏描述
+     * @return prize_type - 奖品类型
      */
-    public String getRemark() {
-        return remark;
+    public String getPrizeType() {
+        return prizeType;
     }
 
     /**
-     * 设置游戏描述
+     * 设置奖品类型
      *
-     * @param remark 游戏描述
+     * @param prizeType 奖品类型
      */
-    public void setRemark(String remark) {
-        this.remark = remark;
+    public void setPrizeType(String prizeType) {
+        this.prizeType = prizeType;
     }
 
     /**
-     * 获取是否删除：0未删除，1已删除
+     * 获取负责人
      *
-     * @return is_delete - 是否删除：0未删除，1已删除
+     * @return manager_id - 负责人
+     */
+    public String getManagerId() {
+        return managerId;
+    }
+
+    /**
+     * 设置负责人
+     *
+     * @param managerId 负责人
+     */
+    public void setManagerId(String managerId) {
+        this.managerId = managerId;
+    }
+
+    /**
+     * 获取状态：0正常，1停止
+     *
+     * @return is_delete - 状态：0正常，1停止
      */
     public Integer getIsDelete() {
         return isDelete;
     }
 
     /**
-     * 设置是否删除：0未删除，1已删除
+     * 设置状态：0正常，1停止
      *
-     * @param isDelete 是否删除：0未删除，1已删除
+     * @param isDelete 状态：0正常，1停止
      */
     public void setIsDelete(Integer isDelete) {
         this.isDelete = isDelete;
+    }
+
+    /**
+     * 获取备注描述
+     *
+     * @return remark - 备注描述
+     */
+    public String getRemark() {
+        return remark;
+    }
+
+    /**
+     * 设置备注描述
+     *
+     * @param remark 备注描述
+     */
+    public void setRemark(String remark) {
+        this.remark = remark;
     }
 
     /**

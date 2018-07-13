@@ -80,6 +80,9 @@ public class Inno72Machine {
 	@Column(name = "device_id")
 	private String deviceId;
 
+	@Column(name = "address")
+	private String address;
+
 	/**
 	 * @return Id
 	 */
@@ -236,5 +239,37 @@ public class Inno72Machine {
 	 */
 	public void setUpdateTime(LocalDateTime updateTime) {
 		this.updateTime = updateTime;
+	}
+
+	public Integer getMachineStatus() {
+		return machineStatus;
+	}
+
+	public void setMachineStatus(Integer machineStatus) {
+		this.machineStatus = machineStatus;
+	}
+
+	public Integer getNetStatus() {
+		return netStatus;
+	}
+
+	public void setNetStatus(Integer netStatus) {
+		this.netStatus = netStatus;
+	}
+
+	public String getDeviceId() {
+		return deviceId;
+	}
+
+	public void setDeviceId(String deviceId) {
+		this.deviceId = deviceId;
+	}
+
+	public String getAddress() {
+		return address;
+	}
+
+	public void setAddress(String address) {
+		this.address = address;
 	}
 }

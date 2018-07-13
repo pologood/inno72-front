@@ -10,6 +10,6 @@ import com.inno72.vo.Inno72MachineVo;
  */
 public interface Inno72MachineService extends Service<Inno72Machine> {
 
-	Result<Inno72MachineVo> findGame(String mid, String gameId, String version, String versionInno72);
+	Result<Inno72MachineVo> findGame(String mid, String plantId, String version, String versionInno72);
 
 }

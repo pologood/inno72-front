@@ -6,18 +6,10 @@
           WARNING - @mbg.generated
         -->
         <id column="id" jdbcType="VARCHAR" property="id"/>
-        <result column="user_nick" jdbcType="VARCHAR" property="userNick"/>
-        <result column="phone" jdbcType="VARCHAR" property="phone"/>
-        <result column="channel" jdbcType="VARCHAR" property="channel"/>
-        <result column="channel_user_key" jdbcType="VARCHAR" property="channelUserKey"/>
         <result column="create_time" jdbcType="TIMESTAMP" property="createTime" javaType="java.time.LocalDateTime"
                 typeHandler="org.apache.ibatis.type.LocalDateTimeTypeHandler"/>
-        <result column="update_time" jdbcType="TIMESTAMP" property="updateTime" javaType="java.time.LocalDateTime"
-                typeHandler="org.apache.ibatis.type.LocalDateTimeTypeHandler"/>
-        <result column="operator" jdbcType="VARCHAR" property="operator"/>
-        <result column="operator_id" jdbcType="VARCHAR" property="operatorId"/>
     </resultMap>
     <select id="selectByChannelUserKey" resultMap="BaseResultMap" parameterType="java.lang.String">
-  select * from inno72_game_user where channel_user_key = #{userId}
-  </select>
+        select * from inno72_game_user where channel_user_key = #{userId}
+    </select>
 </mapper>

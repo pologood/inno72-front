@@ -3,265 +3,554 @@ package com.inno72.model;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
-import javax.persistence.Column;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.Table;
+import javax.persistence.*;
+
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.inno72.common.CustomLocalDateTimeSerializer;
+import com.inno72.common.LocalDateConverter;
+import org.apache.ibatis.annotations.Options;
 
 @Table(name = "inno72_order")
 public class Inno72Order {
-	@Id
-	@GeneratedValue(strategy = GenerationType.IDENTITY, generator = "select uuid()")
-	private String id;
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY, generator = "select uuid()" )
+    private String id;
 
-	@Column(name = "order_num")
-	private String orderNum;
+    @Column(name = "order_num")
+    private String orderNum;
 
-	/**
-	 * inno72_game_user.id
-	 */
-	@Column(name = "user_id")
-	private String userId;
+    /**
+     * inno72_game_user.id
+     */
+    @Column(name = "user_id")
+    private String userId;
 
-	/**
-	 * inn72_channel.id
-	 */
-	@Column(name = "channel_id")
-	private String channelId;
+    /**
+     * inn72_channel.id
+     */
+    @Column(name = "channel_id")
+    private String channelId;
 
-	/**
-	 * inno72_machine.id
-	 */
-	@Column(name = "machine_id")
-	private String machineId;
+    /**
+     * inno72_machine.id
+     */
+    @Column(name = "machine_id")
+    private String machineId;
 
-	/**
-	 * inno72_game.id
-	 */
-	@Column(name = "game_id")
-	private String gameId;
+    /**
+     * 店铺ID
+     */
+    @Column(name = "shops_id")
+    private String shopsId;
 
-	/**
-	 * 下单时间
-	 */
-	@Column(name = "order_time")
-	private LocalDateTime orderTime;
+    /**
+     * 店铺ID
+     */
+    @Column(name = "shops_name")
+    private String shopsName;
 
-	@Column(name = "order_price")
-	private BigDecimal orderPrice;
+    @Column(name = "merchant_id")
+    private String merchantId;
 
-	/**
-	 * 订单类型 10
-	 */
-	@Column(name = "order_type")
-	private String orderType;
+    /**
+     * 	活动ID
+     */
+    @Column(name = "inno72_activity_id")
+    private String inno72ActivityId;
 
-	@Column(name = "pay_status")
-	private String payStatus;
+    /**
+     * 活动计划ID
+     */
+    @Column(name = "inno72_activity_plan_id")
+    private String inno72ActivityPlanId;
 
-	@Column(name = "pay_time")
-	private LocalDateTime payTime;
+    /**
+     * 下单时间
+     */
+    @Column(name = "order_time")
+    @JsonSerialize(using = CustomLocalDateTimeSerializer.class)
+  	@Convert(converter = LocalDateConverter.class)
+    private LocalDateTime orderTime;
 
-	@Column(name = "activity_id")
-	private String activityId;
+    /**
+     * 订单金额
+     */
+    @Column(name = "order_price")
+    private BigDecimal orderPrice;
 
-	@Column(name = "ref_order_id")
-	private String refOrderId;
+    @Column(name = "pay_price")
+    private BigDecimal payPrice;
 
-	/**
-	 * @return id
-	 */
-	public String getId() {
-		return id;
+    /**
+     * 订单类型 10
+     */
+    @Column(name = "order_type")
+    private Integer orderType;
+	public enum INNO72ORDER_ORDERTYPE{
+
+		DEFAULT(999, "默认");
+
+		private Integer key;
+		private String desc;
+
+		INNO72ORDER_ORDERTYPE(Integer key, String desc) {
+			this.key = key;
+			this.desc = desc;
+		}
+
+		public Integer getKey() {
+			return key;
+		}
+
+		public void setKey(Integer key) {
+			this.key = key;
+		}
+
+		public String getDesc() {
+			return desc;
+		}
+
+		public void setDesc(String desc) {
+			this.desc = desc;
+		}
 	}
 
-	/**
-	 * @param id
-	 */
-	public void setId(String id) {
-		this.id = id;
+    @Column(name = "pay_status")
+    private Integer payStatus;
+	public enum INNO72ORDER_PAYSTATUS{
+
+		SUCC(1, "已支付"),
+		WAIT(0, "未支付");
+
+		private Integer key;
+		private String desc;
+
+		INNO72ORDER_PAYSTATUS(Integer key, String desc) {
+			this.key = key;
+			this.desc = desc;
+		}
+
+		public Integer getKey() {
+			return key;
+		}
+
+		public void setKey(Integer key) {
+			this.key = key;
+		}
+
+		public String getDesc() {
+			return desc;
+		}
+
+		public void setDesc(String desc) {
+			this.desc = desc;
+		}
+	}
+    @Column(name = "goods_status")
+    private Integer goodsStatus;
+    public enum INNO72ORDER_GOODSSTATUS{
+
+    	SUCC(1, "出货成功"),
+		WAIT(0, "未出货");
+
+		private Integer key;
+    	private String desc;
+
+		INNO72ORDER_GOODSSTATUS(Integer key, String desc) {
+			this.key = key;
+			this.desc = desc;
+		}
+
+		public Integer getKey() {
+			return key;
+		}
+
+		public void setKey(Integer key) {
+			this.key = key;
+		}
+
+		public String getDesc() {
+			return desc;
+		}
+
+		public void setDesc(String desc) {
+			this.desc = desc;
+		}
 	}
 
-	/**
-	 * @return order_num
-	 */
-	public String getOrderNum() {
-		return orderNum;
+    @Column(name = "pay_time")
+    @JsonSerialize(using = CustomLocalDateTimeSerializer.class)
+  	@Convert(converter = LocalDateConverter.class)
+    private LocalDateTime payTime;
+
+    @Column(name = "ref_order_status")
+    private String refOrderStatus;
+
+    /**
+     * 三方OrderId
+     */
+    @Column(name = "ref_order_id")
+    private String refOrderId;
+
+    /**
+     * 是否为重复单（0:不是，1:是）
+     */
+    private Integer repetition;
+	public enum INNO72ORDER_REPETITION{
+
+		NOT(1, "不重复"),
+		REPETITION(0, "重复单");
+
+		private Integer key;
+		private String desc;
+
+		INNO72ORDER_REPETITION(Integer key, String desc) {
+			this.key = key;
+			this.desc = desc;
+		}
+
+		public Integer getKey() {
+			return key;
+		}
+
+		public void setKey(Integer key) {
+			this.key = key;
+		}
+
+		public String getDesc() {
+			return desc;
+		}
+
+		public void setDesc(String desc) {
+			this.desc = desc;
+		}
 	}
 
-	/**
-	 * @param orderNum
-	 */
-	public void setOrderNum(String orderNum) {
-		this.orderNum = orderNum;
-	}
+    /**
+     * @return id
+     */
+    public String getId() {
+        return id;
+    }
 
-	/**
-	 * 获取inno72_game_user.id
-	 *
-	 * @return user_id - inno72_game_user.id
-	 */
-	public String getUserId() {
-		return userId;
-	}
+    /**
+     * @param id
+     */
+    public void setId(String id) {
+        this.id = id;
+    }
 
-	/**
-	 * 设置inno72_game_user.id
-	 *
-	 * @param userId inno72_game_user.id
-	 */
-	public void setUserId(String userId) {
-		this.userId = userId;
-	}
+    /**
+     * @return order_num
+     */
+    public String getOrderNum() {
+        return orderNum;
+    }
 
-	/**
-	 * 获取inn72_channel.id
-	 *
-	 * @return channel_id - inn72_channel.id
-	 */
-	public String getChannelId() {
-		return channelId;
-	}
+    /**
+     * @param orderNum
+     */
+    public void setOrderNum(String orderNum) {
+        this.orderNum = orderNum;
+    }
 
-	/**
-	 * 设置inn72_channel.id
-	 *
-	 * @param channelId inn72_channel.id
-	 */
-	public void setChannelId(String channelId) {
-		this.channelId = channelId;
-	}
+    /**
+     * 获取inno72_game_user.id
+     *
+     * @return user_id - inno72_game_user.id
+     */
+    public String getUserId() {
+        return userId;
+    }
 
-	/**
-	 * 获取inno72_machine.id
-	 *
-	 * @return machine_id - inno72_machine.id
-	 */
-	public String getMachineId() {
-		return machineId;
-	}
+    /**
+     * 设置inno72_game_user.id
+     *
+     * @param userId inno72_game_user.id
+     */
+    public void setUserId(String userId) {
+        this.userId = userId;
+    }
 
-	/**
-	 * 设置inno72_machine.id
-	 *
-	 * @param machineId inno72_machine.id
-	 */
-	public void setMachineId(String machineId) {
-		this.machineId = machineId;
-	}
+    /**
+     * 获取inn72_channel.id
+     *
+     * @return channel_id - inn72_channel.id
+     */
+    public String getChannelId() {
+        return channelId;
+    }
 
-	/**
-	 * 获取inno72_game.id
-	 *
-	 * @return game_id - inno72_game.id
-	 */
-	public String getGameId() {
-		return gameId;
-	}
+    /**
+     * 设置inn72_channel.id
+     *
+     * @param channelId inn72_channel.id
+     */
+    public void setChannelId(String channelId) {
+        this.channelId = channelId;
+    }
 
-	/**
-	 * 设置inno72_game.id
-	 *
-	 * @param gameId inno72_game.id
-	 */
-	public void setGameId(String gameId) {
-		this.gameId = gameId;
-	}
+    /**
+     * 获取inno72_machine.id
+     *
+     * @return machine_id - inno72_machine.id
+     */
+    public String getMachineId() {
+        return machineId;
+    }
 
-	/**
-	 * 获取下单时间
-	 *
-	 * @return order_time - 下单时间
-	 */
-	public LocalDateTime getOrderTime() {
-		return orderTime;
-	}
+    /**
+     * 设置inno72_machine.id
+     *
+     * @param machineId inno72_machine.id
+     */
+    public void setMachineId(String machineId) {
+        this.machineId = machineId;
+    }
 
-	/**
-	 * 设置下单时间
-	 *
-	 * @param orderTime 下单时间
-	 */
-	public void setOrderTime(LocalDateTime orderTime) {
-		this.orderTime = orderTime;
-	}
+    /**
+     * 获取店铺ID
+     *
+     * @return shops_id - 店铺ID
+     */
+    public String getShopsId() {
+        return shopsId;
+    }
 
-	/**
-	 * @return order_price
-	 */
-	public BigDecimal getOrderPrice() {
-		return orderPrice;
-	}
+    /**
+     * 设置店铺ID
+     *
+     * @param shopsId 店铺ID
+     */
+    public void setShopsId(String shopsId) {
+        this.shopsId = shopsId;
+    }
 
-	/**
-	 * @param orderPrice
-	 */
-	public void setOrderPrice(BigDecimal orderPrice) {
-		this.orderPrice = orderPrice;
-	}
+    /**
+     * 获取店铺ID
+     *
+     * @return shops_name - 店铺ID
+     */
+    public String getShopsName() {
+        return shopsName;
+    }
 
-	/**
-	 * 获取订单类型 10
-	 *
-	 * @return order_type - 订单类型 10
-	 */
-	public String getOrderType() {
-		return orderType;
-	}
+    /**
+     * 设置店铺ID
+     *
+     * @param shopsName 店铺ID
+     */
+    public void setShopsName(String shopsName) {
+        this.shopsName = shopsName;
+    }
 
-	/**
-	 * 设置订单类型 10
-	 *
-	 * @param orderType 订单类型 10
-	 */
-	public void setOrderType(String orderType) {
-		this.orderType = orderType;
-	}
+    /**
+     * @return merchant_id
+     */
+    public String getMerchantId() {
+        return merchantId;
+    }
 
-	/**
-	 * @return pay_status
-	 */
-	public String getPayStatus() {
-		return payStatus;
-	}
+    /**
+     * @param merchantId
+     */
+    public void setMerchantId(String merchantId) {
+        this.merchantId = merchantId;
+    }
 
-	/**
-	 * @param payStatus
-	 */
-	public void setPayStatus(String payStatus) {
-		this.payStatus = payStatus;
-	}
+    /**
+     * 获取	活动ID
+     *
+     * @return inno72_activity_id - 	活动ID
+     */
+    public String getInno72ActivityId() {
+        return inno72ActivityId;
+    }
 
-	/**
-	 * @return pay_time
-	 */
-	public LocalDateTime getPayTime() {
-		return payTime;
-	}
+    /**
+     * 设置	活动ID
+     *
+     * @param inno72ActivityId 	活动ID
+     */
+    public void setInno72ActivityId(String inno72ActivityId) {
+        this.inno72ActivityId = inno72ActivityId;
+    }
 
-	/**
-	 * @param payTime
-	 */
-	public void setPayTime(LocalDateTime payTime) {
-		this.payTime = payTime;
-	}
+    /**
+     * 获取活动计划ID
+     *
+     * @return inno72_activity_plan_id - 活动计划ID
+     */
+    public String getInno72ActivityPlanId() {
+        return inno72ActivityPlanId;
+    }
 
-	public String getActivityId() {
-		return activityId;
-	}
+    /**
+     * 设置活动计划ID
+     *
+     * @param inno72ActivityPlanId 活动计划ID
+     */
+    public void setInno72ActivityPlanId(String inno72ActivityPlanId) {
+        this.inno72ActivityPlanId = inno72ActivityPlanId;
+    }
 
-	public void setActivityId(String activityId) {
-		this.activityId = activityId;
-	}
+    /**
+     * 获取下单时间
+     *
+     * @return order_time - 下单时间
+     */
+    public LocalDateTime getOrderTime() {
+        return orderTime;
+    }
 
-	public String getRefOrderId() {
-		return refOrderId;
-	}
+    /**
+     * 设置下单时间
+     *
+     * @param orderTime 下单时间
+     */
+    public void setOrderTime(LocalDateTime orderTime) {
+        this.orderTime = orderTime;
+    }
 
-	public void setRefOrderId(String refOrderId) {
-		this.refOrderId = refOrderId;
-	}
+    /**
+     * 获取订单金额
+     *
+     * @return order_price - 订单金额
+     */
+    public BigDecimal getOrderPrice() {
+        return orderPrice;
+    }
 
+    /**
+     * 设置订单金额
+     *
+     * @param orderPrice 订单金额
+     */
+    public void setOrderPrice(BigDecimal orderPrice) {
+        this.orderPrice = orderPrice;
+    }
 
+    /**
+     * @return pay_price
+     */
+    public BigDecimal getPayPrice() {
+        return payPrice;
+    }
+
+    /**
+     * @param payPrice
+     */
+    public void setPayPrice(BigDecimal payPrice) {
+        this.payPrice = payPrice;
+    }
+
+    /**
+     * 获取订单类型 10
+     *
+     * @return order_type - 订单类型 10
+     */
+    public Integer getOrderType() {
+        return orderType;
+    }
+
+    /**
+     * 设置订单类型 10
+     *
+     * @param orderType 订单类型 10
+     */
+    public void setOrderType(Integer orderType) {
+        this.orderType = orderType;
+    }
+
+    /**
+     * @return pay_status
+     */
+    public Integer getPayStatus() {
+        return payStatus;
+    }
+
+    /**
+     * @param payStatus
+     */
+    public void setPayStatus(Integer payStatus) {
+        this.payStatus = payStatus;
+    }
+
+    /**
+     * @return goods_status
+     */
+    public Integer getGoodsStatus() {
+        return goodsStatus;
+    }
+
+    /**
+     * @param goodsStatus
+     */
+    public void setGoodsStatus(Integer goodsStatus) {
+        this.goodsStatus = goodsStatus;
+    }
+
+    /**
+     * @return pay_time
+     */
+    public LocalDateTime getPayTime() {
+        return payTime;
+    }
+
+    /**
+     * @param payTime
+     */
+    public void setPayTime(LocalDateTime payTime) {
+        this.payTime = payTime;
+    }
+
+    /**
+     * @return ref_order_status
+     */
+    public String getRefOrderStatus() {
+        return refOrderStatus;
+    }
+
+    /**
+     * @param refOrderStatus
+     */
+    public void setRefOrderStatus(String refOrderStatus) {
+        this.refOrderStatus = refOrderStatus;
+    }
+
+    /**
+     * 获取三方OrderId
+     *
+     * @return ref_order_id - 三方OrderId
+     */
+    public String getRefOrderId() {
+        return refOrderId;
+    }
+
+    /**
+     * 设置三方OrderId
+     *
+     * @param refOrderId 三方OrderId
+     */
+    public void setRefOrderId(String refOrderId) {
+        this.refOrderId = refOrderId;
+    }
+
+    /**
+     * 获取是否为重复单（0:不是，1:是）
+     *
+     * @return repetition - 是否为重复单（0:不是，1:是）
+     */
+    public Integer getRepetition() {
+        return repetition;
+    }
+
+    /**
+     * 设置是否为重复单（0:不是，1:是）
+     *
+     * @param repetition 是否为重复单（0:不是，1:是）
+     */
+    public void setRepetition(Integer repetition) {
+        this.repetition = repetition;
+    }
 }

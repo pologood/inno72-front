@@ -4,6 +4,9 @@ import java.util.List;
 
 import javax.annotation.Resource;
 
+import com.inno72.common.utils.StringUtil;
+import com.inno72.mapper.*;
+import com.inno72.model.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
@@ -15,12 +18,6 @@ import com.inno72.common.AbstractService;
 import com.inno72.common.Inno72GameServiceProperties;
 import com.inno72.common.Result;
 import com.inno72.common.Results;
-import com.inno72.mapper.Inno72GameMapper;
-import com.inno72.mapper.Inno72MachineGameMapper;
-import com.inno72.mapper.Inno72MachineMapper;
-import com.inno72.model.Inno72Game;
-import com.inno72.model.Inno72Machine;
-import com.inno72.model.Inno72MachineGame;
 import com.inno72.service.Inno72MachineService;
 import com.inno72.vo.Inno72MachineVo;
 
@@ -30,7 +27,9 @@ import com.inno72.vo.Inno72MachineVo;
 @Service
 @Transactional
 public class Inno72MachineServiceImpl extends AbstractService<Inno72Machine> implements Inno72MachineService {
+
 	private static final Logger LOGGER = LoggerFactory.getLogger(Inno72MachineServiceImpl.class);
+
 	@Resource
 	private Inno72MachineMapper inno72MachineMapper;
 	@Resource
@@ -39,38 +38,59 @@ public class Inno72MachineServiceImpl extends AbstractService<Inno72Machine> imp
 	private Inno72GameMapper inno72GameMapper;
 	@Resource
 	private Inno72GameServiceProperties inno72GameServiceProperties;
+	@Resource
+	private Inno72ActivityPlanMapper inno72ActivityPlanMapper;
+	@Resource
+	private Inno72ActivityPlanMachineMapper inno72ActivityPlanMachineMapper;
+	@Resource
+	private Inno72MerchantMapper inno72MerchantMapper;
+	@Resource
+	private Inno72ActivityMapper inno72ActivityMapper;
+
+
 
 	@Override
-	public Result<Inno72MachineVo> findGame(String machineId, String gameId, String version, String versionInno72) {
+	public Result<Inno72MachineVo> findGame(String machineId, String plantId, String version, String versionInno72) {
 		LOGGER.info("查询售卖机游戏详情 - machineId -> {}", machineId);
 		Inno72Machine inno72Machine = inno72MachineMapper.selectByPrimaryKey(machineId);
 		if (inno72Machine == null) {
 			return Results.failure("机器ID错误!");
 		}
-		List<Inno72MachineGame> selectByCondition = inno72MachineGameMapper.selectByMachineId(machineId);
-		if (selectByCondition.size() == 0) {
-			return Results.failure("机器ID没有绑定游戏!");
+
+		List<Inno72ActivityPlan> inno72ActivityPlans = inno72ActivityPlanMapper.selectByMachineId(machineId);
+
+		if ( inno72ActivityPlans.size() == 0 ){
+			LOGGER.warn("机器 【{}】 没有配置 活动计划!", inno72Machine.getMachineCode());
+			return Results.failure("无活动计划!");
 		}
 
-		String gameIds = "";
+		Inno72ActivityPlan inno72ActivityPlan = inno72ActivityPlans.get(0);
 
-		for (Inno72MachineGame inno72MachineGame : selectByCondition) {
-			gameIds += inno72MachineGame.getGameId() + ",";
+		String gameId = inno72ActivityPlan.getGameId();
+		if (StringUtil.isEmpty(gameId)){
+			LOGGER.warn("活动计划id 【{}】 没有配置 游戏!", inno72ActivityPlan.getId());
+			return Results.failure("无配置游戏!");
 		}
-		if (gameIds.substring(gameIds.length() - 1).equals(",")) {
-			gameIds = gameIds.substring(0, gameIds.length() - 1);
+
+
+		Inno72Game inno72Game = inno72GameMapper.selectByPrimaryKey(gameId);
+		if (inno72Game == null){
+			LOGGER.warn("游戏id 【{}】 不存在!", gameId);
+			return Results.failure("游戏不存在!");
 		}
-		Inno72Game inno72Games = inno72GameMapper.selectByPrimaryKey(gameIds);
+
+
 
 		Inno72MachineVo inno72MachineVo = new Inno72MachineVo();
 		BeanUtils.copyProperties(inno72Machine, inno72MachineVo);
-		inno72MachineVo.setInno72Games(inno72Games);
-
-		String brandName = inno72GameMapper.selectBoundName(inno72Games.getSellerId());
+		inno72MachineVo.setInno72Games(inno72Game);
+		Inno72Activity inno72Activity = inno72ActivityMapper.selectByPrimaryKey(inno72ActivityPlan.getActivityId());
+		String brandName = inno72MerchantMapper.selectBoundNameByActivityId(inno72Activity.getId());
 		inno72MachineVo.setBrandName(brandName);
-
-		if (!gameId.equals("0") && (!inno72Games.getId().equals(gameId) || !inno72Games.getVersion().equals(version)
-				|| !inno72Games.getVersionInno72().equals(versionInno72))) {
+		inno72MachineVo.setActivityPlanId(inno72ActivityPlan.getId());
+		inno72MachineVo.setInno72ActivityPlan(inno72ActivityPlan);
+		if (!gameId.equals("0") && (!inno72Game.getId().equals(gameId) || !inno72Game.getVersion().equals(version)
+				|| !inno72Game.getVersionInno72().equals(versionInno72))) {
 			inno72MachineVo.setReload(true);
 		}
 

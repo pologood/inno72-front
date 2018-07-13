@@ -27,10 +27,18 @@ public class Inno72MachineController {
 	@Resource
 	private Inno72MachineService inno72MachineService;
 
+	/**
+	 *
+	 * @param mid 机器ID
+	 * @param plantId 活动计划ID
+	 * @param version 游戏版本号
+	 * @param versionInno72 游戏更新版本号
+	 * @return
+	 */
 	@RequestMapping(value = "/findGame", method = {RequestMethod.POST, RequestMethod.GET})
-	public Result findGame(@RequestParam(name = "machineId") String mid, @RequestParam(name = "gameId") String gameId,
+	public Result findGame(@RequestParam(name = "machineId") String mid, @RequestParam(name = "plantId") String plantId,
 			String version, String versionInno72) {
-		return inno72MachineService.findGame(mid, gameId, version, versionInno72);
+		return inno72MachineService.findGame(mid, plantId, version, versionInno72);
 	}
 
 	@RequestMapping(value = "/add", method = {RequestMethod.POST, RequestMethod.GET})

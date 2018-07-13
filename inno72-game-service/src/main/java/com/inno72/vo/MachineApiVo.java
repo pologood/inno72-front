@@ -30,6 +30,11 @@ public class MachineApiVo {
 	 * 商品ID
 	 */
 	private String itemId;
+
+	/**
+	 * 商品类型 0 商品； 1 优惠券
+	 */
+	private String itemType;
 	/**
 	 * 天猫订单号
 	 */
@@ -38,6 +43,11 @@ public class MachineApiVo {
 	 * 活动ID
 	 */
 	private String activityId;
+
+	/**
+	 * 我方活动计划ID
+	 */
+	private String activityPlanId;
 	/**
 	 * 店铺ID
 	 */
@@ -157,5 +167,21 @@ public class MachineApiVo {
 
 	public void setInteractId(String interactId) {
 		this.interactId = interactId;
+	}
+
+	public String getActivityPlanId() {
+		return activityPlanId;
+	}
+
+	public String getItemType() {
+		return itemType;
+	}
+
+	public void setItemType(String itemType) {
+		this.itemType = itemType;
+	}
+
+	public void setActivityPlanId(String activityPlanId) {
+		this.activityPlanId = activityPlanId;
 	}
 }

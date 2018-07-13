@@ -1,50 +1,51 @@
 package com.inno72.model;
 
+import javax.persistence.*;
 import java.time.LocalDateTime;
 
-import javax.persistence.Column;
-import javax.persistence.Convert;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.Table;
-
-import com.fasterxml.jackson.databind.annotation.JsonSerialize;
-import com.inno72.common.CustomLocalDateTimeSerializer;
-import com.inno72.common.LocalDateConverter;
-
-@Table(name = "inno72_game")
-public class Inno72Game {
+@Table(name = "inno72_activity_plan")
+public class Inno72ActivityPlan {
+    /**
+     * 活动排期ID
+     */
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private String id;
 
     /**
-     * 游戏名称
+     * 活动ID
      */
-    private String name;
+    @Column(name = "activity_id")
+    private String activityId;
 
     /**
-     * 游戏版本
+     * 游戏ID
      */
-    private String version;
+    @Column(name = "game_id")
+    private String gameId;
 
     /**
-     * 游戏版本（点72）
+     * 开始时间
      */
-    @Column(name = "version_inno72")
-    private String versionInno72;
+    @Column(name = "start_time")
+    private LocalDateTime startTime;
 
     /**
-     * 游戏描述
+     * 结束时间
      */
-    private String remark;
+    @Column(name = "end_time")
+    private LocalDateTime endTime;
 
     /**
-     * 是否删除：0未删除，1已删除
+     * 状态：0正常，1删除
      */
     @Column(name = "is_delete")
     private Integer isDelete;
+
+    /**
+     * 备注描述
+     */
+    private String remark;
 
     /**
      * 创建人
@@ -56,8 +57,6 @@ public class Inno72Game {
      * 创建时间
      */
     @Column(name = "create_time")
-    @JsonSerialize(using = CustomLocalDateTimeSerializer.class)
-	@Convert(converter = LocalDateConverter.class)
     private LocalDateTime createTime;
 
     /**
@@ -70,112 +69,136 @@ public class Inno72Game {
      * 更新时间
      */
     @Column(name = "update_time")
-    @JsonSerialize(using = CustomLocalDateTimeSerializer.class)
-	@Convert(converter = LocalDateConverter.class)
     private LocalDateTime updateTime;
 
+
+    @Column(name = "user_max_times")
+    private Integer userMaxTimes;
+
     /**
-     * @return id
+     * 获取活动排期ID
+     *
+     * @return id - 活动排期ID
      */
     public String getId() {
         return id;
     }
 
     /**
-     * @param id
+     * 设置活动排期ID
+     *
+     * @param id 活动排期ID
      */
     public void setId(String id) {
         this.id = id;
     }
 
     /**
-     * 获取游戏名称
+     * 获取活动ID
      *
-     * @return name - 游戏名称
+     * @return activity_id - 活动ID
      */
-    public String getName() {
-        return name;
+    public String getActivityId() {
+        return activityId;
     }
 
     /**
-     * 设置游戏名称
+     * 设置活动ID
      *
-     * @param name 游戏名称
+     * @param activityId 活动ID
      */
-    public void setName(String name) {
-        this.name = name;
+    public void setActivityId(String activityId) {
+        this.activityId = activityId;
     }
 
     /**
-     * 获取游戏版本
+     * 获取游戏ID
      *
-     * @return version - 游戏版本
+     * @return game_id - 游戏ID
      */
-    public String getVersion() {
-        return version;
+    public String getGameId() {
+        return gameId;
     }
 
     /**
-     * 设置游戏版本
+     * 设置游戏ID
      *
-     * @param version 游戏版本
+     * @param gameId 游戏ID
      */
-    public void setVersion(String version) {
-        this.version = version;
+    public void setGameId(String gameId) {
+        this.gameId = gameId;
     }
 
     /**
-     * 获取游戏版本（点72）
+     * 获取开始时间
      *
-     * @return version_inno72 - 游戏版本（点72）
+     * @return start_time - 开始时间
      */
-    public String getVersionInno72() {
-        return versionInno72;
+    public LocalDateTime getStartTime() {
+        return startTime;
     }
 
     /**
-     * 设置游戏版本（点72）
+     * 设置开始时间
      *
-     * @param versionInno72 游戏版本（点72）
+     * @param startTime 开始时间
      */
-    public void setVersionInno72(String versionInno72) {
-        this.versionInno72 = versionInno72;
+    public void setStartTime(LocalDateTime startTime) {
+        this.startTime = startTime;
     }
 
     /**
-     * 获取游戏描述
+     * 获取结束时间
      *
-     * @return remark - 游戏描述
+     * @return end_time - 结束时间
      */
-    public String getRemark() {
-        return remark;
+    public LocalDateTime getEndTime() {
+        return endTime;
     }
 
     /**
-     * 设置游戏描述
+     * 设置结束时间
      *
-     * @param remark 游戏描述
+     * @param endTime 结束时间
      */
-    public void setRemark(String remark) {
-        this.remark = remark;
+    public void setEndTime(LocalDateTime endTime) {
+        this.endTime = endTime;
     }
 
     /**
-     * 获取是否删除：0未删除，1已删除
+     * 获取状态：0正常，1删除
      *
-     * @return is_delete - 是否删除：0未删除，1已删除
+     * @return is_delete - 状态：0正常，1删除
      */
     public Integer getIsDelete() {
         return isDelete;
     }
 
     /**
-     * 设置是否删除：0未删除，1已删除
+     * 设置状态：0正常，1删除
      *
-     * @param isDelete 是否删除：0未删除，1已删除
+     * @param isDelete 状态：0正常，1删除
      */
     public void setIsDelete(Integer isDelete) {
         this.isDelete = isDelete;
+    }
+
+    /**
+     * 获取备注描述
+     *
+     * @return remark - 备注描述
+     */
+    public String getRemark() {
+        return remark;
+    }
+
+    /**
+     * 设置备注描述
+     *
+     * @param remark 备注描述
+     */
+    public void setRemark(String remark) {
+        this.remark = remark;
     }
 
     /**
@@ -249,4 +272,12 @@ public class Inno72Game {
     public void setUpdateTime(LocalDateTime updateTime) {
         this.updateTime = updateTime;
     }
+
+	public Integer getUserMaxTimes() {
+		return userMaxTimes;
+	}
+
+	public void setUserMaxTimes(Integer userMaxTimes) {
+		this.userMaxTimes = userMaxTimes;
+	}
 }
