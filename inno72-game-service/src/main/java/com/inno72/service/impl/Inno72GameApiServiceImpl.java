@@ -520,9 +520,11 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 		if (userChannel == null){
 			Inno72GameUser inno72GameUser = new Inno72GameUser();
 			inno72GameUserMapper.insert(inno72GameUser);
+			LOGGER.info("插入游戏用户表 完成 ===> {}", JSON.toJSONString(inno72GameUser));
 			userChannel = new Inno72GameUserChannel(nickName
 			, "", channelId, inno72GameUser.getId(), inno72Channel.getChannelName(), userId);
 			inno72GameUserChannelMapper.insert(userChannel);
+			LOGGER.info("插入游戏用户渠道表 完成 ===> {}", JSON.toJSONString(userChannel));
 			Inno72Machine inno72Machine = inno72MachineMapper.selectByPrimaryKey(mid);
 			this.startGameLife(inno72GameUser, userChannel, inno72Activity, inno72ActivityPlan, inno72Game, inno72Machine);
 		}

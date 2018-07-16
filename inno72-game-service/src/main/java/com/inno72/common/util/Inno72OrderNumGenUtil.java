@@ -1,24 +1,28 @@
 package com.inno72.common.util;
 
-import com.inno72.common.datetime.LocalDateTimeUtil;
-import com.inno72.redis.IRedisUtil;
-import org.apache.commons.lang3.StringUtils;
-
-import javax.annotation.PostConstruct;
-import javax.annotation.Resource;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
+import javax.annotation.PostConstruct;
+
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
+
+import com.inno72.common.datetime.LocalDateTimeUtil;
+import com.inno72.redis.IRedisUtil;
+
+@Component
 public class Inno72OrderNumGenUtil {
 
-	@Resource
+	@Autowired
 	private IRedisUtil redisUtil;
 
 	private static IRedisUtil $redisUtil;
 
 	@PostConstruct
 	public void init(){
-		this.redisUtil = $redisUtil;
+		$redisUtil = this.redisUtil;
 	}
 
 	/**
