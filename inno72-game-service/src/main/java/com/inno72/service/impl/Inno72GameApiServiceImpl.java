@@ -476,6 +476,8 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 		assert inno72ActivityPlan != null;
 		Inno72Activity inno72Activity = inno72ActivityMapper.selectByPrimaryKey(inno72ActivityPlan.getActivityId());
 		String sellerId = inno72Activity.getSellerId();
+		Inno72Merchant inno72Merchant = inno72MerchantMapper.selectByPrimaryKey(sellerId);
+
 
 		String jstUrl = inno72GameServiceProperties.get("jstUrl");
 		if (StringUtil.isEmpty(jstUrl)) {
@@ -485,7 +487,7 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 		Map<String, String> requestForm = new HashMap<>();
 		requestForm.put("accessToken", access_token);
 		requestForm.put("mid", mid);
-		requestForm.put("sellerId", sellerId + "");
+		requestForm.put("sellerId", inno72Merchant.getMerchantCode());
 		/**
 		 * <tmall_fans_automachine_getmaskusernick_response>
 		 *     <msg_code>200</msg_code>
@@ -506,7 +508,6 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 
 		redisUtil.setex(sessionUuid, 1800, JSON.toJSONString(sessionVo));
 
-		Inno72Merchant inno72Merchant = inno72MerchantMapper.selectByPrimaryKey(sellerId);
 		String channelId = inno72Merchant.getChannelId();
 
 		Inno72Channel inno72Channel = inno72ChannelMapper.selectByPrimaryKey(channelId);
