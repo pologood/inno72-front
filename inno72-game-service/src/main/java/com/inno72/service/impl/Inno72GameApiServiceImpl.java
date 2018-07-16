@@ -72,7 +72,8 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 	private Inno72OrderGoodsMapper inno72OrderGoodsMapper;
 	@Resource
 	private Inno72OrderHistoryMapper inno72OrderHistoryMapper;
-
+	@Resource
+	private Inno72AdminAreaMapper inno72AdminAreaMapper;
 
 
 	/**
@@ -184,7 +185,13 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 		requestForm.put("mid", machineId);
 		requestForm.put("goodsId", itemId);
 
-		String respJson = HttpClient.form(jstUrl + "/api/top/order", requestForm, null);
+		String respJson = "";
+		try {
+			respJson = HttpClient.form(jstUrl + "/api/top/order", requestForm, null);
+		} catch (Exception e) {
+			LOGGER.info("调用聚石塔失败 ! {}", e.getMessage(), e);
+			return Results.failure("聚石塔调用失败!");
+		}
 
 		if (StringUtil.isEmpty(respJson)) {
 			return Results.failure("聚石塔无返回数据!");
@@ -497,7 +504,6 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 
 		UserSessionVo sessionVo = new UserSessionVo(mid, nickName, userId, access_token, gameId, sessionUuid);
 
-		LocalDateTime now = LocalDateTime.now();
 		redisUtil.setex(sessionUuid, 1800, JSON.toJSONString(sessionVo));
 
 		Inno72Merchant inno72Merchant = inno72MerchantMapper.selectByPrimaryKey(sellerId);
@@ -516,10 +522,27 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 			userChannel = new Inno72GameUserChannel(nickName
 			, "", channelId, inno72GameUser.getId(), inno72Channel.getChannelName(), userId);
 			inno72GameUserChannelMapper.insert(userChannel);
+			Inno72Machine inno72Machine = inno72MachineMapper.selectByPrimaryKey(mid);
+			this.startGameLife(inno72GameUser, userChannel, inno72Activity, inno72ActivityPlan, inno72Game, inno72Machine);
 		}
 
 
 		return Results.success(gameId);
+	}
+
+	@Resource
+	private Inno72GameUserLifeMapper inno72GameUserLifeMapper;
+
+	private void startGameLife(Inno72GameUser inno72GameUser, Inno72GameUserChannel userChannel, Inno72Activity inno72Activity, Inno72ActivityPlan inno72ActivityPlan,
+			Inno72Game inno72Game, Inno72Machine inno72Machine) {
+		Inno72Merchant inno72Merchant = inno72MerchantMapper.selectByPrimaryKey(inno72Activity.getSellerId());
+		Inno72AdminArea inno72AdminArea = inno72AdminAreaMapper.selectByPrimaryKey(inno72Machine.getLocaleId());
+		Inno72GameUserLife life = new Inno72GameUserLife(inno72GameUser.getId(), userChannel.getId(), inno72Merchant == null ? "" : inno72Merchant.getMerchantCode(),
+				userChannel.getUserNick(), inno72ActivityPlan.getActivityId(), inno72Activity.getName(),
+				inno72ActivityPlan.getId(), inno72Game.getId(), inno72Game.getName(), inno72Machine.getLocaleId(), inno72AdminArea == null ? "" : inno72AdminArea.getCircle(), null, "", null,null);
+		LOGGER.info("插入用户游戏记录 ===> {}", JSON.toJSONString(life));
+		inno72GameUserLifeMapper.insert(life);
+
 	}
 
 	private void updateRefOrderId(String inno72OrderId, String respJson) {

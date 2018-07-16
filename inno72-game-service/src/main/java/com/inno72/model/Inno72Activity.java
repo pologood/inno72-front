@@ -30,12 +30,6 @@ public class Inno72Activity {
     private String sellerId;
 
     /**
-     * 奖品类型
-     */
-    @Column(name = "prize_type")
-    private String prizeType;
-
-    /**
      * 负责人
      */
     @Column(name = "manager_id")
@@ -148,27 +142,7 @@ public class Inno72Activity {
         this.sellerId = sellerId;
     }
 
-    /**
-     * 获取奖品类型
-     *
-     * @return prize_type - 奖品类型
-     */
-    public String getPrizeType() {
-        return prizeType;
-    }
-
-    /**
-     * 设置奖品类型
-     *
-     * @param prizeType 奖品类型
-     */
-    public void setPrizeType(String prizeType) {
-        this.prizeType = prizeType;
-    }
-
-    /**
-     * 获取负责人
-     *
+     /*
      * @return manager_id - 负责人
      */
     public String getManagerId() {

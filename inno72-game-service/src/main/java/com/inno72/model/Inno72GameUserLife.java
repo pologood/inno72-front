@@ -8,6 +8,9 @@ import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.inno72.common.CustomLocalDateTimeSerializer;
 import com.inno72.common.LocalDateConverter;
 
+import javax.persistence.*;
+import java.time.LocalDateTime;
+
 @Table(name = "inno72_game_user_life")
 public class Inno72GameUserLife {
     @Id
@@ -55,7 +58,14 @@ public class Inno72GameUserLife {
     @Column(name = "activity_name")
     private String activityName;
 
-    /**
+	/**
+	 * 活动计划ID
+	 */
+	@Column(name = "activity_plan_id")
+	private String activityPlanId;
+
+
+	/**
      * 游戏id
      */
     @Column(name = "game_id")
@@ -83,7 +93,7 @@ public class Inno72GameUserLife {
      * 游戏结果 成功:1; 失败:0;
      */
     @Column(name = "game_result")
-    private Byte gameResult;
+    private String gameResult;
 
     /**
      * 成功后下单的id
@@ -94,14 +104,43 @@ public class Inno72GameUserLife {
     /**
      * 0 - 女； 1 - 男；
      */
-    private Byte sex;
+    private Integer sex;
 
     /**
      * 年龄
      */
+    private Integer age;
+
+	public Inno72GameUserLife() {
+	}
+
+	public Inno72GameUserLife(String gameUserId, String userChannelId, String machineCode, String nickName,
+			String activityId, String activityName, String activityPlanId, String gameId, String gameName,
+			String merPointId, String merPointAddress, String gameResult, String orderId, Integer sex, Integer age) {
+		this.gameUserId = gameUserId;
+		this.userChannelId = userChannelId;
+		this.machineCode = machineCode;
+		this.nickName = nickName;
+		this.loginTime = LocalDateTime.now();
+		this.activityId = activityId;
+		this.activityName = activityName;
+		this.activityPlanId = activityPlanId;
+		this.gameId = gameId;
+		this.gameName = gameName;
+		this.merPointId = merPointId;
+		this.merPointAddress = merPointAddress;
+		this.gameResult = gameResult;
+		this.orderId = orderId;
+		this.sex = sex;
+		this.age = age;
+	}
+
+	/**
+=======
     private Byte age;
 
     /**
+>>>>>>> b98d85f1a212f405ffd47de237a669ed723d5d81
      * @return id
      */
     public String getId() {
@@ -237,7 +276,15 @@ public class Inno72GameUserLife {
         this.activityName = activityName;
     }
 
-    /**
+	public String getActivityPlanId() {
+		return activityPlanId;
+	}
+
+	public void setActivityPlanId(String activityPlanId) {
+		this.activityPlanId = activityPlanId;
+	}
+
+	/**
      * 获取游戏id
      *
      * @return game_id - 游戏id
@@ -314,7 +361,7 @@ public class Inno72GameUserLife {
      *
      * @return game_result - 游戏结果 成功:1; 失败:0;
      */
-    public Byte getGameResult() {
+    public String getGameResult() {
         return gameResult;
     }
 
@@ -323,7 +370,7 @@ public class Inno72GameUserLife {
      *
      * @param gameResult 游戏结果 成功:1; 失败:0;
      */
-    public void setGameResult(Byte gameResult) {
+    public void setGameResult(String gameResult) {
         this.gameResult = gameResult;
     }
 
@@ -350,7 +397,7 @@ public class Inno72GameUserLife {
      *
      * @return sex - 0 - 女； 1 - 男；
      */
-    public Byte getSex() {
+    public Integer getSex() {
         return sex;
     }
 
@@ -359,7 +406,7 @@ public class Inno72GameUserLife {
      *
      * @param sex 0 - 女； 1 - 男；
      */
-    public void setSex(Byte sex) {
+    public void setSex(Integer sex) {
         this.sex = sex;
     }
 
@@ -368,7 +415,7 @@ public class Inno72GameUserLife {
      *
      * @return age - 年龄
      */
-    public Byte getAge() {
+    public Integer getAge() {
         return age;
     }
 
@@ -377,7 +424,7 @@ public class Inno72GameUserLife {
      *
      * @param age 年龄
      */
-    public void setAge(Byte age) {
+    public void setAge(Integer age) {
         this.age = age;
     }
 }

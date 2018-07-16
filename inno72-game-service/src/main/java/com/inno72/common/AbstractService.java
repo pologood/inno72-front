@@ -3,6 +3,7 @@ package com.inno72.common;
 
 import org.apache.ibatis.exceptions.TooManyResultsException;
 import org.hibernate.service.spi.ServiceException;
+import org.springframework.beans.factory.annotation.Autowired;
 import tk.mybatis.mapper.entity.Condition;
 
 import javax.annotation.Resource;
@@ -15,7 +16,7 @@ import java.util.List;
  */
 public abstract class AbstractService<T> implements Service<T> {
 
-	@Resource
+	@Autowired
 	protected Mapper<T> mapper;
 
 	private Class<T> modelClass;    // 当前泛型真实类型的Class

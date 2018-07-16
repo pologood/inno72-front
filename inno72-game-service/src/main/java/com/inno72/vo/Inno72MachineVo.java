@@ -25,6 +25,10 @@ public class Inno72MachineVo extends Inno72Machine {
 	 * 活动计划ID
 	 */
 	private String activityPlanId;
+	/**
+	 * 活动ID
+	 */
+	private String activityId;
 
 	/**
 	 * 活动计划详情
@@ -64,11 +68,19 @@ public class Inno72MachineVo extends Inno72Machine {
 		this.activityPlanId = activityPlanId;
 	}
 
-	public Inno72ActivityPlan getInno72ActivityPlan() {
-		return inno72ActivityPlan;
-	}
-
 	public void setInno72ActivityPlan(Inno72ActivityPlan inno72ActivityPlan) {
 		this.inno72ActivityPlan = inno72ActivityPlan;
+	}
+
+	public String getActivityId() {
+		return activityId;
+	}
+
+	public void setActivityId(String activityId) {
+		this.activityId = activityId;
+	}
+
+	public Inno72ActivityPlan getInno72ActivityPlan() {
+		return inno72ActivityPlan;
 	}
 }

@@ -59,11 +59,6 @@ public class CodeGenerator {
 	private static final String AUTHOR = "CodeGenerator";//@author
 	private static final String DATE = new SimpleDateFormat("yyyy/MM/dd").format(new Date());//@date
 
-	public static void main(String[] args) {
-		genCode("inno72_goods");
-		//genCodeByCustomModelName("输入表名","输入自定义Model名称");
-	}
-
 	/**
 	 * 通过数据表名称生成代码，Model 名称通过解析数据表名称获得，下划线转大驼峰的形式。
 	 * 如输入表名称 "t_user_detail" 将生成 TUserDetail、TUserDetailMapper、TUserDetailService ...

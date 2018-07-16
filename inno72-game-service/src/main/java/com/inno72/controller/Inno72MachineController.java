@@ -7,7 +7,6 @@ import javax.annotation.Resource;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.github.pagehelper.PageHelper;
@@ -30,15 +29,15 @@ public class Inno72MachineController {
 	/**
 	 *
 	 * @param mid 机器ID
-	 * @param plantId 活动计划ID
+	 * @param planId 活动计划ID
 	 * @param version 游戏版本号
 	 * @param versionInno72 游戏更新版本号
 	 * @return
 	 */
 	@RequestMapping(value = "/findGame", method = {RequestMethod.POST, RequestMethod.GET})
-	public Result findGame(@RequestParam(name = "machineId") String mid, @RequestParam(name = "plantId") String plantId,
+	public Result findGame(@RequestParam(name = "machineId") String mid, String planId,
 			String version, String versionInno72) {
-		return inno72MachineService.findGame(mid, plantId, version, versionInno72);
+		return inno72MachineService.findGame(mid, planId, version, versionInno72);
 	}
 
 	@RequestMapping(value = "/add", method = {RequestMethod.POST, RequestMethod.GET})

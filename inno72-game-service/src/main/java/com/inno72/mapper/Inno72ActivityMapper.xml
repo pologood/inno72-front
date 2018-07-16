@@ -9,7 +9,6 @@
     <result column="name" jdbcType="VARCHAR" property="name" />
     <result column="shop_id" jdbcType="VARCHAR" property="shopId" />
     <result column="seller_id" jdbcType="VARCHAR" property="sellerId" />
-    <result column="prize_type" jdbcType="VARCHAR" property="prizeType" />
     <result column="manager_id" jdbcType="VARCHAR" property="managerId" />
     <result column="is_delete" jdbcType="INTEGER" property="isDelete" />
     <result column="remark" jdbcType="VARCHAR" property="remark" />
