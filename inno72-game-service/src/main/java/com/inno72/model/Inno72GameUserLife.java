@@ -138,11 +138,6 @@ public class Inno72GameUserLife {
 	}
 
 	/**
-=======
-    private Byte age;
-
-    /**
->>>>>>> b98d85f1a212f405ffd47de237a669ed723d5d81
      * @return id
      */
     public String getId() {

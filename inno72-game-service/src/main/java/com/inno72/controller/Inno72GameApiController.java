@@ -89,6 +89,20 @@ public class Inno72GameApiController {
 	public Result<String> sessionRedirect(String sessionUuid, String mid, String token, String code, String userId) {
 		return inno72GameApiService.sessionRedirect(sessionUuid, mid, token, code, userId);
 	}
+	
+	/**
+	 * 
+	 * @param sessionUuid 用户登录信息
+	 * @param mid  ID
+	 * @param code 
+	 * @param userId
+	 * @return
+	 */
+	@RequestMapping(value = "/log", method = {RequestMethod.POST, RequestMethod.GET})
+	public Result<String> log(String sessionUuid, String mid,  String code, String userId) {
+		return null;
+	}
 
+	
 
 }
