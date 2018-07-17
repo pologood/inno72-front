@@ -66,7 +66,7 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 	@Resource
 	private Inno72OrderHistoryMapper inno72OrderHistoryMapper;
 	@Resource
-	private Inno72AdminAreaMapper inno72AdminAreaMapper;
+	private Inno72LocaleMapper inno72LocaleMapper;
 	@Resource
 	private Inno72GameUserLifeMapper inno72GameUserLifeMapper;
 
@@ -569,10 +569,10 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 	private void startGameLife(Inno72GameUser inno72GameUser, Inno72GameUserChannel userChannel, Inno72Activity inno72Activity, Inno72ActivityPlan inno72ActivityPlan,
 			Inno72Game inno72Game, Inno72Machine inno72Machine) {
 		Inno72Merchant inno72Merchant = inno72MerchantMapper.selectByPrimaryKey(inno72Activity.getSellerId());
-		Inno72AdminArea inno72AdminArea = inno72AdminAreaMapper.selectByPrimaryKey(inno72Machine.getLocaleId());
+		Inno72Locale inno72Locale = inno72LocaleMapper.selectByPrimaryKey(inno72Machine.getLocaleId());
 		Inno72GameUserLife life = new Inno72GameUserLife(inno72GameUser.getId(), userChannel.getId(), inno72Merchant == null ? "" : inno72Merchant.getMerchantCode(),
 				userChannel.getUserNick(), inno72ActivityPlan.getActivityId(), inno72Activity.getName(),
-				inno72ActivityPlan.getId(), inno72Game.getId(), inno72Game.getName(), inno72Machine.getLocaleId(), inno72AdminArea == null ? "" : inno72AdminArea.getCircle(), null, "", null,null);
+				inno72ActivityPlan.getId(), inno72Game.getId(), inno72Game.getName(), inno72Machine.getLocaleId(), inno72Locale == null ? "" : inno72Locale.getMall(), null, "", null,null);
 		LOGGER.info("插入用户游戏记录 ===> {}", JSON.toJSONString(life));
 		inno72GameUserLifeMapper.insert(life);
 

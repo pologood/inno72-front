@@ -59,6 +59,10 @@ public class CodeGenerator {
 	private static final String AUTHOR = "CodeGenerator";//@author
 	private static final String DATE = new SimpleDateFormat("yyyy/MM/dd").format(new Date());//@date
 
+	public static void main(String[] args) {
+		genCode("inno72_locale");
+	}
+	
 	/**
 	 * 通过数据表名称生成代码，Model 名称通过解析数据表名称获得，下划线转大驼峰的形式。
 	 * 如输入表名称 "t_user_detail" 将生成 TUserDetail、TUserDetailMapper、TUserDetailService ...
@@ -78,8 +82,8 @@ public class CodeGenerator {
 	 */
 	public static void genCodeByCustomModelName(String tableName, String modelName) {
 		genModelAndMapper(tableName, modelName);
-		//		genService(tableName, modelName);
-		//		genController(tableName, modelName);
+//				genService(tableName, modelName);
+//				genController(tableName, modelName);
 	}
 
 
