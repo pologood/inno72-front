@@ -48,7 +48,7 @@ public class FastJsonUtils {
 
 			String innerKey = String.valueOf(entryNode.getKey());
 
-			if (innerKey.equals(key) && !(entryNode.getValue() instanceof JSONObject)) {
+			if (innerKey.equals(key) ) {
 				return String.valueOf(entryNode.getValue());
 
 			} else {

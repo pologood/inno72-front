@@ -12,16 +12,16 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.alibaba.fastjson.JSON;
 import com.inno72.common.Inno72GameServiceProperties;
 import com.inno72.common.Result;
 import com.inno72.common.Results;
 import com.inno72.common.json.JsonUtil;
+import com.inno72.common.util.GameSessionRedisUtil;
 import com.inno72.common.util.QrCodeUtil;
 import com.inno72.common.util.UuidUtil;
 import com.inno72.oss.OSSUtil;
-import com.inno72.redis.IRedisUtil;
 import com.inno72.service.Inno72AuthInfoService;
+import com.inno72.vo.UserSessionVo;
 
 import net.coobird.thumbnailator.Thumbnails;
 
@@ -33,7 +33,7 @@ import net.coobird.thumbnailator.Thumbnails;
 public class Inno72AuthInfoServiceImpl implements Inno72AuthInfoService {
 	private static final Logger LOGGER = LoggerFactory.getLogger(Inno72AuthInfoServiceImpl.class);
 	@Resource
-	private IRedisUtil redisUtil;
+	private GameSessionRedisUtil gameSessionRedisUtil;
 	@Resource
 	private Inno72GameServiceProperties inno72GameServiceProperties;
 
@@ -88,13 +88,13 @@ public class Inno72AuthInfoServiceImpl implements Inno72AuthInfoService {
 			return Results.failure("参数缺失！");
 		}
 
-		String sessionStr = redisUtil.get(sessionUuid);
+		UserSessionVo sessionStr = gameSessionRedisUtil.getSessionKey(sessionUuid);
 
-		if (StringUtils.isEmpty(sessionStr)) {
+		if (sessionStr == null) {
 			return Results.failure("未登录！");
 		}
 
-		return Results.success(JSON.parseObject(sessionStr));
+		return Results.success(sessionStr);
 	}
 
 }

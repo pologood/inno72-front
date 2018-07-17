@@ -6,13 +6,13 @@ import com.inno72.common.Inno72GameServiceProperties;
 import com.inno72.common.Result;
 import com.inno72.common.Results;
 import com.inno72.common.util.FastJsonUtils;
+import com.inno72.common.util.GameSessionRedisUtil;
 import com.inno72.common.util.Inno72OrderNumGenUtil;
 import com.inno72.common.utils.StringUtil;
 import com.inno72.feign.MachineBackgroundFeignClient;
 import com.inno72.mapper.*;
 import com.inno72.model.*;
 import com.inno72.plugin.http.HttpClient;
-import com.inno72.redis.IRedisUtil;
 import com.inno72.service.Inno72GameApiService;
 import com.inno72.vo.GoodsVo;
 import com.inno72.vo.MachineApiVo;
@@ -24,10 +24,7 @@ import org.springframework.stereotype.Service;
 import javax.annotation.Resource;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 
 @Service
 public class Inno72GameApiServiceImpl implements Inno72GameApiService {
@@ -43,7 +40,7 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 	@Resource
 	private Inno72OrderMapper inno72OrderMapper;
 	@Resource
-	private IRedisUtil redisUtil;
+	private GameSessionRedisUtil gameSessionRedisUtil;
 	@Resource
 	private Inno72GameUserMapper inno72GameUserMapper;
 	@Resource
@@ -90,6 +87,17 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 
 		String activityPlanId = vo.getActivityPlanId();
 		String report = vo.getReport();
+		String sessionUuid = vo.getSessionUuid();
+		if ( StringUtil.isEmpty(sessionUuid) || StringUtil.isEmpty(activityPlanId) ) {
+			LOGGER.info("查询商品参数错误 ! ===> {}", JSON.toJSONString(vo));
+			return Results.failure("参数错误!");
+		}
+		UserSessionVo userSessionVo = gameSessionRedisUtil.getSessionKey(sessionUuid);
+		if (userSessionVo == null){
+			return Results.failure("登录过期啦 !");
+		}
+		userSessionVo.setGameReport(report);
+		gameSessionRedisUtil.setSessionEx(sessionUuid, JSON.toJSONString(userSessionVo));
 
 		Map<String, String> params = new HashMap<>();
 		params.put("activityPlanId", activityPlanId);
@@ -142,14 +150,15 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 			goodsVoMap.put(goodsCode, goodsVo);
 
 		}
+
 		LOGGER.debug("查询商品结果 ==> {}", JSON.toJSONString(goodsVoMap.values()));
 		return Results.success(goodsVoMap.values());
 
 	}
 
 	/**
-	 * String machineId, 
-	 * String gameId, 
+	 * String machineId,
+	 * String gameId,
 	 * String report
 	 */
 	@Override
@@ -169,15 +178,16 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 		String itemId = vo.getItemId();
 		//新增
 
-		String sessionUUIDObjectJSON = redisUtil.get(sessionUuid);
-		if (StringUtil.isEmpty(sessionUUIDObjectJSON)) {
+		UserSessionVo userSessionVo = gameSessionRedisUtil.getSessionKey(sessionUuid);
+		if (userSessionVo == null) {
 			return Results.failure("登录失效!");
 		}
 
 		//下单 inno72_Order
-		String inno72OrderId = genInno72Order(channelId, activityPlanId, machineId, itemId, FastJsonUtils.getString(sessionUUIDObjectJSON, "userId"));
-
-		String accessToken = FastJsonUtils.getString(sessionUUIDObjectJSON, "accessToken");
+		String inno72OrderId = genInno72Order(channelId, activityPlanId, machineId, itemId, userSessionVo.getUserId());
+		userSessionVo.setInno72OrderId(inno72OrderId);
+		gameSessionRedisUtil.setSessionEx(sessionUuid, JSON.toJSONString(userSessionVo));
+		String accessToken = userSessionVo.getAccessToken();
 
 		Map<String, String> requestForm = new HashMap<>();
 		requestForm.put("accessToken", accessToken);
@@ -201,16 +211,34 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 
 		try {
 
-			String msg_code = FastJsonUtils.getString(respJson, "msdg_code");
+			/*
+			 * {
+					"tmall_fans_automachine_order_createorderbyitemid_response": {
+						"result": {
+							"model": {
+								"actual_fee": 1,
+								"order_id": "185028768691768199",
+								"pay_qrcode_image": "https:\/\/img.alicdn.com\/tfscom\/TB1lElXE9tYBeNjSspkwu2U8VXa.png"
+							},
+							"msg_code": "SUCCESS"
+						},
+						"request_id": "43ecpzeb5fdn"
+					}
+				}
+			 */
+
+			String msg_code = FastJsonUtils.getString(respJson, "msg_code");
 			if (!msg_code.equals("SUCCESS")) {
-				String msg_info = FastJsonUtils.getString(respJson, "msdg_info");
+				String msg_info = FastJsonUtils.getString(respJson, "msg_info");
 				return Results.failure(msg_info);
 			}
 
 			//更新第三方订单号进inno72 order
 			this.updateRefOrderId(inno72OrderId, respJson);
+			Map<String, Object> mapToUpperCase = mapToUpperCase(JSON.parseObject(FastJsonUtils.getString(respJson, "model")));
+			mapToUpperCase.put("time", new Date().getTime());
 
-			return Results.success(mapToUpperCase(JSON.parseObject(FastJsonUtils.getString(respJson, "model"))));
+			return Results.success(mapToUpperCase);
 
 		} catch (Exception e) {
 
@@ -238,13 +266,12 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 		String sessionUuid = vo.getSessionUuid();
 		String orderId = vo.getOrderId();
 
-		String sessionUUIDObjectJSON = redisUtil.get(sessionUuid);
-		if (StringUtil.isEmpty(sessionUUIDObjectJSON)) {
+		UserSessionVo userSessionVo = gameSessionRedisUtil.getSessionKey(sessionUuid);
+		if (userSessionVo == null) {
 			return Results.failure("登录失效!");
 		}
 
-		String accessToken = FastJsonUtils.getString(sessionUUIDObjectJSON, "accessToken");
-
+		String accessToken = userSessionVo.getAccessToken();
 		Map<String, String> requestForm = new HashMap<>();
 
 		requestForm.put("accessToken", accessToken);
@@ -307,12 +334,12 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 		String umid = vo.getUmid();
 		String interactId = vo.getInteractId();
 
-		String sessionUUIDObjectJSON = redisUtil.get(sessionUuid);
-		if (StringUtil.isEmpty(sessionUUIDObjectJSON)) {
+		UserSessionVo userSessionVo = gameSessionRedisUtil.getSessionKey(sessionUuid);
+		if (userSessionVo == null) {
 			return Results.failure("登录失效!");
 		}
 
-		String accessToken = FastJsonUtils.getString(sessionUUIDObjectJSON, "accessToken");
+		String accessToken = userSessionVo.getAccessToken();
 
 		Map<String, String> requestForm = new HashMap<>();
 
@@ -373,12 +400,12 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 			return Results.failure("配置中心无聚石塔配置路径!");
 		}
 
-		String sessionUUIDObjectJSON = redisUtil.get(sessionUuid);
-		if (StringUtil.isEmpty(sessionUUIDObjectJSON)) {
+		UserSessionVo userSessionVo = gameSessionRedisUtil.getSessionKey(sessionUuid);
+		if (userSessionVo == null) {
 			return Results.failure("登录失效!");
 		}
 
-		String accessToken = FastJsonUtils.getString(sessionUUIDObjectJSON, "accessToken");
+		String accessToken = userSessionVo.getAccessToken();
 
 		Map<String, String> requestForm = new HashMap<>();
 
@@ -387,7 +414,12 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 		requestForm.put("mid", machineId);//umid
 		requestForm.put("channelId", channelId);//互动实例ID
 
-		String respJson = HttpClient.form(jstUrl + "/api/top/deliveryRecord", requestForm, null);
+		String respJson = "";
+		try {
+			respJson = HttpClient.form(jstUrl + "/api/top/deliveryRecord", requestForm, null);
+		} catch (Exception e) {
+			LOGGER.info("");
+		}
 		if (StringUtil.isEmpty(respJson)) {
 			return Results.failure("聚石塔无返回数据!");
 		}
@@ -491,7 +523,7 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 		/**
 		 * <tmall_fans_automachine_getmaskusernick_response>
 		 *     <msg_code>200</msg_code>
-		 *     <msg_info>用户不存在</msg_info>
+		 *     <msg_info>用户不存在</msg_info>1dd77fc18f3a409196de23baedcf8ce1
 		 *     <model>e****丫</model>
 		 * </tmall_fans_automachine_getmaskusernick_response>
 		 */
@@ -506,7 +538,7 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 
 		UserSessionVo sessionVo = new UserSessionVo(mid, nickName, userId, access_token, gameId, sessionUuid);
 
-		redisUtil.setex(sessionUuid, 1800, JSON.toJSONString(sessionVo));
+		gameSessionRedisUtil.setSessionEx(sessionUuid, JSON.toJSONString(sessionVo));
 
 		String channelId = inno72Merchant.getChannelId();
 
@@ -559,6 +591,7 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 		history.setHistoryOrder(JSON.toJSONString(inno72Order));
 		history.setOrderId(inno72Order.getId());
 		history.setOrderNum(inno72Order.getOrderNum());
+		inno72OrderHistoryMapper.insert(history);
 	}
 
 	private String genInno72Order(String channelId, String activityPlanId, String machineId, String goodsId, String channelUserKey) {
@@ -611,7 +644,7 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 		inno72Order.setUserId(gameUserId);
 		inno72OrderMapper.insert(inno72Order);
 
-		Inno72Goods inno72Goods = inno72GoodsMapper.selectByPrimaryKey(goodsId);
+		Inno72Goods inno72Goods = inno72GoodsMapper.selectByCode(goodsId);
 		Inno72OrderGoods orderGoods = new Inno72OrderGoods();
 		orderGoods.setGoodsCode(inno72Goods.getCode());
 		orderGoods.setGoodsId(inno72Goods.getId());

@@ -12,6 +12,15 @@ public class UserSessionVo {
 	private String gameId;
 	private String sessionUuid;
 
+	/**
+	 * 查询游戏结果对应的货道时存入
+	 */
+	private String gameReport;
+	/**
+	 * 下单存入
+	 */
+	private String inno72OrderId;
+
 	public UserSessionVo(String mid, String userNick, String userId, String access_token, String gameId,
 			String sessionUuid) {
 		super();

@@ -16,9 +16,10 @@
         select distinct prize_id from inno72_activity_plan_game_result
         where
         prize_type = 1
+        and
         activity_plan_id = #{activityPlanId}
         <if test="report != null and report != ''">
-            result_code = #{report}
+           and result_code = #{report}
         </if>
     </select>
 

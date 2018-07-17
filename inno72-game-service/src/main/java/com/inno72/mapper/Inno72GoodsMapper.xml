@@ -18,4 +18,8 @@
     <result column="update_id" jdbcType="VARCHAR" property="updateId" />
     <result column="update_time" jdbcType="TIMESTAMP" property="updateTime" />
   </resultMap>
+  
+  <select id="selectByCode" resultMap="BaseResultMap" parameterType="string">
+  	select * from inno72_goods where code = #{code}
+  </select>
 </mapper>

@@ -29,6 +29,10 @@ public class Inno72MachineVo extends Inno72Machine {
 	 * 活动ID
 	 */
 	private String activityId;
+	/**
+	 * 渠道ID
+	 */
+	private String channelId;
 
 	/**
 	 * 活动计划详情
@@ -83,4 +87,14 @@ public class Inno72MachineVo extends Inno72Machine {
 	public Inno72ActivityPlan getInno72ActivityPlan() {
 		return inno72ActivityPlan;
 	}
+
+	public String getChannelId() {
+		return channelId;
+	}
+
+	public void setChannelId(String channelId) {
+		this.channelId = channelId;
+	}
+	
+	
 }
