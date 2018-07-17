@@ -35,10 +35,10 @@ public class LogReqrest {
 	public enum LogRequest_Type{
 
 		machine_online_time("machine_online_time","开机时间"),
-		lottery("machine_online_time","抽奖"),
-		play_time("machine_online_time","单用户互动时长"),
-		follow("machine_online_time","关注"),
-		login("machine_online_time","登录用户"),
+		lottery("lottery","抽奖"),
+		play_time("play_time","单用户互动时长"),
+		follow("follow","关注"),
+		login("login","登录用户"),
 		;
 
 		private String bizType;
@@ -68,7 +68,7 @@ public class LogReqrest {
 
 
 	/**
-	 *  用户ID
+	 *  用户ID -- cache  accessToken
 	 */
 	private Long userId;
 
@@ -78,7 +78,7 @@ public class LogReqrest {
 	private String value1;
 
 	/**
-	 *  买点字段
+	 *  埋点字段
 	 */
 	private String value2;
 
