@@ -548,9 +548,8 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 		userChannelParams.put("channelUserKey", userId);
 		Inno72GameUserChannel userChannel = inno72GameUserChannelMapper.selectByChannelUserKey(userChannelParams);
 
-		Inno72GameUser inno72GameUser = null;
 		if (userChannel == null){
-			inno72GameUser = new Inno72GameUser();
+			Inno72GameUser inno72GameUser = new Inno72GameUser();
 			inno72GameUserMapper.insert(inno72GameUser);
 			LOGGER.info("插入游戏用户表 完成 ===> {}", JSON.toJSONString(inno72GameUser));
 			userChannel = new Inno72GameUserChannel(nickName
@@ -560,17 +559,17 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 			
 		}
 		Inno72Machine inno72Machine = inno72MachineMapper.selectByPrimaryKey(mid);
-		this.startGameLife(inno72GameUser, userChannel, inno72Activity, inno72ActivityPlan, inno72Game, inno72Machine);
+		this.startGameLife(userChannel, inno72Activity, inno72ActivityPlan, inno72Game, inno72Machine);
 
 
 		return Results.success(gameId);
 	}
 
-	private void startGameLife(Inno72GameUser inno72GameUser, Inno72GameUserChannel userChannel, Inno72Activity inno72Activity, Inno72ActivityPlan inno72ActivityPlan,
+	private void startGameLife(Inno72GameUserChannel userChannel, Inno72Activity inno72Activity, Inno72ActivityPlan inno72ActivityPlan,
 			Inno72Game inno72Game, Inno72Machine inno72Machine) {
 		Inno72Merchant inno72Merchant = inno72MerchantMapper.selectByPrimaryKey(inno72Activity.getSellerId());
 		Inno72Locale inno72Locale = inno72LocaleMapper.selectByPrimaryKey(inno72Machine.getLocaleId());
-		Inno72GameUserLife life = new Inno72GameUserLife(inno72GameUser.getId(), userChannel.getId(), inno72Merchant == null ? "" : inno72Merchant.getMerchantCode(),
+		Inno72GameUserLife life = new Inno72GameUserLife(userChannel.getGameUserId(), userChannel.getId(), inno72Merchant == null ? "" : inno72Merchant.getMerchantCode(),
 				userChannel.getUserNick(), inno72ActivityPlan.getActivityId(), inno72Activity.getName(),
 				inno72ActivityPlan.getId(), inno72Game.getId(), inno72Game.getName(), inno72Machine.getLocaleId(), inno72Locale == null ? "" : inno72Locale.getMall(), null, "", null,null);
 		LOGGER.info("插入用户游戏记录 ===> {}", JSON.toJSONString(life));
