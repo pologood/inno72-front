@@ -1,24 +1,10 @@
 package com.inno72.model;
 
-import java.io.Serializable;
-import java.util.Date;
-
-import javax.persistence.Column;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.Table;
-import javax.persistence.Transient;
-
-import org.springframework.format.annotation.DateTimeFormat;
+import javax.persistence.*;
+import java.time.LocalDateTime;
 
 @Table(name = "inno72_supply_channel")
-public class Inno72SupplyChannel implements Serializable {
-	/**
-	 *
-	 */
-	private static final long serialVersionUID = 889207530103014551L;
-
+public class Inno72SupplyChannel {
 	/**
 	 * uuid
 	 */
@@ -65,7 +51,6 @@ public class Inno72SupplyChannel implements Serializable {
 	@Column(name = "goods_count")
 	private Integer goodsCount;
 
-
 	/**
 	 * 创建人ID
 	 */
@@ -76,8 +61,7 @@ public class Inno72SupplyChannel implements Serializable {
 	 * 创建时间
 	 */
 	@Column(name = "create_time")
-	@DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
-	private Date createTime;
+	private LocalDateTime createTime;
 
 	/**
 	 * 修改人ID
@@ -89,16 +73,34 @@ public class Inno72SupplyChannel implements Serializable {
 	 * 修改时间
 	 */
 	@Column(name = "update_time")
-	private Date updateTime;
+	private LocalDateTime updateTime;
+
+	/**
+	 * 是否删除（0.正常，1.删除）
+	 */
+	@Column(name = "is_delete")
+	private Integer isDelete;
+
+	@Column(name = "work_status")
+	private Integer workStatus;
 
 	@Transient
-	private String goodsName;
+	private int goodsStatus;
+
+	@Transient
+	private String remark;
 
 	@Transient
 	private String[] goodsCodes;
 
 	@Transient
-	private String goodsCode;
+	private String[] codes;
+
+	@Transient
+	private String fromCode;
+
+	@Transient
+	private String toCode;
 
 	public Inno72SupplyChannel() {
 	}
@@ -109,10 +111,11 @@ public class Inno72SupplyChannel implements Serializable {
 		this.code = code;
 	}
 
+
 	/**
-	 * 获取UUID
+	 * 获取uuid
 	 *
-	 * @RETURN ID - UUID
+	 * @return id - uuid
 	 */
 	public String getId() {
 		return id;
@@ -121,7 +124,8 @@ public class Inno72SupplyChannel implements Serializable {
 	/**
 	 * 设置uuid
 	 *
-	 * @param id uuid
+	 * @param id
+	 *            uuid
 	 */
 	public void setId(String id) {
 		this.id = id;
@@ -139,7 +143,8 @@ public class Inno72SupplyChannel implements Serializable {
 	/**
 	 * 设置货道编号
 	 *
-	 * @param code 货道编号
+	 * @param code
+	 *            货道编号
 	 */
 	public void setCode(String code) {
 		this.code = code;
@@ -157,7 +162,8 @@ public class Inno72SupplyChannel implements Serializable {
 	/**
 	 * 设置货道名称
 	 *
-	 * @param name 货道名称
+	 * @param name
+	 *            货道名称
 	 */
 	public void setName(String name) {
 		this.name = name;
@@ -175,7 +181,8 @@ public class Inno72SupplyChannel implements Serializable {
 	/**
 	 * 设置状态（0.未合并，1.已合并）
 	 *
-	 * @param status 状态（0.未合并，1.已合并）
+	 * @param status
+	 *            状态（0.未合并，1.已合并）
 	 */
 	public void setStatus(Integer status) {
 		this.status = status;
@@ -184,7 +191,7 @@ public class Inno72SupplyChannel implements Serializable {
 	/**
 	 * 获取机器编号
 	 *
-	 * @return merchant_id - 机器编号
+	 * @return machine_id - 机器编号
 	 */
 	public String getMachineId() {
 		return machineId;
@@ -193,7 +200,8 @@ public class Inno72SupplyChannel implements Serializable {
 	/**
 	 * 设置机器编号
 	 *
-	 * @param machineId 机器编号
+	 * @param machineId
+	 *            机器编号
 	 */
 	public void setMachineId(String machineId) {
 		this.machineId = machineId;
@@ -211,7 +219,8 @@ public class Inno72SupplyChannel implements Serializable {
 	/**
 	 * 设置父货道编号
 	 *
-	 * @param parentCode 父货道编号
+	 * @param parentCode
+	 *            父货道编号
 	 */
 	public void setParentCode(String parentCode) {
 		this.parentCode = parentCode;
@@ -229,7 +238,8 @@ public class Inno72SupplyChannel implements Serializable {
 	/**
 	 * 设置商品容量
 	 *
-	 * @param volumeCount 商品容量
+	 * @param volumeCount
+	 *            商品容量
 	 */
 	public void setVolumeCount(Integer volumeCount) {
 		this.volumeCount = volumeCount;
@@ -247,12 +257,12 @@ public class Inno72SupplyChannel implements Serializable {
 	/**
 	 * 设置商品数量
 	 *
-	 * @param goodsCount 商品数量
+	 * @param goodsCount
+	 *            商品数量
 	 */
 	public void setGoodsCount(Integer goodsCount) {
 		this.goodsCount = goodsCount;
 	}
-
 
 	/**
 	 * 获取创建人ID
@@ -266,28 +276,11 @@ public class Inno72SupplyChannel implements Serializable {
 	/**
 	 * 设置创建人ID
 	 *
-	 * @param createId 创建人ID
+	 * @param createId
+	 *            创建人ID
 	 */
 	public void setCreateId(String createId) {
 		this.createId = createId;
-	}
-
-	/**
-	 * 获取创建时间
-	 *
-	 * @return create_time - 创建时间
-	 */
-	public Date getCreateTime() {
-		return createTime;
-	}
-
-	/**
-	 * 设置创建时间
-	 *
-	 * @param createTime 创建时间
-	 */
-	public void setCreateTime(Date createTime) {
-		this.createTime = createTime;
 	}
 
 	/**
@@ -302,51 +295,107 @@ public class Inno72SupplyChannel implements Serializable {
 	/**
 	 * 设置修改人ID
 	 *
-	 * @param updateId 修改人ID
+	 * @param updateId
+	 *            修改人ID
 	 */
 	public void setUpdateId(String updateId) {
 		this.updateId = updateId;
 	}
 
 	/**
-	 * 获取修改时间
+	 * 获取是否删除（0.正常，1.删除）
 	 *
-	 * @return update_time - 修改时间
+	 * @return is_delete - 是否删除（0.正常，1.删除）
 	 */
-	public Date getUpdateTime() {
-		return updateTime;
+	public Integer getIsDelete() {
+		return isDelete;
 	}
 
 	/**
-	 * 设置修改时间
+	 * 设置是否删除（0.正常，1.删除）
 	 *
-	 * @param updateTime 修改时间
+	 * @param isDelete
+	 *            是否删除（0.正常，1.删除）
 	 */
-	public void setUpdateTime(Date updateTime) {
+	public void setIsDelete(Integer isDelete) {
+		this.isDelete = isDelete;
+	}
+
+	/**
+	 * @return work_status
+	 */
+	public Integer getWorkStatus() {
+		return workStatus;
+	}
+
+	/**
+	 * @param workStatus
+	 */
+	public void setWorkStatus(Integer workStatus) {
+		this.workStatus = workStatus;
+	}
+
+	public LocalDateTime getCreateTime() {
+		return createTime;
+	}
+
+	public void setCreateTime(LocalDateTime createTime) {
+		this.createTime = createTime;
+	}
+
+	public LocalDateTime getUpdateTime() {
+		return updateTime;
+	}
+
+	public void setUpdateTime(LocalDateTime updateTime) {
 		this.updateTime = updateTime;
 	}
 
-	public String getGoodsName() {
-		return goodsName;
+	public int getGoodsStatus() {
+		return goodsStatus;
+	}
+
+	public void setGoodsStatus(int goodsStatus) {
+		this.goodsStatus = goodsStatus;
+	}
+
+	public String getRemark() {
+		return remark;
+	}
+
+	public void setRemark(String remark) {
+		this.remark = remark;
 	}
 
 	public String[] getGoodsCodes() {
 		return goodsCodes;
 	}
 
+	public String[] getCodes() {
+		return codes;
+	}
+
+	public void setCodes(String[] codes) {
+		this.codes = codes;
+	}
+
 	public void setGoodsCodes(String[] goodsCodes) {
 		this.goodsCodes = goodsCodes;
 	}
 
-	public void setGoodsName(String goodsName) {
-		this.goodsName = goodsName;
+	public String getFromCode() {
+		return fromCode;
 	}
 
-	public String getGoodsCode() {
-		return goodsCode;
+	public void setFromCode(String fromCode) {
+		this.fromCode = fromCode;
 	}
 
-	public void setGoodsCode(String goodsCode) {
-		this.goodsCode = goodsCode;
+	public String getToCode() {
+		return toCode;
+	}
+
+	public void setToCode(String toCode) {
+		this.toCode = toCode;
 	}
 }
