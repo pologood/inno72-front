@@ -32,8 +32,6 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 	private static final Logger LOGGER = LoggerFactory.getLogger(Inno72GameApiServiceImpl.class);
 
 	@Resource
-	private MachineBackgroundFeignClient machineBackgroundFeignClient;
-	@Resource
 	private Inno72GameServiceProperties inno72GameServiceProperties;
 	@Resource
 	private Inno72GameMapper inno72GameMapper;
@@ -69,6 +67,8 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 	private Inno72LocaleMapper inno72LocaleMapper;
 	@Resource
 	private Inno72GameUserLifeMapper inno72GameUserLifeMapper;
+	@Resource
+	private Inno72SupplyChannelMapper inno72SupplyChannelMapper;
 
 	/**
 	 * {
@@ -85,6 +85,8 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 		String activityPlanId = vo.getActivityPlanId();
 		String report = vo.getReport();
 		String sessionUuid = vo.getSessionUuid();
+		String machineId = vo.getMachineId();
+
 		if ( StringUtil.isEmpty(sessionUuid) || StringUtil.isEmpty(activityPlanId) ) {
 			LOGGER.info("查询商品参数错误 ! ===> {}", JSON.toJSONString(vo));
 			return Results.failure("参数错误!");
@@ -103,26 +105,20 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 		List<String> resultGoodsId = inno72ActivityPlanGameResultMapper.selectByActivityPlanId(params);
 
 		//请求接口 获取出货 货道号
-		Result supplyChannel = machineBackgroundFeignClient.getSupplyChannel(
-				new Inno72SupplyChannel(vo.getMachineId(), resultGoodsId.toArray(new String[0]), ""));
+		Map<String, Object> map = new HashMap<>();
+		map.put("machineId", machineId);
+		map.put("goodsCodes", resultGoodsId);
+		List<Inno72SupplyChannel> inno72SupplyChannels = inno72SupplyChannelMapper.selectListByParam(map);
 
-		if (supplyChannel.getCode() == Result.FAILURE) {
-			return Results.failure(supplyChannel.getMsg());
-		}
-		String jsonString = JSON.toJSONString(supplyChannel.getData());
-		LOGGER.info(jsonString);
+		LOGGER.info("查询 货道号 结果 ==> {}", JSON.toJSONString(inno72SupplyChannels));
 
-		List<Inno72SupplyChannel> parseArray = JSON
-				.parseArray(JSON.toJSONString(supplyChannel.getData()), Inno72SupplyChannel.class);
-		LOGGER.info("查询 货道号 结果 ==> {}", JSON.toJSONString(parseArray));
-
-		if (parseArray == null || parseArray.size() == 0) {
+		if (inno72SupplyChannels.size() == 0) {
 			return Results.failure("没有商品!");
 		}
 
 		Map<String, GoodsVo> goodsVoMap = new HashMap<>();
 
-		for (Inno72SupplyChannel inno72SupplyChannel : parseArray) {
+		for (Inno72SupplyChannel inno72SupplyChannel : inno72SupplyChannels) {
 
 			String goodsCode = inno72SupplyChannel.getGoodsCode();
 			String code = inno72SupplyChannel.getCode();
@@ -429,13 +425,9 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 			return Results.failure(msg_info);
 		}
 
-		Result subCount = machineBackgroundFeignClient.subCount(new Inno72SupplyChannel(machineId, null, channelId));
+		int i = inno72SupplyChannelMapper.subCount(new Inno72SupplyChannel(machineId, null, channelId));
 
-		if (subCount.getCode() == Result.FAILURE) {
-			return Results.failure(subCount.getMsg());
-		}
-
-		LOGGER.info("减货结果 ==> {}", JSON.toJSONString(subCount));
+		LOGGER.info("减货结果 ==> {}", i);
 
 		this.updateOrderReport(userSessionVo);
 

@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.inno72.mapper.Inno72SupplyChannelMapper">
+  <resultMap id="BaseResultMap" type="com.inno72.model.Inno72SupplyChannel">
+    <!--
+      WARNING - @mbg.generated
+    -->
+    <id column="id" jdbcType="VARCHAR" property="id" />
+    <result column="code" jdbcType="VARCHAR" property="code" />
+    <result column="name" jdbcType="VARCHAR" property="name" />
+    <result column="status" jdbcType="INTEGER" property="status" />
+    <result column="machine_id" jdbcType="VARCHAR" property="machineId" />
+    <result column="parent_code" jdbcType="VARCHAR" property="parentCode" />
+    <result column="volume_count" jdbcType="INTEGER" property="volumeCount" />
+    <result column="goods_count" jdbcType="INTEGER" property="goodsCount" />
+    <result column="create_id" jdbcType="VARCHAR" property="createId" />
+    <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
+    <result column="update_id" jdbcType="VARCHAR" property="updateId" />
+    <result column="update_time" jdbcType="TIMESTAMP" property="updateTime" />
+    <result column="is_delete" jdbcType="INTEGER" property="isDelete"/>
+    <result column="goodsName" jdbcType="VARCHAR" property="goodsName"/>
+    <result column="goodsCode" jdbcType="VARCHAR" property="goodsCode"/>
+    <result column="goodsStatus" jdbcType="INTEGER" property="goodsStatus"/>
+  </resultMap>
+
+
+
+  <update id="subCount">
+    update inno72_supply_channel set goods_count = goods_count-1,
+    update_time=#{updateTime}
+    where machine_id=#{machineId} and code=#{code}
+  </update>
+
+
+  <sql id="Column_List">
+      t1.id,t1.code,t1.name,t1.status,t1.machine_id,t1.parent_code,t1.volume_count,t1.is_delete,
+      t1.goods_count,t1.create_id,t1.create_time,t1.update_id,t1.update_time,t2.goods_id goodsCode,
+      t2.is_delete goodsStatus,
+      t3.name goodsName
+  </sql>
+
+  <sql id="Column_Get">
+    id,code,name,status,machine_id,parent_code,volume_count,is_delete,goods_count,create_id,create_time,update_id,update_time
+  </sql>
+
+
+  <select id="selectByParam" resultMap="BaseResultMap">
+    select <include refid="Column_List"/>
+    from inno72_supply_channel t1 left join inno72_supply_channel_goods t2
+    on t1.id=t2.supply_channel_id left join inno72_goods t3
+    on t2.goods_id=t3.id
+    <where>
+      <if test="code != null">
+        and t1.code = #{code}
+      </if>
+      <if test="machineId != null">
+        and t1.machine_id = #{machineId}
+      </if>
+      <if test="parentCode != null">
+        and t1.parent_code = #{parentCode}
+      </if>
+      and t1.is_delete=0
+    </where>
+    limit 1
+  </select>
+
+  <select id="selectListByParam" resultMap="BaseResultMap">
+    select <include refid="Column_List"/>
+    from inno72_supply_channel t1 left join inno72_supply_channel_goods t2
+    on t1.id=t2.supply_channel_id left join inno72_goods t3
+    on t2.goods_id=t3.id
+    <where>
+      <if test="code != null">
+        and t1.code = #{code}
+      </if>
+      <if test="machineId != null">
+        and t1.machine_id = #{machineId}
+      </if>
+      <if test="goodsCodes != null">
+        and
+        <foreach collection="goodsCodes" index="index" item="item" separator="or" open="(" close=")">
+          t2.goods_id =#{item,jdbcType=VARCHAR}
+        </foreach>
+      </if>
+      <if test="codes != null">
+        and
+        <foreach collection="codes" item="item" separator="or" open="(" close=")">
+          t1.code = #{item,jdbcType=VARCHAR}
+        </foreach>
+      </if>
+      and t1.is_delete=0
+    </where>
+  </select>
+
+
+</mapper>
