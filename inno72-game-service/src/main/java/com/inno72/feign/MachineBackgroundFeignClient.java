@@ -8,7 +8,7 @@ import com.inno72.common.Result;
 import com.inno72.model.Inno72SupplyChannel;
 
 //@FeignClient(value = "machine-backend", url = "http://172.16.19.218:8880")
-@FeignClient(value = "machineBackend")
+@FeignClient(value = "MACHINEBACKEND")
 @SuppressWarnings("rawtypes")
 public interface MachineBackgroundFeignClient {
 
