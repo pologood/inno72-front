@@ -8,6 +8,7 @@
         <id column="id" jdbcType="VARCHAR" property="id" />
         <result column="game_user_id" jdbcType="VARCHAR" property="gameUserId" />
         <result column="user_channel_id" jdbcType="VARCHAR" property="userChannelId" />
+        <result column="third_ref_id" jdbcType="VARCHAR" property="thirdRefId" />
         <result column="machine_code" jdbcType="VARCHAR" property="machineCode" />
         <result column="nick_name" jdbcType="VARCHAR" property="nickName" />
         <result column="login_time" jdbcType="TIMESTAMP" property="loginTime" javaType="java.time.LocalDateTime"
@@ -25,6 +26,6 @@
         <result column="age" jdbcType="TINYINT" property="age" />
     </resultMap>
     <select id="selectByUserChannelIdLast" resultMap="BaseResultMap" parameterType="string">
-      select * from inno72_game_user_life where user_channel_id = #{userId} order by login_time desc LIMIT 1
+      select * from inno72_game_user_life where third_ref_id = #{userId} order by login_time desc LIMIT 1
     </select>
 </mapper>

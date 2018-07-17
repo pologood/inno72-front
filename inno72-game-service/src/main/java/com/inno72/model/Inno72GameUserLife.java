@@ -30,6 +30,12 @@ public class Inno72GameUserLife {
      */
     @Column(name = "user_channel_id")
     private String userChannelId;
+    
+    /**
+     * inno72_game_user_channel.id
+     */
+    @Column(name = "third_ref_id")
+    private String thirdRefId;
 
     /**
      * 机器编号
@@ -118,7 +124,8 @@ public class Inno72GameUserLife {
 
 	public Inno72GameUserLife(String gameUserId, String userChannelId, String machineCode, String nickName,
 			String activityId, String activityName, String activityPlanId, String gameId, String gameName,
-			String merPointId, String merPointAddress, String gameResult, String orderId, Integer sex, Integer age) {
+			String merPointId, String merPointAddress, String gameResult, String orderId, Integer sex, Integer age,
+			String thirdRefId) {
 		this.gameUserId = gameUserId;
 		this.userChannelId = userChannelId;
 		this.machineCode = machineCode;
@@ -135,6 +142,7 @@ public class Inno72GameUserLife {
 		this.orderId = orderId;
 		this.sex = sex;
 		this.age = age;
+		this.thirdRefId = thirdRefId;
 	}
 
 	/**
@@ -424,4 +432,14 @@ public class Inno72GameUserLife {
     public void setAge(Integer age) {
         this.age = age;
     }
+
+	public String getThirdRefId() {
+		return thirdRefId;
+	}
+
+	public void setThirdRefId(String thirdRefId) {
+		this.thirdRefId = thirdRefId;
+	}
+    
+    
 }
