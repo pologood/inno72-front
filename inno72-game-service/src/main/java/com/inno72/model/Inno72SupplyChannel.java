@@ -115,6 +115,7 @@ public class Inno72SupplyChannel {
 		this.machineId = machineId;
 		this.goodsCodes = goodsCodes;
 		this.code = code;
+		this.updateTime = LocalDateTime.now();
 	}
 
 	public String getGoodsCode() {
