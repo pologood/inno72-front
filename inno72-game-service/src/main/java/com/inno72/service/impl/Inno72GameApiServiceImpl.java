@@ -1,5 +1,20 @@
 package com.inno72.service.impl;
 
+import java.math.BigDecimal;
+import java.time.LocalDateTime;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+
+import javax.annotation.Resource;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.inno72.common.Inno72GameServiceProperties;
@@ -9,22 +24,46 @@ import com.inno72.common.util.FastJsonUtils;
 import com.inno72.common.util.GameSessionRedisUtil;
 import com.inno72.common.util.Inno72OrderNumGenUtil;
 import com.inno72.common.utils.StringUtil;
-import com.inno72.feign.MachineBackgroundFeignClient;
-import com.inno72.mapper.*;
-import com.inno72.model.*;
+import com.inno72.mapper.Inno72ActivityMapper;
+import com.inno72.mapper.Inno72ActivityPlanGameResultMapper;
+import com.inno72.mapper.Inno72ActivityPlanMapper;
+import com.inno72.mapper.Inno72ChannelMapper;
+import com.inno72.mapper.Inno72GameMapper;
+import com.inno72.mapper.Inno72GameUserChannelMapper;
+import com.inno72.mapper.Inno72GameUserLifeMapper;
+import com.inno72.mapper.Inno72GameUserMapper;
+import com.inno72.mapper.Inno72GoodsMapper;
+import com.inno72.mapper.Inno72LocaleMapper;
+import com.inno72.mapper.Inno72MachineMapper;
+import com.inno72.mapper.Inno72MerchantMapper;
+import com.inno72.mapper.Inno72OrderGoodsMapper;
+import com.inno72.mapper.Inno72OrderHistoryMapper;
+import com.inno72.mapper.Inno72OrderMapper;
+import com.inno72.mapper.Inno72ShopsMapper;
+import com.inno72.mapper.Inno72SupplyChannelMapper;
+import com.inno72.model.Inno72Activity;
+import com.inno72.model.Inno72ActivityPlan;
+import com.inno72.model.Inno72Channel;
+import com.inno72.model.Inno72Game;
+import com.inno72.model.Inno72GameUser;
+import com.inno72.model.Inno72GameUserChannel;
+import com.inno72.model.Inno72GameUserLife;
+import com.inno72.model.Inno72Goods;
+import com.inno72.model.Inno72Locale;
+import com.inno72.model.Inno72Machine;
+import com.inno72.model.Inno72Merchant;
+import com.inno72.model.Inno72Order;
+import com.inno72.model.Inno72OrderGoods;
+import com.inno72.model.Inno72OrderHistory;
+import com.inno72.model.Inno72Shops;
+import com.inno72.model.Inno72SupplyChannel;
 import com.inno72.plugin.http.HttpClient;
+import com.inno72.redis.IRedisUtil;
 import com.inno72.service.Inno72GameApiService;
+import com.inno72.vo.AlarmMessageBean;
 import com.inno72.vo.GoodsVo;
 import com.inno72.vo.MachineApiVo;
 import com.inno72.vo.UserSessionVo;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.stereotype.Service;
-
-import javax.annotation.Resource;
-import java.math.BigDecimal;
-import java.time.LocalDateTime;
-import java.util.*;
 
 @Service
 public class Inno72GameApiServiceImpl implements Inno72GameApiService {
@@ -69,7 +108,8 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 	private Inno72GameUserLifeMapper inno72GameUserLifeMapper;
 	@Resource
 	private Inno72SupplyChannelMapper inno72SupplyChannelMapper;
-
+	@Autowired
+	private IRedisUtil redisUtil;
 	/**
 	 * {
 	 goodsId: 1,
@@ -188,9 +228,16 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 		requestForm.put("mid", machineId);
 		requestForm.put("goodsId", itemId);
 
+		Map<String, String> logRequestForm = new HashMap<>();
+		logRequestForm.put("accessToken", accessToken);
+		logRequestForm.put("activityId", activityId);
+		logRequestForm.put("mid", machineId);
+		logRequestForm.put("goodsId", itemId);
+
 		String respJson;
 		try {
 			respJson = HttpClient.form(jstUrl + "/api/top/order", requestForm, null);
+			//respJson = HttpClient.form(jstUrl + "/api/top/addLog", logRequestForm, null);
 		} catch (Exception e) {
 			LOGGER.info("调用聚石塔失败 ! {}", e.getMessage(), e);
 			return Results.failure("聚石塔调用失败!");
@@ -295,7 +342,7 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 					inno72OrderMapper.updateByPrimaryKeySelective(inno72Order);
 					inno72OrderHistoryMapper.insert(
 							new Inno72OrderHistory(inno72Order.getId(), inno72Order.getOrderNum(), JSON.toJSONString(inno72Order), "修改状态为已支付")
-					);
+							);
 				}
 			}
 
@@ -545,16 +592,29 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 			inno72GameUserMapper.insert(inno72GameUser);
 			LOGGER.info("插入游戏用户表 完成 ===> {}", JSON.toJSONString(inno72GameUser));
 			userChannel = new Inno72GameUserChannel(nickName
-			, "", channelId, inno72GameUser.getId(), inno72Channel.getChannelName(), userId);
+					, "", channelId, inno72GameUser.getId(), inno72Channel.getChannelName(), userId);
 			inno72GameUserChannelMapper.insert(userChannel);
 			LOGGER.info("插入游戏用户渠道表 完成 ===> {}", JSON.toJSONString(userChannel));
-			
+
 		}
 		Inno72Machine inno72Machine = inno72MachineMapper.selectByPrimaryKey(mid);
 		this.startGameLife(userChannel, inno72Activity, inno72ActivityPlan, inno72Game, inno72Machine, userId);
 
 
 		return Results.success(gameId);
+	}
+	
+	public Result<String> malfunctionLog(String machineId){
+		
+		Inno72Machine inno72Machine = inno72MachineMapper.selectByPrimaryKey(machineId);
+		//将货道故障信息推送到预警系统
+		AlarmMessageBean alarmMessageBean = new AlarmMessageBean();
+		alarmMessageBean.setSystem("machineChannel");
+		alarmMessageBean.setType("machineChannelException");
+		alarmMessageBean.setData(inno72Machine.getMachineCode());
+		redisUtil.publish("moniterAlarm",JSONObject.toJSONString(alarmMessageBean));
+
+		return Results.success();
 	}
 
 	private void startGameLife(Inno72GameUserChannel userChannel, Inno72Activity inno72Activity, Inno72ActivityPlan inno72ActivityPlan,
@@ -564,7 +624,7 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 		Inno72GameUserLife life = new Inno72GameUserLife(userChannel.getGameUserId(), userChannel.getId(), inno72Merchant == null ? "" : inno72Merchant.getMerchantCode(),
 				userChannel.getUserNick(), inno72ActivityPlan.getActivityId(), inno72Activity.getName(),
 				inno72ActivityPlan.getId(), inno72Game.getId(), inno72Game.getName(), inno72Machine.getLocaleId(), inno72Locale == null ? "" : inno72Locale.getMall(),
-				null, "", null,null, userId);
+						null, "", null,null, userId);
 		LOGGER.info("插入用户游戏记录 ===> {}", JSON.toJSONString(life));
 		inno72GameUserLifeMapper.insert(life);
 
@@ -676,7 +736,7 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 
 		inno72OrderHistoryMapper.insert(
 				new Inno72OrderHistory(inno72Order.getId(), inno72Order.getOrderNum(), JSON.toJSONString(inno72Order), "初始化插入订单!")
-		);
+				);
 
 		return inno72Order.getId();
 	}
