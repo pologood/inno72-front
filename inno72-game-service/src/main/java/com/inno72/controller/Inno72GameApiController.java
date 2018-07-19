@@ -103,6 +103,13 @@ public class Inno72GameApiController {
 		return null;
 	}
 
-	
+	/**
+	 * @param machineId
+	 * @return Result
+	 */
+	@RequestMapping(value = "/malfunctionLog", method = {RequestMethod.POST, RequestMethod.GET})
+	public Result<String> malfunctionLog(String machineId,String channelCode) {
+		return inno72GameApiService.malfunctionLog(machineId,channelCode);
+	}
 
 }

@@ -65,7 +65,8 @@ public class SuperOpenServiceImpl implements SuperOpenService {
 		LUCKY_DRAW("007", "luckyDraw", "/api/special/luckyDraw", "抽奖", "1.0.0"), /** 出货后调用减货 */
 		SHIPMENT_REPORT("008", "shipmentReport", "/api/goods/shipmentReport", "出货后调用减货", "1.0.0"), /** 没有方法 */
 		ERROR_NO_METHOD("404", "ERROR_NO_METHOD", "/inno72/noMethod/open", "出货后调用减货", "1.0.0"), /** 版本不存在 */
-		ERROR_NO_VERSION("500", "ERROR_NO_VERSION", "/inno72/noVersion/open", "出货后调用减货", "1.0.0"),;
+		ERROR_NO_VERSION("500", "ERROR_NO_VERSION", "/inno72/noVersion/open", "出货后调用减货", "1.0.0"),
+		MALFUNCTION_LOG("009", "malfunctionLog", "/api/malfunctionLog", "货道异常信息存储", "1.0.0"), /** 货道异常信息存储 */;
 
 		private String code;
 		private String serviceName;

@@ -604,7 +604,8 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 		return Results.success(gameId);
 	}
 	
-	public Result<String> malfunctionLog(String machineId){
+	@Override
+	public Result<String> malfunctionLog(String machineId,String channelCode){
 		
 		Inno72Machine inno72Machine = inno72MachineMapper.selectByPrimaryKey(machineId);
 		//将货道故障信息推送到预警系统
@@ -612,7 +613,10 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 		alarmMessageBean.setSystem("machineChannel");
 		alarmMessageBean.setType("machineChannelException");
 		alarmMessageBean.setData(inno72Machine.getMachineCode());
-		redisUtil.publish("moniterAlarm",JSONObject.toJSONString(alarmMessageBean));
+		Map map = new HashMap<>();
+		map.put("channelCode", channelCode);
+		map.put("alarmMessage", alarmMessageBean);
+		redisUtil.publish("moniterAlarm",JSONObject.toJSONString(map));
 
 		return Results.success();
 	}
