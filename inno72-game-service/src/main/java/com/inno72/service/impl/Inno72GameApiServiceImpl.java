@@ -636,7 +636,6 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 		String orderId = FastJsonUtils.getString(respJson, "order_id");
 		inno72Order.setId(inno72OrderId);
 		inno72Order.setRefOrderId(orderId);
-		inno72Order.setGoodsStatus(1);
 		inno72OrderMapper.updateByPrimaryKeySelective(inno72Order);
 
 		//插入订单历史
@@ -656,7 +655,7 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 		String inno72OrderId = userSessionVo.getInno72OrderId();
 		Inno72Order inno72Order = inno72OrderMapper.selectByPrimaryKey(inno72OrderId);
 		inno72Order.setId(inno72OrderId);
-		inno72Order.setGoodsStatus(1);
+		inno72Order.setGoodsStatus(Inno72Order.INNO72ORDER_GOODSSTATUS.SUCC.getKey());
 		inno72OrderMapper.updateByPrimaryKeySelective(inno72Order);
 
 		//插入订单历史
