@@ -104,6 +104,9 @@ public class LogReqrest {
 		this.value3 = value3;
 		this.value4 = value4;
 	}
+	
+	public LogReqrest() {
+	}
 
 	public static String sendRequest(String accessToken, String url, LogReqrest reqrest){
 

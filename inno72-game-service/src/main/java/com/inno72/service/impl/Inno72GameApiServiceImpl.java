@@ -62,6 +62,7 @@ import com.inno72.redis.IRedisUtil;
 import com.inno72.service.Inno72GameApiService;
 import com.inno72.vo.AlarmMessageBean;
 import com.inno72.vo.GoodsVo;
+import com.inno72.vo.LogReqrest;
 import com.inno72.vo.MachineApiVo;
 import com.inno72.vo.UserSessionVo;
 
@@ -230,14 +231,16 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 
 		Map<String, String> logRequestForm = new HashMap<>();
 		logRequestForm.put("accessToken", accessToken);
-		logRequestForm.put("activityId", activityId);
-		logRequestForm.put("mid", machineId);
-		logRequestForm.put("goodsId", itemId);
 
+		LogReqrest logReqrest = new LogReqrest();
+		logReqrest.setItemId(Long.valueOf(itemId));
+		logReqrest.setSellerId(Long.valueOf(vo.getShopId()));
+		logReqrest.setType("order");
+		logRequestForm.put("logReqrest", JSON.toJSONString(logReqrest));
 		String respJson;
 		try {
 			respJson = HttpClient.form(jstUrl + "/api/top/order", requestForm, null);
-			//respJson = HttpClient.form(jstUrl + "/api/top/addLog", logRequestForm, null);
+			//String result = HttpClient.form(jstUrl + "/api/top/addLog", logRequestForm, null);
 		} catch (Exception e) {
 			LOGGER.info("调用聚石塔失败 ! {}", e.getMessage(), e);
 			return Results.failure("聚石塔调用失败!");
