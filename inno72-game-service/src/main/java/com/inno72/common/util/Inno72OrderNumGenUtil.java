@@ -42,10 +42,12 @@ public class Inno72OrderNumGenUtil {
 		String dateTime = LocalDateTimeUtil
 				.transfer(LocalDateTime.now(), DateTimeFormatter.ofPattern("yyyyMMdd"));
 
-		String incrKey = "order_num:";
-		Long v = $redisUtil.incr(incrKey + dateTime);
-
-		return orderNum + dateTime + addZeroIndex(String.valueOf(v));
+//		String incrKey = "order_num:";
+//		Long v = $redisUtil.incr(incrKey + dateTime);
+//
+//		return orderNum + dateTime + addZeroIndex(String.valueOf(v));
+		Integer random = (int)((Math.random()*9+1)*100000);
+		return orderNum + dateTime + random;
 	}
 
 	private static String addZeroIndex(String endIndex){
