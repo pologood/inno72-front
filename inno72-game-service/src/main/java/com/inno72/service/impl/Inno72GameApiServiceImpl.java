@@ -633,7 +633,7 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 			Inno72Game inno72Game, Inno72Machine inno72Machine, String userId) {
 		Inno72Merchant inno72Merchant = inno72MerchantMapper.selectByPrimaryKey(inno72Activity.getSellerId());
 		Inno72Locale inno72Locale = inno72LocaleMapper.selectByPrimaryKey(inno72Machine.getLocaleId());
-		Inno72GameUserLife life = new Inno72GameUserLife(userChannel.getGameUserId(), userChannel.getId(), inno72Merchant == null ? "" : inno72Merchant.getMerchantCode(),
+		Inno72GameUserLife life = new Inno72GameUserLife(userChannel.getGameUserId(), userChannel.getId(), inno72Machine.getMachineCode(),
 				userChannel.getUserNick(), inno72ActivityPlan.getActivityId(), inno72Activity.getName(),
 				inno72ActivityPlan.getId(), inno72Game.getId(), inno72Game.getName(), inno72Machine.getLocaleId(), inno72Locale == null ? "" : inno72Locale.getMall(),
 						null, "", null,null, userId);
