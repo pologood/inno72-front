@@ -612,11 +612,11 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 		
 		Inno72Machine inno72Machine = inno72MachineMapper.selectByPrimaryKey(machineId);
 		//将货道故障信息推送到预警系统
-		AlarmMessageBean alarmMessageBean = new AlarmMessageBean();
+		AlarmMessageBean<String> alarmMessageBean = new AlarmMessageBean<String>();
 		alarmMessageBean.setSystem("machineChannel");
 		alarmMessageBean.setType("machineChannelException");
 		alarmMessageBean.setData(inno72Machine.getMachineCode());
-		Map map = new HashMap<>();
+		Map<String, Object> map = new HashMap<String, Object>();
 		map.put("channelCode", channelCode);
 		map.put("alarmMessage", alarmMessageBean);
 		redisUtil.publish("moniterAlarm",JSONObject.toJSONString(map));
