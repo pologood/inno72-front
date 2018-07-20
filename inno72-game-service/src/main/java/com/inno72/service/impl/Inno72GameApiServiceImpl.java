@@ -223,6 +223,11 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 		gameSessionRedisUtil.setSessionEx(sessionUuid, JSON.toJSONString(userSessionVo));
 		String accessToken = userSessionVo.getAccessToken();
 
+		if (inno72OrderId.equals("0")){
+			LOGGER.info("已经超过最大游戏数量啦 QAQ!");
+//			return Results.failure("已经超过最大游戏数量啦 QAQ!");
+		}
+
 		Map<String, String> requestForm = new HashMap<>();
 		requestForm.put("accessToken", accessToken);
 		requestForm.put("activityId", activityId);
@@ -704,7 +709,9 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 		orderParams.put("activityPlanId", activityPlanId);
 		orderParams.put("gameUserId", gameUserId);
 		List<Inno72Order> inno72Orders = inno72OrderMapper.findGoodsStatusSucc(orderParams);
-
+		Integer rep = inno72Orders.size() > inno72ActivityPlan.getUserMaxTimes() ?
+				Inno72Order.INNO72ORDER_REPETITION.REPETITION.getKey() :
+				Inno72Order.INNO72ORDER_REPETITION.NOT.getKey();
 		Inno72Order inno72Order = new Inno72Order();
 		inno72Order.setChannelId(channelId);
 		inno72Order.setGoodsStatus(Inno72Order.INNO72ORDER_GOODSSTATUS.WAIT.getKey());
@@ -721,8 +728,7 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 		inno72Order.setPayTime(null);
 		inno72Order.setRefOrderId(null);
 		inno72Order.setRefOrderStatus(null);
-		inno72Order.setRepetition(inno72Orders.size() >= inno72ActivityPlan.getUserMaxTimes() ?
-				Inno72Order.INNO72ORDER_REPETITION.REPETITION.getKey(): Inno72Order.INNO72ORDER_REPETITION.NOT.getKey());
+		inno72Order.setRepetition(rep);
 		inno72Order.setShopsId(inno72Shops.getId());
 		inno72Order.setShopsName(inno72Shops.getShopName());
 		inno72Order.setUserId(gameUserId);
@@ -744,7 +750,7 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 				new Inno72OrderHistory(inno72Order.getId(), inno72Order.getOrderNum(), JSON.toJSONString(inno72Order), "初始化插入订单!")
 				);
 
-		return inno72Order.getId();
+		return rep == 0 ? rep+"" : inno72Order.getId();
 	}
 
 	private Map<String, Object> mapToUpperCase(JSONObject jObject) {
