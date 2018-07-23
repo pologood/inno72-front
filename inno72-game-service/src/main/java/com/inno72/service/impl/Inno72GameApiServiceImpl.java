@@ -395,7 +395,8 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 		//调用聚石塔日志
 		Map<String, String> requestLogForm = new HashMap<>();
 		requestLogForm.put("accessToken", accessToken);
-		LogReqrest logReqrest = getLogReqrest(null, Long.valueOf(vo.getShopId()));
+		LogReqrest logReqrest = getLogReqrest(Long.valueOf(vo.getItemId()), Long.valueOf(vo.getShopId()),
+				Long.valueOf(vo.getUserId()),vo.getMachineId());
 		requestLogForm.put("logReqrest", JSON.toJSONString(logReqrest));
 		String result = HttpClient.form(jstUrl + "/api/top/addLog", requestLogForm, null);
 		String msg_logCode = FastJsonUtils.getString(result, "msg_code");
@@ -627,7 +628,8 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 		//调用聚石塔日志
 		Map<String, String> requestLogForm = new HashMap<>();
 		requestLogForm.put("accessToken", token);
-		LogReqrest logReqrest = getLogReqrest(null, Long.valueOf(inno72Merchant.getMerchantCode()));
+		LogReqrest logReqrest = getLogReqrest(null, Long.valueOf(inno72Merchant.getId()),
+				Long.valueOf(userId),inno72Machine.getId());
 		requestLogForm.put("logReqrest", JSON.toJSONString(logReqrest));
 		String result = HttpClient.form(jstUrl + "/api/top/addLog", requestLogForm, null);
 		String msg_logCode = FastJsonUtils.getString(result, "msg_code");
@@ -806,10 +808,12 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 	}
 	
 	
-	private LogReqrest getLogReqrest(Long itemId,Long sellerId) {
+	private LogReqrest getLogReqrest(Long itemId,Long sellerId,Long userId,String machineId) {
 		LogReqrest logReqrest = new LogReqrest();
 		logReqrest.setItemId(itemId);
 		logReqrest.setSellerId(sellerId);
+		logReqrest.setUserId(userId);
+		logReqrest.setValue1(machineId);
 		return logReqrest;
 	}
 	
