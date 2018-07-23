@@ -216,13 +216,13 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 		if (userSessionVo == null) {
 			return Results.failure("登录失效!");
 		}
-
+		LOGGER.info("将下单的session =====> {}" , JSON.toJSONString(userSessionVo));
 		//下单 inno72_Order
 		String inno72OrderId = genInno72Order(channelId, activityPlanId, machineId, itemId, userSessionVo.getUserId());
 		userSessionVo.setInno72OrderId(inno72OrderId);
 		gameSessionRedisUtil.setSessionEx(sessionUuid, JSON.toJSONString(userSessionVo));
 		String accessToken = userSessionVo.getAccessToken();
-
+		LOGGER.info("更新的session =====> {}" , JSON.toJSONString(userSessionVo));
 		if (inno72OrderId.equals("0")){
 			LOGGER.info("已经超过最大游戏数量啦 QAQ!");
 //			return Results.failure("已经超过最大游戏数量啦 QAQ!");
@@ -244,6 +244,7 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 		logRequestForm.put("logReqrest", JSON.toJSONString(logReqrest));
 		String respJson;
 		try {
+			LOGGER.info("调用聚石塔下单接口 参数 ======》 {}" ,JSON.toJSONString(requestForm));
 			respJson = HttpClient.form(jstUrl + "/api/top/order", requestForm, null);
 			//String result = HttpClient.form(jstUrl + "/api/top/addLog", logRequestForm, null);
 		} catch (Exception e) {
@@ -255,7 +256,7 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 			return Results.failure("聚石塔无返回数据!");
 		}
 
-		LOGGER.info("调用聚石塔接口  【下单】返回 ===> {}", JSON.toJSONString(respJson));
+		LOGGER.info("调用聚石塔接口  【下单】返回 ===> {}", respJson);
 
 		try {
 
