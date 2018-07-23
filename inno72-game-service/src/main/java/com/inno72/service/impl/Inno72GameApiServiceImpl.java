@@ -234,18 +234,9 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 		requestForm.put("mid", machineId);
 		requestForm.put("goodsId", itemId);
 
-		Map<String, String> logRequestForm = new HashMap<>();
-		logRequestForm.put("accessToken", accessToken);
-
-		LogReqrest logReqrest = new LogReqrest();
-		logReqrest.setItemId(Long.valueOf(itemId));
-		logReqrest.setSellerId(Long.valueOf(vo.getShopId()));
-		logReqrest.setType("order");
-		logRequestForm.put("logReqrest", JSON.toJSONString(logReqrest));
 		String respJson;
 		try {
 			respJson = HttpClient.form(jstUrl + "/api/top/order", requestForm, null);
-			//String result = HttpClient.form(jstUrl + "/api/top/addLog", logRequestForm, null);
 		} catch (Exception e) {
 			LOGGER.info("调用聚石塔失败 ! {}", e.getMessage(), e);
 			return Results.failure("聚石塔调用失败!");
@@ -398,6 +389,19 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 		requestForm.put("shopId", shopId);//店铺ID
 
 		String respJson = HttpClient.form(jstUrl + "/api/top/lottery", requestForm, null);
+		
+		//调用聚石塔日志
+		Map<String, String> requestLogForm = new HashMap<>();
+		requestLogForm.put("accessToken", accessToken);
+		LogReqrest logReqrest = getLogReqrest(null, Long.valueOf(vo.getShopId()));
+		requestLogForm.put("logReqrest", JSON.toJSONString(logReqrest));
+		String result = HttpClient.form(jstUrl + "/api/top/addLog", requestLogForm, null);
+		String msg_logCode = FastJsonUtils.getString(result, "msg_code");
+		if (!msg_logCode.equals("SUCCESS")) {
+			String msg_info = FastJsonUtils.getString(result, "msg_info");
+			return Results.failure(msg_info);
+		}
+			
 		if (StringUtil.isEmpty(respJson)) {
 			return Results.failure("聚石塔无返回数据!");
 		}
@@ -762,5 +766,15 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 		}
 		return result;
 	}
+	
+	
+	private LogReqrest getLogReqrest(Long itemId,Long ShopId) {
+		LogReqrest logReqrest = new LogReqrest();
+		logReqrest.setItemId(itemId);
+		logReqrest.setSellerId(ShopId);
+		return logReqrest;
+	}
+	
+	
 
 }

@@ -66,7 +66,7 @@ public class Inno72AuthInfoServiceImpl implements Inno72AuthInfoService {
 				     //上传阿里云
 				     OSSUtil.uploadLocalFile(localUrl, objectName);
 				     // 删除本地文件
-				     f.delete();
+				     //f.delete();
 				}
 				map.put("qrCodeUrl", returnUrl);
 				map.put("sessionUuid", sessionUuid);
