@@ -16,9 +16,12 @@ import com.inno72.common.Inno72GameServiceProperties;
 import com.inno72.common.Result;
 import com.inno72.common.Results;
 import com.inno72.common.json.JsonUtil;
+import com.inno72.common.util.AesUtils;
 import com.inno72.common.util.GameSessionRedisUtil;
 import com.inno72.common.util.QrCodeUtil;
 import com.inno72.common.util.UuidUtil;
+import com.inno72.mapper.Inno72MachineMapper;
+import com.inno72.model.Inno72Machine;
 import com.inno72.oss.OSSUtil;
 import com.inno72.service.Inno72AuthInfoService;
 import com.inno72.vo.UserSessionVo;
@@ -36,15 +39,26 @@ public class Inno72AuthInfoServiceImpl implements Inno72AuthInfoService {
 	private GameSessionRedisUtil gameSessionRedisUtil;
 	@Resource
 	private Inno72GameServiceProperties inno72GameServiceProperties;
+	@Resource
+	private Inno72MachineMapper inno72MachineMapper;
 
 	@Override
 	public Result<Object> createQrCode(String machineId) {
 		LOGGER.info("根据机器id生成二维码", machineId);
 		Map<String, Object> map = new HashMap<String, Object>();
+		//在machine库查询bluetooth地址
+		Inno72Machine inno72Machine = inno72MachineMapper.selectByPrimaryKey("6893a2ada9dd4f7eb8dc33adfc6eda73");
+		String bluetoothAdd ="";
+		String bluetoothAddAes ="";
+		if(inno72Machine != null) {
+			bluetoothAdd = inno72Machine.getBluetoothAddress();
+			bluetoothAddAes = AesUtils.encrypt(bluetoothAdd);
+		}
+		
 		// 生成sessionUuid
 		String sessionUuid = UuidUtil.getUUID32();
 		// 调用天猫的地址
-		String url = inno72GameServiceProperties.get("tmallUrl")+ machineId + "/" + sessionUuid;
+		String url = inno72GameServiceProperties.get("tmallUrl")+ machineId + "/" + sessionUuid+"?bluetoothAddAes="+bluetoothAddAes;
 		// 二维码存储在本地的路径
 		String localUrl = machineId + sessionUuid + ".png";
 
