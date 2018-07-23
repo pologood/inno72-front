@@ -538,6 +538,16 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 		if (StringUtil.isEmpty(access_token)) {
 			return Results.failure("access_token 参数缺失！");
 		}
+		
+		//判断是否有他人登录
+		if (!StringUtil.isEmpty(sessionUuid)) {
+			UserSessionVo sessionStr = gameSessionRedisUtil.getSessionKey(sessionUuid);
+			if (sessionStr != null) {
+				return Results.failure("此二维码已有他人登录！");
+			}
+		}else {
+			return Results.failure("参数缺失！");
+		}
 		List<Inno72ActivityPlan> inno72ActivityPlans = inno72ActivityPlanMapper.selectByMachineId(mid);
 
 		String gameId = "";
