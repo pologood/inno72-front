@@ -20,6 +20,7 @@ import com.alibaba.fastjson.JSONObject;
 import com.inno72.common.Inno72GameServiceProperties;
 import com.inno72.common.Result;
 import com.inno72.common.Results;
+import com.inno72.common.json.JsonUtil;
 import com.inno72.common.util.FastJsonUtils;
 import com.inno72.common.util.GameSessionRedisUtil;
 import com.inno72.common.util.Inno72OrderNumGenUtil;
@@ -648,7 +649,6 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 		Map<String, Object> resultMap = new HashMap<String,Object>();
 		resultMap.put("gameId", gameId);
 		resultMap.put("qrStatus", qrStatus);
-		LOGGER.info("最终结果 ===> {}", Results.success(JSONObject.toJSONString(resultMap)));
 		return Results.success(JSONObject.toJSONString(resultMap));
 	}
 	
