@@ -23,6 +23,7 @@ import com.inno72.common.Results;
 import com.inno72.common.util.FastJsonUtils;
 import com.inno72.common.util.GameSessionRedisUtil;
 import com.inno72.common.util.Inno72OrderNumGenUtil;
+import com.inno72.common.util.QrCodeRedisUtil;
 import com.inno72.common.utils.StringUtil;
 import com.inno72.mapper.Inno72ActivityMapper;
 import com.inno72.mapper.Inno72ActivityPlanGameResultMapper;
@@ -80,6 +81,8 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 	private Inno72OrderMapper inno72OrderMapper;
 	@Resource
 	private GameSessionRedisUtil gameSessionRedisUtil;
+	@Resource
+	private QrCodeRedisUtil qrCodeRedisUtil;
 	@Resource
 	private Inno72GameUserMapper inno72GameUserMapper;
 	@Resource
@@ -540,11 +543,18 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 			return Results.failure("access_token 参数缺失！");
 		}
 		
-		//判断是否有他人登录
+		//判断是否有他人登录以及二维码是否过期
+		String qrStatusJson = "";
 		if (!StringUtil.isEmpty(sessionUuid)) {
-			UserSessionVo sessionStr = gameSessionRedisUtil.getSessionKey(sessionUuid);
+			UserSessionVo sessionStr = qrCodeRedisUtil.getSessionKey(sessionUuid);
+			UserSessionVo sessionQrCodeValue = qrCodeRedisUtil.getSessionKey(sessionUuid+"_qrCode");
 			if (sessionStr != null) {
-				return Results.failure("此二维码已有他人登录！");
+				qrStatusJson = ",'qrStatus' : '-2'";
+			}else {
+				Long surplusTime = qrCodeRedisUtil.pastTime(sessionUuid+"_qrCode");
+				if(surplusTime==0) {
+					qrStatusJson = ",'qrStatus' : '-1'";
+				}
 			}
 		}else {
 			return Results.failure("参数缺失！");
@@ -637,7 +647,7 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 		   String msg_info = FastJsonUtils.getString(result, "msg_info");
 		   LOGGER.info("调用聚石塔日志接口 ===> {}", JSON.toJSONString(msg_info));
 		}
-		return Results.success(gameId);
+		return Results.success(gameId+qrStatusJson);
 	}
 	
 	@Override
