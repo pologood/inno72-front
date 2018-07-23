@@ -20,6 +20,10 @@ public class Inno72MachineVo extends Inno72Machine {
 	 * 商户名称
 	 */
 	private String brandName;
+	/**
+	 * 商户名称
+	 */
+	private String planCode;
 
 	/**
 	 * 活动计划ID
@@ -95,6 +99,12 @@ public class Inno72MachineVo extends Inno72Machine {
 	public void setChannelId(String channelId) {
 		this.channelId = channelId;
 	}
-	
-	
+
+	public String getPlanCode() {
+		return planCode;
+	}
+
+	public void setPlanCode(String planCode) {
+		this.planCode = planCode;
+	}
 }

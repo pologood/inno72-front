@@ -19,6 +19,12 @@ public class Inno72ActivityPlan {
     private String activityId;
 
     /**
+     * 活动ID
+     */
+    @Column(name = "plan_code")
+    private String planCode;
+
+    /**
      * 游戏ID
      */
     @Column(name = "game_id")
@@ -279,5 +285,13 @@ public class Inno72ActivityPlan {
 
 	public void setUserMaxTimes(Integer userMaxTimes) {
 		this.userMaxTimes = userMaxTimes;
+	}
+
+	public String getPlanCode() {
+		return planCode;
+	}
+
+	public void setPlanCode(String planCode) {
+		this.planCode = planCode;
 	}
 }
