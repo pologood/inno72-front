@@ -112,4 +112,13 @@ public class Inno72GameApiController {
 		return inno72GameApiService.malfunctionLog(machineId,channelCode);
 	}
 
+	/**
+	 * 掉货失败接口
+	 * @param machineId
+	 * @return Result
+	 */
+	@RequestMapping(value = "/shipmentFail", method = {RequestMethod.POST, RequestMethod.GET})
+	public Result<String> shipmentFail(String machineId,String channelCode,String describtion) {
+		return inno72GameApiService.shipmentFail(machineId,channelCode,describtion);
+	}
 }

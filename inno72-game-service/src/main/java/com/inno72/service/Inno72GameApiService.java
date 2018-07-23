@@ -18,5 +18,7 @@ public interface Inno72GameApiService {
 	Result<String> sessionRedirect(String sessionUuid, String mid, String token, String code, String userId);
 
 	Result<String> malfunctionLog(String machineId,String channelCode);
+	
+	Result<String> shipmentFail(String machineId,String channelCode,String describtion);
 
 }
