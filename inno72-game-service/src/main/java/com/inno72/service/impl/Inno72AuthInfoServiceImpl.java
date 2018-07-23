@@ -17,7 +17,6 @@ import com.inno72.common.Result;
 import com.inno72.common.Results;
 import com.inno72.common.json.JsonUtil;
 import com.inno72.common.util.GameSessionRedisUtil;
-import com.inno72.common.util.QrCodeRedisUtil;
 import com.inno72.common.util.QrCodeUtil;
 import com.inno72.common.util.UuidUtil;
 import com.inno72.oss.OSSUtil;
@@ -35,8 +34,6 @@ public class Inno72AuthInfoServiceImpl implements Inno72AuthInfoService {
 	private static final Logger LOGGER = LoggerFactory.getLogger(Inno72AuthInfoServiceImpl.class);
 	@Resource
 	private GameSessionRedisUtil gameSessionRedisUtil;
-	@Resource
-	private QrCodeRedisUtil qrCodeRedisUtil;
 	@Resource
 	private Inno72GameServiceProperties inno72GameServiceProperties;
 
@@ -73,7 +70,7 @@ public class Inno72AuthInfoServiceImpl implements Inno72AuthInfoService {
 				}
 				
 				//设置二维码过期时间
-				qrCodeRedisUtil.setSessionEx(sessionUuid+"_qrCode", "过期时间半小时");
+				gameSessionRedisUtil.setSessionEx(sessionUuid+"_qrCode", "", 1800);
 				map.put("qrCodeUrl", returnUrl);
 				map.put("sessionUuid", sessionUuid);
 				//LOGGER.info("二维码生成成功 - result -> {}", JSON.toJSONString(map).replace("\"", "'"));

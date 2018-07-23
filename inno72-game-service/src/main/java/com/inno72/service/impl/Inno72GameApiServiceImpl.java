@@ -23,7 +23,6 @@ import com.inno72.common.Results;
 import com.inno72.common.util.FastJsonUtils;
 import com.inno72.common.util.GameSessionRedisUtil;
 import com.inno72.common.util.Inno72OrderNumGenUtil;
-import com.inno72.common.util.QrCodeRedisUtil;
 import com.inno72.common.utils.StringUtil;
 import com.inno72.mapper.Inno72ActivityMapper;
 import com.inno72.mapper.Inno72ActivityPlanGameResultMapper;
@@ -81,8 +80,6 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 	private Inno72OrderMapper inno72OrderMapper;
 	@Resource
 	private GameSessionRedisUtil gameSessionRedisUtil;
-	@Resource
-	private QrCodeRedisUtil qrCodeRedisUtil;
 	@Resource
 	private Inno72GameUserMapper inno72GameUserMapper;
 	@Resource
@@ -544,16 +541,16 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 		}
 		
 		//判断是否有他人登录以及二维码是否过期
-		String qrStatusJson = "";
+		String qrStatus = "";
 		if (!StringUtil.isEmpty(sessionUuid)) {
-			UserSessionVo sessionStr = qrCodeRedisUtil.getSessionKey(sessionUuid);
-			UserSessionVo sessionQrCodeValue = qrCodeRedisUtil.getSessionKey(sessionUuid+"_qrCode");
+			UserSessionVo sessionStr = gameSessionRedisUtil.getSessionKey(sessionUuid);
+			UserSessionVo sessionQrCodeValue = gameSessionRedisUtil.getSessionKey(sessionUuid+"_qrCode");
 			if (sessionStr != null) {
-				qrStatusJson = ",'qrStatus' : '-2'";
+				qrStatus = "-2";
 			}else {
-				Long surplusTime = qrCodeRedisUtil.pastTime(sessionUuid+"_qrCode");
+				Long surplusTime = gameSessionRedisUtil.pastTime(sessionUuid+"_qrCode");
 				if(surplusTime==0) {
-					qrStatusJson = ",'qrStatus' : '-1'";
+					qrStatus = "-1";
 				}
 			}
 		}else {
@@ -647,7 +644,11 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 		   String msg_info = FastJsonUtils.getString(result, "msg_info");
 		   LOGGER.info("调用聚石塔日志接口 ===> {}", JSON.toJSONString(msg_info));
 		}
-		return Results.success(gameId+qrStatusJson);
+		
+		Map<String, Object> resultMap = new HashMap<String,Object>();
+		resultMap.put("gameId", gameId);
+		resultMap.put("qrStatus", qrStatus);
+		return Results.success(JSONObject.toJSONString(resultMap));
 	}
 	
 	@Override
