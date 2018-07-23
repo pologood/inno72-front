@@ -634,17 +634,17 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 		this.startGameLife(userChannel, inno72Activity, inno72ActivityPlan, inno72Game, inno72Machine, userId);
 
 		//调用聚石塔日志
-		Map<String, String> requestLogForm = new HashMap<>();
-		requestLogForm.put("accessToken", token);
-		LogReqrest logReqrest = getLogReqrest(null, Long.valueOf(inno72Merchant.getId()),
-				Long.valueOf(userId),inno72Machine.getId());
-		requestLogForm.put("logReqrest", JSON.toJSONString(logReqrest));
-		String result = HttpClient.form(jstUrl + "/api/top/addLog", requestLogForm, null);
-		String msg_logCode = FastJsonUtils.getString(result, "msg_code");
-		if (!msg_logCode.equals("SUCCESS")) {
-		   String msg_info = FastJsonUtils.getString(result, "msg_info");
-		   LOGGER.info("调用聚石塔日志接口 ===> {}", JSON.toJSONString(msg_info));
-		}
+//		Map<String, String> requestLogForm = new HashMap<>();
+//		requestLogForm.put("accessToken", token);
+//		LogReqrest logReqrest = getLogReqrest(null, Long.valueOf(inno72Merchant.getId()),
+//				Long.valueOf(userId),inno72Machine.getId());
+//		requestLogForm.put("logReqrest", JSON.toJSONString(logReqrest));
+//		String result = HttpClient.form(jstUrl + "/api/top/addLog", requestLogForm, null);
+//		String msg_logCode = FastJsonUtils.getString(result, "msg_code");
+//		if (!msg_logCode.equals("SUCCESS")) {
+//		   String msg_info = FastJsonUtils.getString(result, "msg_info");
+//		   LOGGER.info("调用聚石塔日志接口 ===> {}", JSON.toJSONString(msg_info));
+//		}
 		
 		Map<String, Object> resultMap = new HashMap<String,Object>();
 		resultMap.put("gameId", gameId);
