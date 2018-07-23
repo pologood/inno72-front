@@ -649,7 +649,9 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 		Map<String, Object> resultMap = new HashMap<String,Object>();
 		resultMap.put("gameId", gameId);
 		resultMap.put("qrStatus", qrStatus);
+		LOGGER.info("========================--------------------------");
 		return Results.success(JSONObject.toJSONString(resultMap));
+		
 	}
 	
 	@Override
