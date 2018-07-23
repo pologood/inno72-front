@@ -624,7 +624,17 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 		Inno72Machine inno72Machine = inno72MachineMapper.selectByPrimaryKey(mid);
 		this.startGameLife(userChannel, inno72Activity, inno72ActivityPlan, inno72Game, inno72Machine, userId);
 
-
+		//调用聚石塔日志
+		Map<String, String> requestLogForm = new HashMap<>();
+		requestLogForm.put("accessToken", token);
+		LogReqrest logReqrest = getLogReqrest(null, Long.valueOf(inno72Merchant.getMerchantCode()));
+		requestLogForm.put("logReqrest", JSON.toJSONString(logReqrest));
+		String result = HttpClient.form(jstUrl + "/api/top/addLog", requestLogForm, null);
+		String msg_logCode = FastJsonUtils.getString(result, "msg_code");
+		if (!msg_logCode.equals("SUCCESS")) {
+		   String msg_info = FastJsonUtils.getString(result, "msg_info");
+		   return Results.failure(msg_info);
+		}
 		return Results.success(gameId);
 	}
 	
@@ -796,10 +806,10 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 	}
 	
 	
-	private LogReqrest getLogReqrest(Long itemId,Long ShopId) {
+	private LogReqrest getLogReqrest(Long itemId,Long sellerId) {
 		LogReqrest logReqrest = new LogReqrest();
 		logReqrest.setItemId(itemId);
-		logReqrest.setSellerId(ShopId);
+		logReqrest.setSellerId(sellerId);
 		return logReqrest;
 	}
 	
