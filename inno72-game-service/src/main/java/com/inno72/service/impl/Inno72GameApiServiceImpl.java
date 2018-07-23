@@ -402,7 +402,7 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 		String msg_logCode = FastJsonUtils.getString(result, "msg_code");
 		if (!msg_logCode.equals("SUCCESS")) {
 			String msg_info = FastJsonUtils.getString(result, "msg_info");
-			return Results.failure(msg_info);
+			LOGGER.info("调用聚石塔日志接口 ===> {}", JSON.toJSONString(msg_info));
 		}
 			
 		if (StringUtil.isEmpty(respJson)) {
@@ -635,7 +635,7 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 		String msg_logCode = FastJsonUtils.getString(result, "msg_code");
 		if (!msg_logCode.equals("SUCCESS")) {
 		   String msg_info = FastJsonUtils.getString(result, "msg_info");
-		   return Results.failure(msg_info);
+		   LOGGER.info("调用聚石塔日志接口 ===> {}", JSON.toJSONString(msg_info));
 		}
 		return Results.success(gameId);
 	}
