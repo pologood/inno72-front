@@ -217,13 +217,13 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 		if (userSessionVo == null) {
 			return Results.failure("登录失效!");
 		}
-
+		LOGGER.info("将下单的session =====> {}" , JSON.toJSONString(userSessionVo));
 		//下单 inno72_Order
 		String inno72OrderId = genInno72Order(channelId, activityPlanId, machineId, itemId, userSessionVo.getUserId());
 		userSessionVo.setInno72OrderId(inno72OrderId);
 		gameSessionRedisUtil.setSessionEx(sessionUuid, JSON.toJSONString(userSessionVo));
 		String accessToken = userSessionVo.getAccessToken();
-
+		LOGGER.info("更新的session =====> {}" , JSON.toJSONString(userSessionVo));
 		if (inno72OrderId.equals("0")){
 			LOGGER.info("已经超过最大游戏数量啦 QAQ!");
 //			return Results.failure("已经超过最大游戏数量啦 QAQ!");
@@ -237,6 +237,7 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 
 		String respJson;
 		try {
+			LOGGER.info("调用聚石塔下单接口 参数 ======》 {}" ,JSON.toJSONString(requestForm));
 			respJson = HttpClient.form(jstUrl + "/api/top/order", requestForm, null);
 		} catch (Exception e) {
 			LOGGER.info("调用聚石塔失败 ! {}", e.getMessage(), e);
@@ -247,7 +248,7 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 			return Results.failure("聚石塔无返回数据!");
 		}
 
-		LOGGER.info("调用聚石塔接口  【下单】返回 ===> {}", JSON.toJSONString(respJson));
+		LOGGER.info("调用聚石塔接口  【下单】返回 ===> {}", respJson);
 
 		try {
 
@@ -622,11 +623,11 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 		
 		Inno72Machine inno72Machine = inno72MachineMapper.selectByPrimaryKey(machineId);
 		//将货道故障信息推送到预警系统
-		AlarmMessageBean<String> alarmMessageBean = new AlarmMessageBean<String>();
+		AlarmMessageBean<String> alarmMessageBean = new AlarmMessageBean<>();
 		alarmMessageBean.setSystem("machineChannel");
 		alarmMessageBean.setType("machineChannelException");
 		alarmMessageBean.setData(inno72Machine.getMachineCode());
-		Map<String, Object> map = new HashMap<String, Object>();
+		Map<String, Object> map = new HashMap<>();
 		map.put("channelCode", channelCode);
 		map.put("alarmMessage", alarmMessageBean);
 		redisUtil.publish("moniterAlarm",JSONObject.toJSONString(map));
@@ -655,7 +656,6 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 	}
 	private void startGameLife(Inno72GameUserChannel userChannel, Inno72Activity inno72Activity, Inno72ActivityPlan inno72ActivityPlan,
 			Inno72Game inno72Game, Inno72Machine inno72Machine, String userId) {
-		Inno72Merchant inno72Merchant = inno72MerchantMapper.selectByPrimaryKey(inno72Activity.getSellerId());
 		Inno72Locale inno72Locale = inno72LocaleMapper.selectByPrimaryKey(inno72Machine.getLocaleId());
 		Inno72GameUserLife life = new Inno72GameUserLife(userChannel.getGameUserId(), userChannel.getId(), inno72Machine.getMachineCode(),
 				userChannel.getUserNick(), inno72ActivityPlan.getActivityId(), inno72Activity.getName(),
