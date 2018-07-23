@@ -57,6 +57,7 @@ import com.inno72.model.Inno72OrderGoods;
 import com.inno72.model.Inno72OrderHistory;
 import com.inno72.model.Inno72Shops;
 import com.inno72.model.Inno72SupplyChannel;
+import com.inno72.model.MachineDropGoodsBean;
 import com.inno72.plugin.http.HttpClient;
 import com.inno72.redis.IRedisUtil;
 import com.inno72.service.Inno72GameApiService;
@@ -633,6 +634,25 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 		return Results.success();
 	}
 
+	@Override
+	public Result<String> shipmentFail(String machineId,String channelCode,String describtion){
+		
+		Inno72Machine inno72Machine = inno72MachineMapper.selectByPrimaryKey(machineId);
+		
+		AlarmMessageBean<Object> alarmMessageBean = new AlarmMessageBean<Object>();
+		MachineDropGoodsBean machineDropGoodsBean = new MachineDropGoodsBean();
+		machineDropGoodsBean.setMachineCode(inno72Machine.getMachineCode());
+		machineDropGoodsBean.setChannelNum(channelCode);
+		machineDropGoodsBean.setDescribtion(describtion);
+		alarmMessageBean.setSystem("machineDropGoods");
+		alarmMessageBean.setType("machineDropGoodsException");
+		alarmMessageBean.setData(machineDropGoodsBean);
+		Map<String, Object> map = new HashMap<String, Object>();
+		map.put("alarmMessage", alarmMessageBean);
+		redisUtil.publish("machineDropGoods",JSONObject.toJSONString(map));
+
+		return Results.success();
+	}
 	private void startGameLife(Inno72GameUserChannel userChannel, Inno72Activity inno72Activity, Inno72ActivityPlan inno72ActivityPlan,
 			Inno72Game inno72Game, Inno72Machine inno72Machine, String userId) {
 		Inno72Merchant inno72Merchant = inno72MerchantMapper.selectByPrimaryKey(inno72Activity.getSellerId());
