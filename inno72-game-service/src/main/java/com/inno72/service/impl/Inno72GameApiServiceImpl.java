@@ -636,10 +636,10 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 		this.startGameLife(userChannel, inno72Activity, inno72ActivityPlan, inno72Game, inno72Machine, userId);
 
 		//调用聚石塔日志
-		Map<String, String> requestLogForm = new HashMap<>();
+		Map<String, Object> requestLogForm = new HashMap<String,Object>();
 		requestLogForm.put("accessToken", token);
-		LogReqrest logReqrest = getLogReqrest(null, Long.valueOf(inno72Merchant.getId()),
-				Long.valueOf(userId),inno72Machine.getId());
+//		LogReqrest logReqrest = getLogReqrest(null, Long.valueOf(inno72Merchant.getId()),
+//				Long.valueOf(userId),inno72Machine.getId());
 		LOGGER.info("-------------哈哈---------------");
 //		requestLogForm.put("logReqrest", JSON.toJSONString(logReqrest));
 //		LOGGER.info("----------------------------"+JSONObject.toJSONString(requestLogForm));
