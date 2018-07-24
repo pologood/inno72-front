@@ -46,8 +46,8 @@ public class Inno72AuthInfoServiceImpl implements Inno72AuthInfoService {
 	public Result<Object> createQrCode(String machineId) {
 		LOGGER.info("根据机器id生成二维码", machineId);
 		Map<String, Object> map = new HashMap<String, Object>();
-		//在machine库查询bluetooth地址
-		Inno72Machine inno72Machine = inno72MachineMapper.selectByPrimaryKey("6893a2ada9dd4f7eb8dc33adfc6eda73");
+		//在machine库查询bluetooth地址   "6893a2ada9dd4f7eb8dc33adfc6eda73"
+		Inno72Machine inno72Machine = inno72MachineMapper.selectByPrimaryKey(machineId);
 		String bluetoothAdd ="";
 		String bluetoothAddAes ="";
 		if(inno72Machine != null) {
