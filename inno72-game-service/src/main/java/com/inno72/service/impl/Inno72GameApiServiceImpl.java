@@ -648,6 +648,7 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 		LOGGER.info("聚石塔日志接口返回===============", JSON.toJSONString(result));
 		System.out.println("-------------这是输出---------------");
 		String msg_logCode = FastJsonUtils.getString(result, "msg_code");
+		System.out.println("=++++++++++++++++++"+msg_logCode);
 		if (!msg_logCode.equals("SUCCESS")) {
 		   String msg_info = FastJsonUtils.getString(result, "msg_info");
 		   LOGGER.info("调用聚石塔日志接口 ===> {}", JSON.toJSONString(msg_info));
