@@ -645,7 +645,7 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 		requestLogForm.put("logReqrest", JSON.toJSONString(logReqrest));
 		LOGGER.info("----------------------------"+JSONObject.toJSONString(requestLogForm));
 		String result = HttpClient.form(jstUrl + "/api/top/addLog", requestLogForm, null);
-		LOGGER.info("-------------执行到这里了---------------");
+		LOGGER.info("聚石塔日志接口返回===============", JSON.toJSONString(result));
 		System.out.println("-------------这是输出---------------");
 		String msg_logCode = FastJsonUtils.getString(result, "msg_code");
 		if (!msg_logCode.equals("SUCCESS")) {
