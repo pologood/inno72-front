@@ -641,15 +641,13 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 				1l,"26475858937");
 //		LogReqrest logReqrest = getLogReqrest(1l, Long.valueOf(inno72Merchant.getId()),
 //				Long.valueOf(userId),inno72Machine.getId());
-		LOGGER.info("-------------哈哈---------------");
 		requestLogForm.put("logReqrest", JSON.toJSONString(logReqrest));
 		LOGGER.info("----------------------------"+JSONObject.toJSONString(requestLogForm));
 		String result = HttpClient.form(jstUrl + "/api/top/addLog", requestLogForm, null);
 		LOGGER.info("聚石塔日志接口返回===============", JSON.toJSONString(result));
-		System.out.println("-------------这是输出---------------");
 		String msg_logCode = FastJsonUtils.getString(result, "msg_code");
-		System.out.println("=++++++++++++++++++"+msg_logCode);
-		if (!msg_logCode.equals("SUCCESS")) {
+		System.out.println("++++++++++++++++++"+msg_logCode);
+		if (!"SUCCESS".equals(msg_logCode)) {
 		   String msg_info = FastJsonUtils.getString(result, "msg_info");
 		   LOGGER.info("调用聚石塔日志接口 ===> {}", JSON.toJSONString(msg_info));
 		}
