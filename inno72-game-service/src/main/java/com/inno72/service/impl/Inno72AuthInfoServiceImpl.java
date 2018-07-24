@@ -80,11 +80,12 @@ public class Inno72AuthInfoServiceImpl implements Inno72AuthInfoService {
 				     //上传阿里云
 				     OSSUtil.uploadLocalFile(localUrl, objectName);
 				     // 删除本地文件
-				     f.delete();
+				     //f.delete();
 				}
 				
 				//设置二维码过期时间
 				gameSessionRedisUtil.setSessionEx(sessionUuid+"_qrCode", "", 1800);
+				
 				map.put("qrCodeUrl", returnUrl);
 				map.put("sessionUuid", sessionUuid);
 				//LOGGER.info("二维码生成成功 - result -> {}", JSON.toJSONString(map).replace("\"", "'"));

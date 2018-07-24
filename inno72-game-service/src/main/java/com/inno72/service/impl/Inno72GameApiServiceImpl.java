@@ -548,9 +548,11 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 			UserSessionVo sessionQrCodeValue = gameSessionRedisUtil.getSessionKey(sessionUuid+"_qrCode");
 			if (sessionStr != null) {
 				qrStatus = "-2";
+				LOGGER.info("请求redis session数据 ===> {}", JSON.toJSONString(sessionStr));
 			}else {
 				Long surplusTime = gameSessionRedisUtil.pastTime(sessionUuid+"_qrCode");
-				if(surplusTime==0) {
+				//redis中 surplusTime==-2代表过期
+				if(surplusTime==-2) {
 					qrStatus = "-1";
 				}
 			}

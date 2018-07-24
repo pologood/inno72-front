@@ -56,7 +56,8 @@ public class GameSessionRedisUtil {
 	 * @author Houkm 2017年5月11日
 	 */
 	public Long pastTime(String key) {
-		Long result = template.boundValueOps(SESSION_KEY+key).getExpire();
+		//Long result = template.boundValueOps(SESSION_KEY+key).getExpire();
+		Long result = template.getExpire(SESSION_KEY+key);
 		return result;
 	}
 }
