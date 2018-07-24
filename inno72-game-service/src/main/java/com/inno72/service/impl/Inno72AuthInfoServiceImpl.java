@@ -20,6 +20,7 @@ import com.inno72.common.util.AesUtils;
 import com.inno72.common.util.GameSessionRedisUtil;
 import com.inno72.common.util.QrCodeUtil;
 import com.inno72.common.util.UuidUtil;
+import com.inno72.common.utils.StringUtil;
 import com.inno72.mapper.Inno72MachineMapper;
 import com.inno72.model.Inno72Machine;
 import com.inno72.oss.OSSUtil;
@@ -52,7 +53,9 @@ public class Inno72AuthInfoServiceImpl implements Inno72AuthInfoService {
 		String bluetoothAddAes ="";
 		if(inno72Machine != null) {
 			bluetoothAdd = inno72Machine.getBluetoothAddress();
-			bluetoothAddAes = AesUtils.encrypt(bluetoothAdd);
+			if(!StringUtil.isEmpty(bluetoothAdd)) {
+				bluetoothAddAes = AesUtils.encrypt(bluetoothAdd);
+			}
 		}
 		
 		// 生成sessionUuid
