@@ -635,28 +635,28 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 		this.startGameLife(userChannel, inno72Activity, inno72ActivityPlan, inno72Game, inno72Machine, userId);
 
 		//调用聚石塔日志
-		Map<String, Object> requestLogForm = new HashMap<String,Object>();
+		Map<String, String> requestLogForm = new HashMap<String,String>();
 		requestLogForm.put("accessToken", token);
 		LogReqrest logReqrest = getLogReqrest(1l, 1l,
 				1l,"26475858937");
 //		LogReqrest logReqrest = getLogReqrest(1l, Long.valueOf(inno72Merchant.getId()),
 //				Long.valueOf(userId),inno72Machine.getId());
 		LOGGER.info("-------------哈哈---------------");
-//		requestLogForm.put("logReqrest", JSON.toJSONString(logReqrest));
-//		LOGGER.info("----------------------------"+JSONObject.toJSONString(requestLogForm));
-//		String result = HttpClient.form(jstUrl + "/api/top/addLog", requestLogForm, null);
-//		LOGGER.info("-------------执行到这里了---------------");
-//		System.out.println("-------------这是输出---------------");
-//		String msg_logCode = FastJsonUtils.getString(result, "msg_code");
-//		if (!msg_logCode.equals("SUCCESS")) {
-//		   String msg_info = FastJsonUtils.getString(result, "msg_info");
-//		   LOGGER.info("调用聚石塔日志接口 ===> {}", JSON.toJSONString(msg_info));
-//		}
+		requestLogForm.put("logReqrest", JSON.toJSONString(logReqrest));
+		LOGGER.info("----------------------------"+JSONObject.toJSONString(requestLogForm));
+		String result = HttpClient.form(jstUrl + "/api/top/addLog", requestLogForm, null);
+		LOGGER.info("-------------执行到这里了---------------");
+		System.out.println("-------------这是输出---------------");
+		String msg_logCode = FastJsonUtils.getString(result, "msg_code");
+		if (!msg_logCode.equals("SUCCESS")) {
+		   String msg_info = FastJsonUtils.getString(result, "msg_info");
+		   LOGGER.info("调用聚石塔日志接口 ===> {}", JSON.toJSONString(msg_info));
+		}
 		
 		Map<String, Object> resultMap = new HashMap<String,Object>();
 		resultMap.put("gameId", gameId);
 		resultMap.put("qrStatus", qrStatus);
-		LOGGER.info("========================--------------------------");
+		LOGGER.info("========================到底了--------------------------");
 		return Results.success(JSONObject.toJSONString(resultMap));
 		
 	}
