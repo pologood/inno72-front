@@ -641,7 +641,10 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 		LogReqrest logReqrest = getLogReqrest(null, Long.valueOf(inno72Merchant.getId()),
 				Long.valueOf(userId),inno72Machine.getId());
 		requestLogForm.put("logReqrest", JSON.toJSONString(logReqrest));
+		LOGGER.info("----------------------------"+JSONObject.toJSONString(requestLogForm));
 		String result = HttpClient.form(jstUrl + "/api/top/addLog", requestLogForm, null);
+		LOGGER.info("-------------执行到这里了---------------");
+		System.out.println("-------------这是输出---------------");
 		String msg_logCode = FastJsonUtils.getString(result, "msg_code");
 		if (!msg_logCode.equals("SUCCESS")) {
 		   String msg_info = FastJsonUtils.getString(result, "msg_info");
