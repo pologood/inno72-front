@@ -624,6 +624,9 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 		//调用聚石塔日志
 		Map<String, String> requestLogForm = new HashMap<String,String>();
 		requestLogForm.put("accessToken", token);
+		System.out.println("---------------------------"+inno72Merchant.getMerchantCode());
+		System.out.println("---------------------------"+userId);
+		System.out.println("---------------------------"+inno72Machine.getMachineCode());
 		LogReqrest logReqrest = getLogReqrest(null, null, Long.valueOf(inno72Merchant.getMerchantCode()), "login", 
 				Long.valueOf(userId),inno72Machine.getMachineCode(), null, null, null);
 		requestLogForm.put("logReqrest", JSON.toJSONString(logReqrest));
