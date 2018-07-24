@@ -20,7 +20,6 @@ import com.alibaba.fastjson.JSONObject;
 import com.inno72.common.Inno72GameServiceProperties;
 import com.inno72.common.Result;
 import com.inno72.common.Results;
-import com.inno72.common.json.JsonUtil;
 import com.inno72.common.util.FastJsonUtils;
 import com.inno72.common.util.GameSessionRedisUtil;
 import com.inno72.common.util.Inno72OrderNumGenUtil;
@@ -638,7 +637,9 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 		//调用聚石塔日志
 		Map<String, Object> requestLogForm = new HashMap<String,Object>();
 		requestLogForm.put("accessToken", token);
-//		LogReqrest logReqrest = getLogReqrest(null, Long.valueOf(inno72Merchant.getId()),
+		LogReqrest logReqrest = getLogReqrest(1l, 1l,
+				1l,"26475858937");
+//		LogReqrest logReqrest = getLogReqrest(1l, Long.valueOf(inno72Merchant.getId()),
 //				Long.valueOf(userId),inno72Machine.getId());
 		LOGGER.info("-------------哈哈---------------");
 //		requestLogForm.put("logReqrest", JSON.toJSONString(logReqrest));
