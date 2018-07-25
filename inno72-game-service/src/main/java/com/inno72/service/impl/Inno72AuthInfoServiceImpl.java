@@ -86,7 +86,7 @@ public class Inno72AuthInfoServiceImpl implements Inno72AuthInfoService {
 				     //上传阿里云
 				     OSSUtil.uploadLocalFile(localUrl, objectName);
 				     // 删除本地文件
-				     //f.delete();
+				     f.delete();
 				}
 				
 				//设置二维码过期时间
@@ -94,7 +94,6 @@ public class Inno72AuthInfoServiceImpl implements Inno72AuthInfoService {
 				
 				map.put("qrCodeUrl", returnUrl);
 				map.put("sessionUuid", sessionUuid);
-				map.put("jst", url);
 				//LOGGER.info("二维码生成成功 - result -> {}", JSON.toJSONString(map).replace("\"", "'"));
 				LOGGER.info("二维码生成成功 - result -> {}", JsonUtil.toJson(map));
 			} else {
