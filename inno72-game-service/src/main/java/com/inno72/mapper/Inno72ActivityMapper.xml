@@ -7,6 +7,7 @@
     -->
     <id column="id" jdbcType="VARCHAR" property="id" />
     <result column="name" jdbcType="VARCHAR" property="name" />
+    <result column="code" jdbcType="VARCHAR" property="code" />
     <result column="shop_id" jdbcType="VARCHAR" property="shopId" />
     <result column="seller_id" jdbcType="VARCHAR" property="sellerId" />
     <result column="manager_id" jdbcType="VARCHAR" property="managerId" />

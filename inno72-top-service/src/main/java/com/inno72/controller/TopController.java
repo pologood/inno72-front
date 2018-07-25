@@ -56,11 +56,11 @@ public class TopController {
 	public void home(HttpServletRequest request, HttpServletResponse response, @PathVariable("mid") String mid,
 			@PathVariable("sessionUuid") String sessionUuid, String code) throws Exception {
 		LOGGER.info("mid is {}, code is {}, sessionUuid is {}", new String[]{mid, code, sessionUuid});
-
+		String gameId = "";
 		if (!StringUtils.isEmpty(code) && !StringUtils.isEmpty(sessionUuid)) {
 
 			String authInfo = getAuthInfo(code);
-			LOGGER.info("authInfo is {}", authInfo);
+			LOGGER.debug("authInfo is {}", authInfo);
 
 			String tokenResult = FastJsonUtils.getString(authInfo, "token_result");
 			LOGGER.info("tokenResult is {}", tokenResult);
@@ -76,11 +76,14 @@ public class TopController {
 
 			userInfo.setToken(tokenResult);
 			// 设置用户信息
-			setUserInfo(userInfo);
+			gameId = setUserInfo(userInfo);
 		}
 		try {
 			// 跳转到游戏页面 手机端redirect
-			response.sendRedirect(h5MobileUrl);
+			LOGGER.info("h5MobileUrl is {} , gameId is {}", h5MobileUrl, gameId);
+			String formatUrl = String.format(h5MobileUrl, gameId);
+			LOGGER.info("formatUrl is {}", formatUrl);
+			response.sendRedirect(formatUrl);
 		} catch (IOException e) {
 			LOGGER.error(e.getMessage(), e);
 		}
@@ -109,7 +112,8 @@ public class TopController {
 	/**
 	 * 调用游戏服务器接口设置关联 sessionUuid authInfo信息
 	 */
-	private void setUserInfo(UserInfo userInfo) {
+	private String setUserInfo(UserInfo userInfo) {
+		LOGGER.info("gameServerUrl is " + gameServerUrl);
 		RestTemplate client = new RestTemplate();
 		MultiValueMap<String, Object> postParameters = new LinkedMultiValueMap<String, Object>();
 		postParameters.add("sessionUuid", userInfo.getSessionUuid());
@@ -124,9 +128,18 @@ public class TopController {
 			HttpEntity<MultiValueMap<String, Object>> requestEntity = new HttpEntity<>(postParameters, headers);
 			result = client.postForObject(gameServerUrl, requestEntity, String.class);
 			LOGGER.info("setUserInfo result is {} ", result);
+
+			String code = FastJsonUtils.getString(result, "code");
+			String data = FastJsonUtils.getString(result, "data");
+			LOGGER.info("code is {}, data is {}", code, data);
+			if (!StringUtils.isEmpty(code) && !StringUtils.isEmpty(data) && code.equals("0")) {
+				LOGGER.info("setUserInfo gameId is {} ", data);
+				return data;
+			}
 		} catch (Exception e) {
 			LOGGER.error(e.getMessage(), e);
 		}
+		return "";
 	}
 
 	/**
@@ -249,6 +262,12 @@ public class TopController {
 		Validators.checkParamNotNull(test);
 		LOGGER.info("index");
 		return "index";
+	}
+
+	@RequestMapping("/test")
+	public String test() {
+		LOGGER.info("test -----");
+		return "test";
 	}
 
 }

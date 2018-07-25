@@ -17,6 +17,12 @@ public class Inno72Activity {
      */
     private String name;
 
+	/**
+	 * 活动code
+	 */
+	@Column(name = "code")
+	private String code;
+
     /**
      * 店铺ID
      */
@@ -265,4 +271,12 @@ public class Inno72Activity {
     public void setUpdateTime(LocalDateTime updateTime) {
         this.updateTime = updateTime;
     }
+
+	public String getCode() {
+		return code;
+	}
+
+	public void setCode(String code) {
+		this.code = code;
+	}
 }
