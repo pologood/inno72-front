@@ -614,6 +614,26 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 		this.startGameLife(userChannel, inno72Activity, inno72ActivityPlan, inno72Game, inno72Machine, userId);
 
 		LOGGER.info("playCode is" + playCode);
+		
+		//调用聚石塔日志
+//		Map<String, String> requestLogForm = new HashMap<String,String>();
+//		requestLogForm.put("accessToken", token);
+//		System.out.println("---------------------------"+inno72Merchant.getMerchantCode());
+//		System.out.println("---------------------------"+userId);
+//		System.out.println("---------------------------"+inno72Machine.getMachineCode());
+//		LogReqrest logReqrest = getLogReqrest(null, null, Long.valueOf(inno72Merchant.getMerchantCode()), "login", 
+//				Long.valueOf(432),inno72Machine.getMachineCode(), null, null, null);
+//		requestLogForm.put("logReqrest", JSON.toJSONString(logReqrest));
+//		LOGGER.info("聚石塔日志接口参数 requestLogForm ："+JSONObject.toJSONString(requestLogForm));
+//		String result = HttpClient.form(jstUrl + "/api/top/addLog", requestLogForm, null);
+//		LOGGER.info("聚石塔日志接口返回 ", JSON.toJSONString(result));
+//		String msg_logCode = FastJsonUtils.getString(result, "msg_code");
+//		System.out.println("++++++++++++++++++"+msg_logCode);
+//		if (!"SUCCESS".equals(msg_logCode)) {
+//		   String msg_info = FastJsonUtils.getString(result, "msg_info");
+//		   LOGGER.info("调用聚石塔日志接口 ===> {}", JSON.toJSONString(msg_info));
+//		}
+		
 		return Results.success(playCode);
 	}
 	
@@ -787,6 +807,32 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 			String value1, String value2, Long value3, Long value4) {
 		LogReqrest logReqrest = new LogReqrest(bizCode, itemId, sellerId, type, userId, value1, value2, value3, value4);
 		return logReqrest;
+	}
+
+	@Override
+	public Result<String> userDuration(String token, String itemId, String sellerId, String userId, String machineCode, String playTime) {
+		LOGGER.info("用户互动时长 => itemId:{}; sellerId:{}; userId:{}; token:{}", itemId, sellerId, userId, token);
+		//调用聚石塔日志
+		Map<String, String> requestLogForm = new HashMap<String,String>();
+		requestLogForm.put("accessToken", token);
+		LogReqrest logReqrest = getLogReqrest("", Long.valueOf(itemId), Long.valueOf(sellerId), 
+				"用户互动时常", Long.valueOf(userId), machineCode, playTime, null, null);
+		requestLogForm.put("logReqrest", JSON.toJSONString(logReqrest));
+		LOGGER.info("聚石塔日志接口参数 requestLogForm ："+JSONObject.toJSONString(requestLogForm));
+		
+		String jstUrl = inno72GameServiceProperties.get("jstUrl");
+		if (StringUtil.isEmpty(jstUrl)) {
+			return Results.failure("配置中心无聚石塔配置路径!");
+		}
+		String result = HttpClient.form(jstUrl + "/api/top/addLog", requestLogForm, null);
+		LOGGER.info("聚石塔日志接口返回 ", JSON.toJSONString(result));
+		String msg_logCode = FastJsonUtils.getString(result, "msg_code");
+		System.out.println("++++++++++++++++++"+msg_logCode);
+		String msg_info = FastJsonUtils.getString(result, "msg_info");
+		if (!"SUCCESS".equals(msg_logCode)) {
+		   LOGGER.info("调用聚石塔日志接口 ===> {}", JSON.toJSONString(msg_info));
+		}
+		return Results.success(msg_info);
 	}
 
 }
