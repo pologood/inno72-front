@@ -45,10 +45,11 @@ public class Inno72AuthInfoServiceImpl implements Inno72AuthInfoService {
 
 	@Override
 	public Result<Object> createQrCode(String machineId) {
-		LOGGER.info("根据机器id生成二维码", machineId);
+		LOGGER.info("根据机器id生成二维码 machineCode is {} ", machineId);
+
+		Inno72Machine inno72Machine = inno72MachineMapper.findMachineByCode(machineId);
 		Map<String, Object> map = new HashMap<String, Object>();
 		//在machine库查询bluetooth地址   "6893a2ada9dd4f7eb8dc33adfc6eda73"
-		Inno72Machine inno72Machine = inno72MachineMapper.selectByPrimaryKey(machineId);
 		String bluetoothAdd ="";
 		String bluetoothAddAes ="";
 		if(inno72Machine != null) {
@@ -57,13 +58,15 @@ public class Inno72AuthInfoServiceImpl implements Inno72AuthInfoService {
 				bluetoothAddAes = AesUtils.encrypt(bluetoothAdd);
 			}
 		}
+
+		String _machineId = inno72Machine.getId();
 		
 		// 生成sessionUuid
 		String sessionUuid = UuidUtil.getUUID32();
 		// 调用天猫的地址
-		String url = inno72GameServiceProperties.get("tmallUrl")+ machineId + "/" + sessionUuid+"?bluetoothAddAes="+bluetoothAddAes;
+		String url = inno72GameServiceProperties.get("tmallUrl")+ _machineId + "/" + sessionUuid+"?bluetoothAddAes="+bluetoothAddAes;
 		// 二维码存储在本地的路径
-		String localUrl = machineId + sessionUuid + ".png";
+		String localUrl = _machineId + sessionUuid + ".png";
 
 		// 存储在阿里云上的文件名
 		String objectName = "qrcode/" + localUrl;

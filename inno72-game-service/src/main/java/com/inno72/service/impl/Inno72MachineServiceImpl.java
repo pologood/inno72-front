@@ -4,7 +4,6 @@ import java.util.List;
 
 import javax.annotation.Resource;
 
-import org.apache.commons.collections.CollectionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
@@ -64,21 +63,14 @@ public class Inno72MachineServiceImpl extends AbstractService<Inno72Machine> imp
 
 	@Override
 	public Result<Inno72MachineVo> findGame(String machineId, String planId, String version, String versionInno72) {
-		LOGGER.info("查询售卖机游戏详情 - machineId -> {}", machineId);
-		Inno72Machine inno72Machine = new Inno72Machine();
-		inno72Machine.setMachineCode(machineId);
-		List<Inno72Machine> inno72Machines = inno72MachineMapper.select(inno72Machine);
+		LOGGER.info("查询售卖机游戏详情 - machineCode -> {}", machineId);
 
-		String _machineId = "";
-		if (CollectionUtils.isNotEmpty(inno72Machines)) {
-			Inno72Machine _inno72Machine = inno72Machines.get(0);
-			_machineId = _inno72Machine.getId();
-			LOGGER.info("_machineId is {} " + _machineId);
-		} else {
-			return Results.failure("机器ID错误!");
+		Inno72Machine inno72Machine = inno72MachineMapper.findMachineByCode(machineId);
+		if (inno72Machine == null) {
+			return Results.failure("机器code错误!");
 		}
 
-		List<Inno72ActivityPlan> inno72ActivityPlans = inno72ActivityPlanMapper.selectByMachineId(_machineId);
+		List<Inno72ActivityPlan> inno72ActivityPlans = inno72ActivityPlanMapper.selectByMachineId(inno72Machine.getId());
 
 		if (inno72ActivityPlans.size() == 0) {
 			LOGGER.warn("机器 【{}】 没有配置 活动计划!", inno72Machine.getMachineCode());

@@ -146,9 +146,11 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 
 		List<String> resultGoodsId = inno72ActivityPlanGameResultMapper.selectByActivityPlanId(params);
 
+		Inno72Machine inno72Machine = inno72MachineMapper.findMachineByCode(machineId);
+
 		//请求接口 获取出货 货道号
 		Map<String, Object> map = new HashMap<>();
-		map.put("machineId", machineId);
+		map.put("machineId", inno72Machine.getId());
 		map.put("goodsCodes", resultGoodsId);
 		List<Inno72SupplyChannel> inno72SupplyChannels = inno72SupplyChannelMapper.selectListByParam(map);
 
@@ -211,6 +213,11 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 		String activityId = vo.getActivityId();
 		String sessionUuid = vo.getSessionUuid();
 		String itemId = vo.getItemId();
+
+		String _machineId = "";
+		Inno72Machine inno72Machine = inno72MachineMapper.findMachineByCode(machineId);
+		_machineId = inno72Machine.getId();
+
 		//新增
 
 		UserSessionVo userSessionVo = gameSessionRedisUtil.getSessionKey(sessionUuid);
@@ -219,7 +226,7 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 		}
 		LOGGER.info("将下单的session =====> {}" , JSON.toJSONString(userSessionVo));
 		//下单 inno72_Order
-		String inno72OrderId = genInno72Order(channelId, activityPlanId, machineId, itemId, userSessionVo.getUserId());
+		String inno72OrderId = genInno72Order(channelId, activityPlanId, _machineId, itemId, userSessionVo.getUserId());
 		userSessionVo.setInno72OrderId(inno72OrderId);
 		gameSessionRedisUtil.setSessionEx(sessionUuid, JSON.toJSONString(userSessionVo));
 		String accessToken = userSessionVo.getAccessToken();
@@ -232,7 +239,7 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 		Map<String, String> requestForm = new HashMap<>();
 		requestForm.put("accessToken", accessToken);
 		requestForm.put("activityId", activityId);
-		requestForm.put("mid", machineId);
+		requestForm.put("mid", machineId); // 实际为code
 		requestForm.put("goodsId", itemId);
 
 		String respJson;
@@ -453,7 +460,7 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 
 		requestForm.put("accessToken", accessToken);
 		requestForm.put("orderId", orderId); //安全ua
-		requestForm.put("mid", machineId);//umid
+		requestForm.put("mid", machineId);//umid 实际为code
 		requestForm.put("channelId", channelId);//互动实例ID
 
 		String respJson = "";
@@ -628,11 +635,9 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 	@Override
 	public Result<String> shipmentFail(String machineId,String channelCode,String describtion){
 		
-		Inno72Machine inno72Machine = inno72MachineMapper.selectByPrimaryKey(machineId);
-		
 		AlarmMessageBean<Object> alarmMessageBean = new AlarmMessageBean<Object>();
 		MachineDropGoodsBean machineDropGoodsBean = new MachineDropGoodsBean();
-		machineDropGoodsBean.setMachineCode(inno72Machine.getMachineCode());
+		machineDropGoodsBean.setMachineCode(machineId);  // 实际为code
 		machineDropGoodsBean.setChannelNum(channelCode);
 		machineDropGoodsBean.setDescribtion(describtion);
 		alarmMessageBean.setSystem("machineDropGoods");
