@@ -533,7 +533,7 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 		Inno72ActivityPlan inno72ActivityPlan = null;
 		if (inno72ActivityPlans.size() > 0) {
 			inno72ActivityPlan = inno72ActivityPlans.get(0);
-			gameId = inno72ActivityPlan.getGameId();
+			gameId = inno72ActivityPlan.getPlanCode();
 		}
 
 		if (StringUtil.isEmpty(gameId)) {
@@ -602,7 +602,7 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 		Inno72Machine inno72Machine = inno72MachineMapper.selectByPrimaryKey(mid);
 		this.startGameLife(userChannel, inno72Activity, inno72ActivityPlan, inno72Game, inno72Machine, userId);
 
-
+		LOGGER.info("gameId is" + gameId);
 		return Results.success(gameId);
 	}
 	
