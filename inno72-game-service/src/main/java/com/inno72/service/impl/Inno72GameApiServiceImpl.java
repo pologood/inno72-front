@@ -533,6 +533,25 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 		if (StringUtil.isEmpty(access_token)) {
 			return Results.failure("access_token 参数缺失！");
 		}
+		//判断是否有他人登录以及二维码是否过期
+		String qrStatus = "0";
+		if (!StringUtil.isEmpty(sessionUuid)) {
+			UserSessionVo sessionStr = gameSessionRedisUtil.getSessionKey(sessionUuid);
+			UserSessionVo sessionQrCodeValue = gameSessionRedisUtil.getSessionKey(sessionUuid+"_qrCode");
+			if (sessionStr != null) {
+				qrStatus = "-2";
+				LOGGER.info("请求redis session数据 ===> {}", JSON.toJSONString(sessionStr));
+			}else {
+				Long surplusTime = gameSessionRedisUtil.pastTime(sessionUuid+"_qrCode");
+				//redis中 surplusTime==-2代表过期
+				if(surplusTime==-2) {
+					qrStatus = "-1";
+				}
+			}
+		}else {
+			return Results.failure("参数缺失！");
+		}
+				
 		List<Inno72ActivityPlan> inno72ActivityPlans = inno72ActivityPlanMapper.selectByMachineId(mid);
 
 		String gameId = "";
@@ -634,7 +653,11 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 //		   LOGGER.info("调用聚石塔日志接口 ===> {}", JSON.toJSONString(msg_info));
 //		}
 		
-		return Results.success(playCode);
+		Map<String, Object> resultMap = new HashMap<String,Object>();
+		resultMap.put("playCode", playCode);
+		resultMap.put("qrStatus", qrStatus);
+		LOGGER.info("===================结束====================");
+		return Results.success(JSONObject.toJSONString(resultMap));
 	}
 	
 	@Override
@@ -831,6 +854,7 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 		String msg_info = FastJsonUtils.getString(result, "msg_info");
 		if (!"SUCCESS".equals(msg_logCode)) {
 		   LOGGER.info("调用聚石塔日志接口 ===> {}", JSON.toJSONString(msg_info));
+		   return Results.failure(msg_info);
 		}
 		return Results.success(msg_info);
 	}
