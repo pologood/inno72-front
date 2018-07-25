@@ -542,7 +542,6 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 		if (inno72ActivityPlans.size() > 0) {
 			inno72ActivityPlan = inno72ActivityPlans.get(0);
 			gameId = inno72ActivityPlan.getGameId();
-			playCode = inno72ActivityPlan.getPlanCode();
 		}
 
 		if (StringUtil.isEmpty(gameId)) {
@@ -557,6 +556,9 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 		assert inno72ActivityPlan != null;
 		Inno72Activity inno72Activity = inno72ActivityMapper.selectByPrimaryKey(inno72ActivityPlan.getActivityId());
 		String sellerId = inno72Activity.getSellerId();
+		playCode = inno72Activity.getCode();
+		LOGGER.info("sessionRedirect layCode is {}", playCode);
+
 		Inno72Merchant inno72Merchant = inno72MerchantMapper.selectByPrimaryKey(sellerId);
 
 
