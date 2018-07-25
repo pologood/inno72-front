@@ -127,4 +127,15 @@ public class Inno72GameApiController {
 	public Result<String> shipmentFail(String machineId,String channelCode,String describtion) {
 		return inno72GameApiService.shipmentFail(machineId,channelCode,describtion);
 	}
+	
+	/**
+	 * 用户互动时长接口
+	 * @param machineId
+	 * @return Result
+	 */
+	@RequestMapping(value = "/userDuration", method = {RequestMethod.POST, RequestMethod.GET})
+	public Result<String> userDuration(String token, String itemId, String sellerId, String userId, 
+			String machineCode, String playTime) {
+		return inno72GameApiService.userDuration(token, itemId, sellerId, userId, machineCode, playTime);
+	}
 }
