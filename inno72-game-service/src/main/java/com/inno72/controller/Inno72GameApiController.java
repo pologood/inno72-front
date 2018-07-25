@@ -2,7 +2,10 @@ package com.inno72.controller;
 
 import com.inno72.common.Result;
 import com.inno72.service.Inno72GameApiService;
+import com.inno72.service.impl.Inno72GameApiServiceImpl;
 import com.inno72.vo.MachineApiVo;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
@@ -12,6 +15,8 @@ import javax.annotation.Resource;
 @RestController
 @RequestMapping(value = "api")
 public class Inno72GameApiController {
+
+	private static final Logger LOGGER = LoggerFactory.getLogger(Inno72GameApiServiceImpl.class);
 
 	@Resource
 	private Inno72GameApiService inno72GameApiService;
@@ -87,6 +92,7 @@ public class Inno72GameApiController {
 	 */
 	@RequestMapping(value = "/sessionRedirect", method = {RequestMethod.POST, RequestMethod.GET})
 	public Result<String> sessionRedirect(String sessionUuid, String mid, String token, String code, String userId) {
+		LOGGER.info("sessionRedirect -----------------------");
 		return inno72GameApiService.sessionRedirect(sessionUuid, mid, token, code, userId);
 	}
 	
