@@ -23,7 +23,7 @@
 
     <select id="findMachineByCode" resultMap="BaseResultMap" parameterType="java.lang.String">
         select
-        <include refid="Base_Column"/>
+        id, machine_code
         from inno72_machine where machine_code = #{machineCode}
     </select>
 
