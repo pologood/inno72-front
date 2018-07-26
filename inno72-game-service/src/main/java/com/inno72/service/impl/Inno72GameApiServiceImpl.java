@@ -729,9 +729,6 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 		alarmMessageBean.setSystem("machineDropGoods");
 		alarmMessageBean.setType("machineDropGoodsException");
 		alarmMessageBean.setData(machineDropGoodsBean);
-		
-		LOGGER.info("bean => bean:{}", machineDropGoodsBean);
-		
 		redisUtil.publish("moniterAlarm",JSONObject.toJSONString(alarmMessageBean));
 
 		return Results.success();
