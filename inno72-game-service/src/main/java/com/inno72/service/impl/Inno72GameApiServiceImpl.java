@@ -285,7 +285,7 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 			this.updateRefOrderId(inno72OrderId, respJson, userSessionVo);
 			Map<String, Object> mapToUpperCase = mapToUpperCase(JSON.parseObject(FastJsonUtils.getString(respJson, "model")));
 			mapToUpperCase.put("time", new Date().getTime());
-
+			mapToUpperCase.put("inno72OrderId", inno72OrderId);
 			return Results.success(mapToUpperCase);
 
 		} catch (Exception e) {
@@ -397,7 +397,11 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 		requestForm.put("interactId", interactId);//互动实例ID
 		requestForm.put("shopId", shopId);//店铺ID
 
-		String respJson = HttpClient.form(jstUrl + "/api/top/lottery", requestForm, null);
+		String requestUrl = jstUrl + "/api/top/lottory";
+
+		LOGGER.info("请求聚石塔 url ===> {} , 参数 ===> {}", requestUrl, JSON.toJSONString(requestForm));
+
+		String respJson = HttpClient.form(requestUrl, requestForm, null);
 		
 		if (StringUtil.isEmpty(respJson)) {
 			return Results.failure("聚石塔无返回数据!");
@@ -407,13 +411,15 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 
 		try {
 
-			String msg_code = FastJsonUtils.getString(respJson,"code");
-			if (!msg_code.equals("CE001")) {
-				String msg_info = FastJsonUtils.getString(respJson,"msg_info");
+			boolean msg_code = Boolean.parseBoolean(FastJsonUtils.getString(respJson,"succ"));
+			if (!msg_code) {
+				String msg_info = FastJsonUtils.getString(respJson,"sub_msg");
+				LOGGER.info("抽奖失败 ===> {}", msg_info);
 				return Results.failure(msg_info);
 			}
 
 			String data = FastJsonUtils.getString(respJson,"data");
+			LOGGER.info("结果数据 ====> {}", data);
 			JSONObject parseDataObject = JSON.parseObject(data);
 
 			return Results.success(mapToUpperCase(parseDataObject));

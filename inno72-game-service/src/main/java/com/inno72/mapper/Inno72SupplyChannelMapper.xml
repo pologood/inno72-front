@@ -28,7 +28,7 @@
   <update id="subCount">
     update inno72_supply_channel set goods_count = goods_count-1,
     update_time=#{updateTime}
-    where machine_id=#{machineId} and code=#{code}
+    where id = #{code}
   </update>
 
 
