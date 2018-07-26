@@ -238,7 +238,7 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 		LOGGER.info("更新的session =====> {}" , JSON.toJSONString(userSessionVo));
 		if (inno72OrderId.equals("0")){
 			LOGGER.info("已经超过最大游戏数量啦 QAQ!");
-//			return Results.failure("已经超过最大游戏数量啦 QAQ!");
+			return Results.failure("已经超过最大游戏数量啦 QAQ!");
 		}
 
 		Map<String, String> requestForm = new HashMap<>();
