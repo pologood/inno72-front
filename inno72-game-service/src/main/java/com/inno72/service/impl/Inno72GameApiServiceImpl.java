@@ -377,14 +377,29 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 		}
 
 		String sessionUuid = vo.getSessionUuid();
-		String shopId = vo.getShopId();
 		String ua = vo.getUa();
 		String umid = vo.getUmid();
-		String interactId = vo.getInteractId();
+		String report = vo.getReport();
+		String activityPlanId = vo.getActivityPlanId();
 
 		UserSessionVo userSessionVo = gameSessionRedisUtil.getSessionKey(sessionUuid);
 		if (userSessionVo == null) {
 			return Results.failure("登录失效!");
+		}
+
+		// 查奖池ID
+		Map<String,String> selectCouponParam = new HashMap<>();
+		selectCouponParam.put("activityPlanId",activityPlanId);
+		selectCouponParam.put("report",report);
+		String interactId = inno72ActivityPlanMapper.selectCouponCodeByParam(selectCouponParam);
+		if ( StringUtil.isEmpty(interactId)){
+			return Results.failure("没有有效的奖券了!");
+		}
+
+		// 查商户CODE
+		String shopId = inno72MerchantMapper.selectShopCodeByPlanId(activityPlanId);
+		if ( StringUtil.isEmpty(shopId)){
+			return Results.failure("商户好像出了点问题!");
 		}
 
 		String accessToken = userSessionVo.getAccessToken();

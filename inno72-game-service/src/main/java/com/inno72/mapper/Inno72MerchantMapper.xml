@@ -25,4 +25,15 @@
       left join inno72_activity a2 on a1.id = a2.seller_id
       where a2.id = #{id}
     </select>
+
+    <select id="selectShopCodeByPlanId" parameterType="string" resultType="string">
+
+        select shop_code from inno72_shops where seller_id = (
+            select id from inno72_merchant where id = (
+                select seller_id from inno72_activity where id = (
+                  select activity_id from inno72_activity_plan where id = #{activityPlanId}
+                  )
+            )
+        )
+    </select>
 </mapper>
