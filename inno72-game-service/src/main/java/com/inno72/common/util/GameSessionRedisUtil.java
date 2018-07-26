@@ -48,9 +48,9 @@ public class GameSessionRedisUtil {
 		string().set(sessionUuid, value , outtime, TimeUnit.SECONDS);
 	}
 
-	public String getKey(String key) {
-		String s = string().get(key);
-		return s;
+	public Boolean hasKey(String key) {
+		Boolean result = template.hasKey(key);
+		return result;
 	}
 	
 }

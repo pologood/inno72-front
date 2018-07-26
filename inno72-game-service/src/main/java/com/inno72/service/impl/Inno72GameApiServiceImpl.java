@@ -574,9 +574,9 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 		if (!StringUtil.isEmpty(sessionUuid)) {
 			LOGGER.info("sessionUuid is ", sessionUuid);
 			// 判断二维码是否过期
-			String qrCode = gameSessionRedisUtil.getKey(sessionUuid + "_qrCode");
-			LOGGER.info("qrCode is {} ", qrCode);
-			if (StringUtil.isEmpty(qrCode)) {
+			boolean result = gameSessionRedisUtil.hasKey(sessionUuid + "_qrCode");
+			LOGGER.info("qrCode hasKey result {} ", result);
+			if (!result) {
 				qrStatus = QRSTATUS_INVALID;
 				LOGGER.info("二维码已经过期");
 			} else {
