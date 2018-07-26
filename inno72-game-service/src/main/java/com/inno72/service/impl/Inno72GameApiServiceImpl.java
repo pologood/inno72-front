@@ -112,6 +112,11 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 	private Inno72SupplyChannelMapper inno72SupplyChannelMapper;
 	@Autowired
 	private IRedisUtil redisUtil;
+
+	public static final String QRSTATUS_NORMAL = "0"; // 二维码正常
+	public static final String QRSTATUS_INVALID = "-1"; // 二维码失效
+	public static final String QRSTATUS_EXIST_USER = "-2"; // 存在用户登录
+
 	/**
 	 * {
 	 goodsId: 1,
@@ -417,7 +422,7 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 		LOGGER.info("请求聚石塔 url ===> {} , 参数 ===> {}", requestUrl, JSON.toJSONString(requestForm));
 
 		String respJson = HttpClient.form(requestUrl, requestForm, null);
-		
+
 		if (StringUtil.isEmpty(respJson)) {
 			return Results.failure("聚石塔无返回数据!");
 		}
@@ -563,25 +568,27 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 		if (StringUtil.isEmpty(access_token)) {
 			return Results.failure("access_token 参数缺失！");
 		}
+
 		//判断是否有他人登录以及二维码是否过期
-		String qrStatus = "0";
+		String qrStatus = QRSTATUS_NORMAL;
 		if (!StringUtil.isEmpty(sessionUuid)) {
-			UserSessionVo sessionStr = gameSessionRedisUtil.getSessionKey(sessionUuid);
-			UserSessionVo sessionQrCodeValue = gameSessionRedisUtil.getSessionKey(sessionUuid+"_qrCode");
-			if (sessionStr != null) {
-				qrStatus = "-2";
-				LOGGER.info("请求redis session数据 ===> {}", JSON.toJSONString(sessionStr));
-			}else {
-				Long surplusTime = gameSessionRedisUtil.pastTime(sessionUuid+"_qrCode");
-				//redis中 surplusTime==-2代表过期
-				if(surplusTime==-2) {
-					qrStatus = "-1";
+			LOGGER.info("sessionUuid is ", sessionUuid);
+			// 判断二维码是否过期
+			String qrCode = gameSessionRedisUtil.getKey(sessionUuid + "_qrCode");
+			if (StringUtil.isEmpty(qrCode)) {
+				qrStatus = QRSTATUS_INVALID;
+				LOGGER.info("二维码已经过期");
+			} else {
+				UserSessionVo sessionStr = gameSessionRedisUtil.getSessionKey(sessionUuid);
+				if (sessionStr != null) {
+					qrStatus = QRSTATUS_EXIST_USER;
+					LOGGER.info("已经有用户正在操作");
 				}
 			}
-		}else {
+		} else {
 			return Results.failure("参数缺失！");
 		}
-				
+
 		List<Inno72ActivityPlan> inno72ActivityPlans = inno72ActivityPlanMapper.selectByMachineId(mid);
 
 		String gameId = "";
@@ -657,20 +664,20 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 			, "", channelId, inno72GameUser.getId(), inno72Channel.getChannelName(), userId);
 			inno72GameUserChannelMapper.insert(userChannel);
 			LOGGER.info("插入游戏用户渠道表 完成 ===> {}", JSON.toJSONString(userChannel));
-			
+
 		}
 		Inno72Machine inno72Machine = inno72MachineMapper.selectByPrimaryKey(mid);
 		this.startGameLife(userChannel, inno72Activity, inno72ActivityPlan, inno72Game, inno72Machine, userId);
 
 		LOGGER.info("playCode is" + playCode);
-		
+
 		//调用聚石塔日志
 //		Map<String, String> requestLogForm = new HashMap<String,String>();
 //		requestLogForm.put("accessToken", token);
 //		System.out.println("---------------------------"+inno72Merchant.getMerchantCode());
 //		System.out.println("---------------------------"+userId);
 //		System.out.println("---------------------------"+inno72Machine.getMachineCode());
-//		LogReqrest logReqrest = getLogReqrest(null, null, Long.valueOf(inno72Merchant.getMerchantCode()), "login", 
+//		LogReqrest logReqrest = getLogReqrest(null, null, Long.valueOf(inno72Merchant.getMerchantCode()), "login",
 //				Long.valueOf(432),inno72Machine.getMachineCode(), null, null, null);
 //		requestLogForm.put("logReqrest", JSON.toJSONString(logReqrest));
 //		LOGGER.info("聚石塔日志接口参数 requestLogForm ："+JSONObject.toJSONString(requestLogForm));
@@ -682,18 +689,18 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 //		   String msg_info = FastJsonUtils.getString(result, "msg_info");
 //		   LOGGER.info("调用聚石塔日志接口 ===> {}", JSON.toJSONString(msg_info));
 //		}
-		
+
 		Map<String, Object> resultMap = new HashMap<String,Object>();
 		resultMap.put("playCode", playCode);
 		resultMap.put("qrStatus", qrStatus);
 		resultMap.put("sellerId", inno72Merchant.getMerchantCode());
-		
+
 		return Results.success(JSONObject.toJSONString(resultMap));
 	}
-	
+
 	@Override
 	public Result<String> malfunctionLog(String machineId,String channelCode){
-		
+
 		Inno72Machine inno72Machine = inno72MachineMapper.selectByPrimaryKey(machineId);
 		//将货道故障信息推送到预警系统
 		AlarmMessageBean<String> alarmMessageBean = new AlarmMessageBean<>();
@@ -710,7 +717,7 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 
 	@Override
 	public Result<String> shipmentFail(String machineId,String channelCode,String describtion){
-		
+
 		AlarmMessageBean<Object> alarmMessageBean = new AlarmMessageBean<Object>();
 		MachineDropGoodsBean machineDropGoodsBean = new MachineDropGoodsBean();
 		machineDropGoodsBean.setMachineCode(machineId);  // 实际为code
@@ -855,9 +862,9 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 		}
 		return result;
 	}
-	
-	
-	private LogReqrest getLogReqrest(String bizCode, Long itemId, Long sellerId, String type, Long userId, 
+
+
+	private LogReqrest getLogReqrest(String bizCode, Long itemId, Long sellerId, String type, Long userId,
 			String value1, String value2, Long value3, Long value4) {
 		LogReqrest logReqrest = new LogReqrest(bizCode, itemId, sellerId, type, userId, value1, value2, value3, value4);
 		return logReqrest;
@@ -869,11 +876,11 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 		//调用聚石塔日志
 		Map<String, String> requestLogForm = new HashMap<String,String>();
 		requestLogForm.put("accessToken", token);
-		LogReqrest logReqrest = getLogReqrest("", Long.valueOf(itemId), Long.valueOf(sellerId), 
+		LogReqrest logReqrest = getLogReqrest("", Long.valueOf(itemId), Long.valueOf(sellerId),
 				"用户互动时常", Long.valueOf(userId), machineCode, playTime, null, null);
 		requestLogForm.put("logReqrest", JSON.toJSONString(logReqrest));
 		LOGGER.info("聚石塔日志接口参数 requestLogForm ："+JSONObject.toJSONString(requestLogForm));
-		
+
 		String jstUrl = inno72GameServiceProperties.get("jstUrl");
 		if (StringUtil.isEmpty(jstUrl)) {
 			return Results.failure("配置中心无聚石塔配置路径!");
