@@ -285,7 +285,7 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 			this.updateRefOrderId(inno72OrderId, respJson, userSessionVo);
 			Map<String, Object> mapToUpperCase = mapToUpperCase(JSON.parseObject(FastJsonUtils.getString(respJson, "model")));
 			mapToUpperCase.put("time", new Date().getTime());
-
+			mapToUpperCase.put("inno72OrderId", inno72OrderId);
 			return Results.success(mapToUpperCase);
 
 		} catch (Exception e) {
