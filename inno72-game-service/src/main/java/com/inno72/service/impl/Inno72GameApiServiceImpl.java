@@ -440,15 +440,23 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 	@Override
 	public Result<String> shipmentReport(MachineApiVo vo) {
 
-		String machineId = vo.getMachineId();
+		String machineCode = vo.getMachineId();
 		String channelId = vo.getChannelId();
 		String sessionUuid = vo.getSessionUuid();
 		String orderId = vo.getOrderId();
 
-		if (StringUtil.isEmpty(machineId) || StringUtil.isEmpty(channelId) || StringUtil.isEmpty(sessionUuid)
+		if (StringUtil.isEmpty(machineCode) || StringUtil.isEmpty(channelId) || StringUtil.isEmpty(sessionUuid)
 				|| StringUtil.isEmpty(orderId)) {
 			return Results.failure("参数缺失！");
 		}
+
+		Inno72Machine machineByCode = inno72MachineMapper.findMachineByCode(machineCode);
+
+		if (machineByCode == null){
+			LOGGER.info("机器不存在! ===> {}" , JSON.toJSONString(vo));
+		}
+
+		String machineId = machineByCode.getId();
 
 		String jstUrl = inno72GameServiceProperties.get("jstUrl");
 		if (StringUtil.isEmpty(jstUrl)) {
@@ -466,7 +474,7 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 
 		requestForm.put("accessToken", accessToken);
 		requestForm.put("orderId", orderId); //安全ua
-		requestForm.put("mid", machineId);//umid 实际为code
+		requestForm.put("mid", machineCode);//umid 实际为code
 		requestForm.put("channelId", channelId);//互动实例ID
 
 		String respJson = "";
@@ -486,6 +494,7 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 			String msg_info = FastJsonUtils.getString(respJson, "msg_info");
 			return Results.failure(msg_info);
 		}
+
 
 		int i = inno72SupplyChannelMapper.subCount(new Inno72SupplyChannel(machineId, null, channelId));
 
