@@ -110,6 +110,7 @@ public class Inno72MachineServiceImpl extends AbstractService<Inno72Machine> imp
 		inno72MachineVo.setInno72ActivityPlan(inno72ActivityPlan);
 		inno72MachineVo.setActivityId(inno72ActivityPlan.getActivityId());
 		inno72MachineVo.setReload(false);
+		inno72MachineVo.setPrizeType(inno72ActivityPlan.getPrizeType());
 		LOGGER.info("plancode is {} ", inno72Activity.getCode());
 		inno72MachineVo.setPlanCode(inno72Activity.getCode());
 		if (!planId.equals("0") && (!inno72ActivityPlan.getId().equals(planId) || !inno72Game.getVersion().equals(version)

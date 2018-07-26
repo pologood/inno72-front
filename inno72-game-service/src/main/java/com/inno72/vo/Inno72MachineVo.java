@@ -43,6 +43,18 @@ public class Inno72MachineVo extends Inno72Machine {
 	 */
 	private Inno72ActivityPlan inno72ActivityPlan;
 
+	/**
+	 * 奖品类型（100100商品，100200优惠券，100300商品+优惠券)
+	 */
+	private String prizeType;
+
+	public String getPrizeType() {
+		return prizeType;
+	}
+
+	public void setPrizeType(String prizeType) {
+		this.prizeType = prizeType;
+	}
 
 	public String getBrandName() {
 		return brandName;

@@ -24,6 +24,12 @@ public class Inno72ActivityPlan {
     @Column(name = "game_id")
     private String gameId;
 
+	/**
+	 * 奖品类型（100100商品，100200优惠券，100300商品+优惠券)
+	 */
+	@Column(name = "prize_type")
+    private String prizeType;
+
     /**
      * 开始时间
      */
@@ -279,5 +285,14 @@ public class Inno72ActivityPlan {
 
 	public void setUserMaxTimes(Integer userMaxTimes) {
 		this.userMaxTimes = userMaxTimes;
+	}
+
+
+	public String getPrizeType() {
+		return prizeType;
+	}
+
+	public void setPrizeType(String prizeType) {
+		this.prizeType = prizeType;
 	}
 }
