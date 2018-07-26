@@ -687,6 +687,7 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 		resultMap.put("playCode", playCode);
 		resultMap.put("qrStatus", qrStatus);
 		resultMap.put("sellerId", inno72Merchant.getMerchantCode());
+		
 		return Results.success(JSONObject.toJSONString(resultMap));
 	}
 	
