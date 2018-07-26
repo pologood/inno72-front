@@ -56,7 +56,10 @@ public class TopController {
 	public void home(HttpServletRequest request, HttpServletResponse response, @PathVariable("mid") String mid,
 			@PathVariable("sessionUuid") String sessionUuid, String code) throws Exception {
 		LOGGER.info("mid is {}, code is {}, sessionUuid is {}", new String[]{mid, code, sessionUuid});
-		String gameId = "";
+		String playCode = "";
+		String data = "";
+		String qrStatus = "";
+		String sellerId = "";
 		if (!StringUtils.isEmpty(code) && !StringUtils.isEmpty(sessionUuid)) {
 
 			String authInfo = getAuthInfo(code);
@@ -75,13 +78,24 @@ public class TopController {
 			userInfo.setUserId(taobaoUserId);
 
 			userInfo.setToken(tokenResult);
+
 			// 设置用户信息
-			gameId = setUserInfo(userInfo);
+			data = setUserInfo(userInfo);
+			LOGGER.info("data is {}", data);
+
+			if (!StringUtils.isEmpty(data)) {
+				playCode = FastJsonUtils.getString(data, "playCode");
+				qrStatus = FastJsonUtils.getString(data, "qrStatus");
+				String sId = FastJsonUtils.getString(data, "sellerId");
+				if (!StringUtils.isEmpty(sId)) {
+					sellerId = sId.trim();
+				}
+			}
 		}
 		try {
 			// 跳转到游戏页面 手机端redirect
-			LOGGER.info("h5MobileUrl is {} , gameId is {}", h5MobileUrl, gameId);
-			String formatUrl = String.format(h5MobileUrl, gameId);
+			LOGGER.info("h5MobileUrl is {} , playCode is {}", h5MobileUrl, playCode);
+			String formatUrl = String.format(h5MobileUrl, playCode) + "?qrStatus=" + qrStatus + "&sellerId=" + sellerId;
 			LOGGER.info("formatUrl is {}", formatUrl);
 			response.sendRedirect(formatUrl);
 		} catch (IOException e) {
