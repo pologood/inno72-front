@@ -47,17 +47,9 @@ public class GameSessionRedisUtil {
 		LOGGER.info("存入session ===> sessionUuid[{}]、 value[{}];", sessionUuid, value);
 		string().set(SESSION_KEY + sessionUuid, value , outtime, TimeUnit.SECONDS);
 	}
-	
-	/**
-	 * 以秒为单位，返回给定 key 的剩余生存时间
-	 *
-	 * @param key
-	 * @return
-	 * @author Houkm 2017年5月11日
-	 */
-	public Long pastTime(String key) {
-		//Long result = template.boundValueOps(SESSION_KEY+key).getExpire();
-		Long result = template.getExpire(SESSION_KEY+key);
-		return result;
+
+	public String getKey(String key) {
+		String s = string().get(key);
+		return s;
 	}
-}
+	
