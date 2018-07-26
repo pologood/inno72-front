@@ -49,22 +49,23 @@ public class Inno72AuthInfoServiceImpl implements Inno72AuthInfoService {
 
 		Inno72Machine inno72Machine = inno72MachineMapper.findMachineByCode(machineId);
 		Map<String, Object> map = new HashMap<String, Object>();
-		//在machine库查询bluetooth地址   "6893a2ada9dd4f7eb8dc33adfc6eda73"
-		String bluetoothAdd ="";
-		String bluetoothAddAes ="";
-		if(inno72Machine != null) {
+		// 在machine库查询bluetooth地址 "6893a2ada9dd4f7eb8dc33adfc6eda73"
+		String bluetoothAdd = "";
+		String bluetoothAddAes = "";
+		if (inno72Machine != null) {
 			bluetoothAdd = inno72Machine.getBluetoothAddress();
-			if(!StringUtil.isEmpty(bluetoothAdd)) {
+			if (!StringUtil.isEmpty(bluetoothAdd)) {
 				bluetoothAddAes = AesUtils.encrypt(bluetoothAdd);
 			}
 		}
 
 		String _machineId = inno72Machine.getId();
-		
+
 		// 生成sessionUuid
 		String sessionUuid = UuidUtil.getUUID32();
 		// 调用天猫的地址
-		String url = inno72GameServiceProperties.get("tmallUrl")+ _machineId + "/" + sessionUuid+"?bluetoothAddAes="+bluetoothAddAes;
+		String url = inno72GameServiceProperties.get("tmallUrl") + _machineId + "/" + sessionUuid + "?bluetoothAddAes="
+				+ bluetoothAddAes;
 		// 二维码存储在本地的路径
 		String localUrl = _machineId + sessionUuid + ".png";
 
@@ -78,23 +79,21 @@ public class Inno72AuthInfoServiceImpl implements Inno72AuthInfoService {
 			if (result) {
 				File f = new File(localUrl);
 				if (f.exists()) {
-					//压缩图片
-					Thumbnails.of(localUrl) 
-			           .scale(0.5f) 
-			           .outputQuality(0f) 
-			           .toFile(localUrl);
-				     //上传阿里云
-				     OSSUtil.uploadLocalFile(localUrl, objectName);
-				     // 删除本地文件
-				     f.delete();
+					// 压缩图片
+					Thumbnails.of(localUrl).scale(0.5f).outputQuality(0f).toFile(localUrl);
+					// 上传阿里云
+					OSSUtil.uploadLocalFile(localUrl, objectName);
+					// 删除本地文件
+					f.delete();
 				}
-				
-				//设置二维码过期时间
-				gameSessionRedisUtil.setSessionEx(sessionUuid+"_qrCode", "", 1800);
-				
+
+				// 设置二维码过期时间
+				gameSessionRedisUtil.setSessionEx(sessionUuid + "_qrCode", "", 1800);
+
 				map.put("qrCodeUrl", returnUrl);
 				map.put("sessionUuid", sessionUuid);
-				//LOGGER.info("二维码生成成功 - result -> {}", JSON.toJSONString(map).replace("\"", "'"));
+				// LOGGER.info("二维码生成成功 - result -> {}", JSON.toJSONString(map).replace("\"",
+				// "'"));
 				LOGGER.info("二维码生成成功 - result -> {}", JsonUtil.toJson(map));
 			} else {
 				LOGGER.info("二维码生成失败");

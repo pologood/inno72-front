@@ -20,14 +20,14 @@ public class Inno72AuthInfoController {
 	@Resource
 	private Inno72AuthInfoService inno72AuthInfoService;
 
-	@RequestMapping(value = "/createQrCode", method = {RequestMethod.POST, RequestMethod.GET})
+	@RequestMapping(value = "/createQrCode", method = { RequestMethod.POST, RequestMethod.GET })
 	@ResponseBody
 	public Result<Object> createQrCode(@RequestParam String machineId) {
 
 		return inno72AuthInfoService.createQrCode(machineId);
 	}
 
-	@RequestMapping(value = "/polling", method = {RequestMethod.POST, RequestMethod.GET})
+	@RequestMapping(value = "/polling", method = { RequestMethod.POST, RequestMethod.GET })
 	@ResponseBody
 	public Result<Object> sessionPolling(@RequestParam String sessionUuid) {
 		return inno72AuthInfoService.sessionPolling(sessionUuid);
