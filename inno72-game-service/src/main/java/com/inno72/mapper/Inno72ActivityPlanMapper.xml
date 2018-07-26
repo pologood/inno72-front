@@ -7,6 +7,7 @@
     -->
     <id column="id" jdbcType="VARCHAR" property="id" />
     <result column="activity_id" jdbcType="VARCHAR" property="activityId" />
+    <result column="prize_type" jdbcType="VARCHAR" property="prizeType" />
     <result column="plan_code" jdbcType="VARCHAR" property="planCode" />
     <result column="game_id" jdbcType="VARCHAR" property="gameId" />
     <result column="start_time" jdbcType="TIMESTAMP" property="startTime" javaType="java.time.LocalDateTime"
