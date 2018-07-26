@@ -1,5 +1,9 @@
 package com.inno72.model;
 
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.inno72.common.CustomLocalDateTimeSerializer;
+import com.inno72.common.LocalDateConverter;
+
 import javax.persistence.*;
 import java.time.LocalDateTime;
 
@@ -62,6 +66,8 @@ public class Inno72Activity {
      * 创建时间
      */
     @Column(name = "create_time")
+	@JsonSerialize(using = CustomLocalDateTimeSerializer.class)
+	@Convert(converter = LocalDateConverter.class)
     private LocalDateTime createTime;
 
     /**
@@ -74,6 +80,8 @@ public class Inno72Activity {
      * 更新时间
      */
     @Column(name = "update_time")
+	@JsonSerialize(using = CustomLocalDateTimeSerializer.class)
+	@Convert(converter = LocalDateConverter.class)
     private LocalDateTime updateTime;
 
     /**

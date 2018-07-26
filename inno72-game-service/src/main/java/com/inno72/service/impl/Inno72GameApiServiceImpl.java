@@ -285,7 +285,7 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 			this.updateRefOrderId(inno72OrderId, respJson, userSessionVo);
 			Map<String, Object> mapToUpperCase = mapToUpperCase(JSON.parseObject(FastJsonUtils.getString(respJson, "model")));
 			mapToUpperCase.put("time", new Date().getTime());
-
+			mapToUpperCase.put("inno72OrderId", inno72OrderId);
 			return Results.success(mapToUpperCase);
 
 		} catch (Exception e) {
@@ -377,14 +377,29 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 		}
 
 		String sessionUuid = vo.getSessionUuid();
-		String shopId = vo.getShopId();
 		String ua = vo.getUa();
 		String umid = vo.getUmid();
-		String interactId = vo.getInteractId();
+		String report = vo.getReport();
+		String activityPlanId = vo.getActivityPlanId();
 
 		UserSessionVo userSessionVo = gameSessionRedisUtil.getSessionKey(sessionUuid);
 		if (userSessionVo == null) {
 			return Results.failure("登录失效!");
+		}
+
+		// 查奖池ID
+		Map<String,String> selectCouponParam = new HashMap<>();
+		selectCouponParam.put("activityPlanId",activityPlanId);
+		selectCouponParam.put("report",report);
+		String interactId = inno72ActivityPlanMapper.selectCouponCodeByParam(selectCouponParam);
+		if ( StringUtil.isEmpty(interactId)){
+			return Results.failure("没有有效的奖券了!");
+		}
+
+		// 查商户CODE
+		String shopId = inno72MerchantMapper.selectShopCodeByPlanId(activityPlanId);
+		if ( StringUtil.isEmpty(shopId)){
+			return Results.failure("商户好像出了点问题!");
 		}
 
 		String accessToken = userSessionVo.getAccessToken();
@@ -397,7 +412,11 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 		requestForm.put("interactId", interactId);//互动实例ID
 		requestForm.put("shopId", shopId);//店铺ID
 
-		String respJson = HttpClient.form(jstUrl + "/api/top/lottery", requestForm, null);
+		String requestUrl = jstUrl + "/api/top/lottory";
+
+		LOGGER.info("请求聚石塔 url ===> {} , 参数 ===> {}", requestUrl, JSON.toJSONString(requestForm));
+
+		String respJson = HttpClient.form(requestUrl, requestForm, null);
 		
 		if (StringUtil.isEmpty(respJson)) {
 			return Results.failure("聚石塔无返回数据!");
@@ -407,13 +426,15 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 
 		try {
 
-			String msg_code = FastJsonUtils.getString(respJson,"code");
-			if (!msg_code.equals("CE001")) {
-				String msg_info = FastJsonUtils.getString(respJson,"msg_info");
+			boolean msg_code = Boolean.parseBoolean(FastJsonUtils.getString(respJson,"succ"));
+			if (!msg_code) {
+				String msg_info = FastJsonUtils.getString(respJson,"sub_msg");
+				LOGGER.info("抽奖失败 ===> {}", msg_info);
 				return Results.failure(msg_info);
 			}
 
 			String data = FastJsonUtils.getString(respJson,"data");
+			LOGGER.info("结果数据 ====> {}", data);
 			JSONObject parseDataObject = JSON.parseObject(data);
 
 			return Results.success(mapToUpperCase(parseDataObject));
@@ -434,15 +455,23 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 	@Override
 	public Result<String> shipmentReport(MachineApiVo vo) {
 
-		String machineId = vo.getMachineId();
+		String machineCode = vo.getMachineId();
 		String channelId = vo.getChannelId();
 		String sessionUuid = vo.getSessionUuid();
 		String orderId = vo.getOrderId();
 
-		if (StringUtil.isEmpty(machineId) || StringUtil.isEmpty(channelId) || StringUtil.isEmpty(sessionUuid)
+		if (StringUtil.isEmpty(machineCode) || StringUtil.isEmpty(channelId) || StringUtil.isEmpty(sessionUuid)
 				|| StringUtil.isEmpty(orderId)) {
 			return Results.failure("参数缺失！");
 		}
+
+		Inno72Machine machineByCode = inno72MachineMapper.findMachineByCode(machineCode);
+
+		if (machineByCode == null){
+			LOGGER.info("机器不存在! ===> {}" , JSON.toJSONString(vo));
+		}
+
+		String machineId = machineByCode.getId();
 
 		String jstUrl = inno72GameServiceProperties.get("jstUrl");
 		if (StringUtil.isEmpty(jstUrl)) {
@@ -460,7 +489,7 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 
 		requestForm.put("accessToken", accessToken);
 		requestForm.put("orderId", orderId); //安全ua
-		requestForm.put("mid", machineId);//umid 实际为code
+		requestForm.put("mid", machineCode);//umid 实际为code
 		requestForm.put("channelId", channelId);//互动实例ID
 
 		String respJson = "";
@@ -480,6 +509,7 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 			String msg_info = FastJsonUtils.getString(respJson, "msg_info");
 			return Results.failure(msg_info);
 		}
+
 
 		int i = inno72SupplyChannelMapper.subCount(new Inno72SupplyChannel(machineId, null, channelId));
 

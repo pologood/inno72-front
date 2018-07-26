@@ -7,6 +7,7 @@
     -->
     <id column="id" jdbcType="VARCHAR" property="id" />
     <result column="activity_id" jdbcType="VARCHAR" property="activityId" />
+    <result column="prize_type" jdbcType="VARCHAR" property="prizeType" />
     <result column="plan_code" jdbcType="VARCHAR" property="planCode" />
     <result column="game_id" jdbcType="VARCHAR" property="gameId" />
     <result column="start_time" jdbcType="TIMESTAMP" property="startTime" javaType="java.time.LocalDateTime"
@@ -31,5 +32,15 @@
 
         where CURRENT_TIMESTAMP() BETWEEN a1.start_time and a1.end_time
         and a2.machine_id = #{machineId}
+    </select>
+    <select id="selectCouponCodeByParam" resultType="java.lang.String" parameterType="java.util.Map">
+
+        select code from inno72_coupon
+        where id = (
+          select prize_id from inno72_activity_plan_game_result
+          where prize_type = 2 and activity_plan_id = #{activityPlanId} and result_code = #{report} limit 1
+          )
+
+
     </select>
 </mapper>

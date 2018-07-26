@@ -79,6 +79,8 @@ public class Inno72MachineServiceImpl extends AbstractService<Inno72Machine> imp
 
 		Inno72ActivityPlan inno72ActivityPlan = inno72ActivityPlans.get(0);
 
+		LOGGER.info("活动计划详情 =====> {}", JSON.toJSONString(inno72ActivityPlan));
+
 		String gameId = inno72ActivityPlan.getGameId();
 		if (StringUtil.isEmpty(gameId)) {
 			LOGGER.warn("活动计划id 【{}】 没有配置 游戏!", inno72ActivityPlan.getId());
@@ -110,6 +112,7 @@ public class Inno72MachineServiceImpl extends AbstractService<Inno72Machine> imp
 		inno72MachineVo.setInno72ActivityPlan(inno72ActivityPlan);
 		inno72MachineVo.setActivityId(inno72ActivityPlan.getActivityId());
 		inno72MachineVo.setReload(false);
+		inno72MachineVo.setPrizeType(inno72ActivityPlan.getPrizeType());
 		LOGGER.info("plancode is {} ", inno72Activity.getCode());
 		inno72MachineVo.setPlanCode(inno72Activity.getCode());
 		if (!planId.equals("0") && (!inno72ActivityPlan.getId().equals(planId) || !inno72Game.getVersion().equals(version)

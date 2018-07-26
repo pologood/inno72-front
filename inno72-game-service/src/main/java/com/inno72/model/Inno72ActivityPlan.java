@@ -1,5 +1,9 @@
 package com.inno72.model;
 
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.inno72.common.CustomLocalDateTimeSerializer;
+import com.inno72.common.LocalDateConverter;
+
 import javax.persistence.*;
 import java.time.LocalDateTime;
 
@@ -24,16 +28,26 @@ public class Inno72ActivityPlan {
     @Column(name = "game_id")
     private String gameId;
 
+	/**
+	 * 奖品类型（100100商品，100200优惠券，100300商品+优惠券)
+	 */
+	@Column(name = "prize_type")
+    private String prizeType;
+
     /**
      * 开始时间
      */
     @Column(name = "start_time")
+	@JsonSerialize(using = CustomLocalDateTimeSerializer.class)
+	@Convert(converter = LocalDateConverter.class)
     private LocalDateTime startTime;
 
     /**
      * 结束时间
      */
     @Column(name = "end_time")
+	@JsonSerialize(using = CustomLocalDateTimeSerializer.class)
+	@Convert(converter = LocalDateConverter.class)
     private LocalDateTime endTime;
 
     /**
@@ -57,6 +71,8 @@ public class Inno72ActivityPlan {
      * 创建时间
      */
     @Column(name = "create_time")
+	@JsonSerialize(using = CustomLocalDateTimeSerializer.class)
+	@Convert(converter = LocalDateConverter.class)
     private LocalDateTime createTime;
 
     /**
@@ -69,6 +85,8 @@ public class Inno72ActivityPlan {
      * 更新时间
      */
     @Column(name = "update_time")
+	@JsonSerialize(using = CustomLocalDateTimeSerializer.class)
+	@Convert(converter = LocalDateConverter.class)
     private LocalDateTime updateTime;
 
 
@@ -279,5 +297,14 @@ public class Inno72ActivityPlan {
 
 	public void setUserMaxTimes(Integer userMaxTimes) {
 		this.userMaxTimes = userMaxTimes;
+	}
+
+
+	public String getPrizeType() {
+		return prizeType;
+	}
+
+	public void setPrizeType(String prizeType) {
+		this.prizeType = prizeType;
 	}
 }
