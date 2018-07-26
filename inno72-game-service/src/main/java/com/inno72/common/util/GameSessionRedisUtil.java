@@ -45,7 +45,7 @@ public class GameSessionRedisUtil {
 	
 	public void setSessionEx(String sessionUuid, String value, Integer outtime){
 		LOGGER.info("存入session ===> sessionUuid[{}]、 value[{}];", sessionUuid, value);
-		string().set(SESSION_KEY + sessionUuid, value , outtime, TimeUnit.SECONDS);
+		string().set(sessionUuid, value , outtime, TimeUnit.SECONDS);
 	}
 
 	public String getKey(String key) {
