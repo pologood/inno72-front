@@ -58,14 +58,17 @@ public class Inno72AuthInfoServiceImpl implements Inno72AuthInfoService {
 				bluetoothAddAes = AesUtils.encrypt(bluetoothAdd);
 			}
 		}
-
+		String machineCode = "";
+		if (!StringUtil.isEmpty(machineId)) {
+			machineCode = AesUtils.encrypt(machineId);
+		}
 		String _machineId = inno72Machine.getId();
 
 		// 生成sessionUuid
 		String sessionUuid = UuidUtil.getUUID32();
 		// 调用天猫的地址
 		String url = inno72GameServiceProperties.get("tmallUrl") + _machineId + "/" + sessionUuid + "?bluetoothAddAes="
-				+ bluetoothAddAes;
+				+ bluetoothAddAes+"&machineCode="+machineCode;
 		// 二维码存储在本地的路径
 		String localUrl = _machineId + sessionUuid + ".png";
 
