@@ -41,14 +41,14 @@ public class SuperOpenServiceImpl implements SuperOpenService {
 
 		requestJson = Optional.ofNullable(requestJson).orElse("");
 
-		LOGGER.info("inno72 开放接口 request 参数 ==> requestJson -> {} ", requestJson);
+		LOGGER.debug("inno72 开放接口 request 参数 ==> requestJson -> {} ", requestJson);
 		JSONObject jsonObject = JSON.parseObject(requestJson);
 		String serviceName = Optional.ofNullable(jsonObject.get(SERVICE_NAME_KEY)).map(Object::toString).orElse("");
 		String version = Optional.ofNullable(jsonObject.get(VERSION_KEY)).map(Object::toString).orElse("");
 		String params = Optional.ofNullable(jsonObject.get(PARAMS_KEY)).map(Object::toString).orElse("");
 		ADPTE_METHOD method = ADPTE_METHOD.selectAdpteByServiceNameAndVersion(serviceName, version);
 
-		LOGGER.info("redirect url: {}", method);
+		LOGGER.debug("redirect url: {}", method);
 		return method.path + this.buildRequesParams(params);
 	}
 

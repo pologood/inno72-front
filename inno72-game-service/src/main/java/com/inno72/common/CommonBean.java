@@ -2,10 +2,13 @@ package com.inno72.common;
 
 public class CommonBean {
 
-	public static String getSessionKey(String session){
-		return SESSION_KEY+session;
-	}
-	public static final String SESSION_KEY = "session:";
-	public static final Integer SESSION_EX = 1600;
+
+	/**
+	 * game session key
+	 *
+	 * machine_plan:
+	 */
+	public static final String REDIS_ACTIVITY_PLAN_CACHE_KEY = "machine_plan:";
+	public static final int REDIS_ACTIVITY_PLAN_CACHE_EX_KEY = 300;
 
 }
