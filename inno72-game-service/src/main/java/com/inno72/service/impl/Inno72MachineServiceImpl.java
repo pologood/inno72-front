@@ -70,8 +70,10 @@ public class Inno72MachineServiceImpl extends AbstractService<Inno72Machine> imp
 
 		if ( StringUtil.isNotBlank(planId) ){
 			String rVoJson = redisUtil.get(CommonBean.REDIS_ACTIVITY_PLAN_CACHE_KEY + planId);
+			LOGGER.info("redis cache machine data =====> {}", rVoJson);
 			if ( StringUtil.isNotEmpty(rVoJson) ){
 				inno72MachineVo = JSON.parseObject(rVoJson, Inno72MachineVo.class);
+				LOGGER.info("parse rVoJson string finish --> {}", inno72MachineVo);
 			}
 		}
 
