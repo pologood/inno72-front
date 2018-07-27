@@ -126,7 +126,7 @@ public class Inno72MachineServiceImpl extends AbstractService<Inno72Machine> imp
 			inno72MachineVo.setPlanCode(inno72Activity.getCode());
 
 			redisUtil.setex(
-					CommonBean.REDIS_ACTIVITY_PLAN_CACHE_KEY + planId,
+					CommonBean.REDIS_ACTIVITY_PLAN_CACHE_KEY + inno72ActivityPlan.getId(),
 					CommonBean.REDIS_ACTIVITY_PLAN_CACHE_EX_KEY,
 					JSON.toJSONString(inno72MachineVo)
 			);
