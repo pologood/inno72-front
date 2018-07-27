@@ -53,7 +53,7 @@ public class Inno72SuperOpenConrolelr {
 		try {
 			request.getRequestDispatcher(superOpenService.adpter(requestJson)).forward(request, response);
 		} catch (Exception e) {
-			LOGGER.info("公共开放接口异常 ===> {} ", e.getMessage(), e);
+			LOGGER.error("公共开放接口异常 ===> {} ", e.getMessage(), e);
 		}
 		return Results.failure("调用服务失败！");
 	}

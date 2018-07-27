@@ -684,13 +684,12 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 		Map<String, String> requestLogForm = new HashMap<String,String>();
 		requestLogForm.put("accessToken", token);
 		LogReqrest logReqrest = getLogReqrest(null, null, Long.valueOf(inno72Merchant.getMerchantCode()), "login",
-				Long.valueOf(432),inno72Machine.getMachineCode(), null, null, null);
+				-1l,inno72Machine.getMachineCode(), null, null, null);
 		requestLogForm.put("logReqrest", JSON.toJSONString(logReqrest));
 		LOGGER.info("聚石塔日志接口参数 requestLogForm ："+JSONObject.toJSONString(requestLogForm));
 		String result = HttpClient.form(jstUrl + "/api/top/addLog", requestLogForm, null);
 		LOGGER.info("聚石塔日志接口返回 ", JSON.toJSONString(result));
 		String msg_logCode = FastJsonUtils.getString(result, "msg_code");
-		System.out.println("++++++++++++++++++"+msg_logCode);
 		if (!"SUCCESS".equals(msg_logCode)) {
 		   String msg_info = FastJsonUtils.getString(result, "msg_info");
 		   LOGGER.info("调用聚石塔日志接口 ===> {}", JSON.toJSONString(msg_info));
@@ -874,7 +873,7 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 
 	private LogReqrest getLogReqrest(String bizCode, Long itemId, Long sellerId, String type, Long userId,
 			String value1, String value2, Long value3, Long value4) {
-		LogReqrest logReqrest = new LogReqrest(bizCode, itemId, sellerId, type, userId, value1, value2, value3, value4);
+		LogReqrest logReqrest = new LogReqrest(bizCode, itemId, sellerId, type, -1L, value1, value2, value3, value4);
 		return logReqrest;
 	}
 
