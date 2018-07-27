@@ -113,9 +113,9 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 	@Autowired
 	private IRedisUtil redisUtil;
 
-	public static final String QRSTATUS_NORMAL = "0"; // 二维码正常
-	public static final String QRSTATUS_INVALID = "-1"; // 二维码失效
-	public static final String QRSTATUS_EXIST_USER = "-2"; // 存在用户登录
+	private static final String QRSTATUS_NORMAL = "0"; // 二维码正常
+	private static final String QRSTATUS_INVALID = "-1"; // 二维码失效
+	private static final String QRSTATUS_EXIST_USER = "-2"; // 存在用户登录
 
 	/**
 	 * {
@@ -151,7 +151,14 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 
 		List<String> resultGoodsId = inno72ActivityPlanGameResultMapper.selectByActivityPlanId(params);
 
+		if ( resultGoodsId.size() == 0 ){
+			return Results.failure("没有奖品哦.");
+		}
+
 		Inno72Machine inno72Machine = inno72MachineMapper.findMachineByCode(machineId);
+		if ( inno72Machine == null ){
+			return Results.failure("机器信息错误!");
+		}
 
 		//请求接口 获取出货 货道号
 		Map<String, Object> map = new HashMap<>();
@@ -219,12 +226,13 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 		String sessionUuid = vo.getSessionUuid();
 		String itemId = vo.getItemId();
 
-		String _machineId = "";
 		Inno72Machine inno72Machine = inno72MachineMapper.findMachineByCode(machineId);
-		_machineId = inno72Machine.getId();
+		if ( inno72Machine == null ){
+			return Results.failure("机器信息错误!");
+		}
+		String _machineId = inno72Machine.getId();
 
 		//新增
-
 		UserSessionVo userSessionVo = gameSessionRedisUtil.getSessionKey(sessionUuid);
 		if (userSessionVo == null) {
 			return Results.failure("登录失效!");
@@ -673,24 +681,21 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 		LOGGER.info("playCode is" + playCode);
 
 		//调用聚石塔日志
-//		Map<String, String> requestLogForm = new HashMap<String,String>();
-//		requestLogForm.put("accessToken", token);
-//		System.out.println("---------------------------"+inno72Merchant.getMerchantCode());
-//		System.out.println("---------------------------"+userId);
-//		System.out.println("---------------------------"+inno72Machine.getMachineCode());
-//		LogReqrest logReqrest = getLogReqrest(null, null, Long.valueOf(inno72Merchant.getMerchantCode()), "login",
-//				Long.valueOf(432),inno72Machine.getMachineCode(), null, null, null);
-//		requestLogForm.put("logReqrest", JSON.toJSONString(logReqrest));
-//		LOGGER.info("聚石塔日志接口参数 requestLogForm ："+JSONObject.toJSONString(requestLogForm));
-//		String result = HttpClient.form(jstUrl + "/api/top/addLog", requestLogForm, null);
-//		LOGGER.info("聚石塔日志接口返回 ", JSON.toJSONString(result));
-//		String msg_logCode = FastJsonUtils.getString(result, "msg_code");
-//		System.out.println("++++++++++++++++++"+msg_logCode);
-//		if (!"SUCCESS".equals(msg_logCode)) {
-//		   String msg_info = FastJsonUtils.getString(result, "msg_info");
-//		   LOGGER.info("调用聚石塔日志接口 ===> {}", JSON.toJSONString(msg_info));
-//		}
-
+		Map<String, String> requestLogForm = new HashMap<String,String>();
+		requestLogForm.put("accessToken", token);
+		LogReqrest logReqrest = getLogReqrest(null, null, Long.valueOf(inno72Merchant.getMerchantCode()), "login",
+				Long.valueOf(432),inno72Machine.getMachineCode(), null, null, null);
+		requestLogForm.put("logReqrest", JSON.toJSONString(logReqrest));
+		LOGGER.info("聚石塔日志接口参数 requestLogForm ："+JSONObject.toJSONString(requestLogForm));
+		String result = HttpClient.form(jstUrl + "/api/top/addLog", requestLogForm, null);
+		LOGGER.info("聚石塔日志接口返回 ", JSON.toJSONString(result));
+		String msg_logCode = FastJsonUtils.getString(result, "msg_code");
+		System.out.println("++++++++++++++++++"+msg_logCode);
+		if (!"SUCCESS".equals(msg_logCode)) {
+		   String msg_info = FastJsonUtils.getString(result, "msg_info");
+		   LOGGER.info("调用聚石塔日志接口 ===> {}", JSON.toJSONString(msg_info));
+		}
+		
 		Map<String, Object> resultMap = new HashMap<String,Object>();
 		resultMap.put("playCode", playCode);
 		resultMap.put("qrStatus", qrStatus);
