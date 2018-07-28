@@ -64,11 +64,15 @@ public class Inno72AuthInfoServiceImpl implements Inno72AuthInfoService {
 		}
 		String _machineId = inno72Machine.getId();
 
+		LOGGER.info("Mac蓝牙地址 {} ", bluetoothAddAes);
+		
 		// 生成sessionUuid
 		String sessionUuid = UuidUtil.getUUID32();
 		// 调用天猫的地址
 		String url = inno72GameServiceProperties.get("tmallUrl") + _machineId + "/" + sessionUuid + "?bluetoothAddAes="
 				+ bluetoothAddAes+"&machineCode="+machineCode;
+		
+		LOGGER.info("二维码字符串 {} ", url);
 		// 二维码存储在本地的路径
 		String localUrl = _machineId + sessionUuid + ".png";
 
