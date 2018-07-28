@@ -19,11 +19,13 @@
         <result column="machine_status" jdbcType="INTEGER" property="machineStatus"/>
         <result column="net_status" jdbcType="INTEGER" property="netStatus"/>
         <result column="device_id" jdbcType="VARCHAR" property="deviceId"/>
+        <result column="bluetooth_address" jdbcType="VARCHAR" property="bluetoothAddress"/>
+        
     </resultMap>
 
     <select id="findMachineByCode" resultMap="BaseResultMap" parameterType="java.lang.String">
         select
-        id, machine_code
+        id, machine_code, bluetooth_address
         from inno72_machine where machine_code = #{machineCode}
     </select>
 
