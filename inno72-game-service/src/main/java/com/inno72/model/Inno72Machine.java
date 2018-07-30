@@ -85,6 +85,9 @@ public class Inno72Machine {
 	
 	@Column(name = "bluetooth_address")
 	private String bluetoothAddress;
+	
+	@Column(name = "open_status")
+	private Integer openStatus;
 
 	/**
 	 * @return Id
@@ -282,5 +285,13 @@ public class Inno72Machine {
 
 	public void setBluetoothAddress(String bluetoothAddress) {
 		this.bluetoothAddress = bluetoothAddress;
+	}
+
+	public Integer getOpenStatus() {
+		return openStatus;
+	}
+
+	public void setOpenStatus(Integer openStatus) {
+		this.openStatus = openStatus;
 	}
 }
