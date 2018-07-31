@@ -581,8 +581,8 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 
 		//判断是否有他人登录以及二维码是否过期
 		String qrStatus = QRSTATUS_NORMAL;
-		if (!StringUtil.isEmpty(sessionUuid)) {
-			LOGGER.info("sessionUuid is ", sessionUuid);
+		if (!StringUtil.isEmpty(sessionUuid)) {	
+			LOGGER.info("sessionUuid is {}", sessionUuid);
 			// 判断二维码是否过期
 			boolean result = gameSessionRedisUtil.hasKey(sessionUuid + "_qrCode");
 			LOGGER.info("qrCode hasKey result {} ", result);
@@ -728,15 +728,19 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 		AlarmMessageBean<Object> alarmMessageBean = new AlarmMessageBean<Object>();
 		MachineDropGoodsBean machineDropGoodsBean = new MachineDropGoodsBean();
 		LOGGER.info("掉货失败参数 => machineId:{}; channelCode:{}; describtion:{}", machineId, channelCode, describtion);
+		Inno72Machine inno72Machine = inno72MachineMapper.findMachineByCode(machineId);
+		if(inno72Machine==null) {
+			return Results.failure("机器号错误");
+		}
+		if(inno72Machine.getMachineStatus()==4&&inno72Machine.getOpenStatus()==0) {
+			machineDropGoodsBean.setMachineCode(machineId);  // 实际为code
+			machineDropGoodsBean.setChannelNum(channelCode);
+			alarmMessageBean.setSystem("machineDropGoods");
+			alarmMessageBean.setType("machineDropGoodsException");
+			alarmMessageBean.setData(machineDropGoodsBean);
+			redisUtil.publish("moniterAlarm",JSONObject.toJSONString(alarmMessageBean));
+		}
 		
-		machineDropGoodsBean.setMachineCode(machineId);  // 实际为code
-		machineDropGoodsBean.setChannelNum(channelCode);
-		machineDropGoodsBean.setDescribtion(describtion);
-		alarmMessageBean.setSystem("machineDropGoods");
-		alarmMessageBean.setType("machineDropGoodsException");
-		alarmMessageBean.setData(machineDropGoodsBean);
-		redisUtil.publish("moniterAlarm",JSONObject.toJSONString(alarmMessageBean));
-
 		return Results.success();
 	}
 	private void startGameLife(Inno72GameUserChannel userChannel, Inno72Activity inno72Activity, Inno72ActivityPlan inno72ActivityPlan,
