@@ -2,14 +2,12 @@ package com.inno72.service.impl;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 
 import javax.annotation.Resource;
 
+import com.inno72.common.CommonBean;
+import com.inno72.vo.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -61,11 +59,6 @@ import com.inno72.model.MachineDropGoodsBean;
 import com.inno72.plugin.http.HttpClient;
 import com.inno72.redis.IRedisUtil;
 import com.inno72.service.Inno72GameApiService;
-import com.inno72.vo.AlarmMessageBean;
-import com.inno72.vo.GoodsVo;
-import com.inno72.vo.LogReqrest;
-import com.inno72.vo.MachineApiVo;
-import com.inno72.vo.UserSessionVo;
 
 @Service
 public class Inno72GameApiServiceImpl implements Inno72GameApiService {
@@ -134,6 +127,8 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 		String sessionUuid = vo.getSessionUuid();
 		String machineId = vo.getMachineId();
 
+		String channelId = vo.getChannelId();
+
 		if ( StringUtil.isEmpty(sessionUuid) || StringUtil.isEmpty(activityPlanId) ) {
 			LOGGER.info("查询商品参数错误 ! ===> {}", JSON.toJSONString(vo));
 			return Results.failure("参数错误!");
@@ -200,8 +195,15 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 
 		}
 
-		LOGGER.debug("查询商品结果 ==> {}", JSON.toJSONString(goodsVoMap.values()));
-		return Results.success(goodsVoMap.values());
+		boolean canOrder = this.countSuccOrder(channelId, userSessionVo.getUserId(), activityPlanId);
+		Collection<GoodsVo> values = goodsVoMap.values();
+
+		Map<String, Object> result = new HashMap<>();
+		result.put("canOrder", canOrder);
+		result.put("goods", values);
+
+		LOGGER.debug("查询商品结果 ==> {}", JSON.toJSONString(result));
+		return Results.success(result);
 
 	}
 
@@ -788,6 +790,25 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 		Inno72GameUserLife userLife = inno72GameUserLifeMapper.selectByUserChannelIdLast(userSessionVo.getUserId());
 		userLife.setGameResult("1");
 		inno72GameUserLifeMapper.updateByPrimaryKeySelective(userLife);
+	}
+
+	private boolean countSuccOrder(String channelId, String channelUserKey, String activityPlanId){
+
+		Map<String, String> paramsChannel = new HashMap<>();
+		paramsChannel.put("channelId", channelId);
+		paramsChannel.put("channelUserKey", channelUserKey);
+		Inno72GameUserChannel userChannel = inno72GameUserChannelMapper.selectByChannelUserKey(paramsChannel);
+		String gameUserId = userChannel.getGameUserId();
+
+		Map<String, String> orderParams = new HashMap<>();
+		orderParams.put("activityPlanId", activityPlanId);
+		orderParams.put("gameUserId", gameUserId);
+		List<Inno72Order> inno72Orders = inno72OrderMapper.findGoodsStatusSucc(orderParams);
+
+		Inno72ActivityPlan inno72ActivityPlan = inno72ActivityPlanMapper.selectByPrimaryKey(activityPlanId);
+		Integer userMaxTimes = inno72ActivityPlan.getUserMaxTimes();
+
+		return userMaxTimes > inno72Orders.size();
 	}
 
 	private String genInno72Order(String channelId, String activityPlanId, String machineId, String goodsId, String channelUserKey) {

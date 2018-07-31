@@ -57,7 +57,7 @@ public class Inno72MachineServiceImpl extends AbstractService<Inno72Machine> imp
 				|| !inno72MachineVo.getInno72Games().getVersionInno72().equals(versionInno72)
 				)
 		) {
-			LOGGER.info("查询机器游戏关联完成 - result -> {}", JSON.toJSONString(inno72MachineVo));
+			LOGGER.debug("查询机器游戏关联完成 - result -> {}", JSON.toJSONString(inno72MachineVo));
 			inno72MachineVo.setReload(true);
 		}
 
