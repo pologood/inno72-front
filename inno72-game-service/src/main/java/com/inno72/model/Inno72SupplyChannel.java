@@ -1,7 +1,7 @@
 package com.inno72.model;
 
-import javax.persistence.*;
 import java.time.LocalDateTime;
+import javax.persistence.*;
 
 @Table(name = "inno72_supply_channel")
 public class Inno72SupplyChannel {

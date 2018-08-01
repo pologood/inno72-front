@@ -1,7 +1,7 @@
 package com.inno72.model;
 
-import javax.persistence.*;
 import java.util.Date;
+import javax.persistence.*;
 
 @Table(name = "inno72_shops")
 public class Inno72Shops {

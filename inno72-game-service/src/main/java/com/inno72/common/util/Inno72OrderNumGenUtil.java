@@ -2,13 +2,12 @@ package com.inno72.common.util;
 
 import com.inno72.common.datetime.LocalDateTimeUtil;
 import com.inno72.redis.IRedisUtil;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import javax.annotation.PostConstruct;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-
-import javax.annotation.PostConstruct;
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 
 @Component
 public class Inno72OrderNumGenUtil {

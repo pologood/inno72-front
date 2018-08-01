@@ -1,7 +1,7 @@
 package com.inno72.model;
 
-import javax.persistence.*;
 import java.math.BigDecimal;
+import javax.persistence.*;
 
 @Table(name = "inno72_order_goods")
 public class Inno72OrderGoods {

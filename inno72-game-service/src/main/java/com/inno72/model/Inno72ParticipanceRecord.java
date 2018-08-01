@@ -2,9 +2,8 @@ package com.inno72.model;
 
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.inno72.common.CustomLocalDateTimeSerializer;
-
-import javax.persistence.*;
 import java.time.LocalDateTime;
+import javax.persistence.*;
 
 @Table(name = "inno72_participance_record")
 public class Inno72ParticipanceRecord {

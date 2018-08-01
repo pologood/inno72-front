@@ -2,7 +2,6 @@ package com.inno72.vo;
 
 
 import com.inno72.plugin.http.HttpClient;
-
 import java.util.HashMap;
 import java.util.Map;
 

@@ -2,9 +2,8 @@ package com.inno72.controller;
 
 import com.inno72.common.Result;
 import com.inno72.service.Inno72AuthInfoService;
-import org.springframework.web.bind.annotation.*;
-
 import javax.annotation.Resource;
+import org.springframework.web.bind.annotation.*;
 
 /**
  * Created by CodeGenerator on 2018/06/27.

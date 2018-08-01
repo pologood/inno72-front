@@ -14,17 +14,16 @@ import com.inno72.model.Inno72Machine;
 import com.inno72.oss.OSSUtil;
 import com.inno72.service.Inno72AuthInfoService;
 import com.inno72.vo.UserSessionVo;
+import java.io.File;
+import java.util.HashMap;
+import java.util.Map;
+import javax.annotation.Resource;
 import net.coobird.thumbnailator.Thumbnails;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import javax.annotation.Resource;
-import java.io.File;
-import java.util.HashMap;
-import java.util.Map;
 
 /**
  * Created by CodeGenerator on 2018/06/27.

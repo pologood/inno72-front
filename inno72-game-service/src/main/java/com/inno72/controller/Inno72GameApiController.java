@@ -4,13 +4,12 @@ import com.inno72.common.Result;
 import com.inno72.service.Inno72GameApiService;
 import com.inno72.service.impl.Inno72GameApiServiceImpl;
 import com.inno72.vo.MachineApiVo;
+import javax.annotation.Resource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
-
-import javax.annotation.Resource;
 
 @RestController
 @RequestMapping(value = "api")
