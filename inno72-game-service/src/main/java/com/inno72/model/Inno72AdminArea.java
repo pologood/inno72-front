@@ -1,6 +1,8 @@
 package com.inno72.model;
 
-import javax.persistence.*;
+import javax.persistence.Column;
+import javax.persistence.Id;
+import javax.persistence.Table;
 
 @Table(name = "inno72_admin_area")
 public class Inno72AdminArea {

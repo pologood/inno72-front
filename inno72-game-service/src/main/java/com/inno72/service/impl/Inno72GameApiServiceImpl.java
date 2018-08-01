@@ -2,12 +2,15 @@ package com.inno72.service.impl;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
-import java.util.*;
+import java.util.Collection;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 
 import javax.annotation.Resource;
 
-import com.inno72.common.CommonBean;
-import com.inno72.vo.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -59,6 +62,11 @@ import com.inno72.model.MachineDropGoodsBean;
 import com.inno72.plugin.http.HttpClient;
 import com.inno72.redis.IRedisUtil;
 import com.inno72.service.Inno72GameApiService;
+import com.inno72.vo.AlarmMessageBean;
+import com.inno72.vo.GoodsVo;
+import com.inno72.vo.LogReqrest;
+import com.inno72.vo.MachineApiVo;
+import com.inno72.vo.UserSessionVo;
 
 @Service
 public class Inno72GameApiServiceImpl implements Inno72GameApiService {

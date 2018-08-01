@@ -1,12 +1,18 @@
 package com.inno72.model;
 
+import java.math.BigDecimal;
+import java.time.LocalDateTime;
+
+import javax.persistence.Column;
+import javax.persistence.Convert;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.Table;
+
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.inno72.common.CustomLocalDateTimeSerializer;
 import com.inno72.common.LocalDateConverter;
-
-import javax.persistence.*;
-import java.math.BigDecimal;
-import java.time.LocalDateTime;
 
 @Table(name = "inno72_order")
 public class Inno72Order {

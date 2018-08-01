@@ -1,7 +1,5 @@
 package com.inno72.common.util;
 
-import com.inno72.plugin.http.HttpClient;
-
 import java.io.UnsupportedEncodingException;
 import java.security.InvalidAlgorithmParameterException;
 import java.security.InvalidKeyException;
@@ -14,6 +12,8 @@ import javax.crypto.IllegalBlockSizeException;
 import javax.crypto.NoSuchPaddingException;
 import javax.crypto.spec.IvParameterSpec;
 import javax.crypto.spec.SecretKeySpec;
+
+import com.inno72.plugin.http.HttpClient;
 
 
 /**
