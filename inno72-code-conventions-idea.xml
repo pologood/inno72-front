@@ -1,29 +1,52 @@
-<code_scheme name="inno72-1.0">
-  <option name="AUTODETECT_INDENTS" value="false" />
-  <option name="LINE_SEPARATOR" value="&#xA;" />
-  <option name="ENABLE_JAVADOC_FORMATTING" value="false" />
-  <option name="FORMATTER_TAGS_ENABLED" value="true" />
-  <codeStyleSettings language="JAVA">
-    <option name="KEEP_LINE_BREAKS" value="false" />
-    <option name="KEEP_FIRST_COLUMN_COMMENT" value="false" />
-    <option name="KEEP_CONTROL_STATEMENT_IN_ONE_LINE" value="false" />
-    <option name="ALIGN_MULTILINE_PARAMETERS" value="false" />
-    <option name="ALIGN_MULTILINE_RESOURCES" value="false" />
-    <option name="CALL_PARAMETERS_WRAP" value="1" />
-    <option name="METHOD_PARAMETERS_WRAP" value="1" />
-    <option name="RESOURCE_LIST_WRAP" value="5" />
-    <option name="EXTENDS_LIST_WRAP" value="1" />
-    <option name="THROWS_LIST_WRAP" value="1" />
-    <option name="EXTENDS_KEYWORD_WRAP" value="1" />
-    <option name="THROWS_KEYWORD_WRAP" value="1" />
-    <option name="METHOD_CALL_CHAIN_WRAP" value="1" />
-    <option name="BINARY_OPERATION_WRAP" value="1" />
-    <option name="BINARY_OPERATION_SIGN_ON_NEXT_LINE" value="true" />
-    <option name="TERNARY_OPERATION_WRAP" value="5" />
-    <option name="KEEP_SIMPLE_BLOCKS_IN_ONE_LINE" value="true" />
-    <option name="ARRAY_INITIALIZER_WRAP" value="1" />
-    <indentOptions>
-      <option name="USE_TAB_CHARACTER" value="true" />
-    </indentOptions>
-  </codeStyleSettings>
+<code_scheme name="inno72-1.0" version="173">
+    <option name="AUTODETECT_INDENTS" value="false" />
+    <option name="LINE_SEPARATOR" value="&#xA;" />
+    <option name="FORMATTER_TAGS_ENABLED" value="true" />
+    <JavaCodeStyleSettings>
+        <option name="CLASS_COUNT_TO_USE_IMPORT_ON_DEMAND" value="5000" />
+        <option name="NAMES_COUNT_TO_USE_IMPORT_ON_DEMAND" value="2000" />
+        <option name="PACKAGES_TO_USE_IMPORT_ON_DEMAND">
+            <value />
+        </option>
+        <option name="IMPORT_LAYOUT_TABLE">
+            <value>
+                <emptyLine />
+                <package name="" withSubpackages="true" static="true" />
+                <emptyLine />
+                <package name="java" withSubpackages="true" static="false" />
+                <emptyLine />
+                <package name="javax" withSubpackages="true" static="false" />
+                <emptyLine />
+                <package name="org" withSubpackages="true" static="false" />
+                <emptyLine />
+                <package name="com" withSubpackages="true" static="false" />
+                <emptyLine />
+                <package name="" withSubpackages="true" static="false" />
+            </value>
+        </option>
+        <option name="ENABLE_JAVADOC_FORMATTING" value="false" />
+    </JavaCodeStyleSettings>
+    <codeStyleSettings language="JAVA">
+        <option name="KEEP_LINE_BREAKS" value="false" />
+        <option name="KEEP_FIRST_COLUMN_COMMENT" value="false" />
+        <option name="KEEP_CONTROL_STATEMENT_IN_ONE_LINE" value="false" />
+        <option name="ALIGN_MULTILINE_PARAMETERS" value="false" />
+        <option name="ALIGN_MULTILINE_RESOURCES" value="false" />
+        <option name="CALL_PARAMETERS_WRAP" value="1" />
+        <option name="METHOD_PARAMETERS_WRAP" value="1" />
+        <option name="RESOURCE_LIST_WRAP" value="5" />
+        <option name="EXTENDS_LIST_WRAP" value="1" />
+        <option name="THROWS_LIST_WRAP" value="1" />
+        <option name="EXTENDS_KEYWORD_WRAP" value="1" />
+        <option name="THROWS_KEYWORD_WRAP" value="1" />
+        <option name="METHOD_CALL_CHAIN_WRAP" value="1" />
+        <option name="BINARY_OPERATION_WRAP" value="1" />
+        <option name="BINARY_OPERATION_SIGN_ON_NEXT_LINE" value="true" />
+        <option name="TERNARY_OPERATION_WRAP" value="5" />
+        <option name="KEEP_SIMPLE_BLOCKS_IN_ONE_LINE" value="true" />
+        <option name="ARRAY_INITIALIZER_WRAP" value="1" />
+        <indentOptions>
+            <option name="USE_TAB_CHARACTER" value="true" />
+        </indentOptions>
+    </codeStyleSettings>
 </code_scheme>
