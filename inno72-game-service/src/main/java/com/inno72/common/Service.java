@@ -1,7 +1,9 @@
 package com.inno72.common;
 
 import java.util.List;
+
 import org.apache.ibatis.exceptions.TooManyResultsException;
+
 import tk.mybatis.mapper.entity.Condition;
 
 /**

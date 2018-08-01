@@ -1,13 +1,10 @@
 package com.inno72;
 
-import com.fasterxml.jackson.annotation.JsonInclude.Include;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.inno72.common.interceptor.PageListAttrHandlerInterceptor;
-import com.inno72.common.spring.JsonView;
-import com.inno72.redis.IRedisUtil;
 import java.util.ArrayList;
 import java.util.List;
+
 import javax.annotation.Resource;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.Bean;
@@ -21,6 +18,12 @@ import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter;
 import org.springframework.web.servlet.view.ContentNegotiatingViewResolver;
+
+import com.fasterxml.jackson.annotation.JsonInclude.Include;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.inno72.common.interceptor.PageListAttrHandlerInterceptor;
+import com.inno72.common.spring.JsonView;
+import com.inno72.redis.IRedisUtil;
 
 @Configuration
 @EnableWebMvc
