@@ -1,5 +1,13 @@
 package com.inno72.generator;
 
+import static com.inno72.generator.ProjectConstant.BASE_PACKAGE;
+import static com.inno72.generator.ProjectConstant.CONTROLLER_PACKAGE;
+import static com.inno72.generator.ProjectConstant.MAPPER_INTERFACE_REFERENCE;
+import static com.inno72.generator.ProjectConstant.MAPPER_PACKAGE;
+import static com.inno72.generator.ProjectConstant.MODEL_PACKAGE;
+import static com.inno72.generator.ProjectConstant.SERVICE_IMPL_PACKAGE;
+import static com.inno72.generator.ProjectConstant.SERVICE_PACKAGE;
+
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -28,14 +36,6 @@ import org.mybatis.generator.internal.DefaultShellCallback;
 import com.google.common.base.CaseFormat;
 
 import freemarker.template.TemplateExceptionHandler;
-
-import static com.inno72.generator.ProjectConstant.BASE_PACKAGE;
-import static com.inno72.generator.ProjectConstant.CONTROLLER_PACKAGE;
-import static com.inno72.generator.ProjectConstant.MAPPER_INTERFACE_REFERENCE;
-import static com.inno72.generator.ProjectConstant.MAPPER_PACKAGE;
-import static com.inno72.generator.ProjectConstant.MODEL_PACKAGE;
-import static com.inno72.generator.ProjectConstant.SERVICE_IMPL_PACKAGE;
-import static com.inno72.generator.ProjectConstant.SERVICE_PACKAGE;
 
 /**
  * 代码生成器，根据数据表名称生成对应的Model、Mapper、Service、Controller简化开发。
