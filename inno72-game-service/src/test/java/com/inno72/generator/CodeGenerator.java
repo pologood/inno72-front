@@ -1,41 +1,19 @@
 package com.inno72.generator;
 
-import static com.inno72.generator.ProjectConstant.BASE_PACKAGE;
-import static com.inno72.generator.ProjectConstant.CONTROLLER_PACKAGE;
-import static com.inno72.generator.ProjectConstant.MAPPER_INTERFACE_REFERENCE;
-import static com.inno72.generator.ProjectConstant.MAPPER_PACKAGE;
-import static com.inno72.generator.ProjectConstant.MODEL_PACKAGE;
-import static com.inno72.generator.ProjectConstant.SERVICE_IMPL_PACKAGE;
-import static com.inno72.generator.ProjectConstant.SERVICE_PACKAGE;
+import com.google.common.base.CaseFormat;
+import freemarker.template.TemplateExceptionHandler;
+import org.apache.commons.lang3.StringUtils;
+import org.mybatis.generator.api.MyBatisGenerator;
+import org.mybatis.generator.config.*;
+import org.mybatis.generator.internal.DefaultShellCallback;
 
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
-import org.apache.commons.lang3.StringUtils;
-import org.mybatis.generator.api.MyBatisGenerator;
-import org.mybatis.generator.config.Configuration;
-import org.mybatis.generator.config.Context;
-import org.mybatis.generator.config.GeneratedKey;
-import org.mybatis.generator.config.JDBCConnectionConfiguration;
-import org.mybatis.generator.config.JavaClientGeneratorConfiguration;
-import org.mybatis.generator.config.JavaModelGeneratorConfiguration;
-import org.mybatis.generator.config.ModelType;
-import org.mybatis.generator.config.PluginConfiguration;
-import org.mybatis.generator.config.PropertyRegistry;
-import org.mybatis.generator.config.SqlMapGeneratorConfiguration;
-import org.mybatis.generator.config.TableConfiguration;
-import org.mybatis.generator.internal.DefaultShellCallback;
-
-import com.google.common.base.CaseFormat;
-
-import freemarker.template.TemplateExceptionHandler;
+import static com.inno72.generator.ProjectConstant.*;
 
 /**
  * 代码生成器，根据数据表名称生成对应的Model、Mapper、Service、Controller简化开发。

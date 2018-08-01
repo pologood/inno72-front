@@ -1,12 +1,7 @@
 package com.inno72.model;
 
+import javax.persistence.*;
 import java.time.LocalDateTime;
-
-import javax.persistence.Column;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.Table;
 
 @Table(name = "inno72_merchant")
 public class Inno72Merchant {

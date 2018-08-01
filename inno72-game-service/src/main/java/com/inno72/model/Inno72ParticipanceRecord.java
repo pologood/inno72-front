@@ -1,15 +1,10 @@
 package com.inno72.model;
 
-import java.time.LocalDateTime;
-
-import javax.persistence.Column;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.Table;
-
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.inno72.common.CustomLocalDateTimeSerializer;
+
+import javax.persistence.*;
+import java.time.LocalDateTime;
 
 @Table(name = "inno72_participance_record")
 public class Inno72ParticipanceRecord {

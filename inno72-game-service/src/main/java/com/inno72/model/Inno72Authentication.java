@@ -1,10 +1,6 @@
 package com.inno72.model;
 
-import javax.persistence.Column;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.Table;
+import javax.persistence.*;
 
 @Table(name = "inno72_authentication")
 public class Inno72Authentication {

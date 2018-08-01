@@ -1,9 +1,6 @@
 package com.inno72;
 
-import java.util.Properties;
-
-import javax.sql.DataSource;
-
+import com.github.pagehelper.PageHelper;
 import org.apache.ibatis.plugin.Interceptor;
 import org.apache.ibatis.session.SqlSessionFactory;
 import org.mybatis.spring.SqlSessionFactoryBean;
@@ -12,10 +9,10 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.io.support.PathMatchingResourcePatternResolver;
 import org.springframework.core.io.support.ResourcePatternResolver;
-
-import com.github.pagehelper.PageHelper;
-
 import tk.mybatis.spring.mapper.MapperScannerConfigurer;
+
+import javax.sql.DataSource;
+import java.util.Properties;
 
 @Configuration
 public class MybatisConfig {

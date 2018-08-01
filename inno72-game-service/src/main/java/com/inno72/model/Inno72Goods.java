@@ -1,13 +1,8 @@
 package com.inno72.model;
 
+import javax.persistence.*;
 import java.math.BigDecimal;
 import java.util.Date;
-
-import javax.persistence.Column;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.Table;
 
 @Table(name = "inno72_goods")
 public class Inno72Goods {

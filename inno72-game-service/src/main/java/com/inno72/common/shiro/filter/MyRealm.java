@@ -1,7 +1,7 @@
 package com.inno72.common.shiro.filter;
 
-import javax.annotation.Resource;
-
+import com.inno72.model.Inno72Authentication;
+import com.inno72.service.Inno72AuthenticationService;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.apache.shiro.authc.AuthenticationException;
@@ -14,8 +14,7 @@ import org.apache.shiro.realm.AuthorizingRealm;
 import org.apache.shiro.subject.PrincipalCollection;
 import org.springframework.stereotype.Service;
 
-import com.inno72.model.Inno72Authentication;
-import com.inno72.service.Inno72AuthenticationService;
+import javax.annotation.Resource;
 
 @Service
 public class MyRealm extends AuthorizingRealm {

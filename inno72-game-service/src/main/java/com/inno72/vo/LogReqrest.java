@@ -1,10 +1,10 @@
 package com.inno72.vo;
 
 
+import com.inno72.plugin.http.HttpClient;
+
 import java.util.HashMap;
 import java.util.Map;
-
-import com.inno72.plugin.http.HttpClient;
 
 /**
  * 主要用于给淘宝服务端上报机器日志使用
