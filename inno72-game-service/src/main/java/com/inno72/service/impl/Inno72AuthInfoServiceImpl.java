@@ -68,8 +68,10 @@ public class Inno72AuthInfoServiceImpl implements Inno72AuthInfoService {
 		
 		// 生成sessionUuid
 		String sessionUuid = UuidUtil.getUUID32();
+		//获取运行环境
+		String env = inno72GameServiceProperties.get("env");
 		// 调用天猫的地址
-		String url = inno72GameServiceProperties.get("tmallUrl") + _machineId + "/" + sessionUuid + "/&bluetoothAddAes="
+		String url = inno72GameServiceProperties.get("tmallUrl") + _machineId + "/" + sessionUuid + "/?env="+env+"&bluetoothAddAes="
 				+ bluetoothAddAes+"&machineCode="+machineCode;
 		
 		LOGGER.info("二维码字符串 {} ", url);
