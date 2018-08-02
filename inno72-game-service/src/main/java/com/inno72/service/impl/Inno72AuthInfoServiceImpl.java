@@ -70,6 +70,8 @@ public class Inno72AuthInfoServiceImpl implements Inno72AuthInfoService {
 		String sessionUuid = UuidUtil.getUUID32();
 		//获取运行环境
 		String env = inno72GameServiceProperties.get("env");
+		System.out.println("========================="+getActive());
+		String env1 = getActive();
 		// 调用天猫的地址
 		String url = inno72GameServiceProperties.get("tmallUrl") + _machineId + "/" + sessionUuid + "/?env="+env+"&bluetoothAddAes="
 				+ bluetoothAddAes+"&machineCode="+machineCode;
@@ -101,6 +103,7 @@ public class Inno72AuthInfoServiceImpl implements Inno72AuthInfoService {
 
 				map.put("qrCodeUrl", returnUrl);
 				map.put("sessionUuid", sessionUuid);
+				map.put("huanjing", env1);
 				// LOGGER.info("二维码生成成功 - result -> {}", JSON.toJSONString(map).replace("\"",
 				// "'"));
 				LOGGER.info("二维码生成成功 - result -> {}", JsonUtil.toJson(map));
@@ -129,4 +132,13 @@ public class Inno72AuthInfoServiceImpl implements Inno72AuthInfoService {
 		return Results.success(sessionStr);
 	}
 
+	private String getActive() {
+		String active = System.getenv("spring_profiles_active");
+		LOGGER.info("获取spring_profiles_active：{}", active);
+		if (active == null || active.equals("")) {
+			LOGGER.info("未读取到spring_profiles_active的环境变量,使用默认值: dev");
+			active = "dev";
+		}
+		return active;
+	}
 }
