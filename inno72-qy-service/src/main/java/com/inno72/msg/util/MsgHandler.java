@@ -56,6 +56,13 @@ public class MsgHandler {
 		return content;
 	}
 
+	public String getEvent() {
+
+		String event = root.elementText("Event");
+
+		return event;
+	}
+
 	public String getFromuser() {
 		String from = root.elementText("FromUserName");
 

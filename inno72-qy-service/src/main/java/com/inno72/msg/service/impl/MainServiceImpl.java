@@ -30,9 +30,9 @@ public class MainServiceImpl implements MainService {
 		String user = handler.getFromuser();
 		if ("text".equals(msgType)) {
 			String content = handler.getContent();
-			if (!StringUtil.isEmpty(content) && content.contains("注册")) {
-				String mobile = content.replace("注册", "");
-				logger.info("企业号巡检人员注册手机号:{},userId:{}", mobile, user);
+			if (!StringUtil.isEmpty(content) && content.contains("绑定")) {
+				String mobile = content.replace("绑定", "").replace("+", "");
+				logger.info("企业号巡检人员绑定手机号:{},userId:{}", mobile, user);
 				Condition condition = new Condition(Inno72CheckUser.class);
 				condition.createCriteria().andEqualTo("phone", mobile);
 				List<Inno72CheckUser> checkUser = checkUserService.findByCondition(condition);
@@ -42,16 +42,23 @@ public class MainServiceImpl implements MainService {
 					if (StringUtil.isEmpty(userId)) {
 						cu.setWechatUserId(user);
 						checkUserService.update(cu);
-						return handler.toXml("注册成功");
+						return handler.toXml("绑定成功");
 					} else {
-						return handler.toXml("该手机号已注册");
+						return handler.toXml("该手机号已绑定");
 					}
 				} else {
 					return handler.toXml("手机号不存在");
 				}
 			}
+			return handler.toXml("我好像听不懂你说什么");
+		} else if ("event".equals(msgType)) {
+			String event = handler.getEvent();
+			if ("subscribe".equals(event)) {
+				return handler.toXml("欢迎使用微信企业号，如果您是巡检人员请回复绑定+手机号进行绑定。");
+			}
+
 		}
-		return "我好像听不懂你说什么";
+		return null;
 	}
 
 }
