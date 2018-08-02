@@ -2,25 +2,33 @@ package com.inno72.msg.service.impl;
 
 import java.util.List;
 
+import javax.annotation.Resource;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.inno72.common.utils.StringUtil;
+import com.inno72.config.client.QyhProperties;
 import com.inno72.msg.model.Inno72CheckUser;
 import com.inno72.msg.service.CheckUserService;
 import com.inno72.msg.service.MainService;
 import com.inno72.msg.util.MsgHandler;
+import com.inno72.msg.util.QyHandler;
+import com.inno72.redis.IRedisUtil;
 
 import tk.mybatis.mapper.entity.Condition;
 
 @Service
 public class MainServiceImpl implements MainService {
 	Logger logger = LoggerFactory.getLogger(MainServiceImpl.class);
-
+	@Autowired
+	private QyhProperties qyhProperties;
 	@Autowired
 	private CheckUserService checkUserService;
+	@Resource
+	private IRedisUtil redisUtil;
 
 	@Override
 	public String processMsg(String msg) {
@@ -38,8 +46,11 @@ public class MainServiceImpl implements MainService {
 				List<Inno72CheckUser> checkUser = checkUserService.findByCondition(condition);
 				if (checkUser != null && !checkUser.isEmpty()) {
 					Inno72CheckUser cu = checkUser.get(0);
-					String userId = cu.getWechatUserId();
-					if (StringUtil.isEmpty(userId)) {
+					if (StringUtil.isEmpty(cu.getOpenId())) {
+						String key = qyhProperties.get("qyUserAccTokenKey");
+						String token = redisUtil.get(key);
+						String openId = QyHandler.getOpenId(user, token);
+						cu.setOpenId(openId);
 						cu.setWechatUserId(user);
 						checkUserService.update(cu);
 						return handler.toXml("绑定成功");

@@ -1,6 +1,5 @@
 package com.inno72.msg.controller;
 
-import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 
 import org.slf4j.Logger;
@@ -24,7 +23,7 @@ public class MainController {
 	@Autowired
 	private MainService mainService;
 
-	@Resource
+	@Autowired
 	private QyhProperties qyhProperties;
 
 	@RequestMapping(value = "/main", method = { RequestMethod.POST, RequestMethod.GET })
