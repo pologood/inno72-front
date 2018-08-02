@@ -14,8 +14,6 @@ import com.inno72.vo.MachineApiVo;
 @RequestMapping(value = "api")
 public class Inno72GameApiController {
 
-	private static final Logger LOGGER = LoggerFactory.getLogger(Inno72GameApiServiceImpl.class);
-
 	@Resource
 	private Inno72GameApiService inno72GameApiService;
 
