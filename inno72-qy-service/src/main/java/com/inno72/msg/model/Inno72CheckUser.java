@@ -1,7 +1,6 @@
 package com.inno72.msg.model;
 
 import java.util.Date;
-import javax.persistence.*;
 
 @Table(name = "inno72_check_user")
 public class Inno72CheckUser {

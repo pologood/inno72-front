@@ -1,8 +1,8 @@
 package com.inno72.controller;
 
 import java.io.IOException;
+import java.text.MessageFormat;
 
-import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.slf4j.Logger;
@@ -19,44 +19,75 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.client.RestTemplate;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.inno72.util.FastJsonUtils;
 import com.inno72.validator.Validators;
 import com.inno72.vo.UserInfo;
 import com.taobao.api.ApiException;
 import com.taobao.api.DefaultTaobaoClient;
 import com.taobao.api.TaobaoClient;
-import com.taobao.api.request.*;
-import com.taobao.api.response.*;
+import com.taobao.api.request.TmallFansAutomachineDeliveryrecordRequest;
+import com.taobao.api.request.TmallFansAutomachineGetmaskusernickRequest;
+import com.taobao.api.request.TmallFansAutomachineOrderAddlogRequest;
+import com.taobao.api.request.TmallFansAutomachineOrderCheckpaystatusRequest;
+import com.taobao.api.request.TmallFansAutomachineOrderCreateorderbyitemidRequest;
+import com.taobao.api.request.TmallInteractIsvlotteryDrawRequest;
+import com.taobao.api.request.TopAuthTokenCreateRequest;
+import com.taobao.api.response.TmallFansAutomachineDeliveryrecordResponse;
+import com.taobao.api.response.TmallFansAutomachineGetmaskusernickResponse;
+import com.taobao.api.response.TmallFansAutomachineOrderAddlogResponse;
+import com.taobao.api.response.TmallFansAutomachineOrderCheckpaystatusResponse;
+import com.taobao.api.response.TmallFansAutomachineOrderCreateorderbyitemidResponse;
+import com.taobao.api.response.TmallInteractIsvlotteryDrawResponse;
+import com.taobao.api.response.TopAuthTokenCreateResponse;
 
 @RestController
 public class TopController {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(TopController.class);
 
-	public static final String URL = "https://eco.taobao.com/router/rest";
-	public static final String APPKEY = "24791535";
-	public static final String SECRET = "c0799e02efbb606288c51f02a987ba43";
-
+	private static final String URL = "https://eco.taobao.com/router/rest";
+	private static final String APPKEY = "24791535";
+	private static final String SECRET = "c0799e02efbb606288c51f02a987ba43";
+	private static final String APP_NAME = "tivm";
 	@Value("${game_server_url}")
 	private String gameServerUrl;
-
 	@Value("${h5_mobile_url}")
 	private String h5MobileUrl;
-
-	public static final String APP_NAME = "tivm";
-
 	private TaobaoClient client = new DefaultTaobaoClient(URL, APPKEY, SECRET);
+	// http://api.game.72solo.com
+	@Value("${dev_host_game}")
+	private String devHostGame;
+	// http://game.72solo.com
+	@Value("${dev_host_mobile}")
+	private String devHostMobile;
+	// http://api.game.36solo.com
+	@Value("${test_host_game}")
+	private String testHostGame;
+	// http://game.36solo.com
+	@Value("${test_host_mobile}")
+	private String testHostMobile;
+	// http://api.game.32solo.com
+	@Value("${stage_host_game}")
+	private String stageHostGame;
+	// http://game.32solo.com
+	@Value("${stage_host_mobile}")
+	private String stageHostMobile;
+	// http://api.game.inno72.com
+	@Value("${prod_host_game}")
+	private String prodHostGame;
+	// http://game.inno72.com
+	@Value("${prod_host_mobile}")
+	private String prodHostMobile;
 
 	/**
 	 * 登录回调接口
 	 */
 	@RequestMapping("/api/top/{mid}/{sessionUuid}")
-	public void home(HttpServletRequest request, HttpServletResponse response, @PathVariable("mid") String mid,
-			@PathVariable("sessionUuid") String sessionUuid, String code) throws Exception {
-		LOGGER.info("mid is {}, code is {}, sessionUuid is {}", new String[]{mid, code, sessionUuid});
+	public void home(HttpServletResponse response, @PathVariable("mid") String mid,
+			@PathVariable("sessionUuid") String sessionUuid, String code, String env) throws Exception {
+		LOGGER.info("mid is {}, code is {}, sessionUuid is {}", mid, code, sessionUuid);
 		String playCode = "";
-		String data = "";
+		String data;
 		String qrStatus = "";
 		String sellerId = "";
 		if (!StringUtils.isEmpty(code) && !StringUtils.isEmpty(sessionUuid)) {
@@ -79,7 +110,7 @@ public class TopController {
 			userInfo.setToken(tokenResult);
 
 			// 设置用户信息
-			data = setUserInfo(userInfo);
+			data = setUserInfo(userInfo, env);
 			LOGGER.info("data is {}", data);
 
 			if (!StringUtils.isEmpty(data)) {
@@ -92,9 +123,10 @@ public class TopController {
 			}
 		}
 		try {
+			String h5Url = this.getHostGameH5Url(env);
 			// 跳转到游戏页面 手机端redirect
-			LOGGER.info("h5MobileUrl is {} , playCode is {}", h5MobileUrl, playCode);
-			String formatUrl = String.format(h5MobileUrl, playCode) + "?qrStatus=" + qrStatus + "&sellerId=" + sellerId;
+			LOGGER.info("h5MobileUrl is {} , playCode is {}", h5Url, playCode);
+			String formatUrl = String.format(h5Url, playCode) + "?qrStatus=" + qrStatus + "&sellerId=" + sellerId;
 			LOGGER.info("formatUrl is {}", formatUrl);
 			response.sendRedirect(formatUrl);
 		} catch (IOException e) {
@@ -108,8 +140,9 @@ public class TopController {
 	 */
 	@RequestMapping(value = "/api/top/getMaskUserNick", method = RequestMethod.POST)
 	private String getMaskUserNick(String accessToken, String mid, Long sellerId) throws ApiException {
-		LOGGER.info("getMaskUserNick accessToken is {}, mid is {}, sellerId is {}",
-				new Object[]{accessToken, mid, sellerId});
+		// @formatter:off
+		LOGGER.info("getMaskUserNick accessToken is {}, mid is {}, sellerId is {}", accessToken, mid, sellerId);
+		// @formatter:on
 		Validators.checkParamNotNull(accessToken, mid, sellerId);
 
 		TmallFansAutomachineGetmaskusernickRequest req = new TmallFansAutomachineGetmaskusernickRequest();
@@ -125,10 +158,10 @@ public class TopController {
 	/**
 	 * 调用游戏服务器接口设置关联 sessionUuid authInfo信息
 	 */
-	private String setUserInfo(UserInfo userInfo) {
+	private String setUserInfo(UserInfo userInfo, String env) {
 		LOGGER.info("gameServerUrl is " + gameServerUrl);
 		RestTemplate client = new RestTemplate();
-		MultiValueMap<String, Object> postParameters = new LinkedMultiValueMap<String, Object>();
+		MultiValueMap<String, Object> postParameters = new LinkedMultiValueMap<>();
 		postParameters.add("sessionUuid", userInfo.getSessionUuid());
 		postParameters.add("mid", userInfo.getMid());
 		postParameters.add("code", userInfo.getCode());
@@ -139,7 +172,7 @@ public class TopController {
 		String result;
 		try {
 			HttpEntity<MultiValueMap<String, Object>> requestEntity = new HttpEntity<>(postParameters, headers);
-			result = client.postForObject(gameServerUrl, requestEntity, String.class);
+			result = client.postForObject(this.getHostGameUrl(env), requestEntity, String.class);
 			LOGGER.info("setUserInfo result is {} ", result);
 
 			String code = FastJsonUtils.getString(result, "code");
@@ -175,8 +208,8 @@ public class TopController {
 
 	@RequestMapping(value = "/api/top/order", method = RequestMethod.POST)
 	public String order(String accessToken, String mid, String activityId, Long goodsId) throws ApiException {
-		LOGGER.info("order accessToken is {}, mid is {}, activityId is {}, goodsId is {}",
-				new Object[]{accessToken, mid, activityId, goodsId});
+		LOGGER.info("order accessToken is {}, mid is {}, activityId is {}, goodsId is {}", accessToken, mid, activityId,
+				goodsId);
 		Validators.checkParamNotNull(accessToken, mid, activityId, goodsId);
 
 		TmallFansAutomachineOrderCreateorderbyitemidRequest req = new TmallFansAutomachineOrderCreateorderbyitemidRequest();
@@ -202,8 +235,7 @@ public class TopController {
 
 		TmallFansAutomachineOrderCheckpaystatusRequest req = new TmallFansAutomachineOrderCheckpaystatusRequest();
 		req.setOrderId(Long.valueOf(orderId));
-		TmallFansAutomachineOrderCheckpaystatusResponse rsp = null;
-		rsp = client.execute(req, accessToken);
+		TmallFansAutomachineOrderCheckpaystatusResponse rsp = client.execute(req, accessToken);
 		String result = rsp.getBody();
 		LOGGER.info("orderPolling result is {}", result);
 		return result;
@@ -226,8 +258,7 @@ public class TopController {
 		req.setUmid(umid);
 		req.setInteractId(interactId);
 		req.setShopId(shopId);
-		TmallInteractIsvlotteryDrawResponse rsp = null;
-		rsp = client.execute(req, accessToken);
+		TmallInteractIsvlotteryDrawResponse rsp = client.execute(req, accessToken);
 		String result = rsp.getBody();
 		LOGGER.info("lottory result is {}", result);
 		return result;
@@ -237,7 +268,7 @@ public class TopController {
 	 * 获取Access Token
 	 * http://open.taobao.com/api.htm?spm=a219a.7386797.0.0.ZOlSkP&source=search&docId=25388&docType=2
 	 */
-	public String getAuthInfo(String code) throws ApiException {
+	private String getAuthInfo(String code) throws ApiException {
 		LOGGER.info("getAuthInfo code is {}", code);
 		Validators.checkParamNotNull(code);
 
@@ -256,8 +287,8 @@ public class TopController {
 	 */
 	@RequestMapping(value = "/api/top/deliveryRecord", method = RequestMethod.POST)
 	public String deliveryRecord(String accessToken, String mid, String orderId, String channelId) throws ApiException {
-		LOGGER.info("deliveryRecord accessToken is {}, mid is {}, orderId is {}, channelId is {}",
-				new String[]{accessToken, mid, orderId, channelId});
+		LOGGER.info("deliveryRecord accessToken is {}, mid is {}, orderId is {}, channelId is {}", accessToken, mid,
+				orderId, channelId);
 		Validators.checkParamNotNull(accessToken, mid, orderId, channelId);
 
 		TmallFansAutomachineDeliveryrecordRequest req = new TmallFansAutomachineDeliveryrecordRequest();
@@ -271,7 +302,7 @@ public class TopController {
 	}
 
 	@RequestMapping("/api/top/index")
-	public String index(HttpServletRequest request, String test) throws JsonProcessingException {
+	public String index(String test) {
 		Validators.checkParamNotNull(test);
 		LOGGER.info("index");
 		return "index";
@@ -283,4 +314,37 @@ public class TopController {
 		return "test";
 	}
 
+	private String getHostGameUrl(String startWith) {
+		String host;
+		if (prodHostGame.startsWith(startWith)) {
+			host = prodHostGame;
+		} else if (stageHostGame.startsWith(startWith)) {
+			host = stageHostGame;
+		} else if (testHostGame.startsWith(startWith)) {
+			host = testHostGame;
+		} else if (devHostGame.startsWith(startWith)) {
+			host = devHostGame;
+		} else {
+			throw new RuntimeException(startWith + "没有匹配游戏服务的环境变量!");
+		}
+
+		return MessageFormat.format(gameServerUrl, host);
+	}
+
+	private String getHostGameH5Url(String startWith) {
+
+		String host;
+		if (prodHostMobile.startsWith(startWith)) {
+			host = prodHostMobile;
+		} else if (stageHostMobile.startsWith(startWith)) {
+			host = stageHostMobile;
+		} else if (testHostMobile.startsWith(startWith)) {
+			host = testHostMobile;
+		} else if (devHostMobile.startsWith(startWith)) {
+			host = devHostMobile;
+		} else {
+			throw new RuntimeException(startWith + "没有匹配H5的环境变量!");
+		}
+		return MessageFormat.format(h5MobileUrl, host);
+	}
 }

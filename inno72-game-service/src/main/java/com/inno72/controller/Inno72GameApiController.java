@@ -2,15 +2,12 @@ package com.inno72.controller;
 
 import javax.annotation.Resource;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.inno72.common.Result;
 import com.inno72.service.Inno72GameApiService;
-import com.inno72.service.impl.Inno72GameApiServiceImpl;
 import com.inno72.vo.MachineApiVo;
 
 @RestController
@@ -95,7 +92,7 @@ public class Inno72GameApiController {
 	public Result<String> sessionRedirect(String sessionUuid, String mid, String token, String code, String userId) {
 		return inno72GameApiService.sessionRedirect(sessionUuid, mid, token, code, userId);
 	}
-	
+
 	/**
 	 * 
 	 * @param sessionUuid 用户登录信息
@@ -105,7 +102,7 @@ public class Inno72GameApiController {
 	 * @return
 	 */
 	@RequestMapping(value = "/log", method = {RequestMethod.POST, RequestMethod.GET})
-	public Result<String> log(String sessionUuid, String mid,  String code, String userId) {
+	public Result<String> log(String sessionUuid, String mid, String code, String userId) {
 		return null;
 	}
 
@@ -114,8 +111,8 @@ public class Inno72GameApiController {
 	 * @return Result
 	 */
 	@RequestMapping(value = "/malfunctionLog", method = {RequestMethod.POST, RequestMethod.GET})
-	public Result<String> malfunctionLog(String machineId,String channelCode) {
-		return inno72GameApiService.malfunctionLog(machineId,channelCode);
+	public Result<String> malfunctionLog(String machineId, String channelCode) {
+		return inno72GameApiService.malfunctionLog(machineId, channelCode);
 	}
 
 	/**
@@ -124,18 +121,18 @@ public class Inno72GameApiController {
 	 * @return Result
 	 */
 	@RequestMapping(value = "/shipmentFail", method = {RequestMethod.POST, RequestMethod.GET})
-	public Result<String> shipmentFail(String machineId,String channelCode,String describtion) {
-		return inno72GameApiService.shipmentFail(machineId,channelCode,describtion);
+	public Result<String> shipmentFail(String machineId, String channelCode, String describtion) {
+		return inno72GameApiService.shipmentFail(machineId, channelCode, describtion);
 	}
-	
+
 	/**
 	 * 用户互动时长接口
 	 * @param machineId
 	 * @return Result
 	 */
 	@RequestMapping(value = "/userDuration", method = {RequestMethod.POST, RequestMethod.GET})
-	public Result<String> userDuration(String token, String itemId, String sellerId, String userId, 
-			String machineCode, String playTime) {
+	public Result<String> userDuration(String token, String itemId, String sellerId, String userId, String machineCode,
+			String playTime) {
 		return inno72GameApiService.userDuration(token, itemId, sellerId, userId, machineCode, playTime);
 	}
 }
