@@ -69,9 +69,7 @@ public class Inno72AuthInfoServiceImpl implements Inno72AuthInfoService {
 		// 生成sessionUuid
 		String sessionUuid = UuidUtil.getUUID32();
 		//获取运行环境
-		String env = inno72GameServiceProperties.get("env");
-		System.out.println("========================="+getActive());
-		String env1 = getActive();
+		String env = getActive();
 		// 调用天猫的地址
 		String url = inno72GameServiceProperties.get("tmallUrl") + _machineId + "/" + sessionUuid + "/?env="+env+"&bluetoothAddAes="
 				+ bluetoothAddAes+"&machineCode="+machineCode;
@@ -103,7 +101,6 @@ public class Inno72AuthInfoServiceImpl implements Inno72AuthInfoService {
 
 				map.put("qrCodeUrl", returnUrl);
 				map.put("sessionUuid", sessionUuid);
-				map.put("huanjing", env1);
 				// LOGGER.info("二维码生成成功 - result -> {}", JSON.toJSONString(map).replace("\"",
 				// "'"));
 				LOGGER.info("二维码生成成功 - result -> {}", JsonUtil.toJson(map));
