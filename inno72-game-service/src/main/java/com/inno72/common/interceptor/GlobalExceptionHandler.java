@@ -19,23 +19,23 @@ import com.inno72.common.SystemException;
 @ResponseBody
 public class GlobalExceptionHandler {
 
-    private Logger logger = LoggerFactory.getLogger(GlobalExceptionHandler.class);
+	private Logger logger = LoggerFactory.getLogger(GlobalExceptionHandler.class);
 
-    @SuppressWarnings("rawtypes")
+	@SuppressWarnings("rawtypes")
 	@ResponseStatus(HttpStatus.OK)
-    @ExceptionHandler(Exception.class)
-    public Result handleServiceException(SystemException ex) {
-        logger.error(ex.getMessage(), ex);
-        int retCode = StatusConstants.RETURN_CODE_FAIL;
-        String msg = "";
-        if (ex instanceof SystemException) {
-            msg = (((SystemException) ex).getMsgId());
-        } else {
-            msg = "系统错误";
-        }
-        Result result = new Result();
-        result.setCode(retCode);
-        result.setMsg(msg);
-        return result;
-    }
+	@ExceptionHandler(Exception.class)
+	public Result handleServiceException(SystemException ex) {
+		logger.error(ex.getMessage(), ex);
+		int retCode = StatusConstants.RETURN_CODE_FAIL;
+		String msg = "";
+		if (ex instanceof SystemException) {
+			msg = (((SystemException) ex).getMsgId());
+		} else {
+			msg = "系统错误";
+		}
+		Result result = new Result();
+		result.setCode(retCode);
+		result.setMsg(msg);
+		return result;
+	}
 }

@@ -1,11 +1,12 @@
 package com.inno72.common;
 
-import javax.persistence.AttributeConverter;
-import javax.persistence.Converter;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.time.ZoneId;
 import java.util.Date;
+
+import javax.persistence.AttributeConverter;
+import javax.persistence.Converter;
 
 @Converter(autoApply = true)
 public class LocalDateConverter implements AttributeConverter<LocalDate, Date> {

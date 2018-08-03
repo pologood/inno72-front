@@ -1,6 +1,5 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0"
-	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 
 	<parent>
 		<artifactId>inno72-parent</artifactId>
@@ -57,11 +56,6 @@
 			<version>2.3.3</version>
 			<scope>test</scope>
 		</dependency>
-		<dependency>
-			<groupId>org.codehaus.jackson</groupId>
-			<artifactId>jackson-all</artifactId>
-			<version>1.8.5</version>
-		</dependency>
 
 		<dependency>
 			<groupId>org.codehaus.jackson</groupId>
@@ -96,11 +90,6 @@
 			<scope>provided</scope>
 		</dependency>
 
-		<dependency>
-			<groupId>org.apache.logging.log4j</groupId>
-			<artifactId>log4j-web</artifactId>
-			<version>2.6.2</version>
-		</dependency>
 
 		<dependency>
 			<groupId>commons-beanutils</groupId>
@@ -121,21 +110,26 @@
 			<artifactId>pagehelper</artifactId>
 			<version>4.0.0</version>
 		</dependency>
-		
+
 	</dependencies>
-	
+
 	<build>
 		<plugins>
 			<!-- war包插件 -->
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-war-plugin</artifactId>
+				 <configuration>
+			        <failOnMissingWebXml>false</failOnMissingWebXml>
+			    </configuration>
 			</plugin>
 		</plugins>
 	</build>
-	
+
 	<modules>
 		<module>inno72-game-service</module>
-		<module>inno72-top-service</module>
-	</modules>
+
+	<module>inno72-qy-serviceinno72-top-service</module>
+    <module>inno72-qy-service</module>
+  </modules>
 </project>

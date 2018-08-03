@@ -2,7 +2,7 @@ package com.inno72.common;
 
 /**
  * Common Description:静态变量列表
- * 
+ *
  * @Project : maxtp
  * @Program Name: com.framelib.common.Common.java
  * @ClassName : Common

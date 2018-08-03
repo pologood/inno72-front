@@ -1,12 +1,13 @@
 package com.inno72.common.util;
 
-import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.PrintWriter;
 
+import javax.servlet.http.HttpServletResponse;
+
 /**
  * Title:AjaxUtils Description:数据输出工具类
- * 
+ *
  * @Create_by:Zhangy Yan
  * @Create_date:2013-12-2
  * @Last_Edit_By:

@@ -7,14 +7,14 @@ package com.inno72.common;
 public class ResultGenerator {
 
 	public static Result genSuccessResult() {
-        return Results.success();
-    }
+		return Results.success();
+	}
 
-    public static <T> Result<T> genSuccessResult(T data) {
-        return Results.success(data);
-    }
+	public static <T> Result<T> genSuccessResult(T data) {
+		return Results.success(data);
+	}
 
-    public static Result genFailResult(String message) {
-        return Results.failure(message);
-    }
+	public static Result genFailResult(String message) {
+		return Results.failure(message);
+	}
 }

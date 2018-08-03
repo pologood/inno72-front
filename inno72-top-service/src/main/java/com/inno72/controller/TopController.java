@@ -1,235 +1,305 @@
 package com.inno72.controller;
 
 import java.io.IOException;
-import java.io.UnsupportedEncodingException;
+import java.text.MessageFormat;
 
-import javax.servlet.http.HttpServletRequest;
+import javax.annotation.Resource;
 import javax.servlet.http.HttpServletResponse;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
-import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
+import org.springframework.util.LinkedMultiValueMap;
+import org.springframework.util.MultiValueMap;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.client.RestTemplate;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.inno72.util.JsonUtils;
-import com.inno72.util.TaobaoClientUtil;
+import com.inno72.util.FastJsonUtils;
+import com.inno72.validator.Validators;
+import com.inno72.vo.PropertiesBean;
 import com.inno72.vo.UserInfo;
 import com.taobao.api.ApiException;
+import com.taobao.api.DefaultTaobaoClient;
+import com.taobao.api.TaobaoClient;
+import com.taobao.api.request.TmallFansAutomachineDeliveryrecordRequest;
+import com.taobao.api.request.TmallFansAutomachineGetmaskusernickRequest;
+import com.taobao.api.request.TmallFansAutomachineOrderAddlogRequest;
 import com.taobao.api.request.TmallFansAutomachineOrderCheckpaystatusRequest;
 import com.taobao.api.request.TmallFansAutomachineOrderCreateorderbyitemidRequest;
 import com.taobao.api.request.TmallInteractIsvlotteryDrawRequest;
 import com.taobao.api.request.TopAuthTokenCreateRequest;
+import com.taobao.api.response.TmallFansAutomachineDeliveryrecordResponse;
+import com.taobao.api.response.TmallFansAutomachineGetmaskusernickResponse;
+import com.taobao.api.response.TmallFansAutomachineOrderAddlogResponse;
 import com.taobao.api.response.TmallFansAutomachineOrderCheckpaystatusResponse;
 import com.taobao.api.response.TmallFansAutomachineOrderCreateorderbyitemidResponse;
 import com.taobao.api.response.TmallInteractIsvlotteryDrawResponse;
 import com.taobao.api.response.TopAuthTokenCreateResponse;
 
 @RestController
-@RequestMapping(value = "/api")
 public class TopController {
-	
 
-    @RequestMapping("/api/top/{mid}")
-    public void home(HttpServletRequest request, HttpServletResponse response, @PathVariable("mid") String mid) {
+	private static final Logger LOGGER = LoggerFactory.getLogger(TopController.class);
 
-        String code = request.getParameter("code");
-        System.out.println("code is" + code);
+	@Resource
+	private PropertiesBean propertiesBean;
 
-        String sessionUuid = request.getParameter("sessionUuid");
-        System.out.println("sessionUuid is " + sessionUuid);
+	private static final String URL = "https://eco.taobao.com/router/rest";
+	private static final String APPKEY = "24791535";
+	private static final String SECRET = "c0799e02efbb606288c51f02a987ba43";
+	private static final String APP_NAME = "tivm";
+	@Value("${game_server_url}")
+	private String gameServerUrl;
+	@Value("${h5_mobile_url}")
+	private String h5MobileUrl;
+	private TaobaoClient client = new DefaultTaobaoClient(URL, APPKEY, SECRET);
 
-        System.out.println("mid is" + mid);
+	/**
+	 * 登录回调接口
+	 */
+	@RequestMapping("/api/top/{mid}/{sessionUuid}")
+	public void home(HttpServletResponse response, @PathVariable("mid") String mid,
+			@PathVariable("sessionUuid") String sessionUuid, String code, String env) throws Exception {
+		LOGGER.info("mid is {}, code is {}, sessionUuid is {}", mid, code, sessionUuid);
+		String playCode = "";
+		String data;
+		String qrStatus = "";
+		String sellerId = "";
+		if (!StringUtils.isEmpty(code) && !StringUtils.isEmpty(sessionUuid)) {
 
-        if (!StringUtils.isEmpty(code) && !StringUtils.isEmpty(sessionUuid)) {
+			String authInfo = getAuthInfo(code);
+			LOGGER.debug("authInfo is {}", authInfo);
 
-            String authInfo = getAuthInfo(code);
-            System.out.println("authInfo is " + authInfo);
+			String tokenResult = FastJsonUtils.getString(authInfo, "token_result");
+			LOGGER.info("tokenResult is {}", tokenResult);
 
-            String tokenResult = JsonUtils.getString(authInfo, "token_result");
-            System.out.println("token is " + tokenResult);
+			String taobaoUserId = FastJsonUtils.getString(tokenResult, "taobao_user_nick");
+			LOGGER.info("taobaoUserId is {}", taobaoUserId);
 
-            String taobaoUserId = JsonUtils.getString(tokenResult, "taobao_user_id");
-            System.out.println("taobaoUserId is " + taobaoUserId);
+			UserInfo userInfo = new UserInfo();
+			userInfo.setMid(mid);
+			userInfo.setSessionUuid(sessionUuid);
+			userInfo.setCode(code);
+			userInfo.setUserId(taobaoUserId);
 
-            UserInfo userInfo = new UserInfo();
-            userInfo.setSessionUuid(sessionUuid);
-            userInfo.setMid(mid);
-            UserInfo.AuthInfo _authInfo  = new UserInfo.AuthInfo();
-            _authInfo.setCode(code);
+			userInfo.setToken(tokenResult);
 
+			// 设置用户信息
+			data = setUserInfo(userInfo, env);
+			LOGGER.info("data is {}", data);
 
-            String _tokenResult = null;
+			if (!StringUtils.isEmpty(data)) {
+				playCode = FastJsonUtils.getString(data, "playCode");
+				qrStatus = FastJsonUtils.getString(data, "qrStatus");
+				String sId = FastJsonUtils.getString(data, "sellerId");
+				if (!StringUtils.isEmpty(sId)) {
+					sellerId = sId.trim();
+				}
+			}
+		}
+		try {
+			String h5Url = this.getHostGameH5Url(env);
+			// 跳转到游戏页面 手机端redirect
+			LOGGER.info("h5MobileUrl is {} , playCode is {}", h5Url, playCode);
+			String formatUrl = String.format(h5Url, playCode) + "?qrStatus=" + qrStatus + "&sellerId=" + sellerId;
+			LOGGER.info("formatUrl is {}", formatUrl);
+			response.sendRedirect(formatUrl);
+		} catch (IOException e) {
+			LOGGER.error(e.getMessage(), e);
+		}
+	}
 
-            String encoding = System.getProperty("file.encoding");
-            System.out.println("Default System Encoding:" + encoding);
+	/**
+	 * 获取脱敏用户名称
+	 * http://open.taobao.com/doc2/apiDetail.htm?apiId=35602
+	 */
+	@RequestMapping(value = "/api/top/getMaskUserNick", method = RequestMethod.POST)
+	private String getMaskUserNick(String accessToken, String mid, Long sellerId) throws ApiException {
+		// @formatter:off
+		LOGGER.info("getMaskUserNick accessToken is {}, mid is {}, sellerId is {}", accessToken, mid, sellerId);
+		// @formatter:on
+		Validators.checkParamNotNull(accessToken, mid, sellerId);
 
-            try {
-                _tokenResult = new String(tokenResult.getBytes(encoding), "UTF-8");
-            } catch (UnsupportedEncodingException e) {
-                e.printStackTrace();
-            }
-            System.out.println("_tokenResult" + _tokenResult);
+		TmallFansAutomachineGetmaskusernickRequest req = new TmallFansAutomachineGetmaskusernickRequest();
+		req.setSellerId(sellerId);
+		req.setMachineId(mid);
+		req.setAppName(APP_NAME);
+		TmallFansAutomachineGetmaskusernickResponse rsp = client.execute(req, accessToken);
+		String result = rsp.getBody();
+		LOGGER.info("getMaskUserNick result is {}", result);
+		return result;
+	}
 
-            // _authInfo.setToken("test");
+	/**
+	 * 调用游戏服务器接口设置关联 sessionUuid authInfo信息
+	 */
+	private String setUserInfo(UserInfo userInfo, String env) {
+		LOGGER.info("gameServerUrl is " + gameServerUrl);
+		RestTemplate client = new RestTemplate();
+		MultiValueMap<String, Object> postParameters = new LinkedMultiValueMap<>();
+		postParameters.add("sessionUuid", userInfo.getSessionUuid());
+		postParameters.add("mid", userInfo.getMid());
+		postParameters.add("code", userInfo.getCode());
+		postParameters.add("token", userInfo.getToken());
+		postParameters.add("userId", userInfo.getUserId());
+		HttpHeaders headers = new HttpHeaders();
+		headers.add("Content-Type", "application/x-www-form-urlencoded");
+		String result;
+		try {
+			HttpEntity<MultiValueMap<String, Object>> requestEntity = new HttpEntity<>(postParameters, headers);
+			result = client.postForObject(this.getHostGameUrl(env), requestEntity, String.class);
+			LOGGER.info("setUserInfo result is {} ", result);
 
-            _authInfo.setToken(_tokenResult);
-            _authInfo.setUserId(taobaoUserId);
-            userInfo.setAuthInfo(_authInfo);
-            // 调用游戏服务器接口
-            System.out.println("flag1");
-            setUserInfo(userInfo);
-            System.out.println("flag2");
-        }
+			String code = FastJsonUtils.getString(result, "code");
+			String data = FastJsonUtils.getString(result, "data");
+			LOGGER.info("code is {}, data is {}", code, data);
+			if (!StringUtils.isEmpty(code) && !StringUtils.isEmpty(data) && code.equals("0")) {
+				LOGGER.info("setUserInfo gameId is {} ", data);
+				return data;
+			}
+		} catch (Exception e) {
+			LOGGER.error(e.getMessage(), e);
+		}
+		return "";
+	}
 
-        // 跳转到游戏页面 手机端redirect
-        try {
-            response.sendRedirect("http://47.95.217.215:9999");
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
-    
+	/**
+	 * 上报日志接口
+	 * http://open.taobao.com/doc2/apiDetail.htm?apiId=36653
+	 */
+	@RequestMapping(value = "/api/top/addLog", method = RequestMethod.POST)
+	public String addLog(String accessToken, TmallFansAutomachineOrderAddlogRequest.LogReqrest logReqrest)
+			throws ApiException {
+		LOGGER.info("addLog accessToken is {}", accessToken);
+		Validators.checkParamNotNull(accessToken, logReqrest);
 
+		TmallFansAutomachineOrderAddlogRequest req = new TmallFansAutomachineOrderAddlogRequest();
+		req.setLogRequest(logReqrest);
+		TmallFansAutomachineOrderAddlogResponse rsp = client.execute(req, accessToken);
+		String result = rsp.getBody();
+		LOGGER.info("addLog result is {}", result);
+		return result;
+	}
 
-    private void setUserInfo(UserInfo userInfo) {
-        System.out.println("setUserInfo----");
-        String value = "";
-        try {
-            value = JsonUtils.toJson(userInfo);
-            System.out.printf("setUserInfo is " + value);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+	@RequestMapping(value = "/api/top/order", method = RequestMethod.POST)
+	public String order(String accessToken, String mid, String activityId, Long goodsId) throws ApiException {
+		LOGGER.info("order accessToken is {}, mid is {}, activityId is {}, goodsId is {}", accessToken, mid, activityId,
+				goodsId);
+		Validators.checkParamNotNull(accessToken, mid, activityId, goodsId);
 
-        String url = "http://47.95.217.215:30880/api/sessionRedirect";
-        RestTemplate client = new RestTemplate();
-        //  一定要设置header
-        HttpHeaders headers = new HttpHeaders();
-        headers.setContentType(MediaType.APPLICATION_JSON);
+		TmallFansAutomachineOrderCreateorderbyitemidRequest req = new TmallFansAutomachineOrderCreateorderbyitemidRequest();
+		req.setActivityId(activityId);
+		req.setUseDiscount(true);
+		req.setSkuId(0L);
+		req.setItemId(goodsId);
+		req.setMachineId(mid);
+		TmallFansAutomachineOrderCreateorderbyitemidResponse rsp = client.execute(req, accessToken);
+		String result = rsp.getBody();
+		LOGGER.info("order result is {}", result);
+		return result;
+	}
 
-        HttpEntity<String> requestEntity = new HttpEntity<String>(value, headers);
-        //  执行HTTP请求
-        ResponseEntity<String> response = client.postForEntity(url, requestEntity , String.class );
-        System.out.println(response.getBody());
-    }
-    
+	/**
+	 * 互动吧自动售卖机订单付款状态查询接口
+	 * http://open.taobao.com/api.htm?docId=34774&docType=2
+	 */
+	@RequestMapping(value = "/api/top/order-polling", method = RequestMethod.POST)
+	public String orderPolling(String accessToken, String orderId) throws ApiException {
+		LOGGER.info("orderPolling accessToken is {}, orderId is {}", accessToken, orderId);
+		Validators.checkParamNotNull(accessToken, orderId);
 
-    @RequestMapping("/api/top/test1")
-    public String index(HttpServletRequest request) throws JsonProcessingException {
-        return "index";
-    }
+		TmallFansAutomachineOrderCheckpaystatusRequest req = new TmallFansAutomachineOrderCheckpaystatusRequest();
+		req.setOrderId(Long.valueOf(orderId));
+		TmallFansAutomachineOrderCheckpaystatusResponse rsp = client.execute(req, accessToken);
+		String result = rsp.getBody();
+		LOGGER.info("orderPolling result is {}", result);
+		return result;
+	}
 
-    @RequestMapping("/api/top/test")
-    public String test(HttpServletRequest request) throws JsonProcessingException {
+	/**
+	 * isv抽奖接口
+	 * http://open.taobao.com/docs/api.htm?spm=a1z6v.8204065.c3.125.bznYh6&apiId=27640
+	 */
+	@RequestMapping(value = "/api/top/lottory", method = RequestMethod.POST)
+	public String lottory(String accessToken, String interactId, Long shopId, String ua, String umid)
+			throws ApiException {
+		LOGGER.info("lottory accessToken is {}, interactId is {}, shopId is {}, ua is {}, umid is {}", accessToken,
+				interactId, shopId, ua, umid);
+		Validators.checkParamNotNull(accessToken, interactId, shopId, ua, umid);
 
-        String url = "http://47.95.217.215:30880/api/sessionRedirect";
-        RestTemplate client = new RestTemplate();
-        //  一定要设置header
-        HttpHeaders headers = new HttpHeaders();
-        headers.setContentType(MediaType.APPLICATION_JSON);
+		TmallInteractIsvlotteryDrawRequest req = new TmallInteractIsvlotteryDrawRequest();
+		req.setAsac("1A18228U6DKEXP78A4PAT4"); // todo gxg 更换 appkey 后需确认
+		req.setUa(ua);
+		req.setUmid(umid);
+		req.setInteractId(interactId);
+		req.setShopId(shopId);
+		TmallInteractIsvlotteryDrawResponse rsp = client.execute(req, accessToken);
+		String result = rsp.getBody();
+		LOGGER.info("lottory result is {}", result);
+		return result;
+	}
 
-        UserInfo userInfo = new UserInfo();
-        userInfo.setSessionUuid("0014017ff5614149aa2273f6df7c4f0d");
-        userInfo.setMid("456");
+	/**
+	 * 获取Access Token
+	 * http://open.taobao.com/api.htm?spm=a219a.7386797.0.0.ZOlSkP&source=search&docId=25388&docType=2
+	 */
+	private String getAuthInfo(String code) throws ApiException {
+		LOGGER.info("getAuthInfo code is {}", code);
+		Validators.checkParamNotNull(code);
 
-        UserInfo.AuthInfo _authInfo  = new UserInfo.AuthInfo();
-        _authInfo.setCode("isCWfAx5nC4KYE8hH6TtWqfz7q1089761");
-//        _authInfo.setToken("{\"w1_expires_in\":0,\"refresh_token_valid_time\":1530602764000,\"taobao_user_nick\":\"t01sNMnCfkSGKksyq9su9nKdqToIqawc1J4IkhX131bUgk%3D\",\"re_expires_in\":0,\"expire_time\":1531466764000,\"token_type\":\"Bearer\",\"access_token\":\"620082546cdeaf108d7b2934a4d8d0f73ZZb30a9659cd09525671323\",\"taobao_open_uid\":\"AAGxHGf-AF4DUnGwDrNbhtyW\",\"w1_valid\":1530604564234,\"refresh_token\":\"6201025f84bfc8147cb7f92d799883ed5ZZa237d4ad9608525671323\",\"w2_expires_in\":0,\"w2_valid\":1530602764234,\"r1_expires_in\":0,\"r2_expires_in\":0,\"r2_valid\":1530602764234,\"r1_valid\":1530604564234,\"taobao_user_id\":\"-1\",\"expires_in\":848091}");
-        _authInfo.setToken("test");
-        _authInfo.setUserId("-1");
-        userInfo.setAuthInfo(_authInfo);
+		TopAuthTokenCreateRequest req = new TopAuthTokenCreateRequest();
+		req.setCode(code);
+		TopAuthTokenCreateResponse rsp;
+		rsp = client.execute(req);
+		String result = rsp.getBody();
+		LOGGER.info("getAuthInfo result is {}", result);
+		return result;
+	}
 
-        String value = "";
-        try {
+	/**
+	 * 自动售卖机出货记录保存
+	 * http://open.taobao.com/doc2/apiDetail.htm?apiId=35763
+	 */
+	@RequestMapping(value = "/api/top/deliveryRecord", method = RequestMethod.POST)
+	public String deliveryRecord(String accessToken, String mid, String orderId, String channelId) throws ApiException {
+		LOGGER.info("deliveryRecord accessToken is {}, mid is {}, orderId is {}, channelId is {}", accessToken, mid,
+				orderId, channelId);
+		Validators.checkParamNotNull(accessToken, mid, orderId, channelId);
 
-            value = JsonUtils.toJson(userInfo);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+		TmallFansAutomachineDeliveryrecordRequest req = new TmallFansAutomachineDeliveryrecordRequest();
+		req.setOrderId(Long.valueOf(orderId));
+		req.setMachineId(mid);
+		req.setChannelId(channelId);
+		TmallFansAutomachineDeliveryrecordResponse rsp = client.execute(req, accessToken);
+		String result = rsp.getBody();
+		LOGGER.info("deliveryRecord result is", result);
+		return result;
+	}
 
+	@RequestMapping("/api/top/index")
+	public String index(String test) {
+		Validators.checkParamNotNull(test);
+		LOGGER.info("index");
+		return "index";
+	}
 
-        HttpEntity<String> requestEntity = new HttpEntity<String>(value, headers);
-        //  执行HTTP请求
-        ResponseEntity<String> response = client.postForEntity(url, requestEntity , String.class );
-        System.out.println(response.getBody());
+	@RequestMapping("/test")
+	public String test() {
+		LOGGER.info("test -----");
+		return "test";
+	}
 
-        System.out.println("test --- ");
-        return "test ok";
-    }
+	private String getHostGameUrl(String startWith) {
+		return MessageFormat.format(h5MobileUrl, propertiesBean.getValue(startWith + "HostMobile"));
+	}
 
-    @RequestMapping("/api/top/order")
-    public String order(String sessionKey) {
-        System.out.println("order begin sessionKey is" + sessionKey);
-        TmallFansAutomachineOrderCreateorderbyitemidRequest req = new TmallFansAutomachineOrderCreateorderbyitemidRequest();
-        req.setActivityId("mengniu");
-        req.setUseDiscount(true);
-        req.setSkuId(0L);
-        req.setItemId(571723166234L);
-        req.setMachineId("1804040054");
-        try {
-            TmallFansAutomachineOrderCreateorderbyitemidResponse rsp = TaobaoClientUtil.client.execute(req, sessionKey);
-            System.out.println(rsp.getBody());
-            return rsp.getBody();
-        } catch (ApiException e) {
-            e.printStackTrace();
-        }
-        return "";
-    }
-
-    @RequestMapping("/api/top/order-polling")
-    public String orderPolling(String orderId, String sessionKey) {
-        TmallFansAutomachineOrderCheckpaystatusRequest req = new TmallFansAutomachineOrderCheckpaystatusRequest();
-        req.setOrderId(Long.valueOf(orderId));
-        TmallFansAutomachineOrderCheckpaystatusResponse rsp = null;
-        try {
-            rsp = TaobaoClientUtil.client.execute(req, sessionKey);
-            System.out.println(rsp.getBody());
-            return rsp.getBody();
-        } catch (ApiException e) {
-            e.printStackTrace();
-        }
-        return "";
-    }
-
-    @RequestMapping("/api/top/lottory")
-    public String lottory(String sessionKey, String interactId, Long shopId) {
-        TmallInteractIsvlotteryDrawRequest req = new TmallInteractIsvlotteryDrawRequest();
-        req.setAsac("1A18228U6DKEXP78A4PAT4");
-
-        req.setUa("111aaa");
-        req.setUmid("2233bb");
-
-        req.setInteractId(interactId);
-        req.setShopId(shopId);
-        TmallInteractIsvlotteryDrawResponse rsp = null;
-        try {
-            rsp = TaobaoClientUtil.client.execute(req, sessionKey);
-            System.out.println(rsp.getBody());
-            return rsp.getBody();
-        } catch (ApiException e) {
-            e.printStackTrace();
-        }
-        return "lottory";
-    }
-
-    public String getAuthInfo(String code) {
-        TopAuthTokenCreateRequest req = new TopAuthTokenCreateRequest();
-        req.setCode(code);
-        TopAuthTokenCreateResponse rsp = null;
-        try {
-            rsp = TaobaoClientUtil.client.execute(req);
-            return rsp.getBody();
-        } catch (ApiException e) {
-            e.printStackTrace();
-        }
-        return "";
-    }
-
-
+	private String getHostGameH5Url(String startWith) {
+		return MessageFormat.format(h5MobileUrl, propertiesBean.getValue(startWith + "HostGame"));
+	}
 }

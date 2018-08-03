@@ -9,7 +9,7 @@ ${dateTime?string["yyyy-MM-dd HH:mm:ss"]}
 
 所有配置的属性信息:
 <#list props?keys as key>
-${key} - ${props[key]}
+    ${key} - ${props[key]}
 </#list>
 
 <#list tableClassSet as tableClass>
@@ -31,9 +31,9 @@ ${key} - ${props[key]}
         列名：${field.columnName}
         列类型：${field.jdbcType}
         字段名：${field.fieldName}
-        <#if field.remarks??>
+            <#if field.remarks??>
         注释：${field.remarks}
-        </#if>
+            </#if>
         类型包名：${field.typePackage}
         类型短名：${field.shortTypeName}
         类型全名：${field.fullTypeName}
@@ -57,9 +57,9 @@ ${key} - ${props[key]}
         列名：${field.columnName}
         列类型：${field.jdbcType}
         字段名：${field.fieldName}
-        <#if field.remarks??>
+            <#if field.remarks??>
         注释：${field.remarks}
-        </#if>
+            </#if>
         类型包名：${field.typePackage}
         类型短名：${field.shortTypeName}
         类型全名：${field.fullTypeName}
@@ -83,9 +83,9 @@ ${key} - ${props[key]}
         列名：${field.columnName}
         列类型：${field.jdbcType}
         字段名：${field.fieldName}
-        <#if field.remarks??>
+            <#if field.remarks??>
         注释：${field.remarks}
-        </#if>
+            </#if>
         类型包名：${field.typePackage}
         类型短名：${field.shortTypeName}
         类型全名：${field.fullTypeName}
@@ -106,7 +106,7 @@ ${key} - ${props[key]}
     <#if tableClass.allFields??>
     列名 - 字段名
         <#list tableClass.allFields as field>
-        ${field.columnName} - ${field.fieldName}
+            ${field.columnName} - ${field.fieldName}
         </#list>
     </#if>
 </#list>

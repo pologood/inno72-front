@@ -29,76 +29,73 @@ import com.inno72.redis.IRedisUtil;
 @EnableWebMvc
 public class MvcConfiguration extends WebMvcConfigurerAdapter {
 
-    private Logger logger = LoggerFactory.getLogger(MvcConfiguration.class);
+	private Logger logger = LoggerFactory.getLogger(MvcConfiguration.class);
 
-    @Resource
-    private IRedisUtil redisUtil;
+	@Resource
+	private IRedisUtil redisUtil;
 
-    public View jsonView() {
-        logger.info("***********************init JsonView**************************");
-        JsonView view = new JsonView();
-        view.setExtractValueFromSingleKeyModel(true);
-        Jackson2ObjectMapperFactoryBean objectMapperFactoryBean = new Jackson2ObjectMapperFactoryBean();
-        ObjectMapper objectMapper = new ObjectMapper();
-        objectMapperFactoryBean.setObjectMapper(objectMapper);
-        objectMapperFactoryBean.setSerializationInclusion(Include.NON_NULL);
-        objectMapperFactoryBean.afterPropertiesSet();
-        view.setObjectMapper(objectMapperFactoryBean.getObject());
-        return view;
-    }
+	public View jsonView() {
+		logger.info("***********************init JsonView**************************");
+		JsonView view = new JsonView();
+		view.setExtractValueFromSingleKeyModel(true);
+		Jackson2ObjectMapperFactoryBean objectMapperFactoryBean = new Jackson2ObjectMapperFactoryBean();
+		ObjectMapper objectMapper = new ObjectMapper();
+		objectMapperFactoryBean.setObjectMapper(objectMapper);
+		objectMapperFactoryBean.setSerializationInclusion(Include.NON_NULL);
+		objectMapperFactoryBean.afterPropertiesSet();
+		view.setObjectMapper(objectMapperFactoryBean.getObject());
+		return view;
+	}
 
-    /**
-     * 配置解析器
-     *
-     * @return
-     * @Date 2017年5月4日
-     * @Author Houkm
-     */
-    @Bean
-    public ViewResolver viewResolver() {
-        logger.info("***********************init ViewResolver**************************");
-        ContentNegotiatingViewResolver resolver = new ContentNegotiatingViewResolver();
-        List<View> views = new ArrayList<>();
-        views.add(jsonView());
-        resolver.setDefaultViews(views);
-        return resolver;
-    }
+	/**
+	 * 配置解析器
+	 *
+	 * @return
+	 * @Date 2017年5月4日
+	 * @Author Houkm
+	 */
+	@Bean
+	public ViewResolver viewResolver() {
+		logger.info("***********************init ViewResolver**************************");
+		ContentNegotiatingViewResolver resolver = new ContentNegotiatingViewResolver();
+		List<View> views = new ArrayList<>();
+		views.add(jsonView());
+		resolver.setDefaultViews(views);
+		return resolver;
+	}
 
-    /**
-     * 国际化的消息资源文件
-     *
-     * @return
-     * @Date 2017年5月3日
-     * @Author Houkm
-     */
-    @Bean
-    public ReloadableResourceBundleMessageSource messageSource() {
-        logger.info("***********************init ReloadableResourceBundleMessageSource**************************");
-        ReloadableResourceBundleMessageSource messageSource = new ReloadableResourceBundleMessageSource();
-        messageSource.setBasenames("classpath:conf/messages");
-        messageSource.setCacheSeconds(60);
-        messageSource.setDefaultEncoding("UTF-8");
-        return messageSource;
-    }
+	/**
+	 * 国际化的消息资源文件
+	 *
+	 * @return
+	 * @Date 2017年5月3日
+	 * @Author Houkm
+	 */
+	@Bean
+	public ReloadableResourceBundleMessageSource messageSource() {
+		logger.info("***********************init ReloadableResourceBundleMessageSource**************************");
+		ReloadableResourceBundleMessageSource messageSource = new ReloadableResourceBundleMessageSource();
+		messageSource.setBasenames("classpath:conf/messages");
+		messageSource.setCacheSeconds(60);
+		messageSource.setDefaultEncoding("UTF-8");
+		return messageSource;
+	}
 
-    /**
-     * 拦截器
-     */
-    @Override
-    public void addInterceptors(InterceptorRegistry registry) {
-        registry.addInterceptor(new PageListAttrHandlerInterceptor()).addPathPatterns("/**");
-//        LogInterceptor logInterceptor = new LogInterceptor();
-//        logInterceptor.setRedisUtil(redisUtil);
-//        registry.addInterceptor(logInterceptor).addPathPatterns("/**");
-    }
-    
-    @Override  
-    public void addCorsMappings(CorsRegistry registry) {  
-        registry.addMapping("/**")  
-                .allowedOrigins("*")  
-                .allowCredentials(true)  
-                .allowedMethods("GET", "POST", "DELETE", "PUT")  
-                .maxAge(3600);  
-    }  
+	/**
+	 * 拦截器
+	 */
+	@Override
+	public void addInterceptors(InterceptorRegistry registry) {
+		registry.addInterceptor(new PageListAttrHandlerInterceptor()).addPathPatterns("/**");
+		//        LogInterceptor logInterceptor = new LogInterceptor();
+		//        logInterceptor.setRedisUtil(redisUtil);
+		//        registry.addInterceptor(logInterceptor).addPathPatterns("/**");
+	}
+
+	@Override
+	public void addCorsMappings(CorsRegistry registry) {
+		registry.addMapping("/**").allowedOrigins("*").allowCredentials(true)
+				.allowedMethods("GET", "POST", "DELETE", "PUT").maxAge(3600);
+	}
 
 }

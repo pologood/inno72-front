@@ -1,4 +1,5 @@
 package com.inno72.service;
+
 import com.inno72.common.Result;
 import com.inno72.common.Service;
 import com.inno72.model.Inno72Authentication;
@@ -9,7 +10,7 @@ import com.inno72.model.Inno72Authentication;
  */
 public interface Inno72AuthenticationService extends Service<Inno72Authentication> {
 
-	Result<Object> login(String username,String password);
-	
+	Result<Object> login(String username, String password);
+
 	Inno72Authentication getUser(String username);
 }

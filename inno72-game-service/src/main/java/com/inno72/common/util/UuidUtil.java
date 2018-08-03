@@ -4,7 +4,7 @@ import java.util.UUID;
 
 /**
  * Title:AjaxUtils Description:生成uuid工具类
- * 
+ *
  * @Create_by:gaohuan
  * @Create_date:2018-6-29
  * @Last_Edit_By:
@@ -14,8 +14,8 @@ import java.util.UUID;
  */
 public class UuidUtil {
 
-	public static String getUUID32(){
-	    String uuid = UUID.randomUUID().toString().replace("-", "").toLowerCase();
-	    return uuid;
+	public static String getUUID32() {
+		String uuid = UUID.randomUUID().toString().replace("-", "").toLowerCase();
+		return uuid;
 	}
 }

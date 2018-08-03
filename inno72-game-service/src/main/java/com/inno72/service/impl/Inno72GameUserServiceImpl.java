@@ -1,13 +1,14 @@
 package com.inno72.service.impl;
 
-import com.inno72.mapper.Inno72GameUserMapper;
-import com.inno72.model.Inno72GameUser;
-import com.inno72.service.Inno72GameUserService;
-import com.inno72.common.AbstractService;
+import javax.annotation.Resource;
+
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import javax.annotation.Resource;
+import com.inno72.common.AbstractService;
+import com.inno72.mapper.Inno72GameUserMapper;
+import com.inno72.model.Inno72GameUser;
+import com.inno72.service.Inno72GameUserService;
 
 
 /**
@@ -16,7 +17,7 @@ import javax.annotation.Resource;
 @Service
 @Transactional
 public class Inno72GameUserServiceImpl extends AbstractService<Inno72GameUser> implements Inno72GameUserService {
-    @Resource
-    private Inno72GameUserMapper inno72GameUserMapper;
+	@Resource
+	private Inno72GameUserMapper inno72GameUserMapper;
 
 }

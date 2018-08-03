@@ -20,31 +20,31 @@ import com.inno72.common.ApplicationContextHandle;
 @Configuration
 public class BeanDefinitionConfig implements BeanDefinitionRegistryPostProcessor {
 
-    private ScopeMetadataResolver scopeMetadataResolver = new AnnotationScopeMetadataResolver();
-    private BeanNameGenerator beanNameGenerator = new AnnotationBeanNameGenerator();
+	private ScopeMetadataResolver scopeMetadataResolver = new AnnotationScopeMetadataResolver();
+	private BeanNameGenerator beanNameGenerator = new AnnotationBeanNameGenerator();
 
 
-    @Override
-    public void postProcessBeanDefinitionRegistry(BeanDefinitionRegistry registry) throws BeansException {
-//        registerBean(registry, "iosGpushUtil", IOSGPushUtil.class);
-        registerBean(registry, "applicationContextHandle", ApplicationContextHandle.class);
-    }
+	@Override
+	public void postProcessBeanDefinitionRegistry(BeanDefinitionRegistry registry) throws BeansException {
+		//        registerBean(registry, "iosGpushUtil", IOSGPushUtil.class);
+		registerBean(registry, "applicationContextHandle", ApplicationContextHandle.class);
+	}
 
-    @Override
-    public void postProcessBeanFactory(ConfigurableListableBeanFactory beanFactory) throws BeansException {
+	@Override
+	public void postProcessBeanFactory(ConfigurableListableBeanFactory beanFactory) throws BeansException {
 
-    }
+	}
 
-    private void registerBean(BeanDefinitionRegistry registry, String name, Class<?> beanClass){
-        AnnotatedGenericBeanDefinition abd = new AnnotatedGenericBeanDefinition(beanClass);
+	private void registerBean(BeanDefinitionRegistry registry, String name, Class<?> beanClass) {
+		AnnotatedGenericBeanDefinition abd = new AnnotatedGenericBeanDefinition(beanClass);
 
-        ScopeMetadata scopeMetadata = this.scopeMetadataResolver.resolveScopeMetadata(abd);
-        abd.setScope(scopeMetadata.getScopeName());
-        String beanName = (name != null ? name : this.beanNameGenerator.generateBeanName(abd, registry));
+		ScopeMetadata scopeMetadata = this.scopeMetadataResolver.resolveScopeMetadata(abd);
+		abd.setScope(scopeMetadata.getScopeName());
+		String beanName = (name != null ? name : this.beanNameGenerator.generateBeanName(abd, registry));
 
-        AnnotationConfigUtils.processCommonDefinitionAnnotations(abd);
+		AnnotationConfigUtils.processCommonDefinitionAnnotations(abd);
 
-        BeanDefinitionHolder definitionHolder = new BeanDefinitionHolder(abd, beanName);
-        BeanDefinitionReaderUtils.registerBeanDefinition(definitionHolder, registry);
-    }
+		BeanDefinitionHolder definitionHolder = new BeanDefinitionHolder(abd, beanName);
+		BeanDefinitionReaderUtils.registerBeanDefinition(definitionHolder, registry);
+	}
 }
