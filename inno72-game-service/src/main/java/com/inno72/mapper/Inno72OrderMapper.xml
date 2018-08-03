@@ -36,5 +36,8 @@
         where inno72_activity_plan_id = #{activityPlanId}
         and user_id = #{gameUserId}
         and goods_status = 1
+        <if test="orderTime != null and orderTime != ''">
+            and DATE_FORMAT(order_time, '%Y-%m-%d') = CURDATE()
+        </if>
     </select>
 </mapper>

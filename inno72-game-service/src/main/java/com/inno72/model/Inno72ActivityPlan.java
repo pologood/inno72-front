@@ -99,6 +99,9 @@ public class Inno72ActivityPlan {
     @Column(name = "user_max_times")
     private Integer userMaxTimes;
 
+    @Column(name = "day_user_max_times")
+    private Integer dayUserMaxTimes;
+
     /**
      * 获取活动排期ID
      *
@@ -312,5 +315,13 @@ public class Inno72ActivityPlan {
 
 	public void setPrizeType(String prizeType) {
 		this.prizeType = prizeType;
+	}
+
+	public Integer getDayUserMaxTimes() {
+		return dayUserMaxTimes;
+	}
+
+	public void setDayUserMaxTimes(Integer dayUserMaxTimes) {
+		this.dayUserMaxTimes = dayUserMaxTimes;
 	}
 }

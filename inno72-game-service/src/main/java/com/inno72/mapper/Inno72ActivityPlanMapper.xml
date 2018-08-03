@@ -16,6 +16,7 @@
             typeHandler="org.apache.ibatis.type.LocalDateTimeTypeHandler"/>
     <result column="is_delete" jdbcType="INTEGER" property="isDelete" />
     <result column="user_max_times" jdbcType="INTEGER" property="userMaxTimes" />
+    <result column="day_user_max_times" jdbcType="INTEGER" property="dayUserMaxTimes" />
     <result column="remark" jdbcType="VARCHAR" property="remark" />
     <result column="create_id" jdbcType="VARCHAR" property="createId" />
     <result column="create_time" jdbcType="TIMESTAMP" property="createTime" javaType="java.time.LocalDateTime"

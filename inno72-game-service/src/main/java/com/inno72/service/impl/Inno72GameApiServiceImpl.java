@@ -13,7 +13,6 @@ import javax.annotation.Resource;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.alibaba.fastjson.JSON;
@@ -111,7 +110,7 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 	private Inno72GameUserLifeMapper inno72GameUserLifeMapper;
 	@Resource
 	private Inno72SupplyChannelMapper inno72SupplyChannelMapper;
-	@Autowired
+	@Resource
 	private IRedisUtil redisUtil;
 
 	private static final String QRSTATUS_NORMAL = "0"; // 二维码正常
@@ -483,6 +482,7 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 			LOGGER.info("机器不存在! ===> {}", JSON.toJSONString(vo));
 		}
 
+		assert machineByCode != null;
 		String machineId = machineByCode.getId();
 
 		String jstUrl = inno72GameServiceProperties.get("jstUrl");
@@ -600,7 +600,7 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 		List<Inno72ActivityPlan> inno72ActivityPlans = inno72ActivityPlanMapper.selectByMachineId(mid);
 
 		String gameId = "";
-		String playCode = "";
+		String playCode;
 
 		Inno72ActivityPlan inno72ActivityPlan = null;
 		if (inno72ActivityPlans.size() > 0) {
@@ -678,9 +678,9 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 		LOGGER.info("playCode is" + playCode);
 
 		// 调用聚石塔日志
-		Map<String, String> requestLogForm = new HashMap<String, String>();
+		Map<String, String> requestLogForm = new HashMap<>();
 		requestLogForm.put("accessToken", token);
-		LogReqrest logReqrest = getLogReqrest(null, null, Long.valueOf(inno72Merchant.getMerchantCode()), "login", -1l,
+		LogReqrest logReqrest = getLogReqrest(null, null, Long.valueOf(inno72Merchant.getMerchantCode()), "login", -1L,
 				inno72Machine.getMachineCode(), null, null, null);
 		requestLogForm.put("logReqrest", JSON.toJSONString(logReqrest));
 		LOGGER.info("聚石塔日志接口参数 requestLogForm ：" + JSONObject.toJSONString(requestLogForm));
@@ -692,7 +692,7 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 			LOGGER.info("调用聚石塔日志接口 ===> {}", JSON.toJSONString(msg_info));
 		}
 
-		Map<String, Object> resultMap = new HashMap<String, Object>();
+		Map<String, Object> resultMap = new HashMap<>();
 		resultMap.put("playCode", playCode);
 		resultMap.put("qrStatus", qrStatus);
 		resultMap.put("sellerId", inno72Merchant.getMerchantCode());
@@ -720,7 +720,7 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 	@Override
 	public Result<String> shipmentFail(String machineId, String channelCode, String describtion) {
 
-		AlarmMessageBean<Object> alarmMessageBean = new AlarmMessageBean<Object>();
+		AlarmMessageBean<Object> alarmMessageBean = new AlarmMessageBean<>();
 		MachineDropGoodsBean machineDropGoodsBean = new MachineDropGoodsBean();
 		LOGGER.info("掉货失败参数 => machineId:{}; channelCode:{}; describtion:{}", machineId, channelCode, describtion);
 		Inno72Machine inno72Machine = inno72MachineMapper.findMachineByCode(machineId);
@@ -810,7 +810,11 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 		Inno72ActivityPlan inno72ActivityPlan = inno72ActivityPlanMapper.selectByPrimaryKey(activityPlanId);
 		Integer userMaxTimes = inno72ActivityPlan.getUserMaxTimes();
 
-		return userMaxTimes > inno72Orders.size();
+		orderParams.put("orderTime", "1");
+		List<Inno72Order> todayInno72Orders = inno72OrderMapper.findGoodsStatusSucc(orderParams);
+		Integer dayUserMaxTimes = inno72ActivityPlan.getDayUserMaxTimes();
+
+		return  inno72Orders.size() < userMaxTimes && todayInno72Orders.size() < dayUserMaxTimes;
 	}
 
 	private String genInno72Order(String channelId, String activityPlanId, String machineId, String goodsId,
@@ -837,11 +841,8 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 				inno72Machine.getMachineCode());
 		LocalDateTime now = LocalDateTime.now();
 
-		Map<String, String> orderParams = new HashMap<>();
-		orderParams.put("activityPlanId", activityPlanId);
-		orderParams.put("gameUserId", gameUserId);
-		List<Inno72Order> inno72Orders = inno72OrderMapper.findGoodsStatusSucc(orderParams);
-		Integer rep = inno72Orders.size() > inno72ActivityPlan.getUserMaxTimes()
+		boolean b = this.countSuccOrder(channelId, channelUserKey, activityPlanId);
+		Integer rep = b
 				? Inno72Order.INNO72ORDER_REPETITION.REPETITION.getKey()
 				: Inno72Order.INNO72ORDER_REPETITION.NOT.getKey();
 		Inno72Order inno72Order = new Inno72Order();
@@ -897,8 +898,7 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 
 	private LogReqrest getLogReqrest(String bizCode, Long itemId, Long sellerId, String type, Long userId,
 			String value1, String value2, Long value3, Long value4) {
-		LogReqrest logReqrest = new LogReqrest(bizCode, itemId, sellerId, type, -1L, value1, value2, value3, value4);
-		return logReqrest;
+		return new LogReqrest(bizCode, itemId, sellerId, type, -1L, value1, value2, value3, value4);
 	}
 
 	@Override
@@ -906,7 +906,7 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 			String playTime) {
 		LOGGER.info("用户互动时长 => itemId:{}; sellerId:{}; userId:{}; token:{}", itemId, sellerId, userId, token);
 		// 调用聚石塔日志
-		Map<String, String> requestLogForm = new HashMap<String, String>();
+		Map<String, String> requestLogForm = new HashMap<>();
 		requestLogForm.put("accessToken", token);
 		LogReqrest logReqrest = getLogReqrest("", Long.valueOf(itemId), Long.valueOf(sellerId), "用户互动时常",
 				Long.valueOf(userId), machineCode, playTime, null, null);
