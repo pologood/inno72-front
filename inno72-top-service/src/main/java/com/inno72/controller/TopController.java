@@ -3,6 +3,7 @@ package com.inno72.controller;
 import java.io.IOException;
 import java.text.MessageFormat;
 
+import javax.annotation.Resource;
 import javax.servlet.http.HttpServletResponse;
 
 import org.slf4j.Logger;
@@ -21,6 +22,7 @@ import org.springframework.web.client.RestTemplate;
 
 import com.inno72.util.FastJsonUtils;
 import com.inno72.validator.Validators;
+import com.inno72.vo.PropertiesBean;
 import com.inno72.vo.UserInfo;
 import com.taobao.api.ApiException;
 import com.taobao.api.DefaultTaobaoClient;
@@ -45,6 +47,9 @@ public class TopController {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(TopController.class);
 
+	@Resource
+	private PropertiesBean propertiesBean;
+
 	private static final String URL = "https://eco.taobao.com/router/rest";
 	private static final String APPKEY = "24791535";
 	private static final String SECRET = "c0799e02efbb606288c51f02a987ba43";
@@ -54,30 +59,6 @@ public class TopController {
 	@Value("${h5_mobile_url}")
 	private String h5MobileUrl;
 	private TaobaoClient client = new DefaultTaobaoClient(URL, APPKEY, SECRET);
-	// http://api.game.72solo.com
-	@Value("${dev_host_game}")
-	private String devHostGame;
-	// http://game.72solo.com
-	@Value("${dev_host_mobile}")
-	private String devHostMobile;
-	// http://api.game.36solo.com
-	@Value("${test_host_game}")
-	private String testHostGame;
-	// http://game.36solo.com
-	@Value("${test_host_mobile}")
-	private String testHostMobile;
-	// http://api.game.32solo.com
-	@Value("${stage_host_game}")
-	private String stageHostGame;
-	// http://game.32solo.com
-	@Value("${stage_host_mobile}")
-	private String stageHostMobile;
-	// http://api.game.inno72.com
-	@Value("${prod_host_game}")
-	private String prodHostGame;
-	// http://game.inno72.com
-	@Value("${prod_host_mobile}")
-	private String prodHostMobile;
 
 	/**
 	 * 登录回调接口
@@ -315,36 +296,10 @@ public class TopController {
 	}
 
 	private String getHostGameUrl(String startWith) {
-		String host;
-		if (prodHostGame.startsWith(startWith)) {
-			host = prodHostGame;
-		} else if (stageHostGame.startsWith(startWith)) {
-			host = stageHostGame;
-		} else if (testHostGame.startsWith(startWith)) {
-			host = testHostGame;
-		} else if (devHostGame.startsWith(startWith)) {
-			host = devHostGame;
-		} else {
-			throw new RuntimeException(startWith + "没有匹配游戏服务的环境变量!");
-		}
-
-		return MessageFormat.format(gameServerUrl, host);
+		return MessageFormat.format(h5MobileUrl, propertiesBean.getValue(startWith + "HostMobile"));
 	}
 
 	private String getHostGameH5Url(String startWith) {
-
-		String host;
-		if (prodHostMobile.startsWith(startWith)) {
-			host = prodHostMobile;
-		} else if (stageHostMobile.startsWith(startWith)) {
-			host = stageHostMobile;
-		} else if (testHostMobile.startsWith(startWith)) {
-			host = testHostMobile;
-		} else if (devHostMobile.startsWith(startWith)) {
-			host = devHostMobile;
-		} else {
-			throw new RuntimeException(startWith + "没有匹配H5的环境变量!");
-		}
-		return MessageFormat.format(h5MobileUrl, host);
+		return MessageFormat.format(h5MobileUrl, propertiesBean.getValue(startWith + "HostGame"));
 	}
 }
