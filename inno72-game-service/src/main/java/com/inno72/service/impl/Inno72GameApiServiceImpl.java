@@ -846,8 +846,8 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 
 		boolean b = this.countSuccOrder(channelId, channelUserKey, activityPlanId);
 		Integer rep = b
-				? Inno72Order.INNO72ORDER_REPETITION.REPETITION.getKey()
-				: Inno72Order.INNO72ORDER_REPETITION.NOT.getKey();
+				? Inno72Order.INNO72ORDER_REPETITION.NOT.getKey()
+				: Inno72Order.INNO72ORDER_REPETITION.REPETITION.getKey();
 		Inno72Order inno72Order = new Inno72Order();
 		inno72Order.setChannelId(channelId);
 		inno72Order.setGoodsStatus(Inno72Order.INNO72ORDER_GOODSSTATUS.WAIT.getKey());
