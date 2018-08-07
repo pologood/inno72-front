@@ -52,28 +52,31 @@ public class Inno72AuthInfoServiceImpl implements Inno72AuthInfoService {
 		// 在machine库查询bluetooth地址 "6893a2ada9dd4f7eb8dc33adfc6eda73"
 		String bluetoothAdd = "";
 		String bluetoothAddAes = "";
+		String _machineId = "";
 		if (inno72Machine != null) {
 			bluetoothAdd = inno72Machine.getBluetoothAddress();
 			if (!StringUtil.isEmpty(bluetoothAdd)) {
 				bluetoothAddAes = AesUtils.encrypt(bluetoothAdd);
 			}
+			_machineId = inno72Machine.getId();
+		} else {
+			return Results.failure(machineId + "对应的 inno72Machine 不存在");
 		}
 		String machineCode = "";
 		if (!StringUtil.isEmpty(machineId)) {
 			machineCode = AesUtils.encrypt(machineId);
 		}
-		String _machineId = inno72Machine.getId();
 
 		LOGGER.info("Mac蓝牙地址 {} ", bluetoothAddAes);
-		
+
 		// 生成sessionUuid
 		String sessionUuid = UuidUtil.getUUID32();
-		//获取运行环境
+		// 获取运行环境
 		String env = getActive();
 		// 调用天猫的地址
-		String url = inno72GameServiceProperties.get("tmallUrl") + _machineId + "/" + sessionUuid + "/?env="+env+"&bluetoothAddAes="
-				+ bluetoothAddAes+"&machineCode="+machineCode;
-		
+		String url = inno72GameServiceProperties.get("tmallUrl") + _machineId + "/" + sessionUuid + "/?env=" + env
+				+ "&bluetoothAddAes=" + bluetoothAddAes + "&machineCode=" + machineCode;
+
 		LOGGER.info("二维码字符串 {} ", url);
 		// 二维码存储在本地的路径
 		String localUrl = _machineId + sessionUuid + ".png";
