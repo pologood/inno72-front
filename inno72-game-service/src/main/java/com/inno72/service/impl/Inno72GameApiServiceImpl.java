@@ -814,6 +814,9 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 		List<Inno72Order> todayInno72Orders = inno72OrderMapper.findGoodsStatusSucc(orderParams);
 		Integer dayUserMaxTimes = inno72ActivityPlan.getDayUserMaxTimes();
 
+		LOGGER.info("countSuccOrder   inno72Orders.size() => {} ; dayUserMaxTimes => {}; userMaxTimes => {}",
+				inno72Orders.size(), dayUserMaxTimes, userMaxTimes);
+
 		return  inno72Orders.size() < userMaxTimes && todayInno72Orders.size() < dayUserMaxTimes;
 	}
 

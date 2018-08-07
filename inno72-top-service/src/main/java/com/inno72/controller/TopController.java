@@ -20,10 +20,11 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.client.RestTemplate;
 
+import com.alibaba.fastjson.JSON;
 import com.inno72.util.FastJsonUtils;
 import com.inno72.validator.Validators;
 import com.inno72.vo.PropertiesBean;
-import com.inno72.vo.UserInfo;
+import com.inno72.vo.*;
 import com.taobao.api.ApiException;
 import com.taobao.api.DefaultTaobaoClient;
 import com.taobao.api.TaobaoClient;
@@ -33,6 +34,7 @@ import com.taobao.api.request.TmallFansAutomachineOrderAddlogRequest;
 import com.taobao.api.request.TmallFansAutomachineOrderCheckpaystatusRequest;
 import com.taobao.api.request.TmallFansAutomachineOrderCreateorderbyitemidRequest;
 import com.taobao.api.request.TmallInteractIsvlotteryDrawRequest;
+import com.taobao.api.request.TmallMarketingFaceSkindetectRequest;
 import com.taobao.api.request.TopAuthTokenCreateRequest;
 import com.taobao.api.response.TmallFansAutomachineDeliveryrecordResponse;
 import com.taobao.api.response.TmallFansAutomachineGetmaskusernickResponse;
@@ -40,6 +42,7 @@ import com.taobao.api.response.TmallFansAutomachineOrderAddlogResponse;
 import com.taobao.api.response.TmallFansAutomachineOrderCheckpaystatusResponse;
 import com.taobao.api.response.TmallFansAutomachineOrderCreateorderbyitemidResponse;
 import com.taobao.api.response.TmallInteractIsvlotteryDrawResponse;
+import com.taobao.api.response.TmallMarketingFaceSkindetectResponse;
 import com.taobao.api.response.TopAuthTokenCreateResponse;
 
 @RestController
@@ -51,8 +54,8 @@ public class TopController {
 	private PropertiesBean propertiesBean;
 
 	private static final String URL = "https://eco.taobao.com/router/rest";
-	private static final String APPKEY = "24952452";
-	private static final String SECRET = "67ee063609d7a0a11997168d70b370c0";
+	private static final String APPKEY = "24791535";
+	private static final String SECRET = "c0799e02efbb606288c51f02a987ba43";
 	private static final String APP_NAME = "tivm";
 	@Value("${game_server_url}")
 	private String gameServerUrl;
@@ -66,7 +69,7 @@ public class TopController {
 	@RequestMapping("/api/top/{mid}/{sessionUuid}")
 	public void home(HttpServletResponse response, @PathVariable("mid") String mid,
 			@PathVariable("sessionUuid") String sessionUuid, String code, String env) throws Exception {
-		LOGGER.info("mid is {}, code is {}, sessionUuid is {}", mid, code, sessionUuid);
+		LOGGER.info("mid is {}, code is {}, sessionUuid is {}, env is {}", mid, code, sessionUuid, env);
 		String playCode = "";
 		String data;
 		String qrStatus = "";
@@ -295,11 +298,48 @@ public class TopController {
 		return "test";
 	}
 
-	private String getHostGameUrl(String startWith) {
-		return MessageFormat.format(h5MobileUrl, propertiesBean.getValue(startWith + "HostMobile"));
+	/**
+	 *
+	 * @param image 图片的base64（必须以base64,开头）	base64,xxx
+	 * @param mixnick 用户mixnick t01A+8NLodWrUz+M3lESGlKf6Fzup0APmo56QGE4282SaY=
+	 * @param source 	isv标识 	isv_001
+	 * @param front_camera 1	前置摄像头1，后置摄像头0
+	 * @param sessionKey sessionKey
+	 * @return body
+	 */
+	@RequestMapping("/api/top/{sessionUuid}")
+	public String skindetect(String image, String mixnick, String source, String front_camera, @PathVariable("sessionUuid") String sessionKey){
+		LOGGER.info("肌肤检测接口参数 image = {}; mixnich = {}; source = {}; front_camera = {}; sessionUuid = {}"
+		,image, mixnick, source, front_camera, sessionKey);
+		TaobaoClient client = new DefaultTaobaoClient(URL, APPKEY, SECRET);
+		TmallMarketingFaceSkindetectRequest req = new TmallMarketingFaceSkindetectRequest();
+		req.setImage(image);
+		req.setMixnick(mixnick);
+		req.setSource(source);
+		req.setFrontCamera(front_camera);
+
+		String body = "";
+		try {
+			TmallMarketingFaceSkindetectResponse rsp = client.execute(req, sessionKey);
+			LOGGER.info("调用肌肤检测完整结果 =================》 {}", JSON.toJSONString(rsp));
+			body = rsp.getBody();
+		}catch (ApiException e){
+			LOGGER.error("调用肌肤检测接口失败 ===> {} {}", e.getMessage(), e);
+		}
+		LOGGER.info("图片解析结果 ===> {}", body);
+		return body;
 	}
 
-	private String getHostGameH5Url(String startWith) {
-		return MessageFormat.format(h5MobileUrl, propertiesBean.getValue(startWith + "HostGame"));
+	public String getHostGameUrl(String startWith) {
+		String format = MessageFormat.format(gameServerUrl, propertiesBean.getValue(startWith + "HostGame"));
+		LOGGER.info("获取环境 变量组装的game Url {} , env {}", format, startWith);
+		return format;
+	}
+
+	public String getHostGameH5Url(String startWith) {
+		String format = MessageFormat.format(h5MobileUrl, propertiesBean.getValue(startWith + "HostMobile"));
+		LOGGER.info("获取环境 变量组装的game Url {} , env {}", format, startWith);
+		return format;
+
 	}
 }
