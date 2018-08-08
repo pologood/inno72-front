@@ -12,6 +12,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.inno72.common.CommonBean;
 import com.inno72.common.Inno72GameServiceProperties;
 import com.inno72.common.Result;
 import com.inno72.common.Results;
@@ -24,6 +25,7 @@ import com.inno72.common.utils.StringUtil;
 import com.inno72.mapper.Inno72MachineMapper;
 import com.inno72.model.Inno72Machine;
 import com.inno72.oss.OSSUtil;
+import com.inno72.redis.IRedisUtil;
 import com.inno72.service.Inno72AuthInfoService;
 import com.inno72.vo.UserSessionVo;
 
@@ -116,7 +118,8 @@ public class Inno72AuthInfoServiceImpl implements Inno72AuthInfoService {
 		}
 		return Results.success(map);
 	}
-
+	@Resource
+	private IRedisUtil redisUtil;
 	@Override
 	public Result<Object> sessionPolling(String sessionUuid) {
 		if (StringUtils.isEmpty(sessionUuid)) {
@@ -129,7 +132,8 @@ public class Inno72AuthInfoServiceImpl implements Inno72AuthInfoService {
 			return Results.failure("未登录！");
 		}
 
-
+		Long scard = redisUtil.scard(CommonBean.REDIS_ACTIVITY_PLAN_LOGIN_TIMES_KEY + sessionStr.getActivityPlanId());
+		sessionStr.setPlayTimes(scard);
 
 		return Results.success(sessionStr);
 	}

@@ -113,7 +113,7 @@ public class TopController {
 //			String h5Url = this.getHostGameH5Url(env);
 			// 跳转到游戏页面 手机端redirect
 			LOGGER.info("h5MobileUrl is {} , playCode is {}, env is {}", h5MobileUrl, playCode, env);
-			String formatUrl = String.format(h5MobileUrl, playCode, env) + "?qrStatus=" + qrStatus + "&sellerId=" + sellerId;
+			String formatUrl = String.format(h5MobileUrl, env, playCode) + "?qrStatus=" + qrStatus + "&sellerId=" + sellerId;
 			LOGGER.info("formatUrl is {}", formatUrl);
 			response.sendRedirect(formatUrl);
 		} catch (IOException e) {

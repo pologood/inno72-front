@@ -21,8 +21,12 @@ public class UserSessionVo {
 	 */
 	private String inno72OrderId;
 
+	private String activityPlanId;
+
+	private Long playTimes;
+
 	public UserSessionVo(String mid, String userNick, String userId, String access_token, String gameId,
-			String sessionUuid) {
+			String sessionUuid, String planId) {
 		super();
 		this.mid = mid;
 		this.userNick = userNick;
@@ -30,6 +34,7 @@ public class UserSessionVo {
 		this.accessToken = access_token;
 		this.gameId = gameId;
 		this.sessionUuid = sessionUuid;
+		this.activityPlanId = planId;
 	}
 
 	public UserSessionVo() {
