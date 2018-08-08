@@ -54,14 +54,6 @@ public class TopController {
 	@Resource
 	private PropertiesBean propertiesBean;
 
-	@Value("url")
-	private String URL;// = "https://eco.taobao.com/router/rest";
-	@Value("appkey")
-	private String APPKEY;// = "24952134";
-	@Value("secret")
-	private String SECRET;// = "67ee063609d7a0a11997168d70b370c0";
-//	private static final String APPKEY = "24791535";
-//	private static final String SECRET = "c0799e02efbb606288c51f02a987ba43";
 	private static final String APP_NAME = "tivm";
 	@Value("${game_server_url}")
 	private String gameServerUrl;
