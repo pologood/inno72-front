@@ -206,9 +206,8 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 		Collection<GoodsVo> values = goodsVoMap.values();
 
 		Map<String, Object> result = new HashMap<>();
-		result.put("canOrder", canOrder);
 		Long scard = redisUtil.scard(CommonBean.REDIS_ACTIVITY_PLAN_LOGIN_TIMES_KEY + activityPlanId);
-		result.put("planTimes", scard);
+		result.put("playTimes", scard);
 		result.put("canOrder", canOrder);
 		result.put("goods", values);
 
