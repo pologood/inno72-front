@@ -681,10 +681,12 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 
 		// 调用聚石塔日志
 		Map<String, String> requestLogForm = new HashMap<>();
-		requestLogForm.put("accessToken", token);
-		LogReqrest logReqrest = getLogReqrest(null, null, Long.valueOf(inno72Merchant.getMerchantCode()), "login", -1L,
+
+		requestLogForm.put("accessToken", sessionVo.getAccessToken());
+		LogReqrest logReqrest = getLogReqrest("automachine", null, Long.valueOf(inno72Merchant.getMerchantCode()), "login", -1L,
 				inno72Machine.getMachineCode(), null, null, null);
 		requestLogForm.put("logReqrest", JSON.toJSONString(logReqrest));
+
 		LOGGER.info("聚石塔日志接口参数 requestLogForm ：" + JSONObject.toJSONString(requestLogForm));
 		String result = HttpClient.form(jstUrl + "/api/top/addLog", requestLogForm, null);
 		LOGGER.info("聚石塔日志接口返回 ", JSON.toJSONString(result));
