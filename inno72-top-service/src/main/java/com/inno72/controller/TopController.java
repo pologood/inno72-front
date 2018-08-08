@@ -3,6 +3,7 @@ package com.inno72.controller;
 import java.io.IOException;
 import java.text.MessageFormat;
 
+import javax.annotation.PostConstruct;
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletResponse;
 
@@ -24,7 +25,7 @@ import com.alibaba.fastjson.JSON;
 import com.inno72.util.FastJsonUtils;
 import com.inno72.validator.Validators;
 import com.inno72.vo.PropertiesBean;
-import com.inno72.vo.*;
+import com.inno72.vo.UserInfo;
 import com.taobao.api.ApiException;
 import com.taobao.api.DefaultTaobaoClient;
 import com.taobao.api.TaobaoClient;
@@ -53,15 +54,25 @@ public class TopController {
 	@Resource
 	private PropertiesBean propertiesBean;
 
-	private static final String URL = "https://eco.taobao.com/router/rest";
-	private static final String APPKEY = "24791535";
-	private static final String SECRET = "c0799e02efbb606288c51f02a987ba43";
+	@Value("url")
+	private String URL;// = "https://eco.taobao.com/router/rest";
+	@Value("appkey")
+	private String APPKEY;// = "24952134";
+	@Value("secret")
+	private String SECRET;// = "67ee063609d7a0a11997168d70b370c0";
+//	private static final String APPKEY = "24791535";
+//	private static final String SECRET = "c0799e02efbb606288c51f02a987ba43";
 	private static final String APP_NAME = "tivm";
 	@Value("${game_server_url}")
 	private String gameServerUrl;
 	@Value("${h5_mobile_url}")
 	private String h5MobileUrl;
-	private TaobaoClient client = new DefaultTaobaoClient(URL, APPKEY, SECRET);
+	private TaobaoClient client;
+
+	@PostConstruct
+	public void initClient(){
+		client = new DefaultTaobaoClient(propertiesBean.getUrl(), propertiesBean.getAppkey(), propertiesBean.getSecret());
+	}
 
 	/**
 	 * 登录回调接口
@@ -296,6 +307,7 @@ public class TopController {
 	public String test() {
 		LOGGER.info("test -----");
 		return "test";
+//		return JSON.toJSONString(client);
 	}
 
 	/**
@@ -311,7 +323,6 @@ public class TopController {
 	public String skindetect(String image, String mixnick, String source, String front_camera, @PathVariable("sessionUuid") String sessionKey){
 		LOGGER.info("肌肤检测接口参数 image = {}; mixnich = {}; source = {}; front_camera = {}; sessionUuid = {}"
 		,image, mixnick, source, front_camera, sessionKey);
-		TaobaoClient client = new DefaultTaobaoClient(URL, APPKEY, SECRET);
 		TmallMarketingFaceSkindetectRequest req = new TmallMarketingFaceSkindetectRequest();
 		req.setImage(image);
 		req.setMixnick(mixnick);
@@ -330,13 +341,13 @@ public class TopController {
 		return body;
 	}
 
-	public String getHostGameUrl(String startWith) {
+	private String getHostGameUrl(String startWith) {
 		String format = MessageFormat.format(gameServerUrl, propertiesBean.getValue(startWith + "HostGame"));
 		LOGGER.info("获取环境 变量组装的game Url {} , env {}", format, startWith);
 		return format;
 	}
 
-	public String getHostGameH5Url(String startWith) {
+	private String getHostGameH5Url(String startWith) {
 		String format = MessageFormat.format(h5MobileUrl, propertiesBean.getValue(startWith + "HostMobile"));
 		LOGGER.info("获取环境 变量组装的game Url {} , env {}", format, startWith);
 		return format;
