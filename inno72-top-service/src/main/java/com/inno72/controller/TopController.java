@@ -110,10 +110,10 @@ public class TopController {
 			}
 		}
 		try {
-			String h5Url = this.getHostGameH5Url(env);
+//			String h5Url = this.getHostGameH5Url(env);
 			// 跳转到游戏页面 手机端redirect
-			LOGGER.info("h5MobileUrl is {} , playCode is {}", h5Url, playCode);
-			String formatUrl = String.format(h5Url, playCode) + "?qrStatus=" + qrStatus + "&sellerId=" + sellerId;
+			LOGGER.info("h5MobileUrl is {} , playCode is {}, env is {}", h5MobileUrl, playCode, env);
+			String formatUrl = String.format(h5MobileUrl, playCode, env) + "?qrStatus=" + qrStatus + "&sellerId=" + sellerId;
 			LOGGER.info("formatUrl is {}", formatUrl);
 			response.sendRedirect(formatUrl);
 		} catch (IOException e) {
@@ -339,10 +339,10 @@ public class TopController {
 		return format;
 	}
 
-	private String getHostGameH5Url(String startWith) {
-		String format = MessageFormat.format(h5MobileUrl, propertiesBean.getValue(startWith + "HostMobile"));
-		LOGGER.info("获取环境 变量组装的game Url {} , env {}", format, startWith);
-		return format;
-
-	}
+//	private String getHostGameH5Url(String startWith) {
+//		String format = MessageFormat.format(h5MobileUrl, propertiesBean.getValue(startWith + "HostMobile"));
+//		LOGGER.info("获取环境 变量组装的game Url {} , env {}", format, startWith);
+//		return format;
+//
+//	}
 }

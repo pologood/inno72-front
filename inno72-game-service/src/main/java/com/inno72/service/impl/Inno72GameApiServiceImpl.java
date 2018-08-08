@@ -17,6 +17,7 @@ import org.springframework.stereotype.Service;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
+import com.inno72.common.CommonBean;
 import com.inno72.common.Inno72GameServiceProperties;
 import com.inno72.common.Result;
 import com.inno72.common.Results;
@@ -205,6 +206,9 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 		Collection<GoodsVo> values = goodsVoMap.values();
 
 		Map<String, Object> result = new HashMap<>();
+		result.put("canOrder", canOrder);
+		Long scard = redisUtil.scard(CommonBean.REDIS_ACTIVITY_PLAN_LOGIN_TIMES_KEY + activityPlanId);
+		result.put("planTimes", scard);
 		result.put("canOrder", canOrder);
 		result.put("goods", values);
 
@@ -691,6 +695,8 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 			String msg_info = FastJsonUtils.getString(result, "msg_info");
 			LOGGER.info("调用聚石塔日志接口 ===> {}", JSON.toJSONString(msg_info));
 		}
+
+		redisUtil.sadd(CommonBean.REDIS_ACTIVITY_PLAN_LOGIN_TIMES_KEY+inno72ActivityPlan.getId(), userId);
 
 		Map<String, Object> resultMap = new HashMap<>();
 		resultMap.put("playCode", playCode);
