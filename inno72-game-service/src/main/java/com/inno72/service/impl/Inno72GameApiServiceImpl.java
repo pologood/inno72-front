@@ -610,6 +610,10 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 			gameId = inno72ActivityPlan.getGameId();
 		}
 
+		// 设置统计每个计划的已完次数
+		assert inno72ActivityPlan != null;
+		redisUtil.sadd(CommonBean.REDIS_ACTIVITY_PLAN_LOGIN_TIMES_KEY + inno72ActivityPlan.getId(), userId);
+
 		if (StringUtil.isEmpty(gameId)) {
 			return Results.failure("没有绑定的游戏！");
 		}
@@ -619,7 +623,7 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 			return Results.failure("不存在的游戏！");
 		}
 
-		assert inno72ActivityPlan != null;
+
 		Inno72Activity inno72Activity = inno72ActivityMapper.selectByPrimaryKey(inno72ActivityPlan.getActivityId());
 		String sellerId = inno72Activity.getSellerId();
 		playCode = inno72Activity.getCode();
@@ -700,8 +704,6 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 			String msg_info = FastJsonUtils.getString(result, "msg_info");
 			LOGGER.info("调用聚石塔日志接口 ===> {}", JSON.toJSONString(msg_info));
 		}
-
-		redisUtil.sadd(CommonBean.REDIS_ACTIVITY_PLAN_LOGIN_TIMES_KEY+inno72ActivityPlan.getId(), userId);
 
 		Map<String, Object> resultMap = new HashMap<>();
 		resultMap.put("playCode", playCode);
