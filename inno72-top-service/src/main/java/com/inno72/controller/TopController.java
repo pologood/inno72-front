@@ -54,7 +54,7 @@ public class TopController {
 	@Resource
 	private PropertiesBean propertiesBean;
 
-	private static final String APP_NAME = "tivm";
+	private static final String APP_NAME = "点72互动";
 	@Value("${game_server_url}")
 	private String gameServerUrl;
 	@Value("${h5_mobile_url}")
