@@ -26,41 +26,6 @@ public class Inno72OrderGoods {
     @Column(name = "order_num")
     private String orderNum;
 
-    /**
-     * 商品类型
-     */
-    @Column(name = "goods_type")
-    private Integer goodsType;
-
-	public enum INNO72ORDERGOODS_GOODSTYPE{
-
-		PRODUCT(1, "商品"),
-		COUPON(0, "重复单");
-
-		private Integer key;
-		private String desc;
-
-		INNO72ORDERGOODS_GOODSTYPE(Integer key, String desc) {
-			this.key = key;
-			this.desc = desc;
-		}
-
-		public Integer getKey() {
-			return key;
-		}
-
-		public void setKey(Integer key) {
-			this.key = key;
-		}
-
-		public String getDesc() {
-			return desc;
-		}
-
-		public void setDesc(String desc) {
-			this.desc = desc;
-		}
-	}
 
     /**
      * 商品ID
@@ -139,24 +104,6 @@ public class Inno72OrderGoods {
      */
     public void setOrderNum(String orderNum) {
         this.orderNum = orderNum;
-    }
-
-    /**
-     * 获取商品类型
-     *
-     * @return goods_type - 商品类型
-     */
-    public Integer getGoodsType() {
-        return goodsType;
-    }
-
-    /**
-     * 设置商品类型
-     *
-     * @param goodsType 商品类型
-     */
-    public void setGoodsType(Integer goodsType) {
-        this.goodsType = goodsType;
     }
 
     /**

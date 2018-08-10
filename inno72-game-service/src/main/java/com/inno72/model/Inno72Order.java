@@ -150,6 +150,43 @@ public class Inno72Order {
 			this.desc = desc;
 		}
 	}
+
+	/**
+	 * 商品类型
+	 */
+	@Column(name = "goods_type")
+	private Integer goodsType;
+
+	public enum INNO72ORDER_GOODSTYPE{
+
+		PRODUCT(1, "商品"),
+		COUPON(2, "优惠券");
+
+		private Integer key;
+		private String desc;
+
+		INNO72ORDER_GOODSTYPE(Integer key, String desc) {
+			this.key = key;
+			this.desc = desc;
+		}
+
+		public Integer getKey() {
+			return key;
+		}
+
+		public void setKey(Integer key) {
+			this.key = key;
+		}
+
+		public String getDesc() {
+			return desc;
+		}
+
+		public void setDesc(String desc) {
+			this.desc = desc;
+		}
+	}
+
     @Column(name = "goods_status")
     private Integer goodsStatus;
     public enum INNO72ORDER_GOODSSTATUS{
@@ -244,7 +281,15 @@ public class Inno72Order {
         this.id = id;
     }
 
-    /**
+	public Integer getGoodsType() {
+		return goodsType;
+	}
+
+	public void setGoodsType(Integer goodsType) {
+		this.goodsType = goodsType;
+	}
+
+	/**
      * @return order_num
      */
     public String getOrderNum() {
@@ -557,4 +602,5 @@ public class Inno72Order {
     public void setRepetition(Integer repetition) {
         this.repetition = repetition;
     }
+
 }
