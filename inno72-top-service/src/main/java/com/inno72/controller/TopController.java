@@ -69,9 +69,9 @@ public class TopController {
 	/**
 	 * 登录回调接口
 	 */
-	@RequestMapping("/api/top/{mid}/{sessionUuid}")
+	@RequestMapping("/api/top/{mid}/{sessionUuid}/{env}")
 	public void home(HttpServletResponse response, @PathVariable("mid") String mid,
-			@PathVariable("sessionUuid") String sessionUuid, String code, String env) throws Exception {
+			@PathVariable("sessionUuid") String sessionUuid, String code, @PathVariable("env") String env) throws Exception {
 		LOGGER.info("mid is {}, code is {}, sessionUuid is {}, env is {}", mid, code, sessionUuid, env);
 		String playCode = "";
 		String data;
