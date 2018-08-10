@@ -625,7 +625,8 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 			boolean result = gameSessionRedisUtil.hasKey(sessionUuid);
 			LOGGER.info("qrCode hasKey result {} ", result);
 			if (!result) {
-//				qrStatus = QRSTATUS_INVALID;
+				//TODO
+				qrStatus = QRSTATUS_INVALID;
 				LOGGER.info("二维码已经过期");
 			} else {
 				UserSessionVo sessionStr = gameSessionRedisUtil.getSessionKey(sessionUuid);
