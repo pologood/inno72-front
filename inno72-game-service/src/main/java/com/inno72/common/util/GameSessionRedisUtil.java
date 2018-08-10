@@ -50,7 +50,7 @@ public class GameSessionRedisUtil {
 	}
 
 	public Boolean hasKey(String key) {
-		return template.hasKey(key);
+		return template.hasKey(SESSION_KEY + key);
 	}
 	
 }
