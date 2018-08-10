@@ -49,7 +49,7 @@ public class SuperOpenServiceImpl implements SuperOpenService {
 		ADPTE_METHOD method = ADPTE_METHOD.selectAdpteByServiceNameAndVersion(serviceName, version);
 
 		LOGGER.debug("redirect url: {}", method);
-		return method.path + this.buildRequesParams(params);
+		return method.path;// + this.buildRequesParams(params);
 	}
 
 	@SuppressWarnings("unused")
@@ -68,7 +68,8 @@ public class SuperOpenServiceImpl implements SuperOpenService {
 		ERROR_NO_VERSION("500", "ERROR_NO_VERSION", "/inno72/noVersion/open", "出货后调用减货", "1.0.0"),
 		MALFUNCTION_LOG("009", "malfunctionLog", "/api/malfunctionLog", "货道异常信息存储", "1.0.0"), /** 货道异常信息存储 */
 		SHIPMENT_FAIL("010", "shipmentFail", "/api/shipmentFail", "掉货失败", "1.0.0"), /** 掉货失败 */
-		USER_DURATION("011", "userDuration", "/api/userDuration", "用户互动时长", "1.0.0"), /** 用户互动时长 */;
+		USER_DURATION("011", "userDuration", "/api/userDuration", "用户互动时长", "1.0.0"), /* 用户互动时长 */
+		;
 
 		private String code;
 		private String serviceName;

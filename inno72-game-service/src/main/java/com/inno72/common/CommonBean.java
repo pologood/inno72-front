@@ -17,4 +17,11 @@ public class CommonBean {
 	public static final String REDIS_ACTIVITY_PLAN_LOGIN_TIMES_KEY = "game_service:activity_plan:login_times:";
 
 
+	/**
+	 * 护肤检测传入base64格式 以base64,开始
+	 */
+	public static final String PIC_BASE64_START_WITH = "base64,";
+
+
+
 }

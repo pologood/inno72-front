@@ -19,8 +19,8 @@ public class GameSessionRedisUtil {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(GameSessionRedisUtil.class);
 
-	public static final String SESSION_KEY = "session:";
-	public static final Integer SESSION_EX = 1600;
+	private static final String SESSION_KEY = "session:";
+	private static final Integer SESSION_EX = 1600;
 
 	@Autowired
 	private StringRedisTemplate template;
@@ -50,8 +50,7 @@ public class GameSessionRedisUtil {
 	}
 
 	public Boolean hasKey(String key) {
-		Boolean result = template.hasKey(key);
-		return result;
+		return template.hasKey(key);
 	}
 	
 }

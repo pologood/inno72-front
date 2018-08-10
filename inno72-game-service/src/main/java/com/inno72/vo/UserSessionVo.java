@@ -11,6 +11,9 @@ public class UserSessionVo {
 	private String accessToken;
 	private String gameId;
 	private String sessionUuid;
+	private String mixnick;
+	private String source;
+
 
 	/**
 	 * 查询游戏结果对应的货道时存入

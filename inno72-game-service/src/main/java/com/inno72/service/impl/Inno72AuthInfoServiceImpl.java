@@ -37,13 +37,18 @@ import net.coobird.thumbnailator.Thumbnails;
 @Service
 @Transactional
 public class Inno72AuthInfoServiceImpl implements Inno72AuthInfoService {
+
 	private static final Logger LOGGER = LoggerFactory.getLogger(Inno72AuthInfoServiceImpl.class);
+
 	@Resource
 	private GameSessionRedisUtil gameSessionRedisUtil;
 	@Resource
 	private Inno72GameServiceProperties inno72GameServiceProperties;
 	@Resource
 	private Inno72MachineMapper inno72MachineMapper;
+
+	@Resource
+	private IRedisUtil redisUtil;
 
 	@Override
 	public Result<Object> createQrCode(String machineId) {
@@ -118,8 +123,7 @@ public class Inno72AuthInfoServiceImpl implements Inno72AuthInfoService {
 		}
 		return Results.success(map);
 	}
-	@Resource
-	private IRedisUtil redisUtil;
+
 	@Override
 	public Result<Object> sessionPolling(String sessionUuid) {
 		if (StringUtils.isEmpty(sessionUuid)) {

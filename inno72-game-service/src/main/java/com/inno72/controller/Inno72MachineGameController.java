@@ -11,11 +11,9 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
-import com.inno72.common.CommonBean;
 import com.inno72.common.Result;
 import com.inno72.common.ResultGenerator;
 import com.inno72.model.Inno72MachineGame;
-import com.inno72.redis.IRedisUtil;
 import com.inno72.service.Inno72MachineGameService;
 
 /**
