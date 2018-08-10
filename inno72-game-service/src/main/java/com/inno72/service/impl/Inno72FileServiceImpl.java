@@ -55,7 +55,7 @@ public class Inno72FileServiceImpl implements Inno72FileService {
 			String requestUrl = jstUrl + "/api/top/" + sessionKey.getAccessToken();
 			Map<String, String> requestParams = new HashMap<>();
 			requestParams.put("image", CommonBean.PIC_BASE64_START_WITH + picBase64);
-			requestParams.put("mixnick",sessionKey.getMixnick());
+			requestParams.put("mixnick",sessionKey.getUserNick());
 			requestParams.put("source",sessionKey.getSource());
 
 			String respJson = HttpClient.form(requestUrl, requestParams, null);

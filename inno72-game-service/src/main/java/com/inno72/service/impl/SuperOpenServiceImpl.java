@@ -49,7 +49,7 @@ public class SuperOpenServiceImpl implements SuperOpenService {
 		ADPTE_METHOD method = ADPTE_METHOD.selectAdpteByServiceNameAndVersion(serviceName, version);
 
 		LOGGER.debug("redirect url: {}", method);
-		return method.path;// + this.buildRequesParams(params);
+		return method.path + this.buildRequesParams(params);
 	}
 
 	@SuppressWarnings("unused")

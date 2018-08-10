@@ -37,7 +37,7 @@ public class GameSessionRedisUtil {
 
 	public void setSessionEx(String sessionUuid, String value){
 		LOGGER.debug("存入session ===> sessionUuid[{}]、 value[{}];", sessionUuid, value);
-		string().set(SESSION_KEY + sessionUuid, value , GameSessionRedisUtil.SESSION_EX, TimeUnit.SECONDS);
+		string().set(SESSION_KEY + sessionUuid, value, GameSessionRedisUtil.SESSION_EX, TimeUnit.SECONDS);
 	}
 
 	private ValueOperations<String, String> string() {

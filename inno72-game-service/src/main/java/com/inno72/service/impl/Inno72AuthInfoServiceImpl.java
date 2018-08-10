@@ -107,7 +107,7 @@ public class Inno72AuthInfoServiceImpl implements Inno72AuthInfoService {
 				}
 
 				// 设置二维码过期时间
-				gameSessionRedisUtil.setSessionEx(sessionUuid + "_qrCode", "", 1800);
+				gameSessionRedisUtil.setSessionEx(sessionUuid , "");
 
 				map.put("qrCodeUrl", returnUrl);
 				map.put("sessionUuid", sessionUuid);
