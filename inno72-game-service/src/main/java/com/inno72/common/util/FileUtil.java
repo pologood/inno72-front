@@ -1,5 +1,6 @@
 package com.inno72.common.util;
 
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 
@@ -27,4 +28,20 @@ public class FileUtil {
 
 	}
 
+	public static boolean isExitsPath(String path) throws InterruptedException{
+		String [] paths=path.split("/");
+		StringBuilder fullPath = new StringBuilder();
+		for (String name : paths) {
+			if (name.contains(".zip")) {
+				name = name.substring(0, name.indexOf("."));
+			}
+			fullPath.append(name).append("/");
+			File file = new File(fullPath.toString());
+			if (!file.exists()) {
+				file.mkdir();
+			}
+		}
+		File file=new File(fullPath.toString());//目录全路径
+		return !file.exists();
+	}
 }

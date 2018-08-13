@@ -114,6 +114,8 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 	@Resource
 	private Inno72SupplyChannelMapper inno72SupplyChannelMapper;
 	@Resource
+	private Inno72CouponMapper inno72CouponMapper;
+	@Resource
 	private IRedisUtil redisUtil;
 
 	private static final String QRSTATUS_NORMAL = "0"; // 二维码正常
@@ -871,8 +873,7 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 
 		return  inno72Orders.size() < userMaxTimes && todayInno72Orders.size() < dayUserMaxTimes;
 	}
-	@Resource
-	private Inno72CouponMapper inno72CouponMapper;
+
 	private String genInno72Order(String channelId, String activityPlanId, String machineId, String goodsId,
 			String channelUserKey, Inno72Order.INNO72ORDER_GOODSTYPE product) {
 

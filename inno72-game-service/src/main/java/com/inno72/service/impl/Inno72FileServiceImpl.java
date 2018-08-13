@@ -1,5 +1,7 @@
 package com.inno72.service.impl;
 
+import java.io.File;
+import java.io.FileInputStream;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -15,8 +17,10 @@ import com.inno72.common.Inno72GameServiceProperties;
 import com.inno72.common.Result;
 import com.inno72.common.Results;
 import com.inno72.common.util.FastJsonUtils;
+import com.inno72.common.util.FileUtil;
 import com.inno72.common.util.GameSessionRedisUtil;
 import com.inno72.common.utils.StringUtil;
+import com.inno72.oss.OSSUtil;
 import com.inno72.plugin.http.HttpClient;
 import com.inno72.service.Inno72FileService;
 import com.inno72.vo.UserSessionVo;
@@ -47,13 +51,29 @@ public class Inno72FileServiceImpl implements Inno72FileService {
 			return Results.failure("登录超时!");
 		}
 
+		String localTargetPath = "/tmp/skindetect/";
+		String localFile = localTargetPath + picBase64;
+		String base64 = "";
+
+		try {
+			if (FileUtil.isExitsPath(localFile)) {OSSUtil.downloadFile(picBase64, localFile);}
+			FileInputStream inputStream = new FileInputStream(new File(localFile));
+			base64 = FileUtil.toBase64(inputStream, CommonBean.PIC_BASE64_START_WITH);
+		} catch (Exception e) {
+			LOGGER.info("下载图片失败 ====> {}", e.getMessage(), e);
+		}
+
+		if (StringUtil.isEmpty(base64)){
+			return Results.failure("下载解析图片失败");
+		}
+
 		String jstUrl = inno72GameServiceProperties.get("jstUrl");
 
 		try {
 
 			String requestUrl = jstUrl + "/api/top/" + sessionKey.getAccessToken();
 			Map<String, String> requestParams = new HashMap<>();
-			requestParams.put("image", CommonBean.PIC_BASE64_START_WITH + picBase64);
+			requestParams.put("image", base64);
 			requestParams.put("mixnick",sessionKey.getUserNick());
 			requestParams.put("source",sessionKey.getSource());
 
