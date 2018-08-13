@@ -20,6 +20,6 @@
   </resultMap>
   
   <select id="selectByCode" resultMap="BaseResultMap" parameterType="string">
-  	select * from inno72_goods where code = #{code}
+  	select * from inno72_goods where code = #{code} and is_delete = 0
   </select>
 </mapper>
