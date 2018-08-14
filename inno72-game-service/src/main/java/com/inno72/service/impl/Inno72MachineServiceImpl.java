@@ -1,5 +1,6 @@
 package com.inno72.service.impl;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 import javax.annotation.Resource;
@@ -76,6 +77,16 @@ public class Inno72MachineServiceImpl extends AbstractService<Inno72Machine> imp
 		) {
 			LOGGER.debug("查询机器游戏关联完成 - result -> {}", JSON.toJSONString(inno72MachineVo));
 			inno72MachineVo.setReload(true);
+		}
+		Inno72ActivityPlan inno72ActivityPlan = inno72MachineVo.getInno72ActivityPlan();
+		if (inno72ActivityPlan != null){
+			LocalDateTime startTime = inno72ActivityPlan.getStartTime();
+			LocalDateTime endTime = inno72ActivityPlan.getEndTime();
+			LocalDateTime now = LocalDateTime.now();
+			if ( startTime.isBefore(now) && endTime.isAfter(now)){
+				inno72MachineVo.setReload(true);
+				redisUtil.del(CommonBean.REDIS_ACTIVITY_PLAN_CACHE_KEY + planId + ":" +machineId);
+			}
 		}
 
 		return Results.success(inno72MachineVo);
