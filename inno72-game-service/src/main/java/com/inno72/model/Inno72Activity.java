@@ -58,6 +58,12 @@ public class Inno72Activity {
     private Integer isDelete;
 
     /**
+     * 是否是默认活动：0不是，1是
+     */
+    @Column(name = "is_default")
+    private Integer isDefault;
+
+    /**
      * 备注描述
      */
     private String remark;
@@ -292,5 +298,13 @@ public class Inno72Activity {
 
 	public void setCode(String code) {
 		this.code = code;
+	}
+
+	public Integer getIsDefault() {
+		return isDefault;
+	}
+
+	public void setIsDefault(Integer isDefault) {
+		this.isDefault = isDefault;
 	}
 }

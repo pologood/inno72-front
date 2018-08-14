@@ -10,4 +10,6 @@ public interface Inno72ActivityPlanMapper extends Mapper<Inno72ActivityPlan> {
 	List<Inno72ActivityPlan> selectByMachineId(String machineId);
 
 	String selectCouponCodeByParam(Map<String, String> selectCouponParam);
+
+	Inno72ActivityPlan selectDefaultActPlan();
 }

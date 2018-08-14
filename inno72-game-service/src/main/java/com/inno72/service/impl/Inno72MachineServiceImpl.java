@@ -61,11 +61,17 @@ public class Inno72MachineServiceImpl extends AbstractService<Inno72Machine> imp
 		if (inno72MachineVoResult.getCode() == Result.FAILURE){
 			return inno72MachineVoResult;
 		}
+		if (inno72MachineVoResult.getCode() == 2){
+			inno72MachineVoResult = this.initDefaultGameFromRedis(machineId);
+			if (inno72MachineVoResult.getCode() != Result.SUCCESS ){
+				return inno72MachineVoResult;
+			}
+		}
 
 		Inno72MachineVo inno72MachineVo = inno72MachineVoResult.getData();
 
 		if (!planId.equals("0")
-				&& (!inno72MachineVo.getActivityPlanId().equals(planId)
+				&& (!inno72MachineVo.getPlanCode().equals(planId)
 				|| !inno72MachineVo.getInno72Games().getVersion().equals(version)
 				|| !inno72MachineVo.getInno72Games().getVersionInno72().equals(versionInno72)
 				)
@@ -82,7 +88,7 @@ public class Inno72MachineServiceImpl extends AbstractService<Inno72Machine> imp
 		Inno72MachineVo inno72MachineVo = null;
 
 		if ( StringUtil.isNotBlank(planId) ){
-			String rVoJson = redisUtil.get(CommonBean.REDIS_ACTIVITY_PLAN_CACHE_KEY + planId);
+			String rVoJson = redisUtil.get(CommonBean.REDIS_ACTIVITY_PLAN_CACHE_KEY + planId + ":" +machineId);
 			LOGGER.debug("redis cache machine data =====> {}", rVoJson);
 			if ( StringUtil.isNotEmpty(rVoJson) ){
 				inno72MachineVo = JSON.parseObject(rVoJson, Inno72MachineVo.class);
@@ -103,7 +109,7 @@ public class Inno72MachineServiceImpl extends AbstractService<Inno72Machine> imp
 
 			if (inno72ActivityPlans.size() == 0) {
 				LOGGER.debug("机器 【{}】 没有配置 活动计划!", inno72Machine.getMachineCode());
-				return Results.failure("无活动计划!");
+				return Results.warn("无活动计划!",2);
 			}
 
 			Inno72ActivityPlan inno72ActivityPlan = inno72ActivityPlans.get(0);
@@ -141,8 +147,80 @@ public class Inno72MachineServiceImpl extends AbstractService<Inno72Machine> imp
 			inno72MachineVo.setPlanCode(inno72Activity.getCode());
 
 			redisUtil.setex(
-					CommonBean.REDIS_ACTIVITY_PLAN_CACHE_KEY + inno72ActivityPlan.getId(),
+					CommonBean.REDIS_ACTIVITY_PLAN_CACHE_KEY + inno72ActivityPlan.getId()+ ":" +machineId,
 					CommonBean.REDIS_ACTIVITY_PLAN_CACHE_EX_KEY,
+					JSON.toJSONString(inno72MachineVo)
+			);
+		}
+		return Results.success(inno72MachineVo);
+	}
+
+	private Result<Inno72MachineVo> initDefaultGameFromRedis(String machineId){
+
+		Inno72MachineVo inno72MachineVo = null;
+
+		Inno72ActivityPlan defaultPlan = inno72ActivityPlanMapper.selectDefaultActPlan();
+
+		if (defaultPlan == null){
+			return Results.failure("无默认游戏!");
+		}
+
+		String planId = defaultPlan.getId();
+
+		if ( StringUtil.isNotBlank(planId) ){
+			String rVoJson = redisUtil.get(CommonBean.REDIS_ACTIVITY_PLAN_CACHE_KEY + planId+ ":" +machineId);
+			LOGGER.debug("redis cache machine data =====> {}", rVoJson);
+			if ( StringUtil.isNotEmpty(rVoJson) ){
+				inno72MachineVo = JSON.parseObject(rVoJson, Inno72MachineVo.class);
+				LOGGER.debug("parse rVoJson string finish --> {}", inno72MachineVo);
+			}
+		}
+
+		if ( inno72MachineVo == null ){
+
+			inno72MachineVo = new Inno72MachineVo();
+
+			Inno72Machine inno72Machine = inno72MachineMapper.findMachineByCode(machineId);
+			if (inno72Machine == null) {
+				return Results.failure("机器code错误!");
+			}
+
+			LOGGER.debug("活动计划详情 =====> {}", JSON.toJSONString(defaultPlan));
+
+			String gameId = defaultPlan.getGameId();
+			if (StringUtil.isEmpty(gameId)) {
+				LOGGER.debug("活动计划id 【{}】 没有配置 游戏!", defaultPlan.getId());
+				return Results.failure("无配置游戏!");
+			}
+
+			Inno72Game inno72Game = inno72GameMapper.selectByPrimaryKey(gameId);
+			if (inno72Game == null) {
+				LOGGER.debug("游戏id 【{}】 不存在!", gameId);
+				return Results.failure("游戏不存在!");
+			}
+
+			BeanUtils.copyProperties(inno72Machine, inno72MachineVo);
+			inno72MachineVo.setInno72Games(inno72Game);
+			Inno72Activity inno72Activity = inno72ActivityMapper.selectByPrimaryKey(defaultPlan.getActivityId());
+			String brandName = inno72MerchantMapper.selectBoundNameByActivityId(inno72Activity.getId());
+			String sellerId = inno72Activity.getSellerId();
+			Inno72Merchant inno72Merchant = inno72MerchantMapper.selectByPrimaryKey(sellerId);
+			if (inno72Merchant == null) {
+				LOGGER.debug("商户id 【{}】 不存在!", sellerId);
+				return Results.failure("商户配置错误!");
+			}
+			inno72MachineVo.setChannelId(inno72Merchant.getChannelId());
+			inno72MachineVo.setBrandName(brandName);
+			inno72MachineVo.setActivityPlanId(defaultPlan.getId());
+			inno72MachineVo.setInno72ActivityPlan(defaultPlan);
+			inno72MachineVo.setActivityId(defaultPlan.getActivityId());
+			inno72MachineVo.setReload(false);
+			inno72MachineVo.setPrizeType(defaultPlan.getPrizeType());
+			inno72MachineVo.setPlanCode(inno72Activity.getCode());
+
+			redisUtil.setex(
+					CommonBean.REDIS_ACTIVITY_PLAN_CACHE_KEY + defaultPlan.getId()+ ":" +machineId,
+					CommonBean.REDIS_ACTIVITY_DEFAULT_PLAN_CACHE_EX_KEY,
 					JSON.toJSONString(inno72MachineVo)
 			);
 		}

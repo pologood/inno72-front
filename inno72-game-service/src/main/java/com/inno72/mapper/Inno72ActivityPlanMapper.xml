@@ -41,7 +41,9 @@
           select prize_id from inno72_activity_plan_game_result
           where prize_type = 2 and activity_plan_id = #{activityPlanId} and result_code = #{report} limit 1
           )
+    </select>
 
-
+    <select id="selectDefaultActPlan" resultMap="BaseResultMap">
+        select * from inno72_activity_plan where activity_id in (select id from inno72_activity where is_default = 1)
     </select>
 </mapper>

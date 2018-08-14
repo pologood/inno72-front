@@ -12,6 +12,7 @@
     <result column="seller_id" jdbcType="VARCHAR" property="sellerId" />
     <result column="manager_id" jdbcType="VARCHAR" property="managerId" />
     <result column="is_delete" jdbcType="INTEGER" property="isDelete" />
+    <result column="is_default" jdbcType="INTEGER" property="isDefault" />
     <result column="remark" jdbcType="VARCHAR" property="remark" />
     <result column="create_id" jdbcType="VARCHAR" property="createId" />
     <result column="create_time" jdbcType="TIMESTAMP" property="createTime" javaType="java.time.LocalDateTime"
@@ -20,4 +21,8 @@
     <result column="update_time" jdbcType="TIMESTAMP" property="updateTime" javaType="java.time.LocalDateTime"
             typeHandler="org.apache.ibatis.type.LocalDateTimeTypeHandler"/>
   </resultMap>
+
+    <select id="selectDefaultAct" resultMap="BaseResultMap">
+        select * from inno72_activity where is_default = 1
+    </select>
 </mapper>
