@@ -87,7 +87,7 @@ public class Inno72MachineServiceImpl extends AbstractService<Inno72Machine> imp
 			LocalDateTime endTime = inno72ActivityPlan.getEndTime();
 
 			LocalDateTime now = LocalDateTime.now();
-			if ( !startTime.isBefore(now) && !endTime.isAfter(now)){
+			if (!(endTime.isAfter(now) && startTime.isBefore(now))){
 				LOGGER.info("活动过期 ==>   ", JSON.toJSONString(inno72ActivityPlan));
 				redisUtil.del(CommonBean.REDIS_ACTIVITY_PLAN_CACHE_KEY + planId + ":" +machineId);
 				inno72MachineVo.setReload(true);
