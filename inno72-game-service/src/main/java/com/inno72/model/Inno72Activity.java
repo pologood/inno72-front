@@ -12,6 +12,7 @@ import javax.persistence.Table;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.inno72.common.CustomLocalDateTimeSerializer;
 import com.inno72.common.LocalDateConverter;
+import com.inno72.common.LocalDateTimeConverter;
 
 @Table(name = "inno72_activity")
 public class Inno72Activity {
@@ -44,6 +45,12 @@ public class Inno72Activity {
      */
     @Column(name = "seller_id")
     private String sellerId;
+
+    /**
+     * 默认游戏ID
+     */
+    @Column(name = "game_id")
+    private String gameId;
 
     /**
      * 负责人
@@ -93,7 +100,7 @@ public class Inno72Activity {
      */
     @Column(name = "update_time")
 	@JsonSerialize(using = CustomLocalDateTimeSerializer.class)
-	@Convert(converter = LocalDateConverter.class)
+	@Convert(converter = LocalDateTimeConverter.class)
     private LocalDateTime updateTime;
 
     /**
@@ -306,5 +313,13 @@ public class Inno72Activity {
 
 	public void setIsDefault(Integer isDefault) {
 		this.isDefault = isDefault;
+	}
+
+	public String getGameId() {
+		return gameId;
+	}
+
+	public void setGameId(String gameId) {
+		this.gameId = gameId;
 	}
 }

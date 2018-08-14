@@ -9,6 +9,7 @@ public class CommonBean {
 	 * machine_plan:
 	 */
 	public static final String REDIS_ACTIVITY_PLAN_CACHE_KEY = "machine_plan:";
+	public static final String REDIS_ACTIVITY_DEFAULT_PLAN_CACHE_KEY = "machine_default_plan:";
 	public static final int REDIS_ACTIVITY_PLAN_CACHE_EX_KEY = 12 * 60 * 60;
 	public static final int REDIS_ACTIVITY_DEFAULT_PLAN_CACHE_EX_KEY = 14 * 12 * 60 * 60;
 
