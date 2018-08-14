@@ -82,6 +82,18 @@ public class Inno72MachineServiceImpl extends AbstractService<Inno72Machine> imp
 		}
 
 		Inno72ActivityPlan inno72ActivityPlan = inno72MachineVo.getInno72ActivityPlan();
+		if (inno72ActivityPlan != null){
+			LocalDateTime startTime = inno72ActivityPlan.getStartTime();
+			LocalDateTime endTime = inno72ActivityPlan.getEndTime();
+
+			LocalDateTime now = LocalDateTime.now();
+			if ( !startTime.isBefore(now) && !endTime.isAfter(now)){
+				LOGGER.info("活动过期 ==>   ", JSON.toJSONString(inno72ActivityPlan));
+				redisUtil.del(CommonBean.REDIS_ACTIVITY_PLAN_CACHE_KEY + planId + ":" +machineId);
+				inno72MachineVo.setReload(true);
+			}
+		}
+
 
 		return Results.success(inno72MachineVo);
 	}
@@ -154,19 +166,6 @@ public class Inno72MachineServiceImpl extends AbstractService<Inno72Machine> imp
 					CommonBean.REDIS_ACTIVITY_PLAN_CACHE_EX_KEY,
 					JSON.toJSONString(inno72MachineVo)
 			);
-		}else{
-			Inno72ActivityPlan inno72ActivityPlan = inno72MachineVo.getInno72ActivityPlan();
-			if (inno72ActivityPlan != null){
-				LocalDateTime startTime = inno72ActivityPlan.getStartTime();
-				LocalDateTime endTime = inno72ActivityPlan.getEndTime();
-
-				LocalDateTime now = LocalDateTime.now();
-				if ( !startTime.isBefore(now) && !endTime.isAfter(now)){
-					LOGGER.info("活动过期 ==>   ", JSON.toJSONString(inno72ActivityPlan));
-					redisUtil.del(CommonBean.REDIS_ACTIVITY_PLAN_CACHE_KEY + planId + ":" +machineId);
-					return Results.warn("过期了!",2);
-				}
-			}
 		}
 		return Results.success(inno72MachineVo);
 	}
