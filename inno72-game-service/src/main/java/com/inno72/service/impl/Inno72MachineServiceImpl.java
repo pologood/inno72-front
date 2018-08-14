@@ -71,19 +71,24 @@ public class Inno72MachineServiceImpl extends AbstractService<Inno72Machine> imp
 
 		Inno72MachineVo inno72MachineVo = inno72MachineVoResult.getData();
 
-		if (!inno72MachineVo.getActivityPlanId().equals(planId)
+		if (!planId.equals("-1")
+				&& (!inno72MachineVo.getActivityPlanId().equals(planId)
 				|| !inno72MachineVo.getInno72Games().getVersion().equals(version)
 				|| !inno72MachineVo.getInno72Games().getVersionInno72().equals(versionInno72)
+				)
 		) {
 			LOGGER.debug("查询机器游戏关联完成 - result -> {}", JSON.toJSONString(inno72MachineVo));
 			inno72MachineVo.setReload(true);
 		}
+
 		Inno72ActivityPlan inno72ActivityPlan = inno72MachineVo.getInno72ActivityPlan();
+
 		if (inno72ActivityPlan != null){
 			LocalDateTime startTime = inno72ActivityPlan.getStartTime();
 			LocalDateTime endTime = inno72ActivityPlan.getEndTime();
 			LocalDateTime now = LocalDateTime.now();
 			if ( startTime.isBefore(now) && endTime.isAfter(now)){
+				LOGGER.debug("活动过期 ==>   ", JSON.toJSONString(inno72ActivityPlan));
 				inno72MachineVo.setReload(true);
 				redisUtil.del(CommonBean.REDIS_ACTIVITY_PLAN_CACHE_KEY + planId + ":" +machineId);
 			}
