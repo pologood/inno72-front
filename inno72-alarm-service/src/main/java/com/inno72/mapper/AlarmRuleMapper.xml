@@ -21,4 +21,35 @@
     <result column="create_user" jdbcType="VARCHAR" property="createUser" />
     <result column="update_user" jdbcType="VARCHAR" property="updateUser" />
   </resultMap>
+    <select id="queryForPage" parameterType="com.inno72.model.AlarmRule" resultMap="BaseResultMap">
+      select * from alarm_rule
+      <where>
+          <trim prefixOverrides="and">
+              <if test="name != null and name != ''">
+                  and name = #{name}
+              </if>
+
+              <if test="description != null and description != ''">
+                  and description = #{description}
+              </if>
+
+              <if test="ruleType != null and ruleType != ''">
+                  and rule_type = #{ruleType}
+              </if>
+
+              <if test="appName != null and appName != ''">
+                  and app_name = #{appName}
+              </if>
+              <if test="ruleFragment != null and ruleFragment != ''">
+                  and rule_fragment = #{ruleFragment}
+              </if>
+              <if test="startTime != null and startTime != '' ">
+                  and start_time = #{startTime}
+              </if>
+              <if test="endTime != null and endTime != ''">
+                  and end_time = #{endTime}
+              </if>
+          </trim>
+      </where>
+    </select>
 </mapper>

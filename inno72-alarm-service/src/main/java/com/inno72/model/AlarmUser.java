@@ -24,6 +24,11 @@ public class AlarmUser {
      */
 	@Column(name = "name")
     private String name;
+    /**
+     * 用户名
+     */
+	@Column(name = "login_name")
+    private String loginName;
 
     /**
      * 联系方式 JSON
@@ -67,7 +72,15 @@ public class AlarmUser {
         this.id = id;
     }
 
-    /**
+	public String getLoginName() {
+		return loginName;
+	}
+
+	public void setLoginName(String loginName) {
+		this.loginName = loginName;
+	}
+
+	/**
      * 获取用户名
      *
      * @return name - 用户名
@@ -176,4 +189,6 @@ public class AlarmUser {
     public void setUpdateUser(String updateUser) {
         this.updateUser = updateUser;
     }
+
+
 }

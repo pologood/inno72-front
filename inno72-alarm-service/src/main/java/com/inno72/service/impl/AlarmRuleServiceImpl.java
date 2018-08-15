@@ -20,9 +20,11 @@ import com.inno72.common.Result;
 import com.inno72.common.Results;
 import com.inno72.common.util.JSR303Util;
 import com.inno72.common.utils.StringUtil;
+import com.inno72.mapper.AlarmMsgTypeMapper;
 import com.inno72.mapper.AlarmRuleMapper;
 import com.inno72.mapper.AlarmRuleMsgTypeMapper;
 import com.inno72.mapper.AlarmRuleReceiverMapper;
+import com.inno72.mapper.AlarmUserMapper;
 import com.inno72.model.AlarmRule;
 import com.inno72.service.AlarmRuleService;
 import com.inno72.vo.AlarmRuleRequestVo;
@@ -43,6 +45,10 @@ public class AlarmRuleServiceImpl extends AbstractService<AlarmRule> implements 
     private AlarmRuleMsgTypeMapper alarmRuleMsgTypeMapper;
     @Resource
     private AlarmRuleReceiverMapper alarmRuleReceiverMapper;
+	@Resource
+	private AlarmMsgTypeMapper alarmMsgTypeMapper;
+	@Resource
+	private AlarmUserMapper alarmUserMapper;
 
 	@Override
 	@TargetDataSource(dataSourceKey = DataSourceKey.DB_INNO72SAAS)
@@ -92,5 +98,25 @@ public class AlarmRuleServiceImpl extends AbstractService<AlarmRule> implements 
 		}
 
 		return Results.success();
+	}
+
+	@Override
+	@TargetDataSource(dataSourceKey = DataSourceKey.DB_INNO72SAAS)
+	public List<AlarmRule> queryForPage(AlarmRule alarmRule) {
+		return alarmRuleMapper.queryForPage(alarmRule);
+	}
+
+	@Override
+	@TargetDataSource(dataSourceKey = DataSourceKey.DB_INNO72SAAS)
+	public AlarmRuleRequestVo queryById(String ruleId) {
+		AlarmRule alarmRule = alarmRuleMapper.selectByPrimaryKey(ruleId);
+		List<String> msgTypeIds = alarmRuleMsgTypeMapper.selectByRuleId(ruleId);
+		List<String> userIds = alarmRuleReceiverMapper.selectByRuleId(ruleId);
+
+		AlarmRuleRequestVo vo = new AlarmRuleRequestVo();
+		vo.setTypeId(msgTypeIds);
+		vo.setUserId(userIds);
+		vo.setAlarmRule(alarmRule);
+		return vo;
 	}
 }

@@ -9,13 +9,16 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.servlet.ModelAndView;
 
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import com.inno72.common.Result;
 import com.inno72.common.ResultGenerator;
+import com.inno72.common.ResultPages;
 import com.inno72.model.AlarmRule;
 import com.inno72.service.AlarmRuleService;
+import com.inno72.vo.AlarmRuleRequestVo;
 
 /**
  * Created by CodeGenerator on 2018/08/13.
@@ -53,7 +56,7 @@ public class AlarmRuleController {
 
 	@RequestMapping(value = "/detail", method = { RequestMethod.POST,  RequestMethod.GET})
 	public Result detail(@RequestParam String id) {
-		AlarmRule alarmRule = alarmRuleService.findById(id);
+		AlarmRuleRequestVo alarmRule = alarmRuleService.queryById(id);
 		return ResultGenerator.genSuccessResult(alarmRule);
 	}
 
@@ -63,6 +66,13 @@ public class AlarmRuleController {
 		List<AlarmRule> list = alarmRuleService.findAll();
 		PageInfo pageInfo = new PageInfo(list);
 		return ResultGenerator.genSuccessResult(pageInfo);
+	}
+
+
+	@RequestMapping(value = "/getList", method = { RequestMethod.POST,  RequestMethod.GET})
+	public ModelAndView getList(AlarmRule alarmRule) {
+		List<AlarmRule> list = alarmRuleService.queryForPage(alarmRule);
+		return ResultPages.page(ResultGenerator.genSuccessResult(list));
 	}
 
 }

@@ -8,7 +8,7 @@ import com.inno72.model.AlarmDealLog;
 
 public interface AlarmDealLogMapper extends Mapper<AlarmDealLog> {
 
-	List<Map<String,String>> queryForPage(AlarmDealLog alarmDealLog);
+	List<Map<String,String>> queryForPage(Map<String, String> params);
 
 	AlarmDealLog queryDetail(String logId);
 }

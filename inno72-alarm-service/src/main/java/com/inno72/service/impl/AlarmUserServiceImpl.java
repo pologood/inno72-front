@@ -1,5 +1,7 @@
 package com.inno72.service.impl;
 
+import java.util.List;
+
 import javax.annotation.Resource;
 
 import org.slf4j.Logger;
@@ -34,6 +36,12 @@ public class AlarmUserServiceImpl extends AbstractService<AlarmUser> implements 
 		int i = alarmUserMapper.syncUser();
 		LOGGER.info("一共同步 {} 条记录!", i);
 		return Results.success();
+	}
+
+	@Override
+	@TargetDataSource(dataSourceKey = DataSourceKey.DB_INNO72SAAS)
+	public List<AlarmUser> queryForPage(AlarmUser alarmUser) {
+		return alarmUserMapper.queryForPage(alarmUser);
 	}
 
 }

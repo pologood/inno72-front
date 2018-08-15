@@ -13,8 +13,11 @@ import com.alibaba.fastjson.JSON;
 import com.inno72.annotation.TargetDataSource;
 import com.inno72.common.AbstractService;
 import com.inno72.common.DataSourceKey;
+import com.inno72.common.Result;
+import com.inno72.common.Results;
+import com.inno72.common.util.JSR303Util;
+import com.inno72.common.utils.StringUtil;
 import com.inno72.mapper.AlarmMsgTypeMapper;
-import com.inno72.model.AlarmDealLog;
 import com.inno72.model.AlarmMsgType;
 import com.inno72.service.AlarmMsgTypeService;
 
@@ -33,9 +36,22 @@ public class AlarmMsgTypeServiceImpl extends AbstractService<AlarmMsgType> imple
 
     @Override
 	@TargetDataSource(dataSourceKey = DataSourceKey.DB_INNO72SAAS)
-    public void save(AlarmMsgType alarmMsgType){
-		int insert = alarmMsgTypeMapper.insert(alarmMsgType);
-		LOGGER.debug("保存 {} 完成 {}", JSON.toJSONString(alarmMsgType), insert);
+    public Result<String> saveOrUpdate(AlarmMsgType alarmMsgType){
+		Result<String> valid = JSR303Util.valid(alarmMsgType);
+		if (valid.getCode() == Result.FAILURE){
+			return valid;
+		}
+		if (StringUtil.isNotEmpty(alarmMsgType.getId())){
+			AlarmMsgType old = alarmMsgTypeMapper.selectByPrimaryKey(alarmMsgType.getId());
+			if (old == null){
+				return Results.failure("非法请求");
+			}
+			alarmMsgTypeMapper.updateByPrimaryKeySelective(alarmMsgType);
+		}else {
+			int insert = alarmMsgTypeMapper.insert(alarmMsgType);
+		}
+		LOGGER.debug("保存 {} 完成 ", JSON.toJSONString(alarmMsgType));
+		return Results.success();
 	}
 
 	@Override

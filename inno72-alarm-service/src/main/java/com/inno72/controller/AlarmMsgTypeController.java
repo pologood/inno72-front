@@ -13,7 +13,6 @@ import org.springframework.web.servlet.ModelAndView;
 import com.inno72.common.Result;
 import com.inno72.common.ResultGenerator;
 import com.inno72.common.ResultPages;
-import com.inno72.model.AlarmDealLog;
 import com.inno72.model.AlarmMsgType;
 import com.inno72.service.AlarmMsgTypeService;
 
@@ -31,8 +30,7 @@ public class AlarmMsgTypeController {
 
 	@RequestMapping(value = "/add", method = { RequestMethod.POST,  RequestMethod.GET})
 	public Result add(AlarmMsgType alarmMsgType) {
-		alarmMsgTypeService.save(alarmMsgType);
-		return ResultGenerator.genSuccessResult();
+		return alarmMsgTypeService.saveOrUpdate(alarmMsgType);
 	}
 	@RequestMapping(value = "/delete", method = { RequestMethod.POST,  RequestMethod.GET})
 	public Result delete(@RequestParam String id) {

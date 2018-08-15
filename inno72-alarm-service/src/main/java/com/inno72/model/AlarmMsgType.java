@@ -5,6 +5,7 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
+import javax.validation.constraints.NotNull;
 
 @Table(name = "alarm_msg_type")
 public class AlarmMsgType {
@@ -16,12 +17,14 @@ public class AlarmMsgType {
      * 发送方式名称
      */
 	@Column(name = "`name`")
+	@NotNull(message = "名称不能为空")
     private String name;
 
     /**
      * 发送方式key（根据这个key取联系方式的value）
      */
 	@Column(name = "`key`")
+	@NotNull(message = "发送方式不能为空")
     private String key;
 
     /**

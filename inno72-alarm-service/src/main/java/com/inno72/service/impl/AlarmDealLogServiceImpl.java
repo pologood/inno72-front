@@ -41,9 +41,9 @@ public class AlarmDealLogServiceImpl extends AbstractService<AlarmDealLog> imple
 
 	@Override
 	@TargetDataSource(dataSourceKey = DataSourceKey.DB_INNO72SAAS)
-	public List<Map<String, String>> queryForPage(AlarmDealLog alarmDealLog) {
-		LOGGER.info("查询列表参数 {}", JSON.toJSONString(alarmDealLog));
-		return alarmDealLogMapper.queryForPage(alarmDealLog);
+	public List<Map<String, String>> queryForPage(Map<String, String> params) {
+		LOGGER.info("查询列表参数 {}", JSON.toJSONString(params));
+		return alarmDealLogMapper.queryForPage(params);
 	}
 
 	@Override

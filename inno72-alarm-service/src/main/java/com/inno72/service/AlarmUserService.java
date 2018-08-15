@@ -1,5 +1,7 @@
 package com.inno72.service;
 
+import java.util.List;
+
 import com.inno72.common.Result;
 import com.inno72.common.Service;
 import com.inno72.model.AlarmUser;
@@ -11,4 +13,6 @@ import com.inno72.model.AlarmUser;
 public interface AlarmUserService extends Service<AlarmUser> {
 
 	Result<String> syncUser();
+
+	List<AlarmUser> queryForPage(AlarmUser alarmUser);
 }

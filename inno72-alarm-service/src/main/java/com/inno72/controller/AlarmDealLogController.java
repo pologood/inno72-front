@@ -1,9 +1,12 @@
 package com.inno72.controller;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 import javax.annotation.Resource;
+import javax.servlet.http.HttpServletRequest;
 
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -60,8 +63,15 @@ public class AlarmDealLogController {
 	}
 
 	@RequestMapping(value = "/getList", method = { RequestMethod.POST,  RequestMethod.GET})
-	public ModelAndView getList(AlarmDealLog alarmDealLog) {
-		List<Map<String, String>> list = alarmDealLogService.queryForPage(alarmDealLog);
+	public ModelAndView getList(HttpServletRequest request) {
+		Map<String, String[]> parameterMap = request.getParameterMap();
+		Map<String, String> param = new HashMap<>();
+		for (Map.Entry index : parameterMap.entrySet()){
+			String key = Optional.ofNullable(index.getKey()).map(Object::toString).orElse("");
+			String value = Optional.ofNullable(index.getValue()).map(Object::toString).orElse("");
+			param.put(key, value);
+		}
+		List<Map<String, String>> list = alarmDealLogService.queryForPage(param);
 		return ResultPages.page(ResultGenerator.genSuccessResult(list));
 	}
 }
