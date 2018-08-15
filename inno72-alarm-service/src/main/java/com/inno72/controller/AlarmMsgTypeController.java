@@ -8,9 +8,12 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.servlet.ModelAndView;
 
 import com.inno72.common.Result;
 import com.inno72.common.ResultGenerator;
+import com.inno72.common.ResultPages;
+import com.inno72.model.AlarmDealLog;
 import com.inno72.model.AlarmMsgType;
 import com.inno72.service.AlarmMsgTypeService;
 
@@ -54,5 +57,11 @@ public class AlarmMsgTypeController {
 		Condition condition = new Condition( AlarmMsgType.class);
 		List<AlarmMsgType> list = alarmMsgTypeService.findByPage(condition);
 		return ResultGenerator.genSuccessResult(list);
+	}
+
+	@RequestMapping(value = "/getList", method = { RequestMethod.POST,  RequestMethod.GET})
+	public ModelAndView getList(AlarmMsgType alarmDealLog) {
+		List<AlarmMsgType> list = alarmMsgTypeService.queryForPage(alarmDealLog);
+		return ResultPages.page(ResultGenerator.genSuccessResult(list));
 	}
 }

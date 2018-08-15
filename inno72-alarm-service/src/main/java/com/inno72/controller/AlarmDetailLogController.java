@@ -61,7 +61,7 @@ public class AlarmDetailLogController {
 
 	@RequestMapping(value = "/getList", method = { RequestMethod.POST,  RequestMethod.GET})
 	public ModelAndView getList(String logId) {
-		List<AlarmDetailLog> list = alarmDetailLogService.getList(logId);
+		List<AlarmDetailLog> list = alarmDetailLogService.queryForPage(logId);
 		return ResultPages.page(ResultGenerator.genSuccessResult(list));
 	}
 }

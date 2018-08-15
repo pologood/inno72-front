@@ -31,10 +31,16 @@ public class AlarmDetailLogServiceImpl extends AbstractService<AlarmDetailLog> i
 
 	@Override
 	@TargetDataSource(dataSourceKey = DataSourceKey.DB_INNO72SAAS)
-	public List<AlarmDetailLog> getList(String logId) {
+	public List<AlarmDetailLog> queryForPage(String logId) {
 
 		LOGGER.info("查询列表参数 logid => {}", logId);
 
-		return alarmDetailLogMapper.selectByRealId(logId);
+		return alarmDetailLogMapper.queryForPage(logId);
+	}
+
+	@Override
+	@TargetDataSource(dataSourceKey = DataSourceKey.DB_INNO72SAAS)
+	public AlarmDetailLog findById(String id){
+		return alarmDetailLogMapper.selectByPrimaryKey(id);
 	}
 }

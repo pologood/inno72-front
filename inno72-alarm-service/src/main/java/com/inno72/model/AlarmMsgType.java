@@ -9,13 +9,13 @@ import javax.persistence.Table;
 @Table(name = "alarm_msg_type")
 public class AlarmMsgType {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+	@GeneratedValue(strategy = GenerationType.IDENTITY, generator = "select uuid()")
     private String id;
 
     /**
      * 发送方式名称
      */
-	@Column(name = "name")
+	@Column(name = "`name`")
     private String name;
 
     /**

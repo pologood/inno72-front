@@ -6,5 +6,5 @@ import com.inno72.common.Mapper;
 import com.inno72.model.AlarmDetailLog;
 
 public interface AlarmDetailLogMapper extends Mapper<AlarmDetailLog> {
-	List<AlarmDetailLog> selectByRealId(String logId);
+	List<AlarmDetailLog> queryForPage(String logId);
 }

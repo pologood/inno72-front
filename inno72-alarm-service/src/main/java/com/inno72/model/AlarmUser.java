@@ -16,7 +16,7 @@ import com.inno72.common.LocalDateTimeConverter;
 @Table(name = "alarm_user")
 public class AlarmUser {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+	@GeneratedValue(strategy = GenerationType.IDENTITY, generator = "select uuid()")
     private String id;
 
     /**

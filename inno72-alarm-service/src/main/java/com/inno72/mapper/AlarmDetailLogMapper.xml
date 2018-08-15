@@ -11,7 +11,7 @@
     <result column="create_time" jdbcType="TIMESTAMP" property="createTime" javaType="java.time.LocalDateTime"
             typeHandler="org.apache.ibatis.type.LocalDateTimeTypeHandler"/>
   </resultMap>
-    <select id="selectByRealId" resultMap="BaseResultMap" parameterType="string">
+    <select id="queryForPage" resultMap="BaseResultMap" parameterType="string">
         select * from alarm_detail_log where deal_log_id = #{logId}
     </select>
 </mapper>

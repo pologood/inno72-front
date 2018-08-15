@@ -11,5 +11,5 @@ import com.inno72.model.AlarmDetailLog;
  */
 public interface AlarmDetailLogService extends Service<AlarmDetailLog> {
 
-	List<AlarmDetailLog> getList(String logId);
+	List<AlarmDetailLog> queryForPage(String logId);
 }
