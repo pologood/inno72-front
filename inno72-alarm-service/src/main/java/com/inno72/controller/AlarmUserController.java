@@ -19,54 +19,61 @@ import com.inno72.model.AlarmUser;
 import com.inno72.service.AlarmUserService;
 
 /**
-* Created by CodeGenerator on 2018/08/13.
-*/
+ * Created by CodeGenerator on 2018/08/13.
+ */
 @RestController
 @RequestMapping("/alarm/user")
 @SuppressWarnings({"rawtypes", "unchecked"})
 public class AlarmUserController {
-    @Resource
-    private AlarmUserService alarmUserService;
+	@Resource
+	private AlarmUserService alarmUserService;
 
-    @RequestMapping(value = "/add", method = { RequestMethod.POST,  RequestMethod.GET})
-    public Result add(AlarmUser alarmUser) {
-alarmUserService.save(alarmUser);
-        return ResultGenerator.genSuccessResult();
-    }
-    @RequestMapping(value = "/delete", method = { RequestMethod.POST,  RequestMethod.GET})
-    public Result delete(@RequestParam String id) {
-alarmUserService.deleteById(id);
-        return ResultGenerator.genSuccessResult();
-    }
-    
-    @RequestMapping(value = "/update", method = { RequestMethod.POST,  RequestMethod.GET})
-    public Result update(AlarmUser alarmUser) {
-alarmUserService.update(alarmUser);
-        return ResultGenerator.genSuccessResult();
-    }
-    
-    @RequestMapping(value = "/detail", method = { RequestMethod.POST,  RequestMethod.GET})
-    public Result detail(@RequestParam String id) {
-AlarmUser alarmUser = alarmUserService.findById(id);
-        return ResultGenerator.genSuccessResult(alarmUser);
-    }
-    
-    @RequestMapping(value = "/list", method = { RequestMethod.POST,  RequestMethod.GET})
-    public Result list(@RequestParam(defaultValue = "0") Integer page, @RequestParam(defaultValue = "0") Integer size) {
-        PageHelper.startPage(page, size);
-        List<AlarmUser> list = alarmUserService.findAll();
-        PageInfo pageInfo = new PageInfo(list);
-        return ResultGenerator.genSuccessResult(pageInfo);
-    }
+
+
+	@RequestMapping(value = "/login", method = { RequestMethod.POST,  RequestMethod.GET})
+	public Result<AlarmUser> add(String loginName, String password) {
+		return alarmUserService.login(loginName, password);
+	}
+
+	@RequestMapping(value = "/add", method = { RequestMethod.POST,  RequestMethod.GET})
+	public Result add(AlarmUser alarmUser) {
+		alarmUserService.save(alarmUser);
+		return ResultGenerator.genSuccessResult();
+	}
+	@RequestMapping(value = "/delete", method = { RequestMethod.POST,  RequestMethod.GET})
+	public Result delete(@RequestParam String id) {
+		alarmUserService.deleteById(id);
+		return ResultGenerator.genSuccessResult();
+	}
+
+	@RequestMapping(value = "/update", method = { RequestMethod.POST,  RequestMethod.GET})
+	public Result update(AlarmUser alarmUser) {
+		alarmUserService.update(alarmUser);
+		return ResultGenerator.genSuccessResult();
+	}
+
+	@RequestMapping(value = "/detail", method = { RequestMethod.POST,  RequestMethod.GET})
+	public Result detail(@RequestParam String id) {
+		AlarmUser alarmUser = alarmUserService.findById(id);
+		return ResultGenerator.genSuccessResult(alarmUser);
+	}
+
+	@RequestMapping(value = "/list", method = { RequestMethod.POST,  RequestMethod.GET})
+	public Result list(@RequestParam(defaultValue = "0") Integer page, @RequestParam(defaultValue = "0") Integer size) {
+		PageHelper.startPage(page, size);
+		List<AlarmUser> list = alarmUserService.findAll();
+		PageInfo pageInfo = new PageInfo(list);
+		return ResultGenerator.genSuccessResult(pageInfo);
+	}
 
 	/**
 	 * 同步用户
 	 * @return 同步结果
 	 */
 	@RequestMapping(value = "/syncUser", method = { RequestMethod.POST,  RequestMethod.GET})
-    public Result syncUser() {
+	public Result syncUser() {
 		return  alarmUserService.syncUser();
-    }
+	}
 
 
 	@RequestMapping(value = "/getList", method = { RequestMethod.POST,  RequestMethod.GET})

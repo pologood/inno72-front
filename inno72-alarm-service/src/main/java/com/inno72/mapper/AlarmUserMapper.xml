@@ -61,5 +61,8 @@
           </trim>
       </where>
     </select>
+    <select id="selectByLoginName" resultMap="BaseResultMap" parameterType="string">
+        select * from alarm_user where login_name = #{loginName}
+    </select>
 
 </mapper>

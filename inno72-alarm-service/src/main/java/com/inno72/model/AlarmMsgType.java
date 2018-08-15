@@ -27,6 +27,9 @@ public class AlarmMsgType {
 	@NotNull(message = "发送方式不能为空")
     private String key;
 
+	@Column(name = "`code`")
+	private String code;
+
     /**
      * @return id
      */
@@ -76,4 +79,12 @@ public class AlarmMsgType {
     public void setKey(String key) {
         this.key = key;
     }
+
+	public String getCode() {
+		return code;
+	}
+
+	public void setCode(String code) {
+		this.code = code;
+	}
 }

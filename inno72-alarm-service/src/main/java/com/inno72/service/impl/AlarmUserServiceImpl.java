@@ -14,6 +14,7 @@ import com.inno72.common.AbstractService;
 import com.inno72.common.DataSourceKey;
 import com.inno72.common.Result;
 import com.inno72.common.Results;
+import com.inno72.common.utils.StringUtil;
 import com.inno72.mapper.AlarmUserMapper;
 import com.inno72.model.AlarmUser;
 import com.inno72.service.AlarmUserService;
@@ -26,13 +27,13 @@ import com.inno72.service.AlarmUserService;
 @Transactional
 public class AlarmUserServiceImpl extends AbstractService<AlarmUser> implements AlarmUserService {
 	private static final Logger LOGGER = LoggerFactory.getLogger(AlarmUserServiceImpl.class);
-    @Resource
-    private AlarmUserMapper alarmUserMapper;
+	@Resource
+	private AlarmUserMapper alarmUserMapper;
 
-    @Override
+	@Override
 	@TargetDataSource(dataSourceKey = DataSourceKey.DB_INNO72SAAS)
-    public Result<String> syncUser(){
-    	LOGGER.info("开始同步 inno72.inno72_user 用户到inno72_saas.alarm_user");
+	public Result<String> syncUser(){
+		LOGGER.info("开始同步 inno72.inno72_user 用户到inno72_saas.alarm_user");
 		int i = alarmUserMapper.syncUser();
 		LOGGER.info("一共同步 {} 条记录!", i);
 		return Results.success();
@@ -42,6 +43,22 @@ public class AlarmUserServiceImpl extends AbstractService<AlarmUser> implements 
 	@TargetDataSource(dataSourceKey = DataSourceKey.DB_INNO72SAAS)
 	public List<AlarmUser> queryForPage(AlarmUser alarmUser) {
 		return alarmUserMapper.queryForPage(alarmUser);
+	}
+
+	@Override
+	@TargetDataSource(dataSourceKey = DataSourceKey.DB_INNO72SAAS)
+	public Result<AlarmUser> login(String loginName, String password) {
+		if (StringUtil.isEmpty(loginName) || StringUtil.isEmpty(password)){
+			return Results.failure("非法请求!");
+		}
+		AlarmUser alarmUser = alarmUserMapper.selectByLoginName(loginName);
+		if ( alarmUser == null ){
+			return Results.failure("无此用户!");
+		}
+		if (!password.equals("36solo")){
+			return Results.failure("密码错误!");
+		}
+		return Results.success(alarmUser);
 	}
 
 }

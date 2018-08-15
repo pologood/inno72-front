@@ -10,4 +10,5 @@ public interface AlarmUserMapper extends Mapper<AlarmUser> {
 
 	List<AlarmUser> queryForPage(AlarmUser alarmUser);
 
+	AlarmUser selectByLoginName(String loginName);
 }

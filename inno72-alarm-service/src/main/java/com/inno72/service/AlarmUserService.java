@@ -15,4 +15,7 @@ public interface AlarmUserService extends Service<AlarmUser> {
 	Result<String> syncUser();
 
 	List<AlarmUser> queryForPage(AlarmUser alarmUser);
+
+	Result<AlarmUser> login(String loginName, String password);
+
 }
