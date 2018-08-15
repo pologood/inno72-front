@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.inno72.system.mapper.Inno72DeptMapper">
+	<resultMap id="BaseResultMap" type="com.inno72.system.model.Inno72Dept">
+		<!-- WARNING - @mbg.generated -->
+		<id column="id" jdbcType="VARCHAR" property="id" />
+		<result column="name" jdbcType="VARCHAR" property="name" />
+		<result column="seq" jdbcType="INTEGER" property="seq" />
+		<result column="parent_id" jdbcType="VARCHAR" property="parentId" />
+		<result column="parent_name" jdbcType="VARCHAR" property="parentName" />
+	</resultMap>
+
+	<delete id="deleteAll">
+		DELETE FROM inno72_dept
+	</delete>
+	
+	<select id="selectDeptsByPage" parameterType="java.util.Map"
+		resultMap="BaseResultMap">
+		select d.*,dd.name parent_name from inno72_dept d left join inno72_dept dd on d.parent_id=dd.id
+		<where>
+		<if test="keyword !=null and keyword !=''"> d.name like '%${keyword}%' </if>
+		</where>
+		order by d.parent_id,d.seq
+	</select>
+</mapper>

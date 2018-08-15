@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.inno72.mapper.AlarmRuleReceiverMapper">
+  <resultMap id="BaseResultMap" type="com.inno72.model.AlarmRuleReceiver">
+    <!--
+      WARNING - @mbg.generated
+    -->
+    <id column="id" jdbcType="VARCHAR" property="id" />
+    <result column="rule_id" jdbcType="VARCHAR" property="ruleId" />
+    <result column="user_id" jdbcType="VARCHAR" property="userId" />
+    <result column="create_time" jdbcType="TIMESTAMP" property="createTime" javaType="java.time.LocalDateTime"
+            typeHandler="org.apache.ibatis.type.LocalDateTimeTypeHandler"/>
+    <result column="create_user" jdbcType="VARCHAR" property="createUser" />
+  </resultMap>
+    <delete id="deleteByRuleId" parameterType="string">
+        delete from alarm_rule_receiver where rule_id = #{ruleId}
+    </delete>
+    <select id="selectByRuleId" resultType="java.lang.String" parameterType="string">
+      select user_id from alarm_rule_receiver where rule_id = #{ruleId}
+    </select>
+
+    <insert id="inserts" parameterType="java.util.Map">
+        insert into alarm_rule_receiver (rule_id, user_id, create_time)
+        values
+        <foreach collection="list" item="item" separator=",">
+            (
+            #{roleId}, #{item}, CURRENT_TIMESTAMP()
+            )
+        </foreach>
+    </insert>
+</mapper>

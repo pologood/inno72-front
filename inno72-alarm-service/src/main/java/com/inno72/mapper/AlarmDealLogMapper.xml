@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.inno72.mapper.AlarmDealLogMapper">
+  <resultMap id="BaseResultMap" type="com.inno72.model.AlarmDealLog">
+    <!--
+      WARNING - @mbg.generated
+    -->
+    <id column="id" jdbcType="VARCHAR" property="id" />
+    <result column="app_name" jdbcType="VARCHAR" property="appName" />
+    <result column="rule_id" jdbcType="VARCHAR" property="ruleId" />
+    <result column="status" jdbcType="TINYINT" property="status" />
+    <result column="first_read_time" jdbcType="TIMESTAMP" property="firstReadTime" javaType="java.time.LocalDateTime"
+            typeHandler="org.apache.ibatis.type.LocalDateTimeTypeHandler"/>
+    <result column="deal_user" jdbcType="VARCHAR" property="dealUser" />
+    <result column="deal_method" jdbcType="VARCHAR" property="dealMethod" />
+    <result column="deal_time" jdbcType="TIMESTAMP" property="dealTime" javaType="java.time.LocalDateTime"
+            typeHandler="org.apache.ibatis.type.LocalDateTimeTypeHandler"/>
+    <result column="create_time" jdbcType="TIMESTAMP" property="createTime" javaType="java.time.LocalDateTime"
+            typeHandler="org.apache.ibatis.type.LocalDateTimeTypeHandler"/>
+    <result column="uodate_time" jdbcType="TIMESTAMP" property="uodateTime" javaType="java.time.LocalDateTime"
+            typeHandler="org.apache.ibatis.type.LocalDateTimeTypeHandler"/>
+  </resultMap>
+    <select id="queryForPage" parameterType="java.util.Map" resultType="java.util.Map">
+        select
+            i1.id as logId,
+            i1.app_name as appName,
+            i2.`name` as ruleName,
+            DATE_FORMAT(i1.create_time, '%Y-%m-%d %H:%i:%S') as dealLogTime,
+            i2.create_user as createUser,
+            i2.director as director,
+            DATE_FORMAT(i1.first_read_time, '%Y-%m-%d %H:%i:%s') as firstReadTime,
+            Date_format(i1.deal_time, "%Y-%m-%d %H:%i:%s") as dealTime,
+            i1.deal_user as dealUser,
+            i1.status as status,
+            i1.deal_method as dealMethod
+        from alarm_deal_log i1
+        left join alarm_rule i2 on i1.rule_id = i2.id
+        <where>
+            <trim prefixOverrides="and">
+              <if test="appName != null and appName != ''">
+                  i1.app_name = #{appName}
+              </if>
+              <if test="ruleName != null and ruleName != ''">
+                  i2.`name` = #{ruleName}
+              </if>
+              <if test="dealLogTime != null and dealLogTime != ''">
+                  i1.create_time = #{dealLogTime}
+              </if>
+              <if test="createUser != null and createUser != ''">
+                  i2.create_user = #{createUser}
+              </if>
+              <if test="director != null and director != ''">
+                  i2.director = #{director}
+              </if>
+              <if test="firstReadTime != null and firstReadTime != ''">
+                  i1.first_read_time = #{firstReadTime}
+              </if>
+              <if test="dealTime != null and dealTime != ''">
+                  i1.deal_time = #{dealTime}
+              </if>
+              <if test="dealUser != null and dealUser != ''">
+                  i1.deal_user = #{dealUser}
+              </if>
+              <if test="status != null and status != ''">
+                  i1.status = #{status}
+              </if>
+              <if test="dealMethod != null and dealMethod != ''">
+                  i1.deal_method = #{dealMethod}
+              </if>
+            </trim>
+        </where>
+    </select>
+
+    <select id="queryDetail" parameterType="string" resultMap="BaseResultMap" >
+        select
+            i1.id as logId,
+            i1.app_name as appName,
+            i2.`name` as ruleName,
+            DATE_FORMAT(i1.create_time, '%Y-%m-%d %H:%i:%S') as dealLogTime,
+            i2.create_user as createUser,
+            i2.director as director,
+            DATE_FORMAT(i1.first_read_time, '%Y-%m-%d %H:%i:%s') as firstReadTime,
+            Date_format(i1.deal_time, "%Y-%m-%d %H:%i:%s") as dealTime,
+            i1.deal_user as dealUser,
+            i1.status as status,
+            i1.deal_method as dealMethod
+        from alarm_deal_log i1
+        left join alarm_rule i2 on i1.rule_id = i2.id
+        where i1.id = #{logId}
+    </select>
+</mapper>

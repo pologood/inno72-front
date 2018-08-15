@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.inno72.mapper.AlarmMsgTypeMapper">
+  <resultMap id="BaseResultMap" type="com.inno72.model.AlarmMsgType">
+    <!--
+      WARNING - @mbg.generated
+    -->
+    <id column="id" jdbcType="VARCHAR" property="id" />
+    <result column="name" jdbcType="VARCHAR" property="name" />
+    <result column="key" jdbcType="VARCHAR" property="key" />
+  </resultMap>
+    <select id="queryForPage" parameterType="com.inno72.model.AlarmMsgType" resultMap="BaseResultMap">
+      select * from alarm_msg_type
+      <where>
+          <trim prefixOverrides="and">
+              <if test="name != null and name != ''">
+                  and `name` = #{name}
+              </if>
+              <if test="key != null and key != ''">
+                  and `key` = #{key}
+              </if>
+          </trim>
+      </where>
+    </select>
+</mapper>
