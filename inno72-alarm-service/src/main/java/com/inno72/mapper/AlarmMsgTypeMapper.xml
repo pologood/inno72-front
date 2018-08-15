@@ -8,6 +8,7 @@
     <id column="id" jdbcType="VARCHAR" property="id" />
     <result column="name" jdbcType="VARCHAR" property="name" />
     <result column="key" jdbcType="VARCHAR" property="key" />
+    <result column="code" jdbcType="VARCHAR" property="code" />
   </resultMap>
     <select id="queryForPage" parameterType="com.inno72.model.AlarmMsgType" resultMap="BaseResultMap">
       select * from alarm_msg_type
@@ -18,6 +19,9 @@
               </if>
               <if test="key != null and key != ''">
                   and `key` = #{key}
+              </if>
+              <if test="code != null and code != ''">
+                  and `code` = #{code}
               </if>
           </trim>
       </where>
