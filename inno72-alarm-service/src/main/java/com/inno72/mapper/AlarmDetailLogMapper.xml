@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.inno72.mapper.AlarmDetailLogMapper">
+  <resultMap id="BaseResultMap" type="com.inno72.model.AlarmDetailLog">
+    <!--
+      WARNING - @mbg.generated
+    -->
+    <id column="id" jdbcType="VARCHAR" property="id" />
+    <result column="deal_log_id" jdbcType="VARCHAR" property="dealLogId" />
+    <result column="content" jdbcType="VARCHAR" property="content" />
+    <result column="create_time" jdbcType="TIMESTAMP" property="createTime" javaType="java.time.LocalDateTime"
+            typeHandler="org.apache.ibatis.type.LocalDateTimeTypeHandler"/>
+  </resultMap>
+    <select id="selectByRealId" resultMap="BaseResultMap" parameterType="string">
+        select * from alarm_detail_log where deal_log_id = #{logId}
+    </select>
+</mapper>

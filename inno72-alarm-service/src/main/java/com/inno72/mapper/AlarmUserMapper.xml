@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.inno72.mapper.AlarmUserMapper">
+  <resultMap id="BaseResultMap" type="com.inno72.model.AlarmUser">
+    <!--
+      WARNING - @mbg.generated
+    -->
+    <id column="id" jdbcType="VARCHAR" property="id" />
+    <result column="name" jdbcType="VARCHAR" property="name" />
+    <result column="contact" jdbcType="CHAR" property="contact" />
+    <result column="del_flag" jdbcType="INTEGER" property="delFlag" />
+    <result column="create_time" jdbcType="TIMESTAMP" property="createTime" javaType="java.time.LocalDateTime"
+            typeHandler="org.apache.ibatis.type.LocalDateTimeTypeHandler"/>
+    <result column="update_time" jdbcType="TIMESTAMP" property="updateTime" javaType="java.time.LocalDateTime"
+            typeHandler="org.apache.ibatis.type.LocalDateTimeTypeHandler"/>
+    <result column="create_user" jdbcType="VARCHAR" property="createUser" />
+    <result column="update_user" jdbcType="VARCHAR" property="updateUser" />
+  </resultMap>
+
+    <insert id="syncUser">
+
+        insert into `inno72_saas`.`alarm_user`
+        ( `id`, `name`, `contact`, `del_flag`, `create_time`, `update_time`, `create_user`, `update_user`)
+
+        select
+        i1.id,
+        i1.name,
+        CONCAT(
+            '{',
+            '"email"',':','"',i1.email,'"',',',
+            '"mobile"',':','"',i1.mobile,'"',',',
+            '"user_id"',':','"',i1.user_id,'"',',',
+            '"ding_id"',':','"',i1.ding_id,'"',
+            '}'),
+        i1.is_delete,
+        CURRENT_TIMESTAMP(),
+        CURRENT_TIMESTAMP(),
+        'sys_sync',
+        'sys_sync'
+        from inno72.inno72_user i1
+        where i1.create_time > (
+          IFNULL((select max(i0.create_time) from inno72_saas.alarm_user i0 ),"2018-01-01 01:00:00")
+        )
+
+    </insert>
+</mapper>
