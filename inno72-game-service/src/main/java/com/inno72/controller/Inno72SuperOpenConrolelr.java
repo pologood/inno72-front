@@ -3,6 +3,8 @@ package com.inno72.controller;
 import java.io.File;
 import java.io.IOException;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
@@ -74,7 +76,7 @@ public class Inno72SuperOpenConrolelr {
 	private Inno72GameServiceProperties inno72GameServiceProperties;
 
 	@RequestMapping(value = "/service/queryPicCode", method = {RequestMethod.GET, RequestMethod.POST})
-	public Result<String> queryPicCode(@RequestParam MultipartFile file){
+	public Result<Object> queryPicCode(@RequestParam MultipartFile file){
 		if (file == null || file.isEmpty()){
 			return Results.failure("非法请求!");
 		}
@@ -123,7 +125,10 @@ public class Inno72SuperOpenConrolelr {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-		return Results.success(host + ossPhotoCodePath);
+		Map<String, String> result = new HashMap<>(2);
+		result.put("ossPhotoCodePath",host + ossPhotoCodePath);
+		result.put("ossPhotoPath",host + ossPhotoPath);
+		return Results.success(result);
 	}
 	/**
 	 * 定义转发开放接口错误信息
