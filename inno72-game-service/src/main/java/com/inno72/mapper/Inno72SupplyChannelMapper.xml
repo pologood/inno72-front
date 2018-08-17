@@ -70,26 +70,28 @@
         left join inno72_supply_channel_goods t2 on t1.id=t2.supply_channel_id
         left join inno72_goods t3 on t2.goods_id=t3.id
         <where>
-            <if test="code != null">
-                and t1.code = #{code}
-            </if>
-            <if test="machineId != null">
-                and t1.machine_id = #{machineId}
-            </if>
-            <if test="goodsCodes != null">
-                and
-                <foreach collection="goodsCodes" index="index" item="item" separator="or" open="(" close=")">
-                    t2.goods_id =#{item,jdbcType=VARCHAR}
-                </foreach>
-            </if>
-            <if test="codes != null">
-                and
-                <foreach collection="codes" item="item" separator="or" open="(" close=")">
-                    t1.code = #{item,jdbcType=VARCHAR}
-                </foreach>
-            </if>
-            and t1.is_delete=0
-            order by t1.code+0
+            <trim prefixOverrides="and">
+                and t1.is_delete=0 and ti.goods_count > 0
+                <if test="code != null">
+                    and t1.code = #{code}
+                </if>
+                <if test="machineId != null">
+                    and t1.machine_id = #{machineId}
+                </if>
+                <if test="goodsCodes != null">
+                    and
+                    <foreach collection="goodsCodes" index="index" item="item" separator="or" open="(" close=")">
+                        t2.goods_id =#{item,jdbcType=VARCHAR}
+                    </foreach>
+                </if>
+                <if test="codes != null">
+                    and
+                    <foreach collection="codes" item="item" separator="or" open="(" close=")">
+                        t1.code = #{item,jdbcType=VARCHAR}
+                    </foreach>
+                </if>
+                order by t1.code+0
+            </trim>
         </where>
     </select>
 
