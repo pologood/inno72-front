@@ -13,6 +13,7 @@ public class UserSessionVo {
 	private String sessionUuid;
 	private String mixnick;
 	private String source;
+	private String refOrderId;
 
 
 	/**
