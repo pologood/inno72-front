@@ -71,7 +71,7 @@
         left join inno72_goods t3 on t2.goods_id=t3.id
         <where>
             <trim prefixOverrides="and">
-                and t1.is_delete=0 and ti.goods_count > 0
+                and t1.is_delete=0 and t1.goods_count > 0
                 <if test="code != null">
                     and t1.code = #{code}
                 </if>

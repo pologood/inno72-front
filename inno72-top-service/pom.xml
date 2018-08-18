@@ -26,7 +26,7 @@
         <dependency>
             <groupId>taobao</groupId>
             <artifactId>taobao-sdk</artifactId>
-            <version>1.0.1</version>
+            <version>1.0.0</version>
         </dependency>
 
         <dependency>
