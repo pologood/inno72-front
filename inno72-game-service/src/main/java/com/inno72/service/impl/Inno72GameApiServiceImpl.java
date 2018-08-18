@@ -404,6 +404,16 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 			return Results.failure("商户好像出了点问题!");
 		}
 
+		//TODO 奖券下单
+		String orderId = "";
+		try {
+			orderId = this.genInno72Order(channelId, activityPlanId, _machineId, prizeId, userSessionVo.getUserId(),
+					Inno72Order.INNO72ORDER_GOODSTYPE.COUPON);
+		}catch (Exception e){
+			LOGGER.info("获取优惠券下单失败 ==> {}", e.getMessage(), e);
+			return Results.failure("下单失败!");
+		}
+
 		String accessToken = userSessionVo.getAccessToken();
 
 		Map<String, String> requestForm = new HashMap<>();
@@ -425,15 +435,7 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 		}
 
 		LOGGER.info("调用聚石塔接口  【抽奖】返回 ===> {}", JSON.toJSONString(respJson));
-		//TODO 奖券下单
-		String orderId = "";
-		try {
-			orderId = this.genInno72Order(channelId, activityPlanId, _machineId, prizeId, userSessionVo.getUserId(),
-					Inno72Order.INNO72ORDER_GOODSTYPE.COUPON);
-		}catch (Exception e){
-			LOGGER.info("获取优惠券下单失败 ==> {}", e.getMessage(), e);
-			return Results.failure("下单失败!");
-		}
+
 
 		try {
 
@@ -444,7 +446,7 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 				return Results.failure(msg_info);
 			}
 
-			String is_success = FastJsonUtils.getString(respJson, "is_success");
+			String is_success = FastJsonUtils.getString(respJson, "succ");
 			if (is_success.equals("true")){
 				Inno72Order inno72Order = new Inno72Order();
 				inno72Order.setId(orderId);
