@@ -83,6 +83,10 @@ public class Inno72GameServiceImpl extends AbstractService<Inno72Game> implement
 		// 更新订单
 		String inno72OrderId = userSessionVo.getInno72OrderId();
 		Inno72Order inno72Order = inno72OrderMapper.selectByPrimaryKey(inno72OrderId);
+		if ( inno72Order == null ){
+			LOGGER.info("更新第三方订单状态时候查询的订单不存在 [{}]", inno72OrderId);
+			return;
+		}
 		inno72Order.setId(inno72OrderId);
 		inno72Order.setGoodsStatus(Inno72Order.INNO72ORDER_GOODSSTATUS.SUCC.getKey());
 		inno72OrderMapper.updateByPrimaryKeySelective(inno72Order);

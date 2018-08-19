@@ -482,9 +482,16 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 		String sessionUuid = vo.getSessionUuid();
 		String orderId = vo.getOrderId();
 
-		if (StringUtil.isEmpty(machineCode) || StringUtil.isEmpty(channelId) || StringUtil.isEmpty(sessionUuid)
-				|| StringUtil.isEmpty(orderId)) {
+		if (StringUtil.isEmpty(machineCode)
+				|| StringUtil.isEmpty(channelId)
+				|| StringUtil.isEmpty(sessionUuid)
+				) {
 			return Results.failure("参数缺失！");
+		}
+
+		UserSessionVo userSessionVo = gameSessionRedisUtil.getSessionKey(sessionUuid);
+		if (userSessionVo == null) {
+			return Results.failure("登录失效!");
 		}
 
 		Inno72Machine machineByCode = inno72MachineMapper.findMachineByCode(machineCode);
@@ -495,52 +502,63 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 
 		assert machineByCode != null;
 		String machineId = machineByCode.getId();
-
-		String jstUrl = inno72GameServiceProperties.get("jstUrl");
-		if (StringUtil.isEmpty(jstUrl)) {
-			return Results.failure("配置中心无聚石塔配置路径!");
-		}
-
-		UserSessionVo userSessionVo = gameSessionRedisUtil.getSessionKey(sessionUuid);
-		if (userSessionVo == null) {
-			return Results.failure("登录失效!");
-		}
-
-		String accessToken = userSessionVo.getAccessToken();
-
-		Map<String, String> requestForm = new HashMap<>();
-
-		requestForm.put("accessToken", accessToken);
-		requestForm.put("orderId", orderId); // 安全ua
-		requestForm.put("mid", machineCode);// umid 实际为code
-		requestForm.put("channelId", channelId);// 互动实例ID
-
-		String respJson = "";
-		try {
-			respJson = HttpClient.form(jstUrl + "/api/top/deliveryRecord", requestForm, null);
-		} catch (Exception e) {
-			LOGGER.info("");
-		}
-		if (StringUtil.isEmpty(respJson)) {
-			return Results.failure("聚石塔无返回数据!");
-		}
-
-		LOGGER.info("调用聚石塔接口  【通知出货】返回 ===> {}", JSON.toJSONString(respJson));
-
-		String msg_code = FastJsonUtils.getString(respJson, "msg_code");
-		if (!msg_code.equals("SUCCESS")) {
-			String msg_info = FastJsonUtils.getString(respJson, "msg_info");
-			return Results.failure(msg_info);
-		}
-
-
 		int i = inno72SupplyChannelMapper.subCount(new Inno72SupplyChannel(machineId, null, channelId));
 
-		LOGGER.info("减货结果 ==> {}", i);
+		LOGGER.info("减货 参数 ===》 【machineId=>{}，channelId=>{}】;结果 ==> {}",machineId, channelId, i);
 
-		inno72GameService.updateOrderReport(userSessionVo);
-
+		if (StringUtil.isNotEmpty(orderId)){
+			new Thread(new DeliveryRecord(orderId, orderId, machineCode,channelId, userSessionVo)).start();
+		}else {
+			LOGGER.info("调用出货无orderId 请求参数=>{}", JSON.toJSONString(vo));
+		}
 		return Results.success();
+	}
+
+	class DeliveryRecord implements Runnable{
+
+		private String orderId;
+		private String mid;
+		private String channelId;
+		private UserSessionVo userSessionVo;
+		private String machineCode;
+
+		public DeliveryRecord(String orderId, String mid, String channelId, String machineCode, UserSessionVo userSessionVo) {
+			this.orderId = orderId;
+			this.mid = mid;
+			this.channelId = channelId;
+			this.machineCode = machineCode;
+			this.userSessionVo = userSessionVo;
+		}
+
+		@Override
+		public void run() {
+			Map<String, String> requestForm = new HashMap<>();
+
+			requestForm.put("accessToken", userSessionVo.getAccessToken());
+			requestForm.put("orderId", orderId); // 安全ua
+			requestForm.put("mid", machineCode);// umid 实际为code
+			requestForm.put("channelId", channelId);// 互动实例ID
+
+			String respJson = "";
+			try {
+				respJson = HttpClient.form(inno72GameServiceProperties.get("jstUrl") + "/api/top/deliveryRecord", requestForm, null);
+			} catch (Exception e) {
+				LOGGER.info("");
+			}
+			if (StringUtil.isEmpty(respJson)) {
+				LOGGER.info("聚石塔无返回数据!");
+			}
+
+			LOGGER.info("调用聚石塔接口  【通知出货】返回 ===> {}", JSON.toJSONString(respJson));
+
+			String msg_code = FastJsonUtils.getString(respJson, "msg_code");
+			if (!msg_code.equals("SUCCESS")) {
+				String msg_info = FastJsonUtils.getString(respJson, "msg_info");
+				LOGGER.info("返回非成功状态，不能更细订单状态为成功 {}", respJson);
+			}
+
+			inno72GameService.updateOrderReport(userSessionVo);
+		}
 	}
 
 	/**
