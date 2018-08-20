@@ -8,6 +8,8 @@
     <id column="id" jdbcType="VARCHAR" property="id" />
     <result column="name" jdbcType="VARCHAR" property="name" />
     <result column="key" jdbcType="VARCHAR" property="key" />
+    <result column="create_time" jdbcType="TIMESTAMP" property="createTime" javaType="java.time.LocalDateTime"
+            typeHandler="org.apache.ibatis.type.LocalDateTimeTypeHandler"/>
     <result column="code" jdbcType="VARCHAR" property="code" />
   </resultMap>
     <select id="queryForPage" parameterType="com.inno72.model.AlarmMsgType" resultMap="BaseResultMap">
