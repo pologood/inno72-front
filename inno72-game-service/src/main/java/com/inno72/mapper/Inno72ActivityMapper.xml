@@ -26,4 +26,42 @@
     <select id="selectDefaultAct" resultMap="BaseResultMap">
         select * from inno72_activity where is_default = 1
     </select>
+    <resultMap id="ActVoMap" type="com.inno72.vo.FansActVo">
+        <result column="act_id" property="act_id"/>
+        <result column="act_name" property="act_name"/>
+        <result column="act_type" property="act_type"/>
+        <result column="start_time" property="start_time"/>
+        <result column="end_time" property="end_time"/>
+        <association property="act_detail_list" javaType="com.inno72.vo.FansActVo$MachineDetailVo">
+            <result column="owner_id" property="owner_id"/>
+            <result column="machine_id" property="machine_id"/>
+            <result column="show_address" property="show_address"/>
+            <result column="lock_status" property="lock_status"/>
+            <result column="start_time" property="start_time"/>
+            <result column="end_time" property="end_time"/>
+            <result column="act_id" property="act_id"/>
+        </association>
+
+    </resultMap>
+    <select id="selectTianMaoActVo" resultMap="ActVoMap" parameterType="string">
+        select
+            i2.`code` as act_id,
+            i2.`name` as act_name,
+            1 as act_type,
+            DATE_FORMAT(i1.start_time, "%Y-%m-%d") as start_time,
+            DATE_FORMAT(i1.end_time, "%Y-%m-%d") as end_time,
+            "inno722018" as owner_id,
+            i4.machine_code as machine_id,
+            concat(i6.province, " ", i6.city, " ", i6.district, " ", i6.circle, " ", i5.mall) as show_address,
+            case i4.machine_status
+            WHEN 4 THEN 0
+            ELSE 1 end as lock_status
+         from inno72_activity_plan i1
+        left join inno72_activity i2 on i1.activity_id = i2.id
+        left join inno72_activity_plan_machine i3 on i1.id = i3.activity_plan_id
+        left join inno72_machine i4 on i4.id = i3.machine_id
+        left join inno72_locale i5 on i4.locale_id = i5.id
+        left join inno72_admin_area i6 on i6.`code` = i5.area_code
+        where i2.code = #{actId}
+    </select>
 </mapper>

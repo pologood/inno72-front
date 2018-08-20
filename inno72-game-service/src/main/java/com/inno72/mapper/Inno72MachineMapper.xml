@@ -30,4 +30,72 @@
         from inno72_machine where machine_code = #{machineCode}
     </select>
 
+    <resultMap id="qimenListMap" type="com.inno72.vo.MachineVo">
+        <result column="machine_id" jdbcType="VARCHAR" property="machine_id"/>
+        <result column="machine_name" jdbcType="VARCHAR" property="machine_name"/>
+        <result column="machine_status" property="machine_status"/>
+        <result column="machine_desc" jdbcType="VARCHAR" property="machine_desc"/>
+        <result column="latitude" jdbcType="VARCHAR" property="latitude"/>
+        <result column="longitude" jdbcType="VARCHAR" property="longitude"/>
+        <result column="place_type" jdbcType="VARCHAR" property="place_type"/>
+        <result column="owner_name" jdbcType="VARCHAR" property="owner_name"/>
+        <result column="owner_id" jdbcType="VARCHAR" property="owner_id"/>
+        <association property="address_v_o" javaType="com.inno72.vo.MachineVo$AddessVo">
+            <result column="province" jdbcType="VARCHAR" property="province"/>
+            <result column="show_city" jdbcType="VARCHAR" property="show_city"/>
+            <result column="area" jdbcType="VARCHAR" property="area"/>
+            <result column="street" jdbcType="VARCHAR" property="street"/>
+            <result column="detail_address" jdbcType="VARCHAR" property="detail_address"/>
+        </association>
+    </resultMap>
+    <select id="queryQimenMachineListByPage" resultMap="qimenListMap" parameterType="java.util.Map">
+
+        select
+        i2.machine_code as machine_id,
+        i2.machine_name,
+        CASE i2.machine_status
+        WHEN 4 THEN 1
+        ELSE 0 END as machine_status,
+
+        "互动机" as machine_desc,
+        "0" as latitude,
+        "0" as longitude,
+        "other" as place_type,
+        "点72互动" as owner_name,
+        "inno722018" as owner_id,
+        i4.province as province,
+        i4.city as show_city,
+
+        i4.district as area,
+        i4.circle as street,
+        i3.mall as detail_address
+
+
+        from inno72_machine i2
+        left join inno72_locale i3 on i2.locale_id = i3.id
+        left join inno72_admin_area i4 on i4.code = i3.area_code
+
+        <where>
+            <trim prefixOverrides="and">
+                <if test="city != null and city != ''">
+                    and i4.city = #{city}
+                </if>
+                <if test="machineId != null and machineId != ''">
+                    and i2.id = #{machineId}
+                </if>
+                <if test="list != null">
+                    and i2.machine_code in
+                    <foreach collection="list" open="(" close=")" separator="," item="item">
+                        #{item}
+                    </foreach>
+                </if>
+            </trim>
+        </where>
+
+
+
+
+
+    </select>
+
 </mapper>
