@@ -1,5 +1,6 @@
 package com.inno72.service.impl;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 import javax.annotation.Resource;
@@ -39,6 +40,7 @@ public class AlarmMsgTypeServiceImpl extends AbstractService<AlarmMsgType> imple
     public Result<String> saveOrUpdate(AlarmMsgType alarmMsgType){
 		Result<String> valid = JSR303Util.valid(alarmMsgType);
 		if (valid.getCode() == Result.FAILURE){
+			LOGGER.info("校验失败 {},  {}", JSON.toJSONString(valid), JSON.toJSONString(alarmMsgType));
 			return valid;
 		}
 		if (StringUtil.isNotEmpty(alarmMsgType.getId())){
@@ -48,6 +50,7 @@ public class AlarmMsgTypeServiceImpl extends AbstractService<AlarmMsgType> imple
 			}
 			alarmMsgTypeMapper.updateByPrimaryKeySelective(alarmMsgType);
 		}else {
+			alarmMsgType.setCreateTime(LocalDateTime.now());
 			int insert = alarmMsgTypeMapper.insert(alarmMsgType);
 		}
 		LOGGER.debug("保存 {} 完成 ", JSON.toJSONString(alarmMsgType));
