@@ -32,10 +32,10 @@ public class AlarmMsgTypeController {
 	public Result add(AlarmMsgType alarmMsgType) {
 		return alarmMsgTypeService.saveOrUpdate(alarmMsgType);
 	}
+
 	@RequestMapping(value = "/delete", method = { RequestMethod.POST,  RequestMethod.GET})
 	public Result delete(@RequestParam String id) {
-		alarmMsgTypeService.deleteById(id);
-		return ResultGenerator.genSuccessResult();
+		return alarmMsgTypeService.delete(id);
 	}
 
 	@RequestMapping(value = "/update", method = { RequestMethod.POST,  RequestMethod.GET})

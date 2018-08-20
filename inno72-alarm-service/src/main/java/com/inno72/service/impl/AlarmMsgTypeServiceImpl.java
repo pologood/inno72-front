@@ -76,4 +76,17 @@ public class AlarmMsgTypeServiceImpl extends AbstractService<AlarmMsgType> imple
 		return Results.success(alarmMsgType);
 	}
 
+	@Override
+	@TargetDataSource(dataSourceKey = DataSourceKey.DB_INNO72SAAS)
+	public Result<String> delete(String id) {
+		if (StringUtil.isEmpty(id)){
+			return Results.failure("非法请求!");
+		}
+		AlarmMsgType alarmMsgType = alarmMsgTypeMapper.selectByPrimaryKey(id);
+		if (alarmMsgType == null){
+			return Results.failure("不存在!");
+		}
+		int i = alarmMsgTypeMapper.deleteByPrimaryKey(id);
+		return Results.success();
+	}
 }
