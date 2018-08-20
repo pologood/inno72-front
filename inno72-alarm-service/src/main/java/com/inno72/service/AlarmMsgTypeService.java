@@ -15,4 +15,6 @@ public interface AlarmMsgTypeService extends Service<AlarmMsgType> {
 	Result<String> saveOrUpdate(AlarmMsgType alarmMsgType);
 
 	List<AlarmMsgType> queryForPage(AlarmMsgType alarmDealLog);
+
+	Result<AlarmMsgType> selectById(String id);
 }

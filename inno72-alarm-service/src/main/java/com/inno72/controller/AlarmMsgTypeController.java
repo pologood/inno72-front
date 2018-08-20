@@ -46,8 +46,7 @@ public class AlarmMsgTypeController {
 
 	@RequestMapping(value = "/detail", method = { RequestMethod.POST,  RequestMethod.GET})
 	public Result detail(@RequestParam String id) {
-		AlarmMsgType alarmMsgType = alarmMsgTypeService.findById(id);
-		return ResultGenerator.genSuccessResult(alarmMsgType);
+		return alarmMsgTypeService.selectById(id);
 	}
 
 	@RequestMapping(value = "/list", method = { RequestMethod.POST,  RequestMethod.GET})
