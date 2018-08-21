@@ -1005,7 +1005,9 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 
 	@Override
 	public Result<List<Inno72SamplingGoods>> getSampling(String machineCode) {
+		LOGGER.info("获取派样商品 => machineCode:{}", machineCode);
 		List<Inno72SamplingGoods> inno72SamplingGoodsList = inno72GoodsMapper.selectSamplingGoods(machineCode);
+		LOGGER.info("返回派样商品列表 => list:{}", inno72SamplingGoodsList);
 		return Results.success(inno72SamplingGoodsList);
 	}
 }
