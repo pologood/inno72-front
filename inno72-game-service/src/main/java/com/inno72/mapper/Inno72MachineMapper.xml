@@ -31,21 +31,21 @@
     </select>
 
     <resultMap id="qimenListMap" type="com.inno72.vo.MachineVo">
-        <result column="machine_id" jdbcType="VARCHAR" property="machine_id"/>
-        <result column="machine_name" jdbcType="VARCHAR" property="machine_name"/>
-        <result column="machine_status" property="machine_status"/>
-        <result column="machine_desc" jdbcType="VARCHAR" property="machine_desc"/>
+        <result column="machine_id" jdbcType="VARCHAR" property="machineId"/>
+        <result column="machine_name" jdbcType="VARCHAR" property="machineName"/>
+        <result column="machine_status" property="machineStatus"/>
+        <result column="machine_desc" jdbcType="VARCHAR" property="machineDesc"/>
         <result column="latitude" jdbcType="VARCHAR" property="latitude"/>
         <result column="longitude" jdbcType="VARCHAR" property="longitude"/>
-        <result column="place_type" jdbcType="VARCHAR" property="place_type"/>
-        <result column="owner_name" jdbcType="VARCHAR" property="owner_name"/>
-        <result column="owner_id" jdbcType="VARCHAR" property="owner_id"/>
-        <association property="address_v_o" javaType="com.inno72.vo.MachineVo$AddessVo">
+        <result column="place_type" jdbcType="VARCHAR" property="placeType"/>
+        <result column="owner_name" jdbcType="VARCHAR" property="ownerName"/>
+        <result column="owner_id" jdbcType="VARCHAR" property="ownerId"/>
+        <association property="addressVo" javaType="com.inno72.vo.MachineVo$AddessVo">
             <result column="province" jdbcType="VARCHAR" property="province"/>
-            <result column="show_city" jdbcType="VARCHAR" property="show_city"/>
+            <result column="show_city" jdbcType="VARCHAR" property="showCity"/>
             <result column="area" jdbcType="VARCHAR" property="area"/>
             <result column="street" jdbcType="VARCHAR" property="street"/>
-            <result column="detail_address" jdbcType="VARCHAR" property="detail_address"/>
+            <result column="detail_address" jdbcType="VARCHAR" property="detailAddress"/>
         </association>
     </resultMap>
     <select id="queryQimenMachineListByPage" resultMap="qimenListMap" parameterType="java.util.Map">
