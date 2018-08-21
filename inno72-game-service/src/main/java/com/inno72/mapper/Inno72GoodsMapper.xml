@@ -19,7 +19,36 @@
     <result column="update_time" jdbcType="TIMESTAMP" property="updateTime" />
   </resultMap>
   
+  <resultMap id="SamplingGoodsMap" type="com.inno72.vo.Inno72SamplingGoods">
+    <!--
+      WARNING - @mbg.generated
+    -->
+    <id column="id" jdbcType="VARCHAR" property="id" />
+    <result column="name" jdbcType="VARCHAR" property="name" />
+    <result column="code" jdbcType="VARCHAR" property="code" />
+    <result column="price" jdbcType="DECIMAL" property="price" />
+    <result column="seller_id" jdbcType="VARCHAR" property="sellerId" />
+    <result column="img" jdbcType="VARCHAR" property="img" />
+    <result column="is_delete" jdbcType="INTEGER" property="isDelete" />
+    <result column="remark" jdbcType="VARCHAR" property="remark" />
+    <result column="create_id" jdbcType="VARCHAR" property="createId" />
+    <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
+    <result column="update_id" jdbcType="VARCHAR" property="updateId" />
+    <result column="update_time" jdbcType="TIMESTAMP" property="updateTime" />
+    <result column="num" jdbcType="INTEGER" property="num" />
+  </resultMap>
+  
   <select id="selectByCode" resultMap="BaseResultMap" parameterType="string">
   	select * from inno72_goods where code = #{code} and is_delete = 0
+  </select>
+  
+  <select id="selectSamplingGoods" resultMap="SamplingGoodsMap" parameterType="int">
+    select 
+	    plan_goods.number as num,goods.*
+	from inno72_activity_plan plan 
+	left join inno72_activity_plan_machine plan_machine on plan.id=plan_machine.activity_plan_id
+	left join inno72_activity_plan_goods plan_goods on plan_goods.activity_plan_id=plan.id
+	left join inno72_goods goods on goods.id=plan_goods.goods_id
+	where plan_machine.machine_id=#{machineCode} 
   </select>
 </mapper>

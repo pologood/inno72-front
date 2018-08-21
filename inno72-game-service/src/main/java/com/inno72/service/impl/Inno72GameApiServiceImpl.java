@@ -67,6 +67,7 @@ import com.inno72.service.Inno72GameApiService;
 import com.inno72.service.Inno72GameService;
 import com.inno72.vo.AlarmMessageBean;
 import com.inno72.vo.GoodsVo;
+import com.inno72.vo.Inno72SamplingGoods;
 import com.inno72.vo.LogReqrest;
 import com.inno72.vo.MachineApiVo;
 import com.inno72.vo.UserSessionVo;
@@ -1003,8 +1004,8 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 	}
 
 	@Override
-	public Result<List<Inno72Activity>> sampling() {
-		List<Inno72Activity> inno72ActivityList = inno72ActivityMapper.selectActiveByType(SAMPLING_TYPE);
-		return Results.success(inno72ActivityList);
+	public Result<List<Inno72SamplingGoods>> sampling(String machineCode) {
+		List<Inno72SamplingGoods> inno72SamplingGoodsList = inno72GoodsMapper.selectSamplingGoods(machineCode);
+		return Results.success(inno72SamplingGoodsList);
 	}
 }

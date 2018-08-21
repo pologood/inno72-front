@@ -9,8 +9,8 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.inno72.common.Result;
-import com.inno72.model.Inno72Activity;
 import com.inno72.service.Inno72GameApiService;
+import com.inno72.vo.Inno72SamplingGoods;
 import com.inno72.vo.MachineApiVo;
 
 @RestController
@@ -143,7 +143,7 @@ public class Inno72GameApiController {
 	 * @return Result
 	 */
 	@RequestMapping(value = "/sampling", method = {RequestMethod.POST, RequestMethod.GET})
-	public Result<List<Inno72Activity>> sampling() {
-		return inno72GameApiService.sampling();
+	public Result<List<Inno72SamplingGoods>> sampling(String machineCode) {
+		return inno72GameApiService.sampling(machineCode);
 	}
 }
