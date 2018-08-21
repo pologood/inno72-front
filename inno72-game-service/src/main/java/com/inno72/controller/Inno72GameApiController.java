@@ -133,4 +133,14 @@ public class Inno72GameApiController {
 			String playTime) {
 		return inno72GameApiService.userDuration(token, itemId, sellerId, userId, machineCode, playTime);
 	}
+
+	/**
+	 * 获取派样商品
+	 * @param machineId
+	 * @return Result
+	 */
+	@RequestMapping(value = "/sampling", method = {RequestMethod.POST, RequestMethod.GET})
+	public Result<Object> sampling() {
+		return inno72GameApiService.sampling();
+	}
 }
