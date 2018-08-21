@@ -28,6 +28,7 @@
     <result column="code" jdbcType="VARCHAR" property="code" />
     <result column="price" jdbcType="DECIMAL" property="price" />
     <result column="seller_id" jdbcType="VARCHAR" property="sellerId" />
+     <result column="shop_id" jdbcType="VARCHAR" property="shopId" />
     <result column="img" jdbcType="VARCHAR" property="img" />
     <result column="is_delete" jdbcType="INTEGER" property="isDelete" />
     <result column="remark" jdbcType="VARCHAR" property="remark" />
@@ -42,7 +43,7 @@
   	select * from inno72_goods where code = #{code} and is_delete = 0
   </select>
   
-  <select id="selectSamplingGoods" resultMap="SamplingGoodsMap" parameterType="int">
+  <select id="selectSamplingGoods" resultMap="SamplingGoodsMap" parameterType="String">
     select 
 	    plan_goods.number as num,goods.*
 	from inno72_activity_plan plan 

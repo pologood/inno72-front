@@ -33,6 +33,11 @@ public class Inno72SamplingGoods {
 	private String sellerId;
 
 	/**
+	 * 店铺ID
+	 */
+	private String shopId;
+
+	/**
 	 * 图片
 	 */
 	private String img;
@@ -294,6 +299,14 @@ public class Inno72SamplingGoods {
 
 	public void setNum(Integer num) {
 		this.num = num;
+	}
+
+	public String getShopId() {
+		return shopId;
+	}
+
+	public void setShopId(String shopId) {
+		this.shopId = shopId;
 	}
 
 }
