@@ -142,8 +142,8 @@ public class Inno72GameApiController {
 	 * @param machineId
 	 * @return Result
 	 */
-	@RequestMapping(value = "/sampling", method = {RequestMethod.POST, RequestMethod.GET})
-	public Result<List<Inno72SamplingGoods>> sampling(String machineCode) {
-		return inno72GameApiService.sampling(machineCode);
+	@RequestMapping(value = "/getSampling", method = {RequestMethod.POST, RequestMethod.GET})
+	public Result<List<Inno72SamplingGoods>> getSampling(String machineCode) {
+		return inno72GameApiService.getSampling(machineCode);
 	}
 }

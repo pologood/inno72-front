@@ -27,5 +27,5 @@ public interface Inno72GameApiService {
 	Result<String> userDuration(String token, String itemId, String sellerId, String userId, String machineCode,
 			String playTime);
 
-	Result<List<Inno72SamplingGoods>> sampling(String machineCode);
+	Result<List<Inno72SamplingGoods>> getSampling(String machineCode);
 }
