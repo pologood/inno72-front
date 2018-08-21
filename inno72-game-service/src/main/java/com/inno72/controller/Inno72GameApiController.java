@@ -44,6 +44,20 @@ public class Inno72GameApiController {
 	 */
 	@RequestMapping(value = "/qroauth/order", method = {RequestMethod.POST, RequestMethod.GET})
 	public Result<Object> order(MachineApiVo vo) {
+
+		return inno72GameApiService.order(vo);
+	}
+	/**
+	 * @param vo
+	 *  sessionUuid
+	 *  activityId 活动ID，表明活动的来源和品牌
+	 *  machineId 售货机ID
+	 *  itemId 商品ID
+	 *  gameId 游戏ID
+	 * @return Result<Object>
+	 */
+	@RequestMapping(value = "/qroauth/oneKeyOrder", method = {RequestMethod.POST, RequestMethod.GET})
+	public Result<Object> oneKeyOrder(MachineApiVo vo) {
 		return inno72GameApiService.order(vo);
 	}
 
