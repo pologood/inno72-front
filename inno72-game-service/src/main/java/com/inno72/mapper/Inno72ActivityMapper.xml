@@ -27,19 +27,19 @@
         select * from inno72_activity where is_default = 1
     </select>
     <resultMap id="ActVoMap" type="com.inno72.vo.FansActVo">
-        <result column="act_id" property="act_id"/>
-        <result column="act_name" property="act_name"/>
-        <result column="act_type" property="act_type"/>
-        <result column="start_time" property="start_time"/>
-        <result column="end_time" property="end_time"/>
-        <association property="act_detail_list" javaType="com.inno72.vo.FansActVo$MachineDetailVo">
-            <result column="owner_id" property="owner_id"/>
-            <result column="machine_id" property="machine_id"/>
-            <result column="show_address" property="show_address"/>
-            <result column="lock_status" property="lock_status"/>
-            <result column="start_time" property="start_time"/>
-            <result column="end_time" property="end_time"/>
-            <result column="act_id" property="act_id"/>
+        <result column="act_id" property="actId"/>
+        <result column="act_name" property="actName"/>
+        <result column="act_type" property="actType"/>
+        <result column="start_time" property="startTime"/>
+        <result column="end_time" property="endTime"/>
+        <association property="actDetailList" javaType="com.inno72.vo.FansActVo$MachineDetailVo">
+            <result column="owner_id" property="ownerId"/>
+            <result column="machine_id" property="machineId"/>
+            <result column="show_address" property="showAddress"/>
+            <result column="lock_status" property="lockStatus"/>
+            <result column="start_time" property="startTime"/>
+            <result column="end_time" property="endTime"/>
+            <result column="act_id" property="actId"/>
         </association>
 
     </resultMap>

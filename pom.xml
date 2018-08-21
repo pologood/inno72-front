@@ -130,6 +130,6 @@
         <module>inno72-game-service</module>
         <module>inno72-alarm-service</module>
         <module>inno72-qy-service</module>
-        <module>inno72-top-service</module>
+        <!--<module>inno72-top-service</module>-->
     </modules>
 </project>

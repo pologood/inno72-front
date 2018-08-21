@@ -117,6 +117,12 @@
 
         <dependency>
             <groupId>com.inno72</groupId>
+            <artifactId>inno72-msg</artifactId>
+            <version>0.0.1-SNAPSHOT</version>
+        </dependency>
+
+        <dependency>
+            <groupId>com.inno72</groupId>
             <artifactId>inno72-log</artifactId>
             <version>0.0.1-SNAPSHOT</version>
         </dependency>
