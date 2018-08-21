@@ -125,6 +125,8 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 	private static final String QRSTATUS_INVALID = "-1"; // 二维码失效
 	private static final String QRSTATUS_EXIST_USER = "-2"; // 存在用户登录
 
+	private static final Integer SAMPLING_TYPE = 1; // 类型（派样）
+
 	/**
 	 * {
 	 goodsId: 1,
@@ -1001,7 +1003,8 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 	}
 
 	@Override
-	public Result<Object> sampling() {
-		return null;
+	public Result<List<Inno72Activity>> sampling() {
+		List<Inno72Activity> inno72ActivityList = inno72ActivityMapper.selectActiveByType(SAMPLING_TYPE);
+		return Results.success(inno72ActivityList);
 	}
 }

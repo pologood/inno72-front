@@ -1,6 +1,9 @@
 package com.inno72.service;
 
+import java.util.List;
+
 import com.inno72.common.Result;
+import com.inno72.model.Inno72Activity;
 import com.inno72.vo.MachineApiVo;
 
 public interface Inno72GameApiService {
@@ -24,5 +27,5 @@ public interface Inno72GameApiService {
 	Result<String> userDuration(String token, String itemId, String sellerId, String userId, String machineCode,
 			String playTime);
 
-	Result<Object> sampling();
+	Result<List<Inno72Activity>> sampling();
 }
