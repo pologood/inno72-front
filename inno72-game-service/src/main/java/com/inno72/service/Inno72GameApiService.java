@@ -16,6 +16,8 @@ public interface Inno72GameApiService {
 
 	Result<Object> luckyDraw(MachineApiVo vo);
 
+	Result<Object> oneKeyOrder(MachineApiVo vo);
+
 	Result<String> shipmentReport(MachineApiVo vo);
 
 	Result<String> sessionRedirect(String sessionUuid, String mid, String token, String code, String userId);
