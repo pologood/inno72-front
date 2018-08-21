@@ -1,5 +1,7 @@
 package com.inno72.controller;
 
+import java.util.List;
+
 import javax.annotation.Resource;
 
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -7,6 +9,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.inno72.common.Result;
+import com.inno72.model.Inno72Activity;
 import com.inno72.service.Inno72GameApiService;
 import com.inno72.vo.MachineApiVo;
 
@@ -140,7 +143,7 @@ public class Inno72GameApiController {
 	 * @return Result
 	 */
 	@RequestMapping(value = "/sampling", method = {RequestMethod.POST, RequestMethod.GET})
-	public Result<Object> sampling() {
+	public Result<List<Inno72Activity>> sampling() {
 		return inno72GameApiService.sampling();
 	}
 }

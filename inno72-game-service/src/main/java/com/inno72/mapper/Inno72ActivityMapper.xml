@@ -8,6 +8,7 @@
     <id column="id" jdbcType="VARCHAR" property="id" />
     <result column="name" jdbcType="VARCHAR" property="name" />
     <result column="code" jdbcType="VARCHAR" property="code" />
+    <result column="type" jdbcType="INTEGER" property="type" />
     <result column="shop_id" jdbcType="VARCHAR" property="shopId" />
     <result column="seller_id" jdbcType="VARCHAR" property="sellerId" />
     <result column="manager_id" jdbcType="VARCHAR" property="managerId" />
@@ -63,5 +64,11 @@
         left join inno72_locale i5 on i4.locale_id = i5.id
         left join inno72_admin_area i6 on i6.`code` = i5.area_code
         where i2.code = #{actId}
+    </select>
+    <select id="selectActiveByType" resultMap="BaseResultMap" parameterType="int">
+        select
+            *
+         from inno72_activity 
+         where type = #{type}
     </select>
 </mapper>
