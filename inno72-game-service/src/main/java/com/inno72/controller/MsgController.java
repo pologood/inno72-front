@@ -55,4 +55,19 @@ public class MsgController {
 		return "ok";
 	}
 
+	@ResponseBody
+	@RequestMapping(value = "/msg/sendPush", method = {RequestMethod.GET, RequestMethod.POST})
+	public String sendPush(String code, String phone, String machineCode, String localStr, String text, String sendBy) {
+		Map<String, String> param = new HashMap<>();
+		param.put("machineCode", machineCode);
+		param.put("localStr", localStr);
+		param.put("text", text);
+		try {
+			msgUtil.sendPush(code, param, phone, sendBy, "【缺货】您负责的机器需要补货", "");
+		} catch (Exception e) {
+			logger.error(e.getMessage(), e);
+		}
+		return "ok";
+	}
+
 }
