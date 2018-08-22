@@ -636,8 +636,8 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 		Map<String, String> selectCouponParam = new HashMap<>();
 		selectCouponParam.put("activityPlanId", activityPlanId);
 		selectCouponParam.put("report", report);
-		String interactId = inno72ActivityPlanMapper.selectCouponCodeByParam(selectCouponParam);
-		if (StringUtil.isEmpty(interactId)) {
+		Inno72Coupon inno72Coupon = inno72CouponMapper.selectCouponCodeByParam(selectCouponParam);
+		if (inno72Coupon == null) {
 			return Results.failure("没有有效的奖券了!");
 		}
 
@@ -654,7 +654,7 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 		requestForm.put("accessToken", accessToken);
 		requestForm.put("ua", ua); // 安全ua
 		requestForm.put("umid", umid);// umid
-		requestForm.put("interactId", interactId);// 互动实例ID
+		requestForm.put("interactId", inno72Coupon.getCode());// 互动实例ID
 		requestForm.put("shopId", shopId);// 店铺ID
 
 		String requestUrl = jstUrl + "/api/top/lottory";
@@ -671,7 +671,7 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 		// TODO 奖券下单
 		String orderId = "";
 		try {
-			orderId = this.genInno72Order(channelId, activityPlanId, _machineId, interactId, userSessionVo.getUserId(),
+			orderId = this.genInno72Order(channelId, activityPlanId, _machineId, inno72Coupon.getId(), userSessionVo.getUserId(),
 					Inno72Order.INNO72ORDER_GOODSTYPE.COUPON);
 		} catch (Exception e) {
 			LOGGER.info("获取优惠券下单失败 ==> {}", e.getMessage(), e);
