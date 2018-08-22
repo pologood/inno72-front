@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.inno72.check.mapper.Inno72CheckFaultMapper">
+  <resultMap id="BaseResultMap" type="com.inno72.check.model.Inno72CheckFault">
+    <!--
+      WARNING - @mbg.generated
+    -->
+    <id column="id" jdbcType="VARCHAR" property="id" />
+    <result column="machine_id" jdbcType="VARCHAR" property="machineId" />
+    <result column="code" jdbcType="VARCHAR" property="code" />
+    <result column="title" jdbcType="VARCHAR" property="title" />
+    <result column="work_type" jdbcType="INTEGER" property="workType"/>
+    <result column="status" jdbcType="INTEGER" property="status" />
+    <result column="source" jdbcType="INTEGER" property="source"/>
+    <result column="urgent_status" jdbcType="INTEGER" property="urgentStatus"/>
+    <result column="type" jdbcType="VARCHAR" property="type" />
+    <result column="remark" jdbcType="VARCHAR" property="remark"/>
+    <result column="submit_user" jdbcType="VARCHAR" property="submitUser" />
+    <result column="submit_id" jdbcType="VARCHAR" property="submitId"/>
+    <result column="submit_user_type" jdbcType="INTEGER" property="submitUserType"/>
+    <result column="receive_user" jdbcType="VARCHAR" property="receiveUser" />
+    <result column="receive_id" jdbcType="VARCHAR" property="receiveId"/>
+    <result column="finish_user" jdbcType="VARCHAR" property="finishUser" />
+    <result column="finish_id" jdbcType="VARCHAR" property="finishId"/>
+    <result column="submit_time" jdbcType="TIMESTAMP" property="submitTime"/>
+    <result column="talking_time" jdbcType="TIMESTAMP" property="talkingTime"/>
+    <result column="finish_time" jdbcType="TIMESTAMP" property="finishTime" />
+    <result column="update_time" jdbcType="TIMESTAMP" property="updateTime"/>
+    <result column="finish_remark" jdbcType="VARCHAR" property="finishRemark"/>
+    <result column="remind_status" jdbcType="INTEGER" property="remindStatus"/>
+    <result column="typeName" jdbcType="VARCHAR" property="typeName"/>
+    <result column="machineCode" jdbcType="VARCHAR" property="machineCode"/>
+    <association property="remarkList" resultMap="RemarkList"/>
+  </resultMap>
+
+  <resultMap id="ImageList" type="com.inno72.check.model.Inno72CheckFaultImage">
+    <result column="image" jdbcType="VARCHAR" property="image"/>
+  </resultMap>
+
+  <resultMap id="RemarkList" type="com.inno72.check.model.Inno72CheckFaultRemark">
+    <result column="remarkStr" jdbcType="VARCHAR" property="remark"/>
+    <result column="userId" jdbcType="VARCHAR" property="userId"/>
+    <result column="userName" jdbcType="VARCHAR" property="name"/>
+    <result column="remarkType" jdbcType="INTEGER" property="type"/>
+    <result column="remarkTime" jdbcType="TIMESTAMP" property="createTime"/>
+    <association property="imageList" resultMap="ImageList"/>
+  </resultMap>
+  <select id="selectForPage" resultMap="BaseResultMap">
+    select t1.*,
+    t4.name typeName
+    from inno72_check_fault t1
+    left join inno72_machine t2 on t1.machine_id=t2.id
+    left join inno72_check_user_machine t3 on t2.id=t3.machine_id
+    left join inno72_check_fault_type t4 on t1.type=t4.code
+    where t3.check_user_id=#{checkUserId}
+    <if test="status != null">
+      and t1.status=#{status}
+    </if>
+    <if test="workType != null">
+      and t1.work_type = #{workType}
+    </if>
+    order by t1.submit_time desc,t1.finish_time desc
+  </select>
+
+  <select id="selectDetail" resultMap="BaseResultMap">
+    select t1.*,
+    t2.machine_code machineCode,
+    t4.user_id userId,
+    t4.name userName,
+    t4.type remarkType,
+    t4.remark remarkStr,
+    t4.create_time remarkTime,
+    t5.image,
+    t6.name typeName
+    from inno72_check_fault t1
+    left join inno72_machine t2 on t1.machine_id=t2.id
+    left join inno72_check_user_machine t3 on t2.id=t3.machine_id
+    left join inno72_check_fault_remark t4 on t1.id=t4.fault_id
+    left join inno72_check_fault_image t5 on t4.id=t5.remark_id
+    left join inno72_check_fault_type t6 on t1.type=t6.code
+    where t1.id = #{faultId} order by t4.create_time desc,t5.sort
+  </select>
+</mapper>

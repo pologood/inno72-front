@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.inno72.check.mapper.Inno72CheckUserMachineMapper">
+  <resultMap id="BaseResultMap" type="com.inno72.check.model.Inno72CheckUserMachine">
+    <!--
+      WARNING - @mbg.generated
+    -->
+    <id column="id" jdbcType="VARCHAR" property="id" />
+    <result column="check_user_id" jdbcType="VARCHAR" property="checkUserId" />
+    <result column="machine_id" jdbcType="VARCHAR" property="machineId" />
+  </resultMap>
+
+
+</mapper>

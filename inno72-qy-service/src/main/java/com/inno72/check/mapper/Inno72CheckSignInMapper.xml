@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.inno72.check.mapper.Inno72CheckSignInMapper">
+  <resultMap id="BaseResultMap" type="com.inno72.check.model.Inno72CheckSignIn">
+    <!--
+      WARNING - @mbg.generated
+    -->
+    <id column="id" jdbcType="VARCHAR" property="id" />
+    <result column="check_user_id" jdbcType="VARCHAR" property="checkUserId" />
+    <result column="machine_id" jdbcType="VARCHAR" property="machineId" />
+    <result column="type" jdbcType="VARCHAR" property="type" />
+    <result column="create_time" jdbcType="TIMESTAMP" property="createTime"/>
+  </resultMap>
+  <resultMap id="MachineSignList" type="com.inno72.check.vo.MachineSignInVo">
+    <result column="machineId" jdbcType="VARCHAR" property="machineId"/>
+    <result column="machineCode" jdbcType="VARCHAR" property="machineCode"/>
+    <result column="localeStr" jdbcType="VARCHAR" property="localeStr"/>
+    <association property="signInList" resultMap="BaseResultMap"/>
+  </resultMap>
+
+  <select id="selectTishMonth" resultMap="BaseResultMap">
+    select id,check_user_id,machine_id,type,create_time
+    from inno72_check_sign_in
+    where DATE_FORMAT(create_time,'%Y%M') = DATE_FORMAT(CURRENT_DATE,'%Y%M')
+    and machine_id=#{machineId} and check_user_id=#{checkUserId}
+  </select>
+
+
+  <select id="selectMachineSignList" resultMap="MachineSignList">
+    select t1.id machineId,
+    t1.machine_code machineCode,
+    t1.machine_name machineName,
+    CONCAT(
+          t5.province,
+          t5.city,
+          t5.district,
+          if(t5.circle='其他','',t5.circle),IFNULL(t4.mall,""),IFNULL( t4.name,'')
+          ) AS localeStr,
+    t3.*
+    from inno72_machine t1
+    left join inno72_check_user_machine t2 on t1.id = t2.machine_id
+    left join inno72_check_sign_in t3 on t2.machine_id=t3.machine_id
+    and date_format(t3.create_time,'%Y%M%D') = date_format(CURRENT_DATE,'%Y%M%D')
+    and t3.check_user_id=#{checkUserId,jdbcType=VARCHAR}
+    LEFT JOIN inno72_locale t4 ON t4.id = t1.locale_id
+    LEFT JOIN inno72_admin_area t5 ON t5.CODE = t4.area_code
+    where t2.check_user_id = #{checkUserId}
+  </select>
+</mapper>
