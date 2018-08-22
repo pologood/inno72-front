@@ -20,6 +20,7 @@ import com.inno72.common.util.JSR303Util;
 import com.inno72.common.utils.StringUtil;
 import com.inno72.mapper.AlarmMsgTypeMapper;
 import com.inno72.model.AlarmMsgType;
+import com.inno72.redis.IRedisUtil;
 import com.inno72.service.AlarmMsgTypeService;
 
 
@@ -31,13 +32,14 @@ import com.inno72.service.AlarmMsgTypeService;
 public class AlarmMsgTypeServiceImpl extends AbstractService<AlarmMsgType> implements AlarmMsgTypeService {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(AlarmMsgTypeServiceImpl.class);
-    @Resource
-    private AlarmMsgTypeMapper alarmMsgTypeMapper;
+	@Resource
+	private AlarmMsgTypeMapper alarmMsgTypeMapper;
+	@Resource
+	private IRedisUtil redisUtil;
 
-
-    @Override
+	@Override
 	@TargetDataSource(dataSourceKey = DataSourceKey.DB_INNO72SAAS)
-    public Result<String> saveOrUpdate(AlarmMsgType alarmMsgType){
+	public Result<String> saveOrUpdate(AlarmMsgType alarmMsgType){
 		Result<String> valid = JSR303Util.valid(alarmMsgType);
 		if (valid.getCode() == Result.FAILURE){
 			LOGGER.info("校验失败 {},  {}", JSON.toJSONString(valid), JSON.toJSONString(alarmMsgType));
@@ -53,6 +55,9 @@ public class AlarmMsgTypeServiceImpl extends AbstractService<AlarmMsgType> imple
 			alarmMsgType.setCreateTime(LocalDateTime.now());
 			int insert = alarmMsgTypeMapper.insert(alarmMsgType);
 		}
+
+		redisUtil.incr("alarm:db:version");
+
 		LOGGER.debug("保存 {} 完成 ", JSON.toJSONString(alarmMsgType));
 		return Results.success();
 	}
@@ -87,6 +92,9 @@ public class AlarmMsgTypeServiceImpl extends AbstractService<AlarmMsgType> imple
 			return Results.failure("不存在!");
 		}
 		int i = alarmMsgTypeMapper.deleteByPrimaryKey(id);
+
+		redisUtil.incr("alarm:db:version");
+
 		return Results.success();
 	}
 }

@@ -17,6 +17,7 @@ import com.inno72.common.Results;
 import com.inno72.common.utils.StringUtil;
 import com.inno72.mapper.AlarmUserMapper;
 import com.inno72.model.AlarmUser;
+import com.inno72.redis.IRedisUtil;
 import com.inno72.service.AlarmUserService;
 
 
@@ -29,12 +30,15 @@ public class AlarmUserServiceImpl extends AbstractService<AlarmUser> implements 
 	private static final Logger LOGGER = LoggerFactory.getLogger(AlarmUserServiceImpl.class);
 	@Resource
 	private AlarmUserMapper alarmUserMapper;
+	@Resource
+	private IRedisUtil redisUtil;
 
 	@Override
 	@TargetDataSource(dataSourceKey = DataSourceKey.DB_INNO72SAAS)
 	public Result<String> syncUser(){
 		LOGGER.info("开始同步 inno72.inno72_user 用户到inno72_saas.alarm_user");
 		int i = alarmUserMapper.syncUser();
+		redisUtil.incr("alarm:db:version");
 		LOGGER.info("一共同步 {} 条记录!", i);
 		return Results.success();
 	}
