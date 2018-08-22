@@ -28,7 +28,6 @@ import com.inno72.validator.Validators;
 import com.inno72.vo.FansActVo;
 import com.inno72.vo.MachineVo;
 import com.inno72.vo.PropertiesBean;
-import com.inno72.vo.QimenTmallFansAutomachineQureymachinesRequest;
 import com.inno72.vo.UserInfo;
 import com.taobao.api.ApiException;
 import com.taobao.api.DefaultTaobaoClient;
@@ -67,7 +66,8 @@ public class TopController {
 
 	@PostConstruct
 	public void initClient() {
-		client = new DefaultTaobaoClient(propertiesBean.getUrl(), propertiesBean.getAppkey(), propertiesBean.getSecret());
+		client = new DefaultTaobaoClient(propertiesBean.getUrl(), propertiesBean.getAppkey(),
+				propertiesBean.getSecret());
 	}
 
 	/**
@@ -115,10 +115,11 @@ public class TopController {
 			}
 		}
 		try {
-			//			String h5Url = this.getHostGameH5Url(env);
+			// String h5Url = this.getHostGameH5Url(env);
 			// 跳转到游戏页面 手机端redirect
 			LOGGER.info("h5MobileUrl is {} , playCode is {}, env is {}", h5MobileUrl, playCode, env);
-			String formatUrl = String.format(h5MobileUrl, env, playCode) + "?qrStatus=" + qrStatus + "&sellerId=" + sellerId;
+			String formatUrl = String.format(h5MobileUrl, env, playCode) + "?qrStatus=" + qrStatus + "&sellerId="
+					+ sellerId;
 			LOGGER.info("formatUrl is {}", formatUrl);
 			response.sendRedirect(formatUrl);
 		} catch (IOException e) {
@@ -304,7 +305,7 @@ public class TopController {
 	public String test() {
 		LOGGER.info("test -----");
 		return "test";
-		//		return JSON.toJSONString(client);
+		// return JSON.toJSONString(client);
 	}
 
 	/**
@@ -369,7 +370,7 @@ public class TopController {
 	 *
 	 */
 	@RequestMapping("/tmall/fans/automachine/saveact")
-	private Object saveact(@RequestBody FansActVo request){
+	private Object saveact(@RequestBody FansActVo request) {
 
 
 		return JSON.toJSONString(request);
@@ -390,8 +391,66 @@ public class TopController {
 	 *			}
 	 */
 	@RequestMapping("/tmall/fans/automachine/savemachine")
-	private Object savemachine(@RequestBody MachineVo request){
+	private Object savemachine(@RequestBody MachineVo request) {
 
 		return JSON.toJSONString(request);
+	}
+
+	/**
+	 * 派样活动登录回调接口
+	 */
+	@RequestMapping("/api/samplingTop/{mid}/{sessionUuid}/{env}/{goodsId}")
+	public void samplingHome(HttpServletResponse response, @PathVariable("mid") String mid,
+			@PathVariable("sessionUuid") String sessionUuid, String code, @PathVariable("env") String env,
+			@PathVariable("goodsId") String goodsId) throws Exception {
+		LOGGER.info("mid is {}, code is {}, sessionUuid is {}, env is {}, goodsId is {}", mid, code, sessionUuid, env,
+				goodsId);
+		String playCode = "";
+		String data;
+		String qrStatus = "";
+		String sellerId = "";
+		if (!StringUtils.isEmpty(code) && !StringUtils.isEmpty(sessionUuid)) {
+
+			String authInfo = getAuthInfo(code);
+			LOGGER.debug("authInfo is {}", authInfo);
+
+			String tokenResult = FastJsonUtils.getString(authInfo, "token_result");
+			LOGGER.info("tokenResult is {}", tokenResult);
+
+			String taobaoUserId = FastJsonUtils.getString(tokenResult, "taobao_user_nick");
+			LOGGER.info("taobaoUserId is {}", taobaoUserId);
+
+			UserInfo userInfo = new UserInfo();
+			userInfo.setMid(mid);
+			userInfo.setSessionUuid(sessionUuid);
+			userInfo.setCode(code);
+			userInfo.setUserId(taobaoUserId);
+
+			userInfo.setToken(tokenResult);
+
+			// 设置用户信息
+			data = setUserInfo(userInfo, env);
+			LOGGER.info("data is {}", data);
+
+			if (!StringUtils.isEmpty(data)) {
+				playCode = FastJsonUtils.getString(data, "playCode");
+				qrStatus = FastJsonUtils.getString(data, "qrStatus");
+				String sId = FastJsonUtils.getString(data, "sellerId");
+				if (!StringUtils.isEmpty(sId)) {
+					sellerId = sId.trim();
+				}
+			}
+		}
+		try {
+			// String h5Url = this.getHostGameH5Url(env);
+			// 跳转到游戏页面 手机端redirect
+			LOGGER.info("h5MobileUrl is {} , playCode is {}, env is {}", h5MobileUrl, playCode, env);
+			String formatUrl = String.format(h5MobileUrl, env, playCode) + "?qrStatus=" + qrStatus + "&sellerId="
+					+ sellerId;
+			LOGGER.info("formatUrl is {}", formatUrl);
+			response.sendRedirect(formatUrl);
+		} catch (IOException e) {
+			LOGGER.error(e.getMessage(), e);
+		}
 	}
 }
