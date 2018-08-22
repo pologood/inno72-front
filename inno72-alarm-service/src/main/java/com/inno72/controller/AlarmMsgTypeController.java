@@ -32,10 +32,10 @@ public class AlarmMsgTypeController {
 	public Result add(AlarmMsgType alarmMsgType) {
 		return alarmMsgTypeService.saveOrUpdate(alarmMsgType);
 	}
+
 	@RequestMapping(value = "/delete", method = { RequestMethod.POST,  RequestMethod.GET})
 	public Result delete(@RequestParam String id) {
-		alarmMsgTypeService.deleteById(id);
-		return ResultGenerator.genSuccessResult();
+		return alarmMsgTypeService.delete(id);
 	}
 
 	@RequestMapping(value = "/update", method = { RequestMethod.POST,  RequestMethod.GET})
@@ -46,8 +46,7 @@ public class AlarmMsgTypeController {
 
 	@RequestMapping(value = "/detail", method = { RequestMethod.POST,  RequestMethod.GET})
 	public Result detail(@RequestParam String id) {
-		AlarmMsgType alarmMsgType = alarmMsgTypeService.findById(id);
-		return ResultGenerator.genSuccessResult(alarmMsgType);
+		return alarmMsgTypeService.selectById(id);
 	}
 
 	@RequestMapping(value = "/list", method = { RequestMethod.POST,  RequestMethod.GET})

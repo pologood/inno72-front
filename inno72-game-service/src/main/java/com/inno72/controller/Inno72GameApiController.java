@@ -1,5 +1,7 @@
 package com.inno72.controller;
 
+import java.util.List;
+
 import javax.annotation.Resource;
 
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -8,6 +10,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.inno72.common.Result;
 import com.inno72.service.Inno72GameApiService;
+import com.inno72.vo.Inno72SamplingGoods;
 import com.inno72.vo.MachineApiVo;
 
 @RestController
@@ -41,6 +44,20 @@ public class Inno72GameApiController {
 	 */
 	@RequestMapping(value = "/qroauth/order", method = {RequestMethod.POST, RequestMethod.GET})
 	public Result<Object> order(MachineApiVo vo) {
+
+		return inno72GameApiService.order(vo);
+	}
+	/**
+	 * @param vo
+	 *  sessionUuid
+	 *  activityId 活动ID，表明活动的来源和品牌
+	 *  machineId 售货机ID
+	 *  itemId 商品ID
+	 *  gameId 游戏ID
+	 * @return Result<Object>
+	 */
+	@RequestMapping(value = "/qroauth/oneKeyOrder", method = {RequestMethod.POST, RequestMethod.GET})
+	public Result<Object> oneKeyOrder(MachineApiVo vo) {
 		return inno72GameApiService.order(vo);
 	}
 
@@ -132,5 +149,15 @@ public class Inno72GameApiController {
 	public Result<String> userDuration(String token, String itemId, String sellerId, String userId, String machineCode,
 			String playTime) {
 		return inno72GameApiService.userDuration(token, itemId, sellerId, userId, machineCode, playTime);
+	}
+
+	/**
+	 * 获取派样商品
+	 * @param machineId
+	 * @return Result
+	 */
+	@RequestMapping(value = "/getSampling", method = {RequestMethod.POST, RequestMethod.GET})
+	public Result<List<Inno72SamplingGoods>> getSampling(String machineCode) {
+		return inno72GameApiService.getSampling(machineCode);
 	}
 }

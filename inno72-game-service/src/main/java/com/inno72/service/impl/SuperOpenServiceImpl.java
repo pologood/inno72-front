@@ -69,6 +69,8 @@ public class SuperOpenServiceImpl implements SuperOpenService {
 		MALFUNCTION_LOG("009", "malfunctionLog", "/api/malfunctionLog", "货道异常信息存储", "1.0.0"), /** 货道异常信息存储 */
 		SHIPMENT_FAIL("010", "shipmentFail", "/api/shipmentFail", "掉货失败", "1.0.0"), /** 掉货失败 */
 		USER_DURATION("011", "userDuration", "/api/userDuration", "用户互动时长", "1.0.0"), /* 用户互动时长 */
+		GET_SAMPLING("012", "getSampling", "/api/getSampling", "获取派样商品", "1.0.0"), /* 获取派样商品 */
+		ONE_KEY_ORDER("013", "oneKeyOrder", "/api/qroauth/oneKeyOrder", "一键下单（优惠券 and goods）", "1.0.0"), /* 获取派样商品 */
 		;
 
 		private String code;

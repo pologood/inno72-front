@@ -13,6 +13,7 @@ public class UserSessionVo {
 	private String sessionUuid;
 	private String mixnick;
 	private String source;
+	private String refOrderId;
 
 
 	/**
@@ -27,6 +28,11 @@ public class UserSessionVo {
 	private String activityPlanId;
 
 	private Long playTimes;
+	private boolean canOrder;
+	private String channelId;
+	private String machineId;
+	private String activityId;
+	private String machineCode;
 
 	public UserSessionVo(String mid, String userNick, String userId, String access_token, String gameId,
 			String sessionUuid, String planId) {
@@ -45,4 +51,43 @@ public class UserSessionVo {
 	}
 
 
+	public void setCanOrder(boolean canOrder) {
+		this.canOrder = canOrder;
+	}
+
+	public boolean getCanOrder() {
+		return canOrder;
+	}
+
+	public void setChannelId(String channelId) {
+		this.channelId = channelId;
+	}
+
+	public String getChannelId() {
+		return channelId;
+	}
+
+	public void setMachineId(String machineId) {
+		this.machineId = machineId;
+	}
+
+	public String getMachineId() {
+		return machineId;
+	}
+
+	public void setActivityId(String activityId) {
+		this.activityId = activityId;
+	}
+
+	public String getActivityId() {
+		return activityId;
+	}
+
+	public void setMachineCode(String machineCode) {
+		this.machineCode = machineCode;
+	}
+
+	public String getMachineCode() {
+		return machineCode;
+	}
 }

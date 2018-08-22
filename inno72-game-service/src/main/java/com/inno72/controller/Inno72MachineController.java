@@ -15,6 +15,8 @@ import com.inno72.common.Result;
 import com.inno72.common.ResultGenerator;
 import com.inno72.model.Inno72Machine;
 import com.inno72.service.Inno72MachineService;
+import com.inno72.vo.MachineVo;
+import com.inno72.vo.QimenTmallFansAutomachineQureymachinesRequest;
 
 /**
  * Created by CodeGenerator on 2018/06/27.
@@ -72,4 +74,11 @@ public class Inno72MachineController {
 		return ResultGenerator.genSuccessResult(pageInfo);
 	}
 
+	@RequestMapping(value = "/qimenQueryMachines", method = {RequestMethod.POST, RequestMethod.GET})
+	public Object qimenQueryMachines(QimenTmallFansAutomachineQureymachinesRequest.MachineQuery query){
+		PageHelper.startPage(query.getCurrentPage(), query.getPageSize());
+		List<MachineVo> list = inno72MachineService.selectListByQimen(query);
+		PageInfo pageInfo = new PageInfo(list);
+		return ResultGenerator.genSuccessResult(pageInfo);
+	}
 }

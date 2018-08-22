@@ -12,7 +12,7 @@
         <result column="result_code" jdbcType="INTEGER" property="resultCode" />
         <result column="result_remark" jdbcType="VARCHAR" property="resultRemark" />
     </resultMap>
-    <select id="selectByActivityPlanId" resultType="string" parameterType="java.util.Map" >
+    <select id="selectByActivityPlanId" resultType="java.lang.String" parameterType="java.util.Map" >
         select distinct prize_id from inno72_activity_plan_game_result
         where
         prize_type = 1
@@ -21,6 +21,17 @@
         <if test="report != null and report != ''">
            and result_code = #{report}
         </if>
+    </select>
+    <select id="selectAllResultByCode" resultMap="BaseResultMap" parameterType="java.util.Map" >
+        select distinct prize_id from inno72_activity_plan_game_result
+        where
+        activity_plan_id = #{activityPlanId}
+       and result_code = #{report}
+    </select>
+
+    <select id="selectPrizeId" parameterType="java.util.Map" resultType="java.lang.String">
+        select prize_id from inno72_activity_plan_game_result
+          where prize_type = 2 and activity_plan_id = #{activityPlanId} and result_code = #{report} limit 1
     </select>
 
 </mapper>

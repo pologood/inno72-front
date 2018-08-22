@@ -26,6 +26,7 @@ import com.inno72.mapper.AlarmRuleMsgTypeMapper;
 import com.inno72.mapper.AlarmRuleReceiverMapper;
 import com.inno72.mapper.AlarmUserMapper;
 import com.inno72.model.AlarmRule;
+import com.inno72.redis.IRedisUtil;
 import com.inno72.service.AlarmRuleService;
 import com.inno72.vo.AlarmRuleRequestVo;
 
@@ -46,9 +47,8 @@ public class AlarmRuleServiceImpl extends AbstractService<AlarmRule> implements 
     @Resource
     private AlarmRuleReceiverMapper alarmRuleReceiverMapper;
 	@Resource
-	private AlarmMsgTypeMapper alarmMsgTypeMapper;
-	@Resource
-	private AlarmUserMapper alarmUserMapper;
+	private IRedisUtil redisUtil;
+
 
 	@Override
 	@TargetDataSource(dataSourceKey = DataSourceKey.DB_INNO72SAAS)
@@ -96,6 +96,8 @@ public class AlarmRuleServiceImpl extends AbstractService<AlarmRule> implements 
 			param.put("list", userId);
 			alarmRuleReceiverMapper.inserts(param);
 		}
+
+		redisUtil.incr("alarm:db:version");
 
 		return Results.success();
 	}

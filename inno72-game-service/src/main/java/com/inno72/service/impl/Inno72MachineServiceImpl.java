@@ -1,7 +1,10 @@
 package com.inno72.service.impl;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.annotation.Resource;
 
@@ -30,6 +33,8 @@ import com.inno72.model.Inno72Merchant;
 import com.inno72.redis.IRedisUtil;
 import com.inno72.service.Inno72MachineService;
 import com.inno72.vo.Inno72MachineVo;
+import com.inno72.vo.MachineVo;
+import com.inno72.vo.QimenTmallFansAutomachineQureymachinesRequest;
 
 /**
  * Created by CodeGenerator on 2018/06/27.
@@ -75,8 +80,8 @@ public class Inno72MachineServiceImpl extends AbstractService<Inno72Machine> imp
 				&& (!inno72MachineVo.getActivityPlanId().equals(planId)
 				|| !inno72MachineVo.getInno72Games().getVersion().equals(version)
 				|| !inno72MachineVo.getInno72Games().getVersionInno72().equals(versionInno72)
-				)
-		) {
+		)
+				) {
 			LOGGER.debug("查询机器游戏关联完成 - result -> {}", JSON.toJSONString(inno72MachineVo));
 			inno72MachineVo.setReload(true);
 		}
@@ -96,6 +101,39 @@ public class Inno72MachineServiceImpl extends AbstractService<Inno72Machine> imp
 
 
 		return Results.success(inno72MachineVo);
+	}
+
+	@Override
+	public List<MachineVo> selectListByQimen(QimenTmallFansAutomachineQureymachinesRequest.MachineQuery query) {
+		String city = query.getCity();
+		String machineId = query.getMachineId();
+		List<String> machineIdList = query.getMachineIdList();
+		if (machineIdList == null && StringUtil.isNotEmpty(machineId)){
+			machineIdList = new ArrayList<>();
+			machineIdList.add(machineId);
+		}
+
+		Map<String, Object> params = new HashMap<>(2);
+		params.put("list", machineIdList);
+		params.put("city", city);
+		params.put("machineId", machineId);
+
+		return inno72MachineMapper.queryQimenMachineListByPage(params);
+	}
+
+	@Override
+	public Result<MachineVo> selectTianMaoMachineVoById(String machineId) {
+		if (StringUtil.isEmpty(machineId)){
+			LOGGER.info("传入参数为空！");
+			return Results.failure("传入参数为空！");
+		}
+		Map<String, Object> params = new HashMap<>(1);
+		params.put("machineId", machineId);
+		List<MachineVo> machineVos = inno72MachineMapper.queryQimenMachineListByPage(params);
+		if (machineVos.size() > 0){
+			return Results.success(machineVos.get(0));
+		}
+		return Results.failure("ID["+ machineId +"]对应的数据不存在传入参数为空！");
 	}
 
 	private Result<Inno72MachineVo> initVoFromRedis(String planId, String machineId){

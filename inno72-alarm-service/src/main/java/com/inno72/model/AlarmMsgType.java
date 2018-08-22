@@ -1,11 +1,18 @@
 package com.inno72.model;
 
+import java.time.LocalDateTime;
+
 import javax.persistence.Column;
+import javax.persistence.Convert;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
 import javax.validation.constraints.NotNull;
+
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.inno72.common.CustomLocalDateTimeSerializer;
+import com.inno72.common.LocalDateTimeConverter;
 
 @Table(name = "alarm_msg_type")
 public class AlarmMsgType {
@@ -29,6 +36,11 @@ public class AlarmMsgType {
 
 	@Column(name = "`code`")
 	private String code;
+
+	@JsonSerialize(using = CustomLocalDateTimeSerializer.class)
+	@Convert(converter = LocalDateTimeConverter.class)
+	@Column(name = "create_time")
+	private LocalDateTime createTime;
 
     /**
      * @return id
@@ -86,5 +98,13 @@ public class AlarmMsgType {
 
 	public void setCode(String code) {
 		this.code = code;
+	}
+
+	public LocalDateTime getCreateTime() {
+		return createTime;
+	}
+
+	public void setCreateTime(LocalDateTime createTime) {
+		this.createTime = createTime;
 	}
 }

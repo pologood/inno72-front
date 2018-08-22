@@ -16,6 +16,7 @@ import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
@@ -24,7 +25,10 @@ import org.springframework.web.client.RestTemplate;
 import com.alibaba.fastjson.JSON;
 import com.inno72.util.FastJsonUtils;
 import com.inno72.validator.Validators;
+import com.inno72.vo.FansActVo;
+import com.inno72.vo.MachineVo;
 import com.inno72.vo.PropertiesBean;
+import com.inno72.vo.QimenTmallFansAutomachineQureymachinesRequest;
 import com.inno72.vo.UserInfo;
 import com.taobao.api.ApiException;
 import com.taobao.api.DefaultTaobaoClient;
@@ -62,7 +66,7 @@ public class TopController {
 	private TaobaoClient client;
 
 	@PostConstruct
-	public void initClient(){
+	public void initClient() {
 		client = new DefaultTaobaoClient(propertiesBean.getUrl(), propertiesBean.getAppkey(), propertiesBean.getSecret());
 	}
 
@@ -71,7 +75,8 @@ public class TopController {
 	 */
 	@RequestMapping("/api/top/{mid}/{sessionUuid}/{env}")
 	public void home(HttpServletResponse response, @PathVariable("mid") String mid,
-			@PathVariable("sessionUuid") String sessionUuid, String code, @PathVariable("env") String env) throws Exception {
+			@PathVariable("sessionUuid") String sessionUuid, String code, @PathVariable("env") String env)
+			throws Exception {
 		LOGGER.info("mid is {}, code is {}, sessionUuid is {}, env is {}", mid, code, sessionUuid, env);
 		String playCode = "";
 		String data;
@@ -110,7 +115,7 @@ public class TopController {
 			}
 		}
 		try {
-//			String h5Url = this.getHostGameH5Url(env);
+			//			String h5Url = this.getHostGameH5Url(env);
 			// 跳转到游戏页面 手机端redirect
 			LOGGER.info("h5MobileUrl is {} , playCode is {}, env is {}", h5MobileUrl, playCode, env);
 			String formatUrl = String.format(h5MobileUrl, env, playCode) + "?qrStatus=" + qrStatus + "&sellerId=" + sellerId;
@@ -299,22 +304,23 @@ public class TopController {
 	public String test() {
 		LOGGER.info("test -----");
 		return "test";
-//		return JSON.toJSONString(client);
+		//		return JSON.toJSONString(client);
 	}
 
 	/**
 	 *
 	 * @param image 图片的base64（必须以base64,开头）	base64,xxx
 	 * @param mixnick 用户mixnick t01A+8NLodWrUz+M3lESGlKf6Fzup0APmo56QGE4282SaY=
-	 * @param source 	isv标识 	isv_001
+	 * @param source    isv标识 	isv_001
 	 * @param front_camera 1	前置摄像头1，后置摄像头0
 	 * @param sessionKey sessionKey
 	 * @return body
 	 */
 	@RequestMapping("/api/top/{sessionUuid}")
-	public String skindetect(String image, String mixnick, String source, String front_camera, @PathVariable("sessionUuid") String sessionKey){
-		LOGGER.info("肌肤检测接口参数 image = {}; mixnich = {}; source = {}; front_camera = {}; sessionUuid = {}"
-		,image, mixnick, source, front_camera, sessionKey);
+	public String skindetect(String image, String mixnick, String source, String front_camera,
+			@PathVariable("sessionUuid") String sessionKey) {
+		LOGGER.info("肌肤检测接口参数 image = {}; mixnich = {}; source = {}; front_camera = {}; sessionUuid = {}", image,
+				mixnick, source, front_camera, sessionKey);
 		TmallMarketingFaceSkindetectRequest req = new TmallMarketingFaceSkindetectRequest();
 		req.setImage(image);
 		req.setMixnick(mixnick);
@@ -326,7 +332,7 @@ public class TopController {
 			TmallMarketingFaceSkindetectResponse rsp = client.execute(req, sessionKey);
 			LOGGER.info("调用肌肤检测完整结果 =================》 {}", JSON.toJSONString(rsp));
 			body = rsp.getBody();
-		}catch (ApiException e){
+		} catch (ApiException e) {
 			LOGGER.error("调用肌肤检测接口失败 ===> {} {}", e.getMessage(), e);
 		}
 		LOGGER.info("图片解析结果 ===> {}", body);
@@ -339,10 +345,53 @@ public class TopController {
 		return format;
 	}
 
-//	private String getHostGameH5Url(String startWith) {
-//		String format = MessageFormat.format(h5MobileUrl, propertiesBean.getValue(startWith + "HostMobile"));
-//		LOGGER.info("获取环境 变量组装的game Url {} , env {}", format, startWith);
-//		return format;
-//
-//	}
+	/**
+	 * API名称:tmall.fans.automachine.saveact( 保存更新活动信息至天猫 ) 前台类目:互动吧API
+	 * API用户授权类型:不需要 API安全等级:W1
+	 * API标签:
+	 * 收费策略: 简要描述:保存更新活动信息至天猫
+	 *
+	 * API 应用级输入参数
+	 * owner_id Long 必填 供应商为一ID，淘宝ID 23434234
+	 * machine_v_o MachineVo 必填 设备信息
+	 *
+	 * @return  {
+	 * 			  "tmall_fans_automachine_saveact_response":{
+	 *  			"model":true,
+	 *  			"msg_info":"参数错误",
+	 *				"msg_code":"SUCCESS"
+	 *			  }
+	 *			}
+	 *
+	 *	model    Boolean 否 付款成功状态，true成功，false为失败 true
+	 *  msg_info String  否 请求失败时的错误信息 参数错误
+	 *  msg_code String  否 SUCCESS为请求成功，其他为请求失败 SUCCESS
+	 *
+	 */
+	@RequestMapping("/tmall/fans/automachine/saveact")
+	private Object saveact(@RequestBody FansActVo request){
+
+
+		return JSON.toJSONString(request);
+	}
+
+	/**
+	 * API名称:tmall.fans.automachine.savemachine( 注册、更新供应商上的设备信息到天猫互动吧 ) 前台类目:互动吧API
+	 * API用户授权类型:需要 API安全等级:W1
+	 * API标签:
+	 * 收费策略: 简要描述:注册、更新供应商上的设备信息到天猫互动吧
+	 *
+	 * @return  {
+	 * 			  "tmall_fans_automachine_savemachine_response":{
+	 *  			"model":true,
+	 *  			"msg_info":"参数错误",
+	 *				"msg_code":"SUCCESS"
+	 *			  }
+	 *			}
+	 */
+	@RequestMapping("/tmall/fans/automachine/savemachine")
+	private Object savemachine(@RequestBody MachineVo request){
+
+		return JSON.toJSONString(request);
+	}
 }
