@@ -399,12 +399,12 @@ public class TopController {
 	/**
 	 * 派样活动登录回调接口
 	 */
-	@RequestMapping("/api/samplingTop/{mid}/{sessionUuid}/{env}/{goodsId}")
+	@RequestMapping("/api/samplingTop/{mid}/{sessionUuid}/{env}/{ItemId}")
 	public void samplingHome(HttpServletResponse response, @PathVariable("mid") String mid,
 			@PathVariable("sessionUuid") String sessionUuid, String code, @PathVariable("env") String env,
-			@PathVariable("goodsId") String goodsId) throws Exception {
-		LOGGER.info("mid is {}, code is {}, sessionUuid is {}, env is {}, goodsId is {}", mid, code, sessionUuid, env,
-				goodsId);
+			@PathVariable("ItemId") String ItemId) throws Exception {
+		LOGGER.info("mid is {}, code is {}, sessionUuid is {}, env is {}, ItemId is {}", mid, code, sessionUuid, env,
+				ItemId);
 		String playCode = "";
 		String data;
 		String qrStatus = "";
