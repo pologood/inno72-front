@@ -942,11 +942,21 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 			LOGGER.info("插入游戏用户渠道表 完成 ===> {}", JSON.toJSONString(userChannel));
 
 		}
+		//TODO 判断机器是否有商品
+		List<Integer> countGoods = inno72ActivityPlanGameResultMapper.selectCountGoods(inno72ActivityPlan.getId());
+		boolean goodsCount = true;
+		for ( Integer count : countGoods ){
+			if (count == 0){
+				goodsCount = false;
+				break;
+			}
+		}
 
 		UserSessionVo sessionVo = new UserSessionVo(mid, nickName, userId, access_token, gameId, sessionUuid,
 				inno72ActivityPlan.getId());
 		boolean b = inno72GameService.countSuccOrder(channelId, userId, inno72ActivityPlan.getId());
 		sessionVo.setCanOrder(b);
+		sessionVo.setCountGoods(goodsCount);
 		sessionVo.setChannelId(channelId);
 		sessionVo.setMachineId(mid);
 		sessionVo.setMachineCode(mid);
