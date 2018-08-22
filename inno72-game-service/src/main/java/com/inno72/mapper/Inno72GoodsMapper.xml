@@ -50,6 +50,7 @@
 	left join inno72_activity_plan_machine plan_machine on plan.id=plan_machine.activity_plan_id
 	left join inno72_activity_plan_goods plan_goods on plan_goods.activity_plan_id=plan.id
 	left join inno72_goods goods on goods.id=plan_goods.goods_id
-	where plan_machine.machine_id=#{machineCode} 
+	left join inno72_machine machine on machine.id=plan_machine.machine_id
+    where machine.machine_code=#{machineCode}
   </select>
 </mapper>
