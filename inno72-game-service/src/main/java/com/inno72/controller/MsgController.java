@@ -40,4 +40,19 @@ public class MsgController {
 		return "ok";
 	}
 
+	@ResponseBody
+	@RequestMapping(value = "/msg/sendSMS", method = {RequestMethod.GET, RequestMethod.POST})
+	public String sendSMS(String code, String phone, String machineCode, String localStr, String text, String sendBy) {
+		Map<String, String> param = new HashMap<>();
+		param.put("machineCode", machineCode);
+		param.put("localStr", localStr);
+		param.put("text", text);
+		try {
+			msgUtil.sendSMS(code, param, phone, sendBy);
+		} catch (Exception e) {
+			logger.error(e.getMessage(), e);
+		}
+		return "ok";
+	}
+
 }

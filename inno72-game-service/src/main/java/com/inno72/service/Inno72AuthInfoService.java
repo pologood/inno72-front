@@ -10,4 +10,6 @@ public interface Inno72AuthInfoService {
 	Result<Object> createQrCode(String machineId);
 
 	Result<Object> sessionPolling(String sessionUuid);
+
+	Result<Object> createSamplingQrCode(String machineCode, String ItemId);
 }
