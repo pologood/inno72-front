@@ -491,7 +491,7 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 			return Results.failure("登录失效!");
 		}
 		String report = vo.getReport();
-		String activityPlanId = vo.getActivityPlanId();
+		String activityPlanId = userSessionVo.getActivityPlanId();
 
 		Map<String, String> params = new HashMap<>();
 		params.put("activityPlanId", activityPlanId);
