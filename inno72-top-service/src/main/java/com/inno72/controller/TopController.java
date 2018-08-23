@@ -32,6 +32,8 @@ import com.inno72.vo.UserInfo;
 import com.taobao.api.ApiException;
 import com.taobao.api.DefaultTaobaoClient;
 import com.taobao.api.TaobaoClient;
+import com.taobao.api.request.CrmMemberIdentityGetRequest;
+import com.taobao.api.request.CrmMemberJoinurlGetRequest;
 import com.taobao.api.request.TmallFansAutomachineDeliveryrecordRequest;
 import com.taobao.api.request.TmallFansAutomachineGetmaskusernickRequest;
 import com.taobao.api.request.TmallFansAutomachineOrderAddlogRequest;
@@ -40,6 +42,8 @@ import com.taobao.api.request.TmallFansAutomachineOrderCreateorderbyitemidReques
 import com.taobao.api.request.TmallInteractIsvlotteryDrawRequest;
 import com.taobao.api.request.TmallMarketingFaceSkindetectRequest;
 import com.taobao.api.request.TopAuthTokenCreateRequest;
+import com.taobao.api.response.CrmMemberIdentityGetResponse;
+import com.taobao.api.response.CrmMemberJoinurlGetResponse;
 import com.taobao.api.response.TmallFansAutomachineDeliveryrecordResponse;
 import com.taobao.api.response.TmallFansAutomachineGetmaskusernickResponse;
 import com.taobao.api.response.TmallFansAutomachineOrderAddlogResponse;
@@ -63,10 +67,13 @@ public class TopController {
 	@Value("${h5_mobile_url}")
 	private String h5MobileUrl;
 	private TaobaoClient client;
+	private TaobaoClient samplinghClient;
 
 	@PostConstruct
 	public void initClient() {
 		client = new DefaultTaobaoClient(propertiesBean.getUrl(), propertiesBean.getAppkey(),
+				propertiesBean.getSecret());
+		samplinghClient = new DefaultTaobaoClient(propertiesBean.getUrl(), propertiesBean.getSampLingAppkey(),
 				propertiesBean.getSecret());
 	}
 
@@ -452,6 +459,44 @@ public class TopController {
 			response.sendRedirect(formatUrl);
 		} catch (IOException e) {
 			LOGGER.error(e.getMessage(), e);
+		}
+	}
+
+	private String memberJoin() {
+
+		String sessionKey = "610012905721527fc8830005792b8fa53ec2b15b0e86f0b845001562";
+		CrmMemberJoinurlGetRequest req = new CrmMemberJoinurlGetRequest();
+		req.setCallbackUrl("http://inno72top.ews.m.jaeapp.com/test");
+		req.setExtraInfo("{\"source\":\"paiyangji\",\"deviceId\":\"testId\",\"itemId\":576069787121}");
+		CrmMemberJoinurlGetResponse rsp = null;
+		try {
+			rsp = samplinghClient.execute(req, sessionKey);
+		} catch (ApiException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return rsp.getBody();
+	}
+
+	private String memberiDentity() {
+
+		String sessionKey = "610012905721527fc8830005792b8fa53ec2b15b0e86f0b845001562";
+		CrmMemberIdentityGetRequest req = new CrmMemberIdentityGetRequest();
+		req.setExtraInfo("{\"source\":\"paiyangji\",\"deviceId\":\"testId\",\"itemId\":565058963761}");
+		req.setMixNick(Escape.unescape("d01UrP%2BdYSsphXW%2BcTqLpwRmP%2FrLfMf5rcnjO9hg9D8BB8%3D"));
+		CrmMemberIdentityGetResponse rsp = client.execute(req, sessionKey);
+		System.out.println(rsp.getBody());
+
+		// TaobaoClient client = new DefaultTaobaoClient(URL, APPKEY, SECRET);
+		TopAuthTokenCreateRequest req = new TopAuthTokenCreateRequest();
+		req.setCode("dzZ6GSpiKYkP41dD9F73Vqoi1418779");
+		TopAuthTokenCreateResponse rsp;
+		try {
+			rsp = client.execute(req);
+			String result = rsp.getBody();
+			System.out.println(result);
+		} catch (ApiException e) {
+			e.printStackTrace();
 		}
 	}
 }

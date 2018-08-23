@@ -16,6 +16,7 @@ public class PropertiesBean {
 
 	private String url;
 	private String appkey;
+	private String sampLingAppkey;
 	private String secret;
 
 	public Map<String, String> getUrls() {
@@ -26,7 +27,7 @@ public class PropertiesBean {
 		this.urls = urls;
 	}
 
-	public String getValue(String key){
+	public String getValue(String key) {
 		return urls.get(key);
 	}
 
@@ -52,5 +53,13 @@ public class PropertiesBean {
 
 	public void setSecret(String secret) {
 		this.secret = secret;
+	}
+
+	public String getSampLingAppkey() {
+		return sampLingAppkey;
+	}
+
+	public void setSampLingAppkey(String sampLingAppkey) {
+		this.sampLingAppkey = sampLingAppkey;
 	}
 }
