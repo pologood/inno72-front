@@ -23,7 +23,7 @@
         </if>
     </select>
     <select id="selectAllResultByCode" resultMap="BaseResultMap" parameterType="java.util.Map">
-        select distinct prize_id from inno72_activity_plan_game_result
+        select * from inno72_activity_plan_game_result
         where
         activity_plan_id = #{activityPlanId}
        and result_code = #{report}
