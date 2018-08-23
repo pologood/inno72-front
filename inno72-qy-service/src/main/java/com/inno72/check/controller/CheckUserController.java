@@ -31,9 +31,9 @@ public class CheckUserController {
     @RequestMapping(value="/smsCode", method = {RequestMethod.POST})
     @ResponseBody
     public Result<String> smsCode(@RequestBody Inno72CheckUser inno72CheckUser){
-        logger.info("获取验证码接口参数：{}",JSON.toJSON(inno72CheckUser));
+        logger.info("获取验证码H5接口参数：{}",JSON.toJSON(inno72CheckUser));
         Result<String> result = checkUserService.smsCode(inno72CheckUser.getPhone());
-        logger.info("获取验证码接口结果：{}",JSON.toJSON(result));
+        logger.info("获取验证码H5接口结果：{}",JSON.toJSON(result));
         return result;
     }
 
@@ -42,9 +42,9 @@ public class CheckUserController {
      */
     @RequestMapping(value="/login", method = {RequestMethod.POST})
     public Result<SessionData> login(@RequestBody Inno72CheckUser inno72CheckUser){
-        logger.info("登录接口参数：{}",JSON.toJSON(inno72CheckUser));
+        logger.info("登录H5接口参数：{}",JSON.toJSON(inno72CheckUser));
         Result<SessionData> result = checkUserService.login(inno72CheckUser.getPhone(),inno72CheckUser.getSmsCode());
-        logger.info("登录接口结果：{}",JSON.toJSON(result));
+        logger.info("登录H5接口结果：{}",JSON.toJSON(result));
         return result;
     }
 
@@ -53,9 +53,9 @@ public class CheckUserController {
      */
     @RequestMapping(value="/upload")
     public Result<String> upload(MultipartFile file){
-        logger.info("上传头像接口开始。。。");
+        logger.info("上传头像H5接口开始。。。");
         Result<String> result = checkUserService.upload(file);
-        logger.info("上传头像接口返回结果{}", JSON.toJSON(result));
+        logger.info("上传头像H5接口返回结果{}", JSON.toJSON(result));
         return result;
     }
 
@@ -64,9 +64,9 @@ public class CheckUserController {
      */
     @RequestMapping(value="/update",method = {RequestMethod.POST})
     public Result<Inno72CheckUser> update(@RequestBody Inno72CheckUser inno72CheckUser){
-        logger.info("编辑用户接口参数：{}",JSON.toJSON(inno72CheckUser));
+        logger.info("编辑用户H5接口参数：{}",JSON.toJSON(inno72CheckUser));
         Result<Inno72CheckUser> result = checkUserService.updateUser(inno72CheckUser);
-        logger.info("编辑用户接口返回：{}",JSON.toJSON(inno72CheckUser));
+        logger.info("编辑用户H5接口返回：{}",JSON.toJSON(inno72CheckUser));
         return result;
     }
 
@@ -74,14 +74,5 @@ public class CheckUserController {
     @RequestMapping(value = "logout")
     public Result<String> logout(){
         return checkUserService.logout();
-    }
-
-    /**
-     * 运维检测
-     * @return
-     */
-    @RequestMapping(value="operation")
-    public Result<String> operation(){
-        return ResultGenerator.genSuccessResult();
     }
 }
