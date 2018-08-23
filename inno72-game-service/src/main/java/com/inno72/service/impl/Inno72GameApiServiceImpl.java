@@ -504,7 +504,7 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 			return Results.failure("无配置商品!");
 		}
 		List<String> orderIds = new ArrayList<>();
-		LOGGER.info("下单 userSessionVo ==> {}", JSON.toJSONString(userSessionVo));
+		LOGGER.debug("下单 userSessionVo ==> {}", JSON.toJSONString(userSessionVo));
 		for (Inno72ActivityPlanGameResult result : resultGoodsId) {
 			String prizeType = result.getPrizeType();
 			switch (prizeType) {
@@ -513,7 +513,7 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 					String prizeId = result.getPrizeId();
 					Inno72Goods inno72Goods = inno72GoodsMapper.selectByPrimaryKey(prizeId);
 					if (inno72Goods == null) {
-						LOGGER.info("讲真的。配置商品..它不见了。。。! 不信你看配置 ==> {}", JSON.toJSONString(result));
+						LOGGER.debug("讲真的。配置商品..它不见了。。。! 不信你看配置 ==> {}", JSON.toJSONString(result));
 						return Results.failure("讲真的。配置商品..它不见了。。。!");
 					}
 					String code = inno72Goods.getCode();
