@@ -504,6 +504,7 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 			return Results.failure("无配置商品!");
 		}
 		List<String> orderIds = new ArrayList<>();
+		LOGGER.info("下单 userSessionVo ==> {}", JSON.toJSONString(userSessionVo));
 		for (Inno72ActivityPlanGameResult result : resultGoodsId) {
 			String prizeType = result.getPrizeType();
 			switch (prizeType) {
@@ -553,6 +554,7 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 		String sessionUuid = userSessionVo.getSessionUuid();
 		String jstUrl = inno72GameServiceProperties.get("jstUrl");
 
+		LOGGER.info("商品下单 userSessionVo =》 {}", JSON.toJSONString(userSessionVo));
 
 		Inno72Machine inno72Machine = inno72MachineMapper.findMachineByCode(machineId);
 		if (inno72Machine == null) {
@@ -561,7 +563,6 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 		String _machineId = inno72Machine.getId();
 
 
-		LOGGER.info("将下单的session =====> {}", JSON.toJSONString(userSessionVo));
 		// 下单 inno72_Order TODO 商品下单 itemId 对应的类型？
 		String inno72OrderId = genInno72Order(channelId, activityPlanId, _machineId, itemId, userSessionVo.getUserId(),
 				Inno72Order.INNO72ORDER_GOODSTYPE.PRODUCT);
@@ -641,13 +642,10 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 		String sessionUuid = vo.getSessionUuid();
 		String activityPlanId = vo.getActivityPlanId();
 		String channelId = vo.getChannelId();
-		String machineId = vo.getMachineId();
+//		String machineId = vo.getMachineId();
 		String machineCode = vo.getMachineCode();
 
-		UserSessionVo userSessionVo = gameSessionRedisUtil.getSessionKey(sessionUuid);
-		if (userSessionVo == null) {
-			return Results.failure("登录失效!");
-		}
+		LOGGER.info("抽奖下单 userSessionVo =》 {}", JSON.toJSONString(vo));
 
 		Inno72Machine inno72Machine = inno72MachineMapper.findMachineByCode(machineCode);
 		if (inno72Machine == null) {
@@ -670,7 +668,7 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 			return Results.failure("商户好像出了点问题!");
 		}
 
-		String accessToken = userSessionVo.getAccessToken();
+		String accessToken = vo.getAccessToken();
 
 		Map<String, String> requestForm = new HashMap<>();
 
@@ -695,7 +693,7 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 		String orderId = "";
 		try {
 			orderId = this.genInno72Order(channelId, activityPlanId, _machineId, inno72Coupon.getId(),
-					userSessionVo.getUserId(), Inno72Order.INNO72ORDER_GOODSTYPE.COUPON);
+					vo.getUserId(), Inno72Order.INNO72ORDER_GOODSTYPE.COUPON);
 		} catch (Exception e) {
 			LOGGER.info("获取优惠券下单失败 ==> {}", e.getMessage(), e);
 			return Results.failure("下单失败!");
