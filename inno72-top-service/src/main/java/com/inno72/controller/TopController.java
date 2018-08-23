@@ -23,6 +23,7 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.client.RestTemplate;
 
 import com.alibaba.fastjson.JSON;
+import com.inno72.util.Escape;
 import com.inno72.util.FastJsonUtils;
 import com.inno72.validator.Validators;
 import com.inno72.vo.FansActVo;
@@ -450,6 +451,14 @@ public class TopController {
 			}
 		}
 		try {
+			String identityResult = memberIdentity();
+			String result = FastJsonUtils.getString(identityResult, "result");
+			if (result == null || result == "") {
+				String memberJoinResult = memberJoin();
+
+
+			}
+
 			// String h5Url = this.getHostGameH5Url(env);
 			// 跳转到游戏页面 手机端redirect
 			LOGGER.info("h5MobileUrl is {} , playCode is {}, env is {}", h5MobileUrl, playCode, env);
@@ -462,41 +471,40 @@ public class TopController {
 		}
 	}
 
+	/**
+	 * 入会
+	 */
 	private String memberJoin() {
 
 		String sessionKey = "610012905721527fc8830005792b8fa53ec2b15b0e86f0b845001562";
 		CrmMemberJoinurlGetRequest req = new CrmMemberJoinurlGetRequest();
-		req.setCallbackUrl("http://inno72top.ews.m.jaeapp.com/test");
+		req.setCallbackUrl("http://inno72top.ews.m.jaeapp.com/api/memberiDentity");
 		req.setExtraInfo("{\"source\":\"paiyangji\",\"deviceId\":\"testId\",\"itemId\":576069787121}");
 		CrmMemberJoinurlGetResponse rsp = null;
 		try {
 			rsp = samplinghClient.execute(req, sessionKey);
 		} catch (ApiException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		return rsp.getBody();
 	}
 
-	private String memberiDentity() {
+	/**
+	 * 是否是会员
+	 */
+	@RequestMapping("/api/memberIdentity")
+	private String memberIdentity() {
 
 		String sessionKey = "610012905721527fc8830005792b8fa53ec2b15b0e86f0b845001562";
 		CrmMemberIdentityGetRequest req = new CrmMemberIdentityGetRequest();
 		req.setExtraInfo("{\"source\":\"paiyangji\",\"deviceId\":\"testId\",\"itemId\":565058963761}");
 		req.setMixNick(Escape.unescape("d01UrP%2BdYSsphXW%2BcTqLpwRmP%2FrLfMf5rcnjO9hg9D8BB8%3D"));
-		CrmMemberIdentityGetResponse rsp = client.execute(req, sessionKey);
-		System.out.println(rsp.getBody());
-
-		// TaobaoClient client = new DefaultTaobaoClient(URL, APPKEY, SECRET);
-		TopAuthTokenCreateRequest req = new TopAuthTokenCreateRequest();
-		req.setCode("dzZ6GSpiKYkP41dD9F73Vqoi1418779");
-		TopAuthTokenCreateResponse rsp;
+		CrmMemberIdentityGetResponse rsp = null;
 		try {
-			rsp = client.execute(req);
-			String result = rsp.getBody();
-			System.out.println(result);
+			rsp = client.execute(req, sessionKey);
 		} catch (ApiException e) {
 			e.printStackTrace();
 		}
+		return rsp.getBody();
 	}
 }
