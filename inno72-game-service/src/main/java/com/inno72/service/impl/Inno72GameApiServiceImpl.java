@@ -497,15 +497,15 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 		params.put("activityPlanId", activityPlanId);
 		params.put("report", report);
 
-		List<Inno72ActivityPlanGameResult> resultGoodsId = inno72ActivityPlanGameResultMapper
+		List<Inno72ActivityPlanGameResult> planGameResults = inno72ActivityPlanGameResultMapper
 				.selectAllResultByCode(params);
 
-		if (resultGoodsId.size() == 0) {
+		if (planGameResults.size() == 0) {
 			return Results.failure("无配置商品!");
 		}
-		List<String> orderIds = new ArrayList<>();
 		LOGGER.debug("下单 userSessionVo ==> {}", JSON.toJSONString(userSessionVo));
-		for (Inno72ActivityPlanGameResult result : resultGoodsId) {
+		List<String> resultGoodsId = new ArrayList<>();
+		for (Inno72ActivityPlanGameResult result : planGameResults) {
 			String prizeType = result.getPrizeType();
 			switch (prizeType) {
 				case "1":
@@ -518,9 +518,8 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 					}
 					String code = inno72Goods.getCode();
 					Result<String> orderResult = this.sendOrder(userSessionVo, code);
-					if (orderResult.getCode() == Result.SUCCESS) {
-						orderIds.add(orderResult.getData());
-					}
+
+					resultGoodsId.add(result.getPrizeId());
 
 					break;
 				case "2":
@@ -533,8 +532,53 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 					return Results.failure("无商品类型");
 			}
 		}
+
 		Map<String, Object> result = new HashMap<>(2);
-		result.put("orderIds", orderIds);
+		if (resultGoodsId.size() > 0 ){
+			// 请求接口 获取出货 货道号
+			Map<String, Object> map = new HashMap<>();
+			map.put("machineId", userSessionVo.getMachineId());
+			map.put("goodsCodes", resultGoodsId);
+			List<Inno72SupplyChannel> inno72SupplyChannels = inno72SupplyChannelMapper.selectListByParam(map);
+
+			LOGGER.info("查询 货道号 结果 ==> {}", JSON.toJSONString(inno72SupplyChannels));
+
+			if (inno72SupplyChannels.size() == 0) {
+				return Results.failure("没有商品!");
+			}
+
+			Map<String, GoodsVo> goodsVoMap = new HashMap<>();
+
+			for (Inno72SupplyChannel inno72SupplyChannel : inno72SupplyChannels) {
+
+				String goodsCode = inno72SupplyChannel.getGoodsCode();
+				String code = inno72SupplyChannel.getCode();
+				Integer goodsCount = inno72SupplyChannel.getGoodsCount();
+
+				GoodsVo goodsVo = goodsVoMap.get(goodsCode);
+
+				if (goodsVo == null) {
+					goodsVo = new GoodsVo(goodsCode, 0, inno72SupplyChannel.getGoodsName());
+				}
+
+				int goodsNum = goodsVo.getGoodsNum();
+
+				List<String> chanelIds = goodsVo.getChannelIds();
+
+				if (goodsCount != null && goodsCount > 0) {
+					goodsVo.setGoodsNum(goodsNum + goodsCount);
+					chanelIds.add(code);
+					goodsVo.setChannelIds(chanelIds);
+				}
+
+				goodsVoMap.put(goodsCode, goodsVo);
+
+			}
+
+			Collection<GoodsVo> values = goodsVoMap.values();
+			result.put("goods", values);
+		}
+
 		result.put("time", new Date().getTime());
 		return Results.success(result);
 	}
