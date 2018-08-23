@@ -1,20 +1,20 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.inno72.mapper.Inno72OrderGoodsMapper">
-  <resultMap id="BaseResultMap" type="com.inno72.model.Inno72OrderGoods">
-    <!--
-      WARNING - @mbg.generated
-    -->
-    <id column="id" jdbcType="VARCHAR" property="id" />
-    <result column="order_id" jdbcType="VARCHAR" property="orderId" />
-    <result column="order_num" jdbcType="VARCHAR" property="orderNum" />
-    <result column="goods_type" jdbcType="TINYINT" property="goodsType" />
-    <result column="goods_id" jdbcType="VARCHAR" property="goodsId" />
-    <result column="goods_name" jdbcType="VARCHAR" property="goodsName" />
-    <result column="goods_code" jdbcType="VARCHAR" property="goodsCode" />
-    <result column="goods_price" jdbcType="DECIMAL" property="goodsPrice" />
-    <result column="status" jdbcType="TINYINT" property="status" />
-  </resultMap>
+    <resultMap id="BaseResultMap" type="com.inno72.model.Inno72OrderGoods">
+        <!--
+          WARNING - @mbg.generated
+        -->
+        <id column="id" jdbcType="VARCHAR" property="id"/>
+        <result column="order_id" jdbcType="VARCHAR" property="orderId"/>
+        <result column="order_num" jdbcType="VARCHAR" property="orderNum"/>
+        <result column="goods_type" jdbcType="TINYINT" property="goodsType"/>
+        <result column="goods_id" jdbcType="VARCHAR" property="goodsId"/>
+        <result column="goods_name" jdbcType="VARCHAR" property="goodsName"/>
+        <result column="goods_code" jdbcType="VARCHAR" property="goodsCode"/>
+        <result column="goods_price" jdbcType="DECIMAL" property="goodsPrice"/>
+        <result column="status" jdbcType="TINYINT" property="status"/>
+    </resultMap>
     <select id="selectByOrderIdAndGoodsType" resultMap="BaseResultMap" parameterType="java.util.Map">
       select * from inno72_order_goods where order_id = #{orderId}
     </select>

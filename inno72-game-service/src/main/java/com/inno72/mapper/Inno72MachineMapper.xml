@@ -21,7 +21,7 @@
         <result column="device_id" jdbcType="VARCHAR" property="deviceId"/>
         <result column="bluetooth_address" jdbcType="VARCHAR" property="bluetoothAddress"/>
         <result column="open_status" jdbcType="INTEGER" property="openStatus"/>
-        
+
     </resultMap>
 
     <select id="findMachineByCode" resultMap="BaseResultMap" parameterType="java.lang.String">
@@ -91,9 +91,6 @@
                 </if>
             </trim>
         </where>
-
-
-
 
 
     </select>

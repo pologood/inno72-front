@@ -55,7 +55,6 @@ public class Inno72GameServiceImpl extends AbstractService<Inno72Game> implement
 	private Inno72ActivityPlanMapper inno72ActivityPlanMapper;
 
 
-
 	@Override
 	public Result<String> updateRefOrderId(String inno72OrderId, String refId, String thirdUserId) {
 		Inno72Order inno72Order = inno72OrderMapper.selectByPrimaryKey(inno72OrderId);
@@ -83,7 +82,7 @@ public class Inno72GameServiceImpl extends AbstractService<Inno72Game> implement
 		// 更新订单
 		String inno72OrderId = userSessionVo.getInno72OrderId();
 		Inno72Order inno72Order = inno72OrderMapper.selectByPrimaryKey(inno72OrderId);
-		if ( inno72Order == null ){
+		if (inno72Order == null) {
 			LOGGER.info("更新第三方订单状态时候查询的订单不存在 [{}]", inno72OrderId);
 			return;
 		}
@@ -127,6 +126,6 @@ public class Inno72GameServiceImpl extends AbstractService<Inno72Game> implement
 		LOGGER.info("countSuccOrder   inno72Orders.size() => {} ; dayUserMaxTimes => {}; userMaxTimes => {}",
 				inno72Orders.size(), dayUserMaxTimes, userMaxTimes);
 
-		return  inno72Orders.size() < userMaxTimes && todayInno72Orders.size() < dayUserMaxTimes;
+		return inno72Orders.size() < userMaxTimes && todayInno72Orders.size() < dayUserMaxTimes;
 	}
 }

@@ -82,10 +82,10 @@ public class Inno72Machine {
 
 	@Column(name = "address")
 	private String address;
-	
+
 	@Column(name = "bluetooth_address")
 	private String bluetoothAddress;
-	
+
 	@Column(name = "open_status")
 	private Integer openStatus;
 

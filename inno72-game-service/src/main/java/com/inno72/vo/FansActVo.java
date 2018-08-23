@@ -43,7 +43,7 @@ public class FansActVo {
 	/**
 	 * 活动对应的机器列表信息
 	 */
-	public class MachineDetailVo{
+	public class MachineDetailVo {
 		/**
 		 * 供应商ID
 		 * ex: 232323
