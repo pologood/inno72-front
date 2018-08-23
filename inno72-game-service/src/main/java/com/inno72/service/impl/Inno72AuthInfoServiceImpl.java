@@ -153,7 +153,7 @@ public class Inno72AuthInfoServiceImpl implements Inno72AuthInfoService {
 	}
 
 	@Override
-	public Result<Object> createSamplingQrCode(String machineCode, String ItemId) {
+	public Result<Object> createSamplingQrCode(String machineCode, String itemId) {
 		LOGGER.info("根据机器code生成二维码 machineCode is {} ", machineCode);
 
 		Inno72Machine inno72Machine = inno72MachineMapper.findMachineByCode(machineCode);
@@ -183,7 +183,7 @@ public class Inno72AuthInfoServiceImpl implements Inno72AuthInfoService {
 		String env = getActive();
 		// 调用天猫的地址
 		String url = inno72GameServiceProperties.get("tmallSamplingUrl") + _machineId + "/" + sessionUuid + "/" + env
-				+ "/" + ItemId + "/?1=1" + "&bluetoothAddAes=" + bluetoothAddAes + "&machineCode=" + machineCode;
+				+ "/" + itemId + "/?1=1" + "&bluetoothAddAes=" + bluetoothAddAes + "&machineCode=" + machineCode;
 
 		LOGGER.info("二维码字符串 {} ", url);
 		// 二维码存储在本地的路径
