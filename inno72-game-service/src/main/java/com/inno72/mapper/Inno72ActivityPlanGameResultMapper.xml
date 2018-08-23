@@ -33,13 +33,14 @@
         select prize_id from inno72_activity_plan_game_result
           where prize_type = 2 and activity_plan_id = #{activityPlanId} and result_code = #{report} limit 1
     </select>
-    <select id="selectCountGoods" resultType="java.lang.Integer" parameterType="string">
+    <select id="selectCountGoods" resultType="java.lang.Integer" parameterType="java.util.Map">
         select SUM(ifnull(i4.goods_count,0)) as goodsCount from inno72_activity_plan_game_result i1
             left join inno72_goods i2 on i1.prize_id = i2.id
             left join inno72_supply_channel_goods i3 on i3.goods_id = i2.id
             left join inno72_supply_channel i4 on i4.id = i3.supply_channel_id
             where i1.prize_type = 1
             and i1.activity_plan_id = #{platId}
+            and i4.machine_id = #{machineId}
             group by i2.id
     </select>
 

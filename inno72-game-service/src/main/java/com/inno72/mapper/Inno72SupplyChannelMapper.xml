@@ -26,10 +26,10 @@
 
 
     <update id="subCount">
-    update inno72_supply_channel set goods_count = goods_count-1,
-    update_time=#{updateTime}
-    where code = #{code} and machine_id = #{machineId}
-  </update>
+        update inno72_supply_channel set goods_count = goods_count-1,
+        update_time=#{updateTime}
+        where code = #{code} and machine_id = #{machineId}
+    </update>
 
 
     <sql id="Column_List">
@@ -37,11 +37,11 @@
       t1.goods_count,t1.create_id,t1.create_time,t1.update_id,t1.update_time,t3.code goodsCode,
       t2.is_delete goodsStatus,
       t3.name goodsName
-  </sql>
+    </sql>
 
     <sql id="Column_Get">
-    id,code,name,status,machine_id,parent_code,volume_count,is_delete,goods_count,create_id,create_time,update_id,update_time
-  </sql>
+      id,code,name,status,machine_id,parent_code,volume_count,is_delete,goods_count,create_id,create_time,update_id,update_time
+    </sql>
 
 
     <select id="selectByParam" resultMap="BaseResultMap">
@@ -60,6 +60,7 @@
                 and t1.parent_code = #{parentCode}
             </if>
             and t1.is_delete=0
+            and t1.goods_count > 0
         </where>
         limit 1
     </select>
