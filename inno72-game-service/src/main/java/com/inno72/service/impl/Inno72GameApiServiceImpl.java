@@ -764,9 +764,21 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 
 		assert machineByCode != null;
 		String machineId = machineByCode.getId();
-		int i = inno72SupplyChannelMapper.subCount(new Inno72SupplyChannel(machineId, null, channelId));
 
-		LOGGER.info("减货 参数 ===》 【machineId=>{}，channelId=>{}】;结果 ==> {}", machineId, channelId, i);
+		Inno72SupplyChannel inno72SupplyChannel = inno72SupplyChannelMapper.selectChannel(new Inno72SupplyChannel(machineId, null, channelId));
+		if (inno72SupplyChannel == null){
+			return Results.failure("货道错误");
+		}
+		LOGGER.info("减货接口 ==> 未减货货道 [{}]", JSON.toJSONString(inno72SupplyChannel));
+		Inno72SupplyChannel updateChannel = new Inno72SupplyChannel();
+		updateChannel.setId(inno72SupplyChannel.getId());
+		updateChannel.setUpdateTime(LocalDateTime.now());
+		updateChannel.setGoodsCount((inno72SupplyChannel.getGoodsCount() - 1) < 0 ? 0 : (inno72SupplyChannel.getGoodsCount() - 1));
+		LOGGER.info("减货接口 ==> 要减货的货道 [{}]", JSON.toJSONString(updateChannel));
+		inno72SupplyChannelMapper.updateByPrimaryKeySelective(updateChannel);
+//		int i = inno72SupplyChannelMapper.subCount(new Inno72SupplyChannel(machineId, null, channelId));
+
+//		LOGGER.info("减货 参数 ===》 【machineId=>{}，channelId=>{}】;结果 ==> {}", machineId, channelId, i);
 
 		if (StringUtil.isNotEmpty(orderId)) {
 			new Thread(new DeliveryRecord(orderId, orderId, machineCode, channelId, userSessionVo)).start();

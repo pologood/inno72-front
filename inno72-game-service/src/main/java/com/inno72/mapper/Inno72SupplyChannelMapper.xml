@@ -96,5 +96,9 @@
         </where>
     </select>
 
+    <select id="selectChannel" resultMap="BaseResultMap" parameterType="com.inno72.model.Inno72SupplyChannel">
+      select  * from inno72_supply_channel where code = #{code} and machine_id = #{machineId}
+    </select>
+
 
 </mapper>
