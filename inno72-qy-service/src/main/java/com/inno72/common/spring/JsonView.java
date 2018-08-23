@@ -1,11 +1,10 @@
 package com.inno72.common.spring;
 
-import java.util.Iterator;
-import java.util.Map;
-
+import com.inno72.common.Result;
 import org.springframework.web.servlet.view.json.MappingJackson2JsonView;
 
-import com.inno72.common.Result;
+import java.util.Iterator;
+import java.util.Map;
 
 
 public class JsonView extends MappingJackson2JsonView {

@@ -1,15 +1,12 @@
 package com.inno72.check.model;
 
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
-import com.inno72.common.CommonConstants;
-import com.inno72.common.StringUtil;
 import com.inno72.common.datetime.CustomLocalDateTimeSerializer;
 import org.springframework.data.jpa.convert.threeten.Jsr310JpaConverters;
 import org.springframework.format.annotation.DateTimeFormat;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
-import java.util.List;
 
 public class Inno72CheckUser {
 
@@ -118,6 +115,7 @@ public class Inno72CheckUser {
      */
     @JsonSerialize(using = CustomLocalDateTimeSerializer.class)
     @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+    @Convert(converter = Jsr310JpaConverters.LocalDateTimeConverter.class)
     @Column(name = "update_time")
     private LocalDateTime updateTime;
 

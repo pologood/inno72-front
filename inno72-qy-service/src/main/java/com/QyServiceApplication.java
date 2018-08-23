@@ -1,12 +1,13 @@
 package com;
 
+import com.inno72.common.Inno72QyServiceProperties;
+import com.inno72.config.client.QyhProperties;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.cloud.client.circuitbreaker.EnableCircuitBreaker;
 import org.springframework.cloud.netflix.eureka.EnableEurekaClient;
 import org.springframework.cloud.netflix.feign.EnableFeignClients;
 
-import com.inno72.config.client.QyhProperties;
 import com.inno72.springboot.web.SpringApplicationBuilder;
 import com.inno72.springboot.web.SpringBootServletInitializer;
 
@@ -18,11 +19,11 @@ import com.inno72.springboot.web.SpringBootServletInitializer;
 public class QyServiceApplication extends SpringBootServletInitializer {
 
 	public static void main(String[] args) {
-		new SpringApplicationBuilder(QyServiceApplication.class, "qy-service", args);
+		new SpringApplicationBuilder(QyServiceApplication.class, "inno72-qy-service", args);
 	}
 
 	@Override
 	public String setAppNameForLog() {
-		return "qy-service";
+		return "inno72-qy-service";
 	}
 }

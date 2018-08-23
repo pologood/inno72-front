@@ -10,9 +10,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.inno72.common.CommonConstants;
 import com.inno72.common.utils.StringUtil;
-import com.inno72.config.client.QyhProperties;
 import com.inno72.msg.aes.WXBizMsgCrypt;
 import com.inno72.msg.service.MainService;
 
@@ -23,13 +21,12 @@ public class MainController {
 	@Autowired
 	private MainService mainService;
 
-	@Autowired
-	private QyhProperties qyhProperties;
-
 	@RequestMapping(value = "/main", method = { RequestMethod.POST, RequestMethod.GET })
 	public String processMsg(HttpServletRequest request) throws Exception {
-		WXBizMsgCrypt wxcpt = new WXBizMsgCrypt(CommonConstants.QY_TOKEN, CommonConstants.QY_AES_KEY,
-				qyhProperties.get("corpid"));
+		String sToken = "XDubpXOqvnXsPa";
+		String sCorpID = "wwdf888217e3fcd510";
+		String sEncodingAESKey = "fxjCVo9P6XdGPqjbDg9dW1zmkUJGeSN3xQJYw0JQUDK";
+		WXBizMsgCrypt wxcpt = new WXBizMsgCrypt(sToken, sEncodingAESKey, sCorpID);
 		String msg_signature = request.getParameter("msg_signature");
 		String timestamp = request.getParameter("timestamp");
 		String nonce = request.getParameter("nonce");

@@ -1,8 +1,6 @@
 package com.inno72.check.model;
 
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
-import com.inno72.common.CommonConstants;
-import com.inno72.common.StringUtil;
 import com.inno72.common.datetime.CustomLocalDateTimeSerializer;
 import org.springframework.data.jpa.convert.threeten.Jsr310JpaConverters;
 import org.springframework.format.annotation.DateTimeFormat;

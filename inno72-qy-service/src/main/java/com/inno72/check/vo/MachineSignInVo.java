@@ -1,13 +1,9 @@
 package com.inno72.check.vo;
 
-import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.inno72.check.model.Inno72CheckSignIn;
-import com.inno72.common.datetime.CustomLocalDateTimeSerializer;
-import org.springframework.data.jpa.convert.threeten.Jsr310JpaConverters;
-import org.springframework.format.annotation.DateTimeFormat;
 
-import javax.persistence.*;
-import java.time.LocalDateTime;
+import javax.persistence.Column;
+import javax.persistence.Transient;
 import java.util.List;
 
 public class MachineSignInVo {

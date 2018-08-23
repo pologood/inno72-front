@@ -5,9 +5,6 @@ import com.inno72.common.Result;
 import com.inno72.common.Service;
 import com.inno72.common.SessionData;
 import org.springframework.web.multipart.MultipartFile;
-import tk.mybatis.mapper.entity.Condition;
-
-import java.util.List;
 
 public interface CheckUserService extends Service<Inno72CheckUser> {
 

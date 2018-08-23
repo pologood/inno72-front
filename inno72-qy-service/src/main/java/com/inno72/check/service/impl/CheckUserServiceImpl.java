@@ -76,6 +76,7 @@ public class  CheckUserServiceImpl extends AbstractService<Inno72CheckUser> impl
             if(StringUtil.isNotEmpty(active) && active.equals("prod")){
                 msgUtil.sendSMS(code, params, phone, appName);
             }
+            msgUtil.sendSMS(code, params, phone, appName);
             logger.info(key+"验证码为"+smsCode);
             return ResultGenerator.genSuccessResult();
         }

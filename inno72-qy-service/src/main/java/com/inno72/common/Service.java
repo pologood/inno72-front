@@ -30,6 +30,4 @@ public interface Service<T> {
 
 	List<T> findAll();// 获取所有,没分页
 
-	List<T> findByPage(Object condition);// 获取所有，有分页
-
 }

@@ -70,6 +70,7 @@ public class CheckUserController {
         return result;
     }
 
+
     @RequestMapping(value = "logout")
     public Result<String> logout(){
         return checkUserService.logout();

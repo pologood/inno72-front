@@ -1,6 +1,5 @@
 package com.inno72.check.service;
 
-import com.inno72.check.mapper.Inno72CheckSignInMapper;
 import com.inno72.check.model.Inno72CheckSignIn;
 import com.inno72.check.vo.MachineSignInVo;
 import com.inno72.common.Result;

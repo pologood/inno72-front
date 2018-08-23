@@ -82,9 +82,4 @@ public abstract class AbstractService<T> implements Service<T> {
 	public List<T> findAll() {
 		return mapper.selectAll();
 	}
-
-	@Override
-	public List<T> findByPage(Object condition) {
-		return mapper.selectByConditionByPage(condition);
-	}
 }

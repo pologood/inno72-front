@@ -2,11 +2,6 @@ package com.inno72.common;
 
 public class CommonConstants {
 
-	public final static String QY_TOKEN = "XDubpXOqvnXsPa";
-	public final static String QY_AES_KEY = "fxjCVo9P6XdGPqjbDg9dW1zmkUJGeSN3xQJYw0JQUDK";
-
-	public final static String QY_GETOPENID = "https://qyapi.weixin.qq.com/cgi-bin/user/convert_to_openid?access_token={0}";
-
 	/** 钉钉消息加密用的token **/
 	public final static String DD_TOKEN = "123456";
 	/** 钉钉消息加密用的key **/
@@ -32,7 +27,7 @@ public class CommonConstants {
 
 	/** 用户登录对象 **/
 	public static SessionData SESSION_DATA = new SessionData();
-
+	
 	/** OSS基础路径 **/
 	public static final String OSS_PATH = "backend";
 	/** OSS基础路径 **/
@@ -45,4 +40,5 @@ public class CommonConstants {
 	 *APP下载地址前缀
 	 */
 	public static final String DOWNLOAD_APP_PREF = "http://inno72.oss.72solo.com";
+
 }
