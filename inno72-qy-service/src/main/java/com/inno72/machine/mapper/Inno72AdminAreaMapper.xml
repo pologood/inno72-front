@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.inno72.machine.mapper.Inno72AdminAreaMapper">
+  <resultMap id="BaseResultMap" type="com.inno72.machine.model.Inno72AdminArea">
+    <!--
+      WARNING - @mbg.generated
+    -->
+    <id column="code" jdbcType="VARCHAR" property="code" />
+    <result column="parent_code" jdbcType="VARCHAR" property="parentCode" />
+    <result column="name" jdbcType="VARCHAR" property="name" />
+    <result column="province" jdbcType="VARCHAR" property="province" />
+    <result column="city" jdbcType="VARCHAR" property="city" />
+    <result column="district" jdbcType="VARCHAR" property="district" />
+    <result column="circle" jdbcType="VARCHAR" property="circle" />
+    <result column="level" jdbcType="INTEGER" property="level" />
+    <association property="cityVoList" resultMap="CityVoList"/>
+  </resultMap>
+    <resultMap id="CityVoList" type="com.inno72.machine.vo.CityVo">
+        <result column="cityCode" jdbcType="VARCHAR" property="code" />
+        <result column="cityParentCode" jdbcType="VARCHAR" property="parentCode" />
+        <result column="cityName" jdbcType="VARCHAR" property="name" />
+        <result column="cityLevel" jdbcType="INTEGER" property="level" />
+        <association property="districtVoList" resultMap="DistrictVoList"/>
+    </resultMap>
+  <resultMap id="DistrictVoList" type="com.inno72.machine.vo.DistrictVo">
+    <result column="districtCode" jdbcType="VARCHAR" property="code" />
+    <result column="districtParentCode" jdbcType="VARCHAR" property="parentCode" />
+    <result column="districtName" jdbcType="VARCHAR" property="name" />
+    <result column="districtLevel" jdbcType="INTEGER" property="level" />
+    <association property="circleVoList" resultMap="CircleVoList"/>
+  </resultMap>
+  <resultMap id="CircleVoList" type="com.inno72.machine.vo.CircleVo">
+    <result column="circleCode" jdbcType="VARCHAR" property="code" />
+    <result column="circleParentCode" jdbcType="VARCHAR" property="parentCode" />
+    <result column="circleName" jdbcType="VARCHAR" property="name" />
+    <result column="circleLevel" jdbcType="INTEGER" property="level" />
+  </resultMap>
+
+
+    <select id="selectFistLevelArea" resultMap="BaseResultMap">
+        select * from inno72_admin_area t1
+        <if test="level == 2">
+            left join inno72_admin_area t2 on t1.code=t2.parent_code
+        </if>
+        <if test="level == 3">
+            left join inno72_admin_area t2 on t1.code=t2.parent_code
+            left join inno72_admin_area t3 on t2.code=t3.parent_code
+        </if>
+        <if test="level == 4">
+            left join inno72_admin_area t2 on t1.code=t2.parent_code
+            left join inno72_admin_area t3 on t2.code=t3.parent_code
+            left join inno72_admin_area t4 on t3.code=t4.parent_code
+        </if>
+        <where>
+            t1.level = 1
+            <if test="level == 1">
+                and t1.code = #{code}
+            </if>
+            <if test="level == 2">
+                and t2.code = #{code}
+            </if>
+            <if test="level == 3">
+                and t3.code = #{code}
+            </if>
+            <if test="level == 4">
+                and t4.code = #{code}
+            </if>
+        </where>
+    </select>
+
+    <select id="cityLevelArea" resultMap="BaseResultMap">
+        select t1.*,
+        t2.code cityCode,
+        t2.parent_code cityParentCode,
+        t2.name cityName,
+        t2.level cityLevel,
+        t3.code districtCode,
+        t3.parent_code districtParentCode,
+        t3.name districtName,
+        t3.level districtLevel,
+        t4.code circleCode,
+        t4.parent_code circleParentCode,
+        t4.name circleName,
+        t4.level circleLevel
+        from inno72_admin_area t1
+        left join inno72_admin_area t2 on t1.code = t2.parent_code
+        left join inno72_admin_area t3 on t2.code = t3.parent_code
+        left join inno72_admin_area t4 on t3.code = t4.parent_code
+        where t1.code = #{code}
+    </select>
+</mapper>
