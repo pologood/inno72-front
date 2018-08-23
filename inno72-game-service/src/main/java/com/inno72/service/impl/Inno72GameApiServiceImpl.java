@@ -671,8 +671,8 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 		// TODO 奖券下单
 		String orderId = "";
 		try {
-			orderId = this.genInno72Order(channelId, activityPlanId, _machineId, inno72Coupon.getId(), userSessionVo.getUserId(),
-					Inno72Order.INNO72ORDER_GOODSTYPE.COUPON);
+			orderId = this.genInno72Order(channelId, activityPlanId, _machineId, inno72Coupon.getId(),
+					userSessionVo.getUserId(), Inno72Order.INNO72ORDER_GOODSTYPE.COUPON);
 		} catch (Exception e) {
 			LOGGER.info("获取优惠券下单失败 ==> {}", e.getMessage(), e);
 			return Results.failure("下单失败!");
@@ -834,7 +834,8 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 	 }
 	 */
 	@Override
-	public Result<String> sessionRedirect(String sessionUuid, String mid, String token, String code, String userId) {
+	public Result<String> sessionRedirect(String sessionUuid, String mid, String token, String code, String userId,
+			String itemId) {
 		LOGGER.info("session 回执请求 => sessionUuid:{}; mid:{}; token:{}; code:{}; userId:{}", sessionUuid, mid, token,
 				code, userId);
 
@@ -942,11 +943,11 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 			LOGGER.info("插入游戏用户渠道表 完成 ===> {}", JSON.toJSONString(userChannel));
 
 		}
-		//TODO 判断机器是否有商品
+		// TODO 判断机器是否有商品
 		List<Integer> countGoods = inno72ActivityPlanGameResultMapper.selectCountGoods(inno72ActivityPlan.getId());
 		boolean goodsCount = true;
-		for ( Integer count : countGoods ){
-			if (count == 0){
+		for (Integer count : countGoods) {
+			if (count == 0) {
 				goodsCount = false;
 				break;
 			}

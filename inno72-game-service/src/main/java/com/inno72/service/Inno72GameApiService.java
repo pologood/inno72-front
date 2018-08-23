@@ -20,7 +20,8 @@ public interface Inno72GameApiService {
 
 	Result<String> shipmentReport(MachineApiVo vo);
 
-	Result<String> sessionRedirect(String sessionUuid, String mid, String token, String code, String userId);
+	Result<String> sessionRedirect(String sessionUuid, String mid, String token, String code, String userId,
+			String itemId);
 
 	Result<String> malfunctionLog(String machineId, String channelCode);
 
