@@ -39,7 +39,7 @@ public class MachineController {
     /**
      * 查询管理的机器
      */
-    @RequestMapping(value="list", method = {RequestMethod.POST})
+    @RequestMapping(value="list", method = {RequestMethod.GET})
     public Result<List<Inno72Machine>> list(){
         logger.info("查询管理的机器接口");
         Result<List<Inno72Machine>> result = machineService.getMachineList();
@@ -51,9 +51,9 @@ public class MachineController {
     /**
      * 查询单个一级区域及子区域
      */
-    @RequestMapping(value="findAreaByCode", method = {RequestMethod.POST})
+    @RequestMapping(value="findAreaByCode", method = {RequestMethod.GET})
     @ResponseBody
-    public Result<Inno72AdminArea> findAreaByCode(@RequestBody Inno72AdminArea adminArea){
+    public Result<Inno72AdminArea> findAreaByCode(Inno72AdminArea adminArea){
         logger.info("查询城市及子区域接口");
         return machineService.cityLevelArea(adminArea);
     }
@@ -62,7 +62,7 @@ public class MachineController {
     /**
      * 查询一级区域
      */
-    @RequestMapping(value="findFirstLevelArea", method = {RequestMethod.POST})
+    @RequestMapping(value="findFirstLevelArea", method = {RequestMethod.GET})
     public Result<List<Inno72AdminArea>> findFirstLevelArea(){
         logger.info("查询单个一级区域及子区域接口");
         return machineService.findFirstLevelArea();
@@ -71,7 +71,7 @@ public class MachineController {
     /**
      * 查询点位
      */
-    @RequestMapping(value="findLocaleByAreaCode", method = {RequestMethod.POST})
+    @RequestMapping(value="findLocaleByAreaCode", method = {RequestMethod.GET})
     public Result<List<Inno72Locale>> findLocaleByAreaCode(@RequestBody Inno72Locale locale){
         logger.info("查询点位接口参数：{}",JSON.toJSON(locale));
         return machineService.selectLocaleByAreaCode(locale.getAreaCode());
@@ -82,7 +82,7 @@ public class MachineController {
      * @param inno72Machine
      * @return
      */
-    @RequestMapping(value="getLocale", method = {RequestMethod.POST})
+    @RequestMapping(value="getLocale", method = {RequestMethod.GET})
     public Result<Map<String,Object>> getLocale(@RequestBody Inno72Machine inno72Machine){
         logger.info("获取当前点位接口参数：{}",JSON.toJSON(inno72Machine));
         Result<Map<String,Object>> result = machineService.selectMachineLocale(inno72Machine);
