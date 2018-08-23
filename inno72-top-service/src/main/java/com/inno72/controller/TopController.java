@@ -102,7 +102,7 @@ public class TopController {
 			userInfo.setToken(tokenResult);
 
 			// 设置用户信息
-			data = setUserInfo(userInfo, env);
+			data = setUserInfo(userInfo, env, null);
 			LOGGER.info("data is {}", data);
 
 			if (!StringUtils.isEmpty(data)) {
@@ -151,7 +151,7 @@ public class TopController {
 	/**
 	 * 调用游戏服务器接口设置关联 sessionUuid authInfo信息
 	 */
-	private String setUserInfo(UserInfo userInfo, String env) {
+	private String setUserInfo(UserInfo userInfo, String env, String itemId) {
 		LOGGER.info("gameServerUrl is " + gameServerUrl);
 		RestTemplate client = new RestTemplate();
 		MultiValueMap<String, Object> postParameters = new LinkedMultiValueMap<>();
@@ -160,6 +160,7 @@ public class TopController {
 		postParameters.add("code", userInfo.getCode());
 		postParameters.add("token", userInfo.getToken());
 		postParameters.add("userId", userInfo.getUserId());
+		postParameters.add("itemId", itemId);
 		HttpHeaders headers = new HttpHeaders();
 		headers.add("Content-Type", "application/x-www-form-urlencoded");
 		String result;
@@ -399,12 +400,12 @@ public class TopController {
 	/**
 	 * 派样活动登录回调接口
 	 */
-	@RequestMapping("/api/samplingTop/{mid}/{sessionUuid}/{env}/{ItemId}")
+	@RequestMapping("/api/samplingTop/{mid}/{sessionUuid}/{env}/{itemId}")
 	public void samplingHome(HttpServletResponse response, @PathVariable("mid") String mid,
 			@PathVariable("sessionUuid") String sessionUuid, String code, @PathVariable("env") String env,
-			@PathVariable("ItemId") String ItemId) throws Exception {
+			@PathVariable("itemId") String itemId) throws Exception {
 		LOGGER.info("mid is {}, code is {}, sessionUuid is {}, env is {}, ItemId is {}", mid, code, sessionUuid, env,
-				ItemId);
+				itemId);
 		String playCode = "";
 		String data;
 		String qrStatus = "";
@@ -429,7 +430,7 @@ public class TopController {
 			userInfo.setToken(tokenResult);
 
 			// 设置用户信息
-			data = setUserInfo(userInfo, env);
+			data = setUserInfo(userInfo, env, itemId);
 			LOGGER.info("data is {}", data);
 
 			if (!StringUtils.isEmpty(data)) {
