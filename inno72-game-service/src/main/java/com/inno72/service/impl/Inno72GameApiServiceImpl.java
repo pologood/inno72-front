@@ -548,7 +548,8 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 	private Result<String> sendOrder(UserSessionVo userSessionVo, String itemId) {
 
 		String channelId = userSessionVo.getChannelId();
-		String machineId = userSessionVo.getMachineCode();
+		String machineCode = userSessionVo.getMachineCode();
+		String machineId = userSessionVo.getMachineId();
 		String activityPlanId = userSessionVo.getActivityPlanId();
 		String activityId = userSessionVo.getActivityId();
 		String sessionUuid = userSessionVo.getSessionUuid();
@@ -556,15 +557,13 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 
 		LOGGER.info("商品下单 userSessionVo =》 {}", JSON.toJSONString(userSessionVo));
 
-		Inno72Machine inno72Machine = inno72MachineMapper.findMachineByCode(machineId);
+		Inno72Machine inno72Machine = inno72MachineMapper.selectByPrimaryKey(machineId);
 		if (inno72Machine == null) {
-			return Results.failure("机器信息错误!");
+			return Results.failure("下商品订单机器信息错误!");
 		}
-		String _machineId = inno72Machine.getId();
-
 
 		// 下单 inno72_Order TODO 商品下单 itemId 对应的类型？
-		String inno72OrderId = genInno72Order(channelId, activityPlanId, _machineId, itemId, userSessionVo.getUserId(),
+		String inno72OrderId = genInno72Order(channelId, activityPlanId, machineId, itemId, userSessionVo.getUserId(),
 				Inno72Order.INNO72ORDER_GOODSTYPE.PRODUCT);
 
 		userSessionVo.setInno72OrderId(inno72OrderId);
@@ -642,14 +641,14 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 		String sessionUuid = vo.getSessionUuid();
 		String activityPlanId = vo.getActivityPlanId();
 		String channelId = vo.getChannelId();
-//		String machineId = vo.getMachineId();
+		String machineId = vo.getMachineId();
 		String machineCode = vo.getMachineCode();
 
 		LOGGER.info("抽奖下单 userSessionVo =》 {}", JSON.toJSONString(vo));
 
-		Inno72Machine inno72Machine = inno72MachineMapper.findMachineByCode(machineCode);
+		Inno72Machine inno72Machine = inno72MachineMapper.selectByPrimaryKey(machineId);
 		if (inno72Machine == null) {
-			return Results.failure("机器信息错误!");
+			return Results.failure("下优惠券机器信息错误!");
 		}
 		String _machineId = inno72Machine.getId();
 
