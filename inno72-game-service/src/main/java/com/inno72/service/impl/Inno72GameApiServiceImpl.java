@@ -1035,8 +1035,11 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 		params.put("machineId", inno72Machine.getId());
 		List<Integer> countGoods = inno72ActivityPlanGameResultMapper.selectCountGoods(params);
 		boolean goodsCount = true;
+		if (countGoods.size() == 0 ){
+			goodsCount = false;
+		}
 		for (Integer count : countGoods) {
-			if (count == 0) {
+			if (count < 1 ) {
 				goodsCount = false;
 				break;
 			}
