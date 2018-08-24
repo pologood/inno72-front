@@ -648,11 +648,11 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 			 * "request_id": "43ecpzeb5fdn" } }
 			 */
 
-			String msg_code = FastJsonUtils.getString(respJson, "msg_code");
-			if (!msg_code.equals("SUCCESS")) {
-				String msg_info = FastJsonUtils.getString(respJson, "msg_info");
-				return Results.failure(msg_info);
-			}
+//			String msg_code = FastJsonUtils.getString(respJson, "msg_code");
+//			if (!msg_code.equals("SUCCESS")) {
+//				String msg_info = FastJsonUtils.getString(respJson, "msg_info");
+//				return Results.failure(msg_info);
+//			}
 			String ref_order_id = FastJsonUtils.getString(respJson, "order_id");
 			userSessionVo.setInno72OrderId(inno72OrderId);
 			userSessionVo.setRefOrderId(ref_order_id);
