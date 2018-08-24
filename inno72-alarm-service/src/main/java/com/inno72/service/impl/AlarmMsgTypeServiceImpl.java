@@ -5,6 +5,8 @@ import java.util.List;
 
 import javax.annotation.Resource;
 
+import com.inno72.mapper.AlarmRuleMsgTypeMapper;
+import com.inno72.model.AlarmRuleMsgType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -36,6 +38,9 @@ public class AlarmMsgTypeServiceImpl extends AbstractService<AlarmMsgType> imple
 	private AlarmMsgTypeMapper alarmMsgTypeMapper;
 	@Resource
 	private IRedisUtil redisUtil;
+
+	@Resource
+	private AlarmRuleMsgTypeMapper alarmRuleMsgTypeMapper;
 
 	@Override
 	@TargetDataSource(dataSourceKey = DataSourceKey.DB_INNO72SAAS)
@@ -91,7 +96,14 @@ public class AlarmMsgTypeServiceImpl extends AbstractService<AlarmMsgType> imple
 		if (alarmMsgType == null){
 			return Results.failure("不存在!");
 		}
-		int i = alarmMsgTypeMapper.deleteByPrimaryKey(id);
+
+		AlarmRuleMsgType alarmRuleMsgType = new AlarmRuleMsgType();
+		alarmRuleMsgType.setMsgTypeId(id);
+		int i = alarmRuleMsgTypeMapper.selectCount(alarmRuleMsgType);
+		if (i > 0) {
+			return Results.failure("通知方式已经被使用!");
+		}
+		alarmMsgTypeMapper.deleteByPrimaryKey(id);
 
 		redisUtil.incr("alarm:db:version");
 

@@ -2,6 +2,8 @@ package com.inno72.service;
 
 import java.util.List;
 
+import com.inno72.annotation.TargetDataSource;
+import com.inno72.common.DataSourceKey;
 import com.inno72.common.Result;
 import com.inno72.common.Service;
 import com.inno72.model.AlarmRule;
@@ -18,4 +20,7 @@ public interface AlarmRuleService extends Service<AlarmRule> {
 	List<AlarmRule> queryForPage(AlarmRule alarmRule);
 
 	AlarmRuleRequestVo queryById(String ruleId);
+
+	@TargetDataSource(dataSourceKey = DataSourceKey.DB_INNO72SAAS)
+	Result<String> delete(String id);
 }

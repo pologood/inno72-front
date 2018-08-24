@@ -5,6 +5,10 @@ import java.util.Map;
 
 import javax.annotation.Resource;
 
+import com.inno72.mapper.AlarmRuleMapper;
+import com.inno72.mapper.AlarmUserMapper;
+import com.inno72.model.AlarmRule;
+import com.inno72.model.AlarmUser;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -33,11 +37,19 @@ public class AlarmDealLogServiceImpl extends AbstractService<AlarmDealLog> imple
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(AlarmDealLogServiceImpl.class);
 
+	@Resource
+	private AlarmUserMapper alarmUserMapper;
+
+	@Resource
+	private AlarmRuleMapper alarmRuleMapper;
+
     @Resource
     private AlarmDealLogMapper alarmDealLogMapper;
 
     @Resource
     private AlarmDetailLogMapper alarmDetailLogMapper;
+
+
 
 	@Override
 	@TargetDataSource(dataSourceKey = DataSourceKey.DB_INNO72SAAS)
@@ -54,7 +66,14 @@ public class AlarmDealLogServiceImpl extends AbstractService<AlarmDealLog> imple
 			return Results.failure("参数缺失");
 		}
 
-		AlarmDealLog alarmDealLog = alarmDealLogMapper.queryDetail(logId);
+		AlarmDealLog alarmDealLog = alarmDealLogMapper.selectByPrimaryKey(logId);
+		String ruleId = alarmDealLog.getRuleId();
+		AlarmRule alarmRule = alarmRuleMapper.selectByPrimaryKey(ruleId);
+		alarmDealLog.setAlarmRule(alarmRule);
+
+		String director = alarmRule.getDirector();
+		AlarmUser alarmUser = alarmUserMapper.selectByPrimaryKey(director);
+		alarmRule.setDirector(alarmUser.getName());
 
 		if (alarmDealLog == null){
 			return Results.failure("非法请求");

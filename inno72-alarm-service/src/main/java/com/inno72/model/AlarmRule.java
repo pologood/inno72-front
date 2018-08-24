@@ -1,6 +1,7 @@
 package com.inno72.model;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 import javax.persistence.Column;
 import javax.persistence.Convert;
@@ -99,6 +100,10 @@ public class AlarmRule {
 
     @Column(name = "update_user")
     private String updateUser;
+
+	private List<String> userId;
+
+	private List<String> typeId;
 
     /**
      * 获取uuid
@@ -321,4 +326,20 @@ public class AlarmRule {
     public void setUpdateUser(String updateUser) {
         this.updateUser = updateUser;
     }
+
+	public List<String> getUserId() {
+		return userId;
+	}
+
+	public void setUserId(List<String> userId) {
+		this.userId = userId;
+	}
+
+	public List<String> getTypeId() {
+		return typeId;
+	}
+
+	public void setTypeId(List<String> typeId) {
+		this.typeId = typeId;
+	}
 }

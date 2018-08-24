@@ -23,11 +23,11 @@
     <select id="queryForPage" parameterType="java.util.Map" resultType="java.util.Map">
         select
             i1.id as logId,
-            i1.app_name as appName,
+            i2.app_name as appName,
             i2.`name` as ruleName,
             DATE_FORMAT(i1.create_time, '%Y-%m-%d %H:%i:%S') as dealLogTime,
             i2.create_user as createUser,
-            i2.director as director,
+            i3.name as director,
             DATE_FORMAT(i1.first_read_time, '%Y-%m-%d %H:%i:%s') as firstReadTime,
             Date_format(i1.deal_time, "%Y-%m-%d %H:%i:%s") as dealTime,
             i1.deal_user as dealUser,
@@ -35,6 +35,7 @@
             i1.deal_method as dealMethod
         from alarm_deal_log i1
         left join alarm_rule i2 on i1.rule_id = i2.id
+        left join alarm_user i3 on i2.director = i3.id
         <where>
             <trim prefixOverrides="and">
               <if test="appName != null and appName != ''">

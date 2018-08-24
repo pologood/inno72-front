@@ -44,8 +44,7 @@ public class AlarmRuleController {
 
 	@RequestMapping(value = "/delete", method = { RequestMethod.POST,  RequestMethod.GET})
 	public Result delete(@RequestParam String id) {
-		alarmRuleService.deleteById(id);
-		return ResultGenerator.genSuccessResult();
+		return alarmRuleService.delete(id);
 	}
 
 	@RequestMapping(value = "/update", method = { RequestMethod.POST,  RequestMethod.GET})

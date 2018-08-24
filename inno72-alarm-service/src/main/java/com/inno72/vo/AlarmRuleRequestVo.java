@@ -11,8 +11,4 @@ public class AlarmRuleRequestVo {
 
 	private AlarmRule alarmRule;
 
-	private List<String> userId;
-
-	private List<String> typeId;
-
 }
