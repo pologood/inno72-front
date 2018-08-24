@@ -27,7 +27,7 @@ public class QimenTmallFansAutomachineQureymachinesRequest {
 		this.obj1 = obj1;
 	}
 
-	public class MachineQuery{
+	public class MachineQuery {
 		private int pageSize;
 		private int currentPage;
 		private String machineId;

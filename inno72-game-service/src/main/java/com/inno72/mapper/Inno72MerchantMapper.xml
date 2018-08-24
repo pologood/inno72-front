@@ -5,15 +5,15 @@
         <!--
           WARNING - @mbg.generated
         -->
-        <id column="id" jdbcType="VARCHAR" property="id" />
-        <result column="merchant_code" jdbcType="VARCHAR" property="merchantCode" />
-        <result column="merchant_name" jdbcType="VARCHAR" property="merchantName" />
-        <result column="origin_flag" jdbcType="VARCHAR" property="originFlag" />
-        <result column="brand_name" jdbcType="VARCHAR" property="brandName" />
-        <result column="channel_id" jdbcType="VARCHAR" property="channelId" />
-        <result column="is_delete" jdbcType="INTEGER" property="isDelete" />
-        <result column="create_id" jdbcType="VARCHAR" property="createId" />
-        <result column="update_id" jdbcType="VARCHAR" property="updateId" />
+        <id column="id" jdbcType="VARCHAR" property="id"/>
+        <result column="merchant_code" jdbcType="VARCHAR" property="merchantCode"/>
+        <result column="merchant_name" jdbcType="VARCHAR" property="merchantName"/>
+        <result column="origin_flag" jdbcType="VARCHAR" property="originFlag"/>
+        <result column="brand_name" jdbcType="VARCHAR" property="brandName"/>
+        <result column="channel_id" jdbcType="VARCHAR" property="channelId"/>
+        <result column="is_delete" jdbcType="INTEGER" property="isDelete"/>
+        <result column="create_id" jdbcType="VARCHAR" property="createId"/>
+        <result column="update_id" jdbcType="VARCHAR" property="updateId"/>
         <result column="create_time" jdbcType="TIMESTAMP" property="createTime" javaType="java.time.LocalDateTime"
                 typeHandler="org.apache.ibatis.type.LocalDateTimeTypeHandler"/>
         <result column="update_time" jdbcType="TIMESTAMP" property="updateTime" javaType="java.time.LocalDateTime"
@@ -35,5 +35,6 @@
                   )
             )
         )
+        and is_delete = 0
     </select>
 </mapper>

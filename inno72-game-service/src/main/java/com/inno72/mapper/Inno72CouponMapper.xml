@@ -5,16 +5,16 @@
         <!--
           WARNING - @mbg.generated
         -->
-        <id column="id" jdbcType="VARCHAR" property="id" />
-        <result column="name" jdbcType="VARCHAR" property="name" />
-        <result column="code" jdbcType="VARCHAR" property="code" />
-        <result column="activity_plan_id" jdbcType="VARCHAR" property="activityPlanId" />
-        <result column="is_delete" jdbcType="INTEGER" property="isDelete" />
-        <result column="remark" jdbcType="VARCHAR" property="remark" />
-        <result column="create_id" jdbcType="VARCHAR" property="createId" />
-        <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
-        <result column="update_id" jdbcType="VARCHAR" property="updateId" />
-        <result column="update_time" jdbcType="TIMESTAMP" property="updateTime" />
+        <id column="id" jdbcType="VARCHAR" property="id"/>
+        <result column="name" jdbcType="VARCHAR" property="name"/>
+        <result column="code" jdbcType="VARCHAR" property="code"/>
+        <result column="activity_plan_id" jdbcType="VARCHAR" property="activityPlanId"/>
+        <result column="is_delete" jdbcType="INTEGER" property="isDelete"/>
+        <result column="remark" jdbcType="VARCHAR" property="remark"/>
+        <result column="create_id" jdbcType="VARCHAR" property="createId"/>
+        <result column="create_time" jdbcType="TIMESTAMP" property="createTime"/>
+        <result column="update_id" jdbcType="VARCHAR" property="updateId"/>
+        <result column="update_time" jdbcType="TIMESTAMP" property="updateTime"/>
     </resultMap>
     <select id="selectCouponCodeByParam" resultMap="BaseResultMap" parameterType="java.util.Map">
 

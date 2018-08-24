@@ -15,7 +15,7 @@ public class Inno72FileController {
 	private Inno72FileService inno72FileService;
 
 	@PostMapping("/picCheck")
-	public Result<Object> picCheck(String sessionUUid, String base64Pic)  {
+	public Result<Object> picCheck(String sessionUUid, String base64Pic) {
 		return inno72FileService.skindetect(sessionUUid, base64Pic);
 	}
 

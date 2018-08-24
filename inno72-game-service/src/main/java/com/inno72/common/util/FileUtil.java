@@ -8,7 +8,7 @@ import sun.misc.BASE64Encoder;
 
 public class FileUtil {
 
-	public static String toBase64(InputStream in, String startWith){
+	public static String toBase64(InputStream in, String startWith) {
 
 		byte[] data = null;
 
@@ -28,8 +28,8 @@ public class FileUtil {
 
 	}
 
-	public static boolean isExitsPath(String path) throws InterruptedException{
-		String [] paths=path.split("/");
+	public static boolean isExitsPath(String path) throws InterruptedException {
+		String[] paths = path.split("/");
 		StringBuilder fullPath = new StringBuilder();
 		for (String name : paths) {
 			if (name.contains(".zip")) {
@@ -41,7 +41,7 @@ public class FileUtil {
 				file.mkdir();
 			}
 		}
-		File file=new File(fullPath.toString());//目录全路径
+		File file = new File(fullPath.toString());//目录全路径
 		return !file.exists();
 	}
 }
