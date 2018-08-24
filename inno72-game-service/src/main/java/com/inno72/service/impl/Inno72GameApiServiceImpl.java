@@ -791,7 +791,6 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 		String machineCode = vo.getMachineId();
 		String channelId = vo.getChannelId();
 		String sessionUuid = vo.getSessionUuid();
-		String orderId = vo.getOrderId();
 
 		if (StringUtil.isEmpty(machineCode) || StringUtil.isEmpty(channelId) || StringUtil.isEmpty(sessionUuid)) {
 			return Results.failure("参数缺失！");
@@ -801,6 +800,7 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 		if (userSessionVo == null) {
 			return Results.failure("登录失效!");
 		}
+		String orderId = userSessionVo.getRefOrderId();
 
 		Inno72Machine machineByCode = inno72MachineMapper.findMachineByCode(machineCode);
 
