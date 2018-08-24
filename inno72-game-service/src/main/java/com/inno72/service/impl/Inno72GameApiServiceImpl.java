@@ -597,6 +597,7 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 		String activityPlanId = userSessionVo.getActivityPlanId();
 		String sessionUuid = userSessionVo.getSessionUuid();
 		String jstUrl = inno72GameServiceProperties.get("jstUrl");
+		String activityId = userSessionVo.getActivityId();
 
 		LOGGER.info("商品下单 userSessionVo =》 {}", JSON.toJSONString(userSessionVo));
 
@@ -620,8 +621,8 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 
 		Map<String, String> requestForm = new HashMap<>();
 		requestForm.put("accessToken", accessToken);
-		requestForm.put("activityId", machineCode);
-		requestForm.put("mid", machineId); // 实际为code
+		requestForm.put("activityId", activityId);
+		requestForm.put("mid", machineCode); // 实际为code
 		requestForm.put("goodsId", itemId);
 
 		String respJson;
