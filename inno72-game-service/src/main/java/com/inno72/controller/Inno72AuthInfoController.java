@@ -40,8 +40,9 @@ public class Inno72AuthInfoController {
 	 */
 	@RequestMapping(value = "/createSamplingQrCode", method = {RequestMethod.POST, RequestMethod.GET})
 	@ResponseBody
-	public Result<Object> createSamplingQrCode(@RequestParam String machineCode, @RequestParam String itemId) {
+	public Result<Object> createSamplingQrCode(@RequestParam String machineCode, @RequestParam String itemId,
+			@RequestParam String isVip, @RequestParam String sessionKey) {
 
-		return inno72AuthInfoService.createSamplingQrCode(machineCode, itemId);
+		return inno72AuthInfoService.createSamplingQrCode(machineCode, itemId, isVip, sessionKey);
 	}
 }

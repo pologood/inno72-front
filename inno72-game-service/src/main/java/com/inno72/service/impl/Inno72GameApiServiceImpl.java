@@ -1266,6 +1266,15 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 			return Results.failure("machineCode为空!");
 		}
 		List<Inno72SamplingGoods> inno72SamplingGoodsList = inno72GoodsMapper.selectSamplingGoods(machineCode);
+		for (Inno72SamplingGoods sampLingGoods : inno72SamplingGoodsList) {
+			String aliyunUrl = inno72GameServiceProperties.get("returnUrl");
+			if (sampLingGoods.getImg() != null && !"".equals(sampLingGoods.getImg())) {
+				sampLingGoods.setImg(aliyunUrl + sampLingGoods.getImg());
+			}
+			if (sampLingGoods.getBanner() != null && !"".equals(sampLingGoods.getBanner())) {
+				sampLingGoods.setBanner(aliyunUrl + sampLingGoods.getBanner());
+			}
+		}
 		LOGGER.info("返回派样商品列表 => list:{}", inno72SamplingGoodsList);
 		return Results.success(inno72SamplingGoodsList);
 	}
