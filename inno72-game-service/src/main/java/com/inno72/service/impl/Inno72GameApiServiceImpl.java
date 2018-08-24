@@ -610,8 +610,7 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 		String inno72OrderId = genInno72Order(channelId, activityPlanId, machineId, itemId, userSessionVo.getUserId(),
 				Inno72Order.INNO72ORDER_GOODSTYPE.PRODUCT);
 
-		userSessionVo.setInno72OrderId(inno72OrderId);
-		gameSessionRedisUtil.setSessionEx(sessionUuid, JSON.toJSONString(userSessionVo));
+
 		String accessToken = userSessionVo.getAccessToken();
 		LOGGER.info("更新的session =====> {}", JSON.toJSONString(userSessionVo));
 		if (inno72OrderId.equals("0")) {
@@ -654,10 +653,14 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 				String msg_info = FastJsonUtils.getString(respJson, "msg_info");
 				return Results.failure(msg_info);
 			}
+			String ref_order_id = FastJsonUtils.getString(respJson, "order_id");
+			userSessionVo.setInno72OrderId(inno72OrderId);
+			userSessionVo.setRefOrderId(ref_order_id);
+			gameSessionRedisUtil.setSessionEx(sessionUuid, JSON.toJSONString(userSessionVo));
 
 			// 更新第三方订单号进inno72 order
 			Result<String> stringResult = inno72GameService
-					.updateRefOrderId(inno72OrderId, FastJsonUtils.getString(respJson, "order_id"), userSessionVo.getUserId());
+					.updateRefOrderId(inno72OrderId, ref_order_id, userSessionVo.getUserId());
 			LOGGER.info("修改第三方订单进inno72——order 结果 {}", JSON.toJSONString(stringResult));
 			return Results.success(inno72OrderId);
 
@@ -821,12 +824,14 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 				(inno72SupplyChannel.getGoodsCount() - 1) < 0 ? 0 : (inno72SupplyChannel.getGoodsCount() - 1));
 		LOGGER.info("减货接口 ==> 要减货的货道 [{}]", JSON.toJSONString(updateChannel));
 		inno72SupplyChannelMapper.updateByPrimaryKeySelective(updateChannel);
+
+		inno72GameService.updateOrderReport(userSessionVo);
 		//		int i = inno72SupplyChannelMapper.subCount(new Inno72SupplyChannel(machineId, null, channelId));
 
 		//		LOGGER.info("减货 参数 ===》 【machineId=>{}，channelId=>{}】;结果 ==> {}", machineId, channelId, i);
 
 		if (StringUtil.isNotEmpty(orderId)) {
-			new Thread(new DeliveryRecord(orderId, orderId, machineCode, channelId, userSessionVo)).start();
+			new Thread(new DeliveryRecord(machineCode, channelId, userSessionVo)).run();
 		} else {
 			LOGGER.info("调用出货无orderId 请求参数=>{}", JSON.toJSONString(vo));
 		}
@@ -835,16 +840,12 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 
 	class DeliveryRecord implements Runnable {
 
-		private String orderId;
-		private String mid;
 		private String channelId;
 		private UserSessionVo userSessionVo;
 		private String machineCode;
 
-		public DeliveryRecord(String orderId, String mid, String channelId, String machineCode,
+		public DeliveryRecord(String channelId, String machineCode,
 				UserSessionVo userSessionVo) {
-			this.orderId = orderId;
-			this.mid = mid;
 			this.channelId = channelId;
 			this.machineCode = machineCode;
 			this.userSessionVo = userSessionVo;
@@ -855,7 +856,7 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 			Map<String, String> requestForm = new HashMap<>();
 
 			requestForm.put("accessToken", userSessionVo.getAccessToken());
-			requestForm.put("orderId", orderId); // 安全ua
+			requestForm.put("orderId", userSessionVo.getRefOrderId()); // 安全ua
 			requestForm.put("mid", machineCode);// umid 实际为code
 			requestForm.put("channelId", channelId);// 互动实例ID
 
@@ -878,7 +879,6 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 				LOGGER.info("返回非成功状态，不能更细订单状态为成功 {}", respJson);
 			}
 
-			inno72GameService.updateOrderReport(userSessionVo);
 		}
 	}
 
