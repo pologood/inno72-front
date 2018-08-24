@@ -595,7 +595,6 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 		String machineCode = userSessionVo.getMachineCode();
 		String machineId = userSessionVo.getMachineId();
 		String activityPlanId = userSessionVo.getActivityPlanId();
-		String activityId = userSessionVo.getActivityId();
 		String sessionUuid = userSessionVo.getSessionUuid();
 		String jstUrl = inno72GameServiceProperties.get("jstUrl");
 
