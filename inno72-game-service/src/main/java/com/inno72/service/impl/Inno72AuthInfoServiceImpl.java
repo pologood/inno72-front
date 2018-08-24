@@ -182,8 +182,9 @@ public class Inno72AuthInfoServiceImpl implements Inno72AuthInfoService {
 		// 获取运行环境
 		String env = getActive();
 		// 调用天猫的地址
-		String url = inno72GameServiceProperties.get("tmallSamplingUrl") + _machineId + "/" + sessionUuid + "/" + env
-				+ "/" + itemId + "/?1=1" + "&bluetoothAddAes=" + bluetoothAddAes + "&machineCode=" + machineCode;
+		String testUrl = "https://oauth.taobao.com/authorize?response_type=code&client_id=24952452&redirect_uri=http://inno72test.ews.m.jaeapp.com/api/samplingTop/";
+		String url = testUrl + _machineId + "/" + sessionUuid + "/" + env + "/" + itemId + "/?1=1" + "&bluetoothAddAes="
+				+ bluetoothAddAes + "&machineCode=" + machineCode;
 
 		LOGGER.info("二维码字符串 {} ", url);
 		// 二维码存储在本地的路径
