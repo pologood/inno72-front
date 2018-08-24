@@ -657,7 +657,7 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 
 			// 更新第三方订单号进inno72 order
 			Result<String> stringResult = inno72GameService
-					.updateRefOrderId(inno72OrderId, respJson, userSessionVo.getUserId());
+					.updateRefOrderId(inno72OrderId, FastJsonUtils.getString(respJson, "order_id"), userSessionVo.getUserId());
 			LOGGER.info("修改第三方订单进inno72——order 结果 {}", JSON.toJSONString(stringResult));
 			return Results.success(inno72OrderId);
 
