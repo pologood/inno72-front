@@ -89,6 +89,10 @@ public class Inno72SamplingGoods {
 	 * sessionKey
 	 */
 	private String sessionKey;
+	/**
+	 * 店铺名称
+	 */
+	private String shopName;
 
 	/**
 	 * 获取商品ID
@@ -327,5 +331,11 @@ public class Inno72SamplingGoods {
 		this.sessionKey = sessionKey;
 	}
 
+	public String getShopName() {
+		return shopName;
+	}
 
+	public void setShopName(String shopName) {
+		this.shopName = shopName;
+	}
 }
