@@ -836,8 +836,8 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 	@Override
 	public Result<String> sessionRedirect(String sessionUuid, String mid, String token, String code, String userId,
 			String itemId) {
-		LOGGER.info("session 回执请求 => sessionUuid:{}; mid:{}; token:{}; code:{}; userId:{}", sessionUuid, mid, token,
-				code, userId);
+		LOGGER.info("session 回执请求 => sessionUuid:{}; mid:{}; token:{}; code:{}; userId:{}; itemId:{}", sessionUuid, mid,
+				token, code, userId, itemId);
 
 		JSONObject parseTokenObject = JSON.parseObject(token);
 		String access_token = Optional.ofNullable(parseTokenObject.get("access_token")).map(Object::toString)
