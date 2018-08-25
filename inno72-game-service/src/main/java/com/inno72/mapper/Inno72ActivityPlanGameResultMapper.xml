@@ -50,7 +50,7 @@
                 activity_plan_id = #{planId}
             and prize_id = #{goodsId}
             and prize_type = 1
-        union on
+        union all
         select r1.* from inno72_activity_plan_game_result r1
             left join inno72_coupon c1 on r1.prize_id = c1.id
             where r1.prize_type = 2
