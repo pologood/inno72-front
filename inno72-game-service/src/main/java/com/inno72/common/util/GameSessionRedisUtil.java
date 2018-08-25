@@ -25,17 +25,17 @@ public class GameSessionRedisUtil {
 	@Autowired
 	private StringRedisTemplate template;
 
-	public UserSessionVo getSessionKey(String sessionUuid){
+	public UserSessionVo getSessionKey(String sessionUuid) {
 		String sessionKey = SESSION_KEY + sessionUuid;
 		String s = string().get(sessionKey);
 		UserSessionVo userSessionVo = null;
-		if (StringUtil.isNotEmpty(s)){
+		if (StringUtil.isNotEmpty(s)) {
 			userSessionVo = JSON.parseObject(s, UserSessionVo.class);
 		}
 		return userSessionVo;
 	}
 
-	public void setSessionEx(String sessionUuid, String value){
+	public void setSessionEx(String sessionUuid, String value) {
 		LOGGER.debug("存入session ===> sessionUuid[{}]、 value[{}];", sessionUuid, value);
 		string().set(SESSION_KEY + sessionUuid, value, GameSessionRedisUtil.SESSION_EX, TimeUnit.SECONDS);
 	}
@@ -43,14 +43,14 @@ public class GameSessionRedisUtil {
 	private ValueOperations<String, String> string() {
 		return template.opsForValue();
 	}
-	
-	public void setSessionEx(String sessionUuid, String value, Integer outtime){
+
+	public void setSessionEx(String sessionUuid, String value, Integer outtime) {
 		LOGGER.debug("存入session ===> sessionUuid[{}]、 value[{}];", sessionUuid, value);
-		string().set(sessionUuid, value , outtime, TimeUnit.SECONDS);
+		string().set(sessionUuid, value, outtime, TimeUnit.SECONDS);
 	}
 
 	public Boolean hasKey(String key) {
 		return template.hasKey(SESSION_KEY + key);
 	}
-	
+
 }

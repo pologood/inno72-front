@@ -16,8 +16,9 @@ import com.inno72.service.Inno72ParticipanceRecordService;
  */
 @Service
 @Transactional
-public class Inno72ParticipanceRecordServiceImpl extends AbstractService<Inno72ParticipanceRecord> implements Inno72ParticipanceRecordService {
-    @Resource
-    private Inno72ParticipanceRecordMapper inno72ParticipanceRecordMapper;
+public class Inno72ParticipanceRecordServiceImpl extends AbstractService<Inno72ParticipanceRecord>
+		implements Inno72ParticipanceRecordService {
+	@Resource
+	private Inno72ParticipanceRecordMapper inno72ParticipanceRecordMapper;
 
 }

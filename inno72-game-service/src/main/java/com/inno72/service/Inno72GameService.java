@@ -11,6 +11,8 @@ import com.inno72.vo.UserSessionVo;
  */
 public interface Inno72GameService extends Service<Inno72Game> {
 	public Result<String> updateRefOrderId(String inno72OrderId, String refId, String thirdUserId);
+
 	public void updateOrderReport(UserSessionVo userSessionVo);
+
 	public boolean countSuccOrder(String channelId, String channelUserKey, String activityPlanId);
 }

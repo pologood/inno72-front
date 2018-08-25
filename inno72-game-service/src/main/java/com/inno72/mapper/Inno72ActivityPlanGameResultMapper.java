@@ -7,10 +7,13 @@ import com.inno72.common.Mapper;
 import com.inno72.model.Inno72ActivityPlanGameResult;
 
 public interface Inno72ActivityPlanGameResultMapper extends Mapper<Inno72ActivityPlanGameResult> {
-	List<String> selectByActivityPlanId(Map<String,String> params);
-	String selectPrizeId(Map<String,String> params );
+	List<String> selectByActivityPlanId(Map<String, String> params);
+
+	String selectPrizeId(Map<String, String> params);
 
 	List<Inno72ActivityPlanGameResult> selectAllResultByCode(Map<String, String> params);
 
-	List<Integer> selectCountGoods(String platId);
+	List<Integer> selectCountGoods(Map<String, String> params);
+
+	List<Inno72ActivityPlanGameResult> selectByParams(Map<String, String> params);
 }

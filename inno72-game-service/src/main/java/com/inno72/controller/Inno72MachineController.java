@@ -37,8 +37,8 @@ public class Inno72MachineController {
 	 * @return
 	 */
 	@RequestMapping(value = "/findGame", method = {RequestMethod.POST, RequestMethod.GET})
-	public Result findGame(@RequestParam(name = "machineId") String mid, String planId,
-			String version, String versionInno72) {
+	public Result findGame(@RequestParam(name = "machineId") String mid, String planId, String version,
+			String versionInno72) {
 		return inno72MachineService.findGame(mid, planId, version, versionInno72);
 	}
 
@@ -75,7 +75,7 @@ public class Inno72MachineController {
 	}
 
 	@RequestMapping(value = "/qimenQueryMachines", method = {RequestMethod.POST, RequestMethod.GET})
-	public Object qimenQueryMachines(QimenTmallFansAutomachineQureymachinesRequest.MachineQuery query){
+	public Object qimenQueryMachines(QimenTmallFansAutomachineQureymachinesRequest.MachineQuery query) {
 		PageHelper.startPage(query.getCurrentPage(), query.getPageSize());
 		List<MachineVo> list = inno72MachineService.selectListByQimen(query);
 		PageInfo pageInfo = new PageInfo(list);

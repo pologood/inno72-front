@@ -32,14 +32,11 @@ public class LogReqrest {
 	 *   业务类型
 	 */
 	private String type;
-	public enum LogRequest_Type{
 
-		machine_online_time("machine_online_time","开机时间"),
-		lottery("lottery","抽奖"),
-		play_time("play_time","单用户互动时长"),
-		follow("follow","关注"),
-		login("login","登录用户"),
-		;
+	public enum LogRequest_Type {
+
+		machine_online_time("machine_online_time", "开机时间"), lottery("lottery", "抽奖"), play_time("play_time",
+				"单用户互动时长"), follow("follow", "关注"), login("login", "登录用户"),;
 
 		private String bizType;
 		private String info;
@@ -104,11 +101,11 @@ public class LogReqrest {
 		this.value3 = value3;
 		this.value4 = value4;
 	}
-	
+
 	public LogReqrest() {
 	}
 
-	public static String sendRequest(String accessToken, String url, LogReqrest reqrest){
+	public static String sendRequest(String accessToken, String url, LogReqrest reqrest) {
 
 		Map<String, String> requestForm = new HashMap<>();
 		requestForm.put("accessToken", accessToken);
@@ -191,5 +188,5 @@ public class LogReqrest {
 	public static long getSerialversionuid() {
 		return serialVersionUID;
 	}
-	
+
 }

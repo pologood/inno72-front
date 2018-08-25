@@ -5,9 +5,9 @@
         <!--
           WARNING - @mbg.generated
         -->
-        <id column="id" jdbcType="VARCHAR" property="id" />
-        <result column="activity_plan_id" jdbcType="VARCHAR" property="activityPlanId" />
-        <result column="goods_id" jdbcType="VARCHAR" property="goodsId" />
+        <id column="id" jdbcType="VARCHAR" property="id"/>
+        <result column="activity_plan_id" jdbcType="VARCHAR" property="activityPlanId"/>
+        <result column="goods_id" jdbcType="VARCHAR" property="goodsId"/>
     </resultMap>
 
 </mapper>
