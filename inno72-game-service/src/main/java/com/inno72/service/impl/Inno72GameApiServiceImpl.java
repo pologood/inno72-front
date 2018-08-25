@@ -832,8 +832,8 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 		}
 
 		// 查商户CODE
-		String shopId = inno72MerchantMapper.selectShopCodeByPlanId(activityPlanId);
-		if (StringUtil.isEmpty(shopId)) {
+		Inno72Shops shop = inno72ShopsMapper.selectByPrimaryKey(inno72Coupon.getShopsId());
+		if ( shop == null || StringUtil.isEmpty(shop.getShopCode())) {
 			return Results.failure("商户好像出了点问题!");
 		}
 
@@ -845,7 +845,7 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 		requestForm.put("ua", ua); // 安全ua
 		requestForm.put("umid", umid);// umid
 		requestForm.put("interactId", inno72Coupon.getCode());// 互动实例ID
-		requestForm.put("shopId", shopId);// 店铺ID
+		requestForm.put("shopId", shop.getShopCode());// 店铺ID
 
 		String requestUrl = jstUrl + "/api/top/lottory";
 
