@@ -86,9 +86,9 @@ public class Inno72SamplingGoods {
 	private Integer isVip;
 
 	/**
-	 * sessionkdy
+	 * sessionKey
 	 */
-	private String sessionkdy;
+	private String sessionKey;
 
 	/**
 	 * 获取商品ID
@@ -319,11 +319,13 @@ public class Inno72SamplingGoods {
 		this.banner = banner;
 	}
 
-	public String getSessionkdy() {
-		return sessionkdy;
+	public String getSessionKey() {
+		return sessionKey;
 	}
 
-	public void setSessionkdy(String sessionkdy) {
-		this.sessionkdy = sessionkdy;
+	public void setSessionKey(String sessionKey) {
+		this.sessionKey = sessionKey;
 	}
+
+
 }

@@ -40,7 +40,7 @@
     <result column="update_time" jdbcType="TIMESTAMP" property="updateTime" />
     <result column="num" jdbcType="INTEGER" property="num" />
     <result column="is_vip" jdbcType="INTEGER" property="isVip" />
-    <result column="session_key" jdbcType="VARCHAR" property="sessionkdy" />
+    <result column="session_key" jdbcType="VARCHAR" property="sessionKey" />
     
   </resultMap>
   
