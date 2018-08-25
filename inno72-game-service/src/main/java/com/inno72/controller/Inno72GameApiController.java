@@ -72,7 +72,7 @@ public class Inno72GameApiController {
 	 */
 	@RequestMapping(value = "/qroauth/paiYangOrder", method = {RequestMethod.POST, RequestMethod.GET})
 	public Result<Object> paiYangOrder(MachineApiVo vo) {
-		return inno72GameApiService.oneKeyOrder(vo);
+		return inno72GameApiService.paiYangOrder(vo);
 	}
 
 	/**
