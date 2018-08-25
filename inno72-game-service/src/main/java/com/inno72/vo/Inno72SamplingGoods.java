@@ -42,6 +42,11 @@ public class Inno72SamplingGoods {
 	private String img;
 
 	/**
+	 * banner
+	 */
+	private String banner;
+
+	/**
 	 * 状态：0正常，1下架
 	 */
 	private Integer isDelete;
@@ -75,6 +80,15 @@ public class Inno72SamplingGoods {
 	 * 商品数量
 	 */
 	private Integer num;
+	/**
+	 * 是否需要入会   0否，1是
+	 */
+	private Integer isVip;
+
+	/**
+	 * sessionkdy
+	 */
+	private String sessionkdy;
 
 	/**
 	 * 获取商品ID
@@ -281,6 +295,14 @@ public class Inno72SamplingGoods {
 		this.num = num;
 	}
 
+	public Integer getIsVip() {
+		return isVip;
+	}
+
+	public void setIsVip(Integer isVip) {
+		this.isVip = isVip;
+	}
+
 	public String getShopId() {
 		return shopId;
 	}
@@ -289,4 +311,19 @@ public class Inno72SamplingGoods {
 		this.shopId = shopId;
 	}
 
+	public String getBanner() {
+		return banner;
+	}
+
+	public void setBanner(String banner) {
+		this.banner = banner;
+	}
+
+	public String getSessionkdy() {
+		return sessionkdy;
+	}
+
+	public void setSessionkdy(String sessionkdy) {
+		this.sessionkdy = sessionkdy;
+	}
 }

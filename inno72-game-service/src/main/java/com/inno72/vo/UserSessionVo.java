@@ -33,6 +33,7 @@ public class UserSessionVo {
 	private String machineId;
 	private String activityId;
 	private String machineCode;
+	private boolean countGoods;
 
 	public UserSessionVo(String mid, String userNick, String userId, String access_token, String gameId,
 			String sessionUuid, String planId) {
@@ -89,5 +90,13 @@ public class UserSessionVo {
 
 	public String getMachineCode() {
 		return machineCode;
+	}
+
+	public void setCountGoods(boolean countGoods) {
+		this.countGoods = countGoods;
+	}
+
+	public boolean getCountGoods() {
+		return countGoods;
 	}
 }

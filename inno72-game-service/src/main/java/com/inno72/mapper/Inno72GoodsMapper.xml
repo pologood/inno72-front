@@ -30,6 +30,7 @@
     <result column="seller_id" jdbcType="VARCHAR" property="sellerId" />
      <result column="shop_id" jdbcType="VARCHAR" property="shopId" />
     <result column="img" jdbcType="VARCHAR" property="img" />
+    <result column="banner" jdbcType="VARCHAR" property="banner" />
     <result column="is_delete" jdbcType="INTEGER" property="isDelete" />
     <result column="remark" jdbcType="VARCHAR" property="remark" />
     <result column="create_id" jdbcType="VARCHAR" property="createId" />
@@ -37,6 +38,9 @@
     <result column="update_id" jdbcType="VARCHAR" property="updateId" />
     <result column="update_time" jdbcType="TIMESTAMP" property="updateTime" />
     <result column="num" jdbcType="INTEGER" property="num" />
+    <result column="is_vip" jdbcType="INTEGER" property="isVip" />
+    <result column="session_key" jdbcType="VARCHAR" property="sessionkdy" />
+    
   </resultMap>
   
   <select id="selectByCode" resultMap="BaseResultMap" parameterType="string">
@@ -44,13 +48,18 @@
   </select>
   
   <select id="selectSamplingGoods" resultMap="SamplingGoodsMap" parameterType="String">
+    
     select 
-	    plan_goods.number as num,goods.*
-	from inno72_activity_plan plan 
-	left join inno72_activity_plan_machine plan_machine on plan.id=plan_machine.activity_plan_id
-	left join inno72_activity_plan_goods plan_goods on plan_goods.activity_plan_id=plan.id
-	left join inno72_goods goods on goods.id=plan_goods.goods_id
-	left join inno72_machine machine on machine.id=plan_machine.machine_id
-    where machine.machine_code=#{machineCode}
+        SUM(supply_channel.goods_count) as num,goods.*,shops.is_vip,shops.session_key
+    from inno72_activity_plan plan 
+    left join inno72_activity_plan_machine plan_machine on plan.id=plan_machine.activity_plan_id
+    left join inno72_activity_plan_goods plan_goods on plan_goods.activity_plan_id=plan.id
+    left join inno72_goods goods on goods.id=plan_goods.goods_id
+    left join inno72_machine machine on machine.id=plan_machine.machine_id
+    left join inno72_activity_shops shops on shops.activity_id=plan.activity_id
+    left join inno72_supply_channel_goods supply_channel_goods on supply_channel_goods.goods_id=goods.id
+    left join inno72_supply_channel supply_channel on supply_channel.id=supply_channel_goods.supply_channel_id
+    where machine.machine_code=#{machineCode} and CURRENT_TIMESTAMP() BETWEEN plan.start_time and plan.end_time and plan.is_delete=0 
+    GROUP BY goods.id
   </select>
 </mapper>

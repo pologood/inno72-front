@@ -47,6 +47,7 @@ public class Inno72GameApiController {
 
 		return inno72GameApiService.order(vo);
 	}
+
 	/**
 	 * @param vo
 	 *  sessionUuid
@@ -104,8 +105,9 @@ public class Inno72GameApiController {
 	 * @return Result
 	 */
 	@RequestMapping(value = "/sessionRedirect", method = {RequestMethod.POST, RequestMethod.GET})
-	public Result<String> sessionRedirect(String sessionUuid, String mid, String token, String code, String userId) {
-		return inno72GameApiService.sessionRedirect(sessionUuid, mid, token, code, userId);
+	public Result<String> sessionRedirect(String sessionUuid, String mid, String token, String code, String userId,
+			String itemId) {
+		return inno72GameApiService.sessionRedirect(sessionUuid, mid, token, code, userId, itemId);
 	}
 
 	/**
