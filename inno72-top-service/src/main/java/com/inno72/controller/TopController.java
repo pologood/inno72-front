@@ -313,7 +313,7 @@ public class TopController {
 	@RequestMapping("/test")
 	public String test() {
 		LOGGER.info("test -----");
-		return "test";
+		return "hahatest";
 		// return JSON.toJSONString(client);
 	}
 
@@ -408,12 +408,13 @@ public class TopController {
 	/**
 	 * 派样活动登录回调接口
 	 */
-	@RequestMapping("/api/samplingTop/{mid}/{sessionUuid}/{env}/{itemId}")
+	@RequestMapping("/api/samplingTop/{mid}/{sessionUuid}/{env}/{itemId}/{isVip}/{sessionKey}")
 	public void samplingHome(HttpServletResponse response, @PathVariable("mid") String mid,
 			@PathVariable("sessionUuid") String sessionUuid, String code, @PathVariable("env") String env,
-			@PathVariable("itemId") String itemId) throws Exception {
-		LOGGER.info("mid is {}, code is {}, sessionUuid is {}, env is {}, ItemId is {}", mid, code, sessionUuid, env,
-				itemId);
+			@PathVariable("itemId") String itemId, @PathVariable("isVip") String isVip,
+			@PathVariable("sessionKey") String sessionKey) throws Exception {
+		LOGGER.info("mid is {}, code is {}, sessionUuid is {}, env is {}, ItemId is {}, isVip is {}, sessionKey is {}",
+				mid, code, sessionUuid, env, itemId, isVip, sessionKey);
 		String playCode = "";
 		String data;
 		String qrStatus = "";
@@ -437,48 +438,60 @@ public class TopController {
 
 			userInfo.setToken(tokenResult);
 
-			// 设置用户信息
-			data = setUserInfo(userInfo, env, itemId);
-			LOGGER.info("data is {}", data);
 
-			if (!StringUtils.isEmpty(data)) {
-				playCode = FastJsonUtils.getString(data, "playCode");
-				qrStatus = FastJsonUtils.getString(data, "qrStatus");
-				String sId = FastJsonUtils.getString(data, "sellerId");
-				if (!StringUtils.isEmpty(sId)) {
-					sellerId = sId.trim();
+			try {
+				if ("1".equals(isVip)) {
+					String identityResBody = memberIdentity(taobaoUserId, sessionKey);
+					LOGGER.info("identityResBody is {}", identityResBody);
+					String grade_name = FastJsonUtils.getString(identityResBody, "grade_name");
+					LOGGER.info("grade_name is {}", grade_name);
+					if (grade_name == null || "".equals(grade_name)) {
+						String memberJoinResBody = memberJoin(mid, code, sessionUuid, env, itemId, isVip, sessionKey);
+						LOGGER.info("memberJoinResBody is {}", memberJoinResBody);
+						String resultUrl = FastJsonUtils.getString(memberJoinResBody, "result");
+						LOGGER.info("resultUrl is {}", resultUrl);
+						response.sendRedirect("http:" + resultUrl);
+
+					}
 				}
+
+				// 设置用户信息
+				data = setUserInfo(userInfo, env, itemId);
+				LOGGER.info("data is {}", data);
+
+				if (!StringUtils.isEmpty(data)) {
+					playCode = FastJsonUtils.getString(data, "playCode");
+					qrStatus = FastJsonUtils.getString(data, "qrStatus");
+					String sId = FastJsonUtils.getString(data, "sellerId");
+					if (!StringUtils.isEmpty(sId)) {
+						sellerId = sId.trim();
+					}
+				}
+
+				// String h5Url = this.getHostGameH5Url(env);
+				// 跳转到游戏页面 手机端redirect
+				LOGGER.info("h5MobileUrl is {} , playCode is {}, env is {}", h5MobileUrl, playCode, env);
+				String formatUrl = String.format(h5MobileUrl, env, playCode) + "?qrStatus=" + qrStatus + "&sellerId="
+						+ sellerId;
+				LOGGER.info("formatUrl is {}", formatUrl);
+				response.sendRedirect(formatUrl);
+			} catch (IOException e) {
+				LOGGER.error(e.getMessage(), e);
 			}
-		}
-		try {
-			String identityResult = memberIdentity();
-			String result = FastJsonUtils.getString(identityResult, "result");
-			if (result == null || result == "") {
-				String memberJoinResult = memberJoin();
-
-
-			}
-
-			// String h5Url = this.getHostGameH5Url(env);
-			// 跳转到游戏页面 手机端redirect
-			LOGGER.info("h5MobileUrl is {} , playCode is {}, env is {}", h5MobileUrl, playCode, env);
-			String formatUrl = String.format(h5MobileUrl, env, playCode) + "?qrStatus=" + qrStatus + "&sellerId="
-					+ sellerId;
-			LOGGER.info("formatUrl is {}", formatUrl);
-			response.sendRedirect(formatUrl);
-		} catch (IOException e) {
-			LOGGER.error(e.getMessage(), e);
 		}
 	}
 
 	/**
 	 * 入会
 	 */
-	private String memberJoin() {
+	private String memberJoin(String mid, String code, String sessionUuid, String env, String itemId, String isVip,
+			String sessionKey) {
 
-		String sessionKey = "610012905721527fc8830005792b8fa53ec2b15b0e86f0b845001562";
+		// String sessionKey = "610012905721527fc8830005792b8fa53ec2b15b0e86f0b845001562";
 		CrmMemberJoinurlGetRequest req = new CrmMemberJoinurlGetRequest();
-		req.setCallbackUrl("http://inno72top.ews.m.jaeapp.com/api/memberiDentity");
+		String callbackUrl = "http://inno72test.ews.m.jaeapp.com/api/samplingTop/" + mid + "/" + sessionUuid + "/" + env
+				+ "/" + itemId + "/" + isVip + "/" + sessionKey + "/1=1?code=" + code;
+		req.setCallbackUrl(callbackUrl);
 		req.setExtraInfo("{\"source\":\"paiyangji\",\"deviceId\":\"testId\",\"itemId\":576069787121}");
 		CrmMemberJoinurlGetResponse rsp = null;
 		try {
@@ -492,16 +505,15 @@ public class TopController {
 	/**
 	 * 是否是会员
 	 */
-	@RequestMapping("/api/memberIdentity")
-	private String memberIdentity() {
+	private String memberIdentity(String nickName, String sessionKey) {
 
-		String sessionKey = "610012905721527fc8830005792b8fa53ec2b15b0e86f0b845001562";
+		// String sessionKey = "610012905721527fc8830005792b8fa53ec2b15b0e86f0b845001562";
 		CrmMemberIdentityGetRequest req = new CrmMemberIdentityGetRequest();
 		req.setExtraInfo("{\"source\":\"paiyangji\",\"deviceId\":\"testId\",\"itemId\":565058963761}");
-		req.setMixNick(Escape.unescape("d01UrP%2BdYSsphXW%2BcTqLpwRmP%2FrLfMf5rcnjO9hg9D8BB8%3D"));
+		req.setMixNick(Escape.unescape(nickName));
 		CrmMemberIdentityGetResponse rsp = null;
 		try {
-			rsp = client.execute(req, sessionKey);
+			rsp = samplinghClient.execute(req, sessionKey);
 		} catch (ApiException e) {
 			e.printStackTrace();
 		}
