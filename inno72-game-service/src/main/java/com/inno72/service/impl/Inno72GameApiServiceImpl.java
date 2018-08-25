@@ -18,7 +18,6 @@ import org.springframework.stereotype.Service;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
-import com.inno72.common.CommonBean;
 import com.inno72.common.Inno72GameServiceProperties;
 import com.inno72.common.Result;
 import com.inno72.common.Results;
@@ -881,8 +880,8 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 
 
 		// 设置统计每个计划的已完次数
-		assert inno72ActivityPlan != null;
-		redisUtil.sadd(CommonBean.REDIS_ACTIVITY_PLAN_LOGIN_TIMES_KEY + inno72ActivityPlan.getId(), userId);
+		// assert inno72ActivityPlan != null;
+		// redisUtil.sadd(CommonBean.REDIS_ACTIVITY_PLAN_LOGIN_TIMES_KEY + inno72ActivityPlan.getId(), userId);
 		System.out.println("===============到这里了");
 		if (StringUtil.isEmpty(gameId)) {
 			return Results.failure("没有绑定的游戏！");
