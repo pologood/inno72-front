@@ -38,6 +38,11 @@ public class Inno72Goods {
 	 */
 	@Column(name = "seller_id")
 	private String sellerId;
+	/**
+	 * 商户ID
+	 */
+	@Column(name = "shop_id")
+	private String shopId;
 
 	/**
 	 * 图片
@@ -293,5 +298,13 @@ public class Inno72Goods {
 	 */
 	public void setUpdateTime(Date updateTime) {
 		this.updateTime = updateTime;
+	}
+
+	public String getShopId() {
+		return shopId;
+	}
+
+	public void setShopId(String shopId) {
+		this.shopId = shopId;
 	}
 }

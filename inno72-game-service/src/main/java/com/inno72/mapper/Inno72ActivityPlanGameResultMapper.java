@@ -14,4 +14,6 @@ public interface Inno72ActivityPlanGameResultMapper extends Mapper<Inno72Activit
 	List<Inno72ActivityPlanGameResult> selectAllResultByCode(Map<String, String> params);
 
 	List<Integer> selectCountGoods(Map<String, String> params);
+
+	List<Inno72ActivityPlanGameResult> selectByParams(Map<String, String> params);
 }

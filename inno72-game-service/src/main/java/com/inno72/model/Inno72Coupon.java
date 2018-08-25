@@ -26,6 +26,11 @@ public class Inno72Coupon {
 	 * 奖券编码
 	 */
 	private String code;
+	/**
+	 * 奖券编码
+	 */
+	@Column(name = "shops_id")
+	private String shopsId;
 
 	/**
 	 * 活动计划ID
@@ -246,5 +251,13 @@ public class Inno72Coupon {
 	 */
 	public void setUpdateTime(Date updateTime) {
 		this.updateTime = updateTime;
+	}
+
+	public String getShopsId() {
+		return shopsId;
+	}
+
+	public void setShopsId(String shopsId) {
+		this.shopsId = shopsId;
 	}
 }
