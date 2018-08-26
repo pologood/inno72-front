@@ -84,4 +84,16 @@ public class AlarmDealLogServiceImpl extends AbstractService<AlarmDealLog> imple
 
 		return Results.success(vo);
 	}
+
+	@Override
+	@TargetDataSource(dataSourceKey = DataSourceKey.DB_INNO72SAAS)
+	public Result<String> addOrUpdate(String json) {
+		AlarmDealLog alarmDealLog = JSON.parseObject(json, AlarmDealLog.class);
+		if (StringUtil.isNotEmpty(alarmDealLog.getId())) {
+			alarmDealLogMapper.updateByPrimaryKeySelective(alarmDealLog);
+		} else {
+			alarmDealLogMapper.insert(alarmDealLog);
+		}
+		return Results.success();
+	}
 }

@@ -14,6 +14,8 @@ import com.inno72.vo.AlarmDealLogVo;
  */
 public interface AlarmDealLogService extends Service<AlarmDealLog> {
 
+	Result<String> addOrUpdate(String json);
+
 	List<Map<String,String>> queryForPage(Map<String, String> params);
 
 	Result<AlarmDealLogVo> selectDetailById(String logId);
