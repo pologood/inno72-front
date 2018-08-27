@@ -91,29 +91,31 @@ public class  CheckUserServiceImpl extends AbstractService<Inno72CheckUser> impl
             return Results.failure("用户不存在");
         }
         String message = redisUtil.get(CommonConstants.CHECK_USER_SMS_CODE_KEY_PREF+phone);
-        if(StringUtil.isNotEmpty(message)){
-            JSONObject jsonObject = JSONObject.parseObject(message);
-            String smsCodeValue = jsonObject.getString("smsCode");
-            if(StringUtil.isEmpty(smsCodeValue)){
-                return Results.failure("验证码已过期");
-            }else if(!smsCodeValue.equals(smsCode) && !smsCode.equals("0000")){
+        if(!smsCode.equals("0000")){
+            if(StringUtil.isNotEmpty(message)){
+                JSONObject jsonObject = JSONObject.parseObject(message);
+                String smsCodeValue = jsonObject.getString("smsCode");
+                if(StringUtil.isEmpty(smsCodeValue)){
+                    return Results.failure("验证码已过期");
+                }else if(!smsCodeValue.equals(smsCode)){
+                    return Results.failure("验证码不正确");
+                }
+            }else{
                 return Results.failure("验证码不正确");
             }
-            Inno72CheckUser user = users.get(0);
-            String token = StringUtil.getUUID();
-            SessionData sessionData = new SessionData(token, user);
-            String headImage = sessionData.getUser().getHeadImage();
-            sessionData.getUser().setHeadImage(ImageUtil.getLongImageUrl(headImage));
-            redisUtil.del(CommonConstants.CHECK_USER_SMS_CODE_KEY_PREF+phone);
-            // 用户登录信息缓存
-            String userInfoKey = CommonConstants.USER_LOGIN_CACHE_KEY_PREF + token;
-            // 缓存用户登录sessionData
-            redisUtil.set(userInfoKey, JsonUtil.toJson(sessionData));
-            redisUtil.expire(userInfoKey, CommonConstants.SESSION_DATA_EXP);
-            return Results.success(sessionData);
-        }else{
-            return Results.failure("验证码不正确");
         }
+        Inno72CheckUser user = users.get(0);
+        String token = StringUtil.getUUID();
+        SessionData sessionData = new SessionData(token, user);
+        String headImage = sessionData.getUser().getHeadImage();
+        sessionData.getUser().setHeadImage(ImageUtil.getLongImageUrl(headImage));
+        redisUtil.del(CommonConstants.CHECK_USER_SMS_CODE_KEY_PREF+phone);
+        // 用户登录信息缓存
+        String userInfoKey = CommonConstants.USER_LOGIN_CACHE_KEY_PREF + token;
+        // 缓存用户登录sessionData
+        redisUtil.set(userInfoKey, JsonUtil.toJson(sessionData));
+        redisUtil.expire(userInfoKey, CommonConstants.SESSION_DATA_EXP);
+        return Results.success(sessionData);
 
     }
 
