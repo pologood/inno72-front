@@ -1,11 +1,16 @@
 package com.inno72.vo;
 
+import com.inno72.common.util.FaceCacheUtil;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.annotation.Transient;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 @Document
 public class Skin {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(Skin.class);
     @Id
     public String id;
     public Integer gender;//0为男性1为女性
@@ -31,6 +36,9 @@ public class Skin {
         int score = 0;
 
         score+=20;
+        if(age == -1){
+            age = 28;
+        }
         if(age > 26){
 
             score = score -(age - 26);
@@ -52,6 +60,9 @@ public class Skin {
         }else if(colorLevel == 5 || colorLevel == 6){
             //黝黑
             score+=16;
+        }else{
+            LOGGER.info("colorLevel 异常 colorLevel={}",colorLevel);
+            score+=18;
         }
 
         if(oilLevel == 1){
@@ -72,6 +83,9 @@ public class Skin {
         }else if(oilLevel == 5){
             //5-油性
             score+=17;
+        }else{
+            score+=19;
+            LOGGER.info("oilLevel 异常 oilLevel={}",colorLevel);
         }
 
 
@@ -87,6 +101,9 @@ public class Skin {
         }else if(acneLevel == 3){
             //重度 ",
             score+=17;
+        }else{
+            score+=18;
+            LOGGER.info("acneLevel 异常 acneLevel={}",acneLevel);
         }
 
         //黑头严重程度
@@ -102,6 +119,10 @@ public class Skin {
         }else if(blackLevel == 3){
             //重度 ",
             score+=17;
+        }else{
+            //重度 ",
+            score+=18;
+            LOGGER.info("blackLevel 异常 blackLevel={}",blackLevel);
         }
         return score;
     }

@@ -6,6 +6,7 @@ import java.util.Map;
 
 
 import com.alibaba.fastjson.JSONObject;
+import com.google.gson.Gson;
 import com.inno72.common.util.FaceCacheUtil;
 import com.inno72.common.util.FileUtil;
 import com.inno72.oss.OSSUtil;
@@ -43,7 +44,7 @@ public class Inno72FileServiceImpl implements Inno72FileService {
 	@Override
 	public Result<Object> skindetect(String sessionUUid, String picBase64) {
 
-		LOGGER.info("肌肤检测接口 -- 参数 sessionUUid=>({}); picBase64 => ({})", sessionUUid, picBase64);
+		LOGGER.info("肌肤检测接口 -- 参数 sessionUUid=>({})", sessionUUid);
 		if (StringUtils.isEmpty(sessionUUid) || StringUtils.isEmpty(picBase64)) {
 			LOGGER.info("参数缺失.");
 			return Results.failure("参数缺失!");
@@ -51,7 +52,7 @@ public class Inno72FileServiceImpl implements Inno72FileService {
 
 		UserSessionVo sessionKey = gameSessionRedisUtil.getSessionKey(sessionUUid);
 
-		if (sessionKey == null) {
+		if (sessionKey == null || StringUtils.isEmpty(sessionKey.getUserId())) {
 			return Results.failure("登录超时!");
 		}
 
@@ -65,6 +66,7 @@ public class Inno72FileServiceImpl implements Inno72FileService {
 			requestParams.put("image", picBase64);
 			requestParams.put("mixnick", sessionKey.getUserNick());
 			requestParams.put("source", "isv_001");
+			LOGGER.info("调用聚石塔肌肤测试接口requestUrl={}requestParams={},",requestUrl,new Gson().toJson(requestParams));
 			String respJson = HttpClient.form(requestUrl, requestParams, null);
 			if (StringUtils.isEmpty(respJson)) {
 				LOGGER.info("调用聚石塔 肌肤检测接口返回空 url => {}", requestUrl, JSON.toJSONString(requestParams));
@@ -81,11 +83,11 @@ public class Inno72FileServiceImpl implements Inno72FileService {
 				int successcode = JSONObject.parseObject(data).getInteger("code");
 				try{
 					if(successcode == 0){
-						faceCacheUtil.save2RedisFace(sessionKey.getUserId(),data);
-						faceCacheUtil.save2MongoFace(sessionKey.getUserId(),data);
+						faceCacheUtil.save2RedisFace(sessionUUid,data);
+						faceCacheUtil.save2MongoFace(sessionUUid,data);
 						return Results.success(JSON.parseObject(data));
 					}else{
-						faceCacheUtil.deleteSkinByUserId(sessionKey.getUserId());
+						faceCacheUtil.deleteSkinByUserId(sessionUUid);
 						return Results.warn("肌肤检测失败",successcode);
 					}
 				}catch (Exception e){
@@ -112,7 +114,7 @@ public class Inno72FileServiceImpl implements Inno72FileService {
 			if (sessionKey == null) {
 				return Results.failure("登录超时!");
 			}
-			Skin result = faceCacheUtil.getFaceFromMongo(sessionKey.getUserId());
+			Skin result = faceCacheUtil.getFaceFromMongo(sessionUUid);
 			LOGGER.info("获取肌肤检测结果【sessionUUid={}】,【返回结果{}】",sessionUUid,result);
 			if(result!=null){
 				return Results.success(result);
@@ -137,10 +139,10 @@ public class Inno72FileServiceImpl implements Inno72FileService {
 			return Results.failure("登录超时!");
 		}
 		try{
-			String url = saveFile(base64Pic,sessionKey.getUserId());
+			String url = saveFile(base64Pic,sessionUUid);
 			LOGGER.info("上传肌肤检测图片到oss，path={}",url);
 			if(StringUtils.isEmpty(url)) return Results.failure("保存文件失败");
-			Result result = faceCacheUtil.updateSkinPicUrl(sessionKey.getUserId(),url);
+			Result result = faceCacheUtil.updateSkinPicUrl(sessionUUid,url);
 			LOGGER.info("上传肌肤检测图片保存到mongo");
 			return result;
 		}catch (Exception e){
@@ -156,7 +158,7 @@ public class Inno72FileServiceImpl implements Inno72FileService {
 		if (sessionKey == null) {
 			return Results.failure("登录超时!");
 		}
-		String url = faceCacheUtil.getSckinChectPicByUserId(sessionKey.getUserId());
+		String url = faceCacheUtil.getSckinChectPicByUserId(sessionUUid);
 		if(StringUtils.isEmpty(url)) {
 			LOGGER.error("根据sessionUUid={},userId={}未查找到肌肤检测图片路径",sessionUUid,sessionKey.getUserId());
 			return Results.warn("未找到图片地址",-1);
