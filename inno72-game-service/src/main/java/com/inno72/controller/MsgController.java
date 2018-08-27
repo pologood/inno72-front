@@ -73,4 +73,11 @@ public class MsgController {
 		return "ok";
 	}
 
+	@ResponseBody
+	@RequestMapping(value = "/msg/testlog", method = {RequestMethod.GET, RequestMethod.POST})
+	public String testlog(String code, String phone, String machineCode, String localStr, String text, String sendBy) {
+		logger.error("testlog Exception");
+		return "ok";
+	}
+
 }
