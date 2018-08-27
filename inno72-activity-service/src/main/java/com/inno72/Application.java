@@ -34,4 +34,33 @@ public class Application extends SpringBootServletInitializer {
 	public String setAppNameForLog() {
 		return "inno72-game-service";
 	}
+
+	@Bean
+	public FilterRegistrationBean crossFilter() {
+		Filter filter = new OncePerRequestFilter() {
+			@Override
+			protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response,
+											FilterChain filterChain) throws ServletException, IOException {
+				response.setHeader("Access-Control-Allow-Origin", "*");
+				response.setHeader("Access-Control-Allow-Credentials", "true");
+				response.setHeader("Access-Control-Allow-Methods", "POST, PUT, DELETE, OPTIONS, HEAD");
+				response.setHeader("Access-Control-Allow-Headers",
+						"User-Agent,Origin,Cache-Control,Content-type,Date,Server,withCredentials,AccessToken,lf-None-Matoh");
+				response.setHeader("Access-Control-Max-Age", "1209600");
+				response.setHeader("Access-Control-Expose-Headers", "lf-None-Matoh");
+				response.setHeader("Access-Control-Request-Headers", "lf-None-Matoh");
+				response.setHeader("Expires", "-1");
+				response.setHeader("Cache-Control", "no-cache");
+				response.setHeader("pragma", "no-cache");
+				filterChain.doFilter(request, response);
+			}
+		};
+
+		FilterRegistrationBean registration = new FilterRegistrationBean();
+		registration.setFilter(filter);
+		registration.addUrlPatterns("/*");
+		registration.setName("crossFilter");
+		registration.setOrder(1);
+		return registration;
+	}
 }

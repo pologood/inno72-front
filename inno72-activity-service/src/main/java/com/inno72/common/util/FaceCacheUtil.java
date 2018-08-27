@@ -108,7 +108,7 @@ public class FaceCacheUtil {
             query.addCriteria(Criteria.where("score").lt(skin.getScore()));
             long ltsum = mongoUtil.count(query,Skin.class);
             DecimalFormat df=new DecimalFormat("0.00");
-            String percent = df.format(ltsum/(float)sum);
+            String percent = df.format(ltsum*100/(float)sum);
             skin.setPercent(percent);
         }
         return skin;
