@@ -1465,7 +1465,7 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 			Map<String, String> requestForm = new HashMap<>();
 			requestForm.put("accessToken", userSessionVo.getAccessToken());
 			requestForm.put("activityId", activityId);
-			requestForm.put("mid", mid); // 实际为code
+			requestForm.put("mid", userSessionVo.getMachineCode()); // 实际为code
 			requestForm.put("goodsId", itemId);
 
 			String respJson;
