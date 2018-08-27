@@ -124,7 +124,8 @@ public class CodeGenerator {
 
 		TableConfiguration tableConfiguration = new TableConfiguration(context);
 		tableConfiguration.setTableName(tableName);
-		if (StringUtils.isNotEmpty(modelName)) tableConfiguration.setDomainObjectName(modelName);
+		if (StringUtils.isNotEmpty(modelName))
+			tableConfiguration.setDomainObjectName(modelName);
 		tableConfiguration.setGeneratedKey(new GeneratedKey("id", "Mysql", true, null));
 		context.addTableConfiguration(tableConfiguration);
 
@@ -147,7 +148,8 @@ public class CodeGenerator {
 		if (generator.getGeneratedJavaFiles().isEmpty() || generator.getGeneratedXmlFiles().isEmpty()) {
 			throw new RuntimeException("生成Model和Mapper失败：" + warnings);
 		}
-		if (StringUtils.isEmpty(modelName)) modelName = tableNameConvertUpperCamel(tableName);
+		if (StringUtils.isEmpty(modelName))
+			modelName = tableNameConvertUpperCamel(tableName);
 		System.out.println(modelName + ".java 生成成功");
 		System.out.println(modelName + "Mapper.java 生成成功");
 		System.out.println(modelName + "Mapper.xml 生成成功");
@@ -160,8 +162,9 @@ public class CodeGenerator {
 			Map<String, Object> data = new HashMap<>();
 			data.put("date", DATE);
 			data.put("author", AUTHOR);
-			String modelNameUpperCamel = StringUtils.isEmpty(modelName) ? tableNameConvertUpperCamel(tableName)
-					: modelName;
+			String modelNameUpperCamel = StringUtils.isEmpty(modelName) ?
+					tableNameConvertUpperCamel(tableName) :
+					modelName;
 			data.put("modelNameUpperCamel", modelNameUpperCamel);
 			data.put("modelNameLowerCamel", tableNameConvertLowerCamel(tableName));
 			data.put("basePackage", BASE_PACKAGE);
@@ -193,8 +196,9 @@ public class CodeGenerator {
 			Map<String, Object> data = new HashMap<>();
 			data.put("date", DATE);
 			data.put("author", AUTHOR);
-			String modelNameUpperCamel = StringUtils.isEmpty(modelName) ? tableNameConvertUpperCamel(tableName)
-					: modelName;
+			String modelNameUpperCamel = StringUtils.isEmpty(modelName) ?
+					tableNameConvertUpperCamel(tableName) :
+					modelName;
 			data.put("baseRequestMapping", modelNameConvertMappingPath(modelNameUpperCamel));
 			data.put("modelNameUpperCamel", modelNameUpperCamel);
 			data.put("modelNameLowerCamel", CaseFormat.UPPER_CAMEL.to(CaseFormat.LOWER_CAMEL, modelNameUpperCamel));

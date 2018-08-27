@@ -13,7 +13,7 @@ public class QimenTmallFansAutomachineSynactoisvRequest {
 	private FansActVO fansActVo;
 	private Long ownerId;
 
-	public static class FansActVO{
+	public static class FansActVO {
 
 		private List<MachineActDetailDO> actDetailList;
 		private MaterialDO materialDO;
@@ -126,7 +126,7 @@ public class QimenTmallFansAutomachineSynactoisvRequest {
 		}
 	}
 
-	static class MachineActDetailDO{
+	static class MachineActDetailDO {
 
 		private String actId;
 		private String machineId;
@@ -184,7 +184,7 @@ public class QimenTmallFansAutomachineSynactoisvRequest {
 		}
 	}
 
-	static class MaterialDO{
+	static class MaterialDO {
 
 		private String actUrl;
 		private String code;
@@ -231,7 +231,7 @@ public class QimenTmallFansAutomachineSynactoisvRequest {
 		this.ownerId = ownerId;
 	}
 
-	public static void main(String [] args){
+	public static void main(String[] args) {
 		QimenTmallFansAutomachineSynactoisvRequest req = new QimenTmallFansAutomachineSynactoisvRequest();
 		FansActVO obj1 = new FansActVO();
 		List<MachineActDetailDO> list3 = new ArrayList<MachineActDetailDO>();

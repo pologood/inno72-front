@@ -1,49 +1,49 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.inno72.mapper.Inno72GoodsMapper">
-  <resultMap id="BaseResultMap" type="com.inno72.model.Inno72Goods">
-    <!--
-      WARNING - @mbg.generated
-    -->
-    <id column="id" jdbcType="VARCHAR" property="id" />
-    <result column="name" jdbcType="VARCHAR" property="name" />
-    <result column="code" jdbcType="VARCHAR" property="code" />
-    <result column="price" jdbcType="DECIMAL" property="price" />
-    <result column="seller_id" jdbcType="VARCHAR" property="sellerId" />
-    <result column="img" jdbcType="VARCHAR" property="img" />
-    <result column="is_delete" jdbcType="INTEGER" property="isDelete" />
-    <result column="remark" jdbcType="VARCHAR" property="remark" />
-    <result column="create_id" jdbcType="VARCHAR" property="createId" />
-    <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
-    <result column="update_id" jdbcType="VARCHAR" property="updateId" />
-    <result column="update_time" jdbcType="TIMESTAMP" property="updateTime" />
-  </resultMap>
-  
-  <resultMap id="SamplingGoodsMap" type="com.inno72.vo.Inno72SamplingGoods">
-    <!--
-      WARNING - @mbg.generated
-    -->
-    <id column="id" jdbcType="VARCHAR" property="id" />
-    <result column="name" jdbcType="VARCHAR" property="name" />
-    <result column="code" jdbcType="VARCHAR" property="code" />
-    <result column="price" jdbcType="DECIMAL" property="price" />
-    <result column="seller_id" jdbcType="VARCHAR" property="sellerId" />
-     <result column="shop_id" jdbcType="VARCHAR" property="shopId" />
-    <result column="img" jdbcType="VARCHAR" property="img" />
-    <result column="is_delete" jdbcType="INTEGER" property="isDelete" />
-    <result column="remark" jdbcType="VARCHAR" property="remark" />
-    <result column="create_id" jdbcType="VARCHAR" property="createId" />
-    <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
-    <result column="update_id" jdbcType="VARCHAR" property="updateId" />
-    <result column="update_time" jdbcType="TIMESTAMP" property="updateTime" />
-    <result column="num" jdbcType="INTEGER" property="num" />
-  </resultMap>
-  
-  <select id="selectByCode" resultMap="BaseResultMap" parameterType="string">
+    <resultMap id="BaseResultMap" type="com.inno72.model.Inno72Goods">
+        <!--
+          WARNING - @mbg.generated
+        -->
+        <id column="id" jdbcType="VARCHAR" property="id"/>
+        <result column="name" jdbcType="VARCHAR" property="name"/>
+        <result column="code" jdbcType="VARCHAR" property="code"/>
+        <result column="price" jdbcType="DECIMAL" property="price"/>
+        <result column="seller_id" jdbcType="VARCHAR" property="sellerId"/>
+        <result column="img" jdbcType="VARCHAR" property="img"/>
+        <result column="is_delete" jdbcType="INTEGER" property="isDelete"/>
+        <result column="remark" jdbcType="VARCHAR" property="remark"/>
+        <result column="create_id" jdbcType="VARCHAR" property="createId"/>
+        <result column="create_time" jdbcType="TIMESTAMP" property="createTime"/>
+        <result column="update_id" jdbcType="VARCHAR" property="updateId"/>
+        <result column="update_time" jdbcType="TIMESTAMP" property="updateTime"/>
+    </resultMap>
+
+    <resultMap id="SamplingGoodsMap" type="com.inno72.vo.Inno72SamplingGoods">
+        <!--
+          WARNING - @mbg.generated
+        -->
+        <id column="id" jdbcType="VARCHAR" property="id"/>
+        <result column="name" jdbcType="VARCHAR" property="name"/>
+        <result column="code" jdbcType="VARCHAR" property="code"/>
+        <result column="price" jdbcType="DECIMAL" property="price"/>
+        <result column="seller_id" jdbcType="VARCHAR" property="sellerId"/>
+        <result column="shop_id" jdbcType="VARCHAR" property="shopId"/>
+        <result column="img" jdbcType="VARCHAR" property="img"/>
+        <result column="is_delete" jdbcType="INTEGER" property="isDelete"/>
+        <result column="remark" jdbcType="VARCHAR" property="remark"/>
+        <result column="create_id" jdbcType="VARCHAR" property="createId"/>
+        <result column="create_time" jdbcType="TIMESTAMP" property="createTime"/>
+        <result column="update_id" jdbcType="VARCHAR" property="updateId"/>
+        <result column="update_time" jdbcType="TIMESTAMP" property="updateTime"/>
+        <result column="num" jdbcType="INTEGER" property="num"/>
+    </resultMap>
+
+    <select id="selectByCode" resultMap="BaseResultMap" parameterType="string">
   	select * from inno72_goods where code = #{code} and is_delete = 0
   </select>
-  
-  <select id="selectSamplingGoods" resultMap="SamplingGoodsMap" parameterType="String">
+
+    <select id="selectSamplingGoods" resultMap="SamplingGoodsMap" parameterType="String">
     select 
 	    plan_goods.number as num,goods.*
 	from inno72_activity_plan plan 
