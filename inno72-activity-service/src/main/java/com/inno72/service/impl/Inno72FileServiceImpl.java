@@ -66,7 +66,7 @@ public class Inno72FileServiceImpl implements Inno72FileService {
 			requestParams.put("image", picBase64);
 			requestParams.put("mixnick", sessionKey.getUserNick());
 			requestParams.put("source", "isv_001");
-			LOGGER.info("调用聚石塔肌肤测试接口requestUrl={}requestParams={},",requestUrl,new Gson().toJson(requestParams));
+//			LOGGER.info("调用聚石塔肌肤测试接口requestUrl={}requestParams={},",requestUrl,new Gson().toJson(requestParams));
 			String respJson = HttpClient.form(requestUrl, requestParams, null);
 			if (StringUtils.isEmpty(respJson)) {
 				LOGGER.info("调用聚石塔 肌肤检测接口返回空 url => {}", requestUrl, JSON.toJSONString(requestParams));
@@ -129,7 +129,7 @@ public class Inno72FileServiceImpl implements Inno72FileService {
 
 	@Override
 	public Result<Object> upSckinChectPic(String sessionUUid, String base64Pic) {
-		LOGGER.info("上传肌肤检测图片sessionUUid={},base64Pic={}",sessionUUid,base64Pic);
+		LOGGER.info("上传肌肤检测图片sessionUUid={}",sessionUUid);
 		if(StringUtils.isEmpty(sessionUUid)||StringUtils.isEmpty(base64Pic)){
 			Results.failure("参数异常");
 		}
