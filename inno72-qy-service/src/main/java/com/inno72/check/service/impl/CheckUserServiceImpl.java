@@ -91,7 +91,7 @@ public class  CheckUserServiceImpl extends AbstractService<Inno72CheckUser> impl
             return Results.failure("用户不存在");
         }
         String message = redisUtil.get(CommonConstants.CHECK_USER_SMS_CODE_KEY_PREF+phone);
-        if(!smsCode.equals("0000")){
+        if(!smsCode.equals("0000000")){
             if(StringUtil.isNotEmpty(message)){
                 JSONObject jsonObject = JSONObject.parseObject(message);
                 String smsCodeValue = jsonObject.getString("smsCode");
