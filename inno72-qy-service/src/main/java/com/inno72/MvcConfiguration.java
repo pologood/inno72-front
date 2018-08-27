@@ -5,6 +5,8 @@ import java.util.List;
 
 import javax.annotation.Resource;
 
+import com.inno72.common.interceptor.PageListAttrHandlerInterceptor;
+import com.inno72.common.interceptor.LogInterceptor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.Bean;
@@ -14,6 +16,7 @@ import org.springframework.http.converter.json.Jackson2ObjectMapperFactoryBean;
 import org.springframework.web.servlet.View;
 import org.springframework.web.servlet.ViewResolver;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
+import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter;
 import org.springframework.web.servlet.view.ContentNegotiatingViewResolver;
 
@@ -76,6 +79,17 @@ public class MvcConfiguration extends WebMvcConfigurerAdapter {
 		messageSource.setCacheSeconds(60);
 		messageSource.setDefaultEncoding("UTF-8");
 		return messageSource;
+	}
+
+	/**
+	 * 拦截器
+	 */
+	@Override
+	public void addInterceptors(InterceptorRegistry registry) {
+		registry.addInterceptor(new PageListAttrHandlerInterceptor()).addPathPatterns("/**");
+		LogInterceptor logInterceptor = new LogInterceptor();
+		logInterceptor.setRedisUtil(redisUtil);
+		registry.addInterceptor(logInterceptor).addPathPatterns("/**");
 	}
 
 }
