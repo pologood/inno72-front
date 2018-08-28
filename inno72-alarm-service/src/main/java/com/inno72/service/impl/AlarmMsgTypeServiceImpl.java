@@ -13,9 +13,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.alibaba.fastjson.JSON;
-import com.inno72.annotation.TargetDataSource;
 import com.inno72.common.AbstractService;
-import com.inno72.common.DataSourceKey;
 import com.inno72.common.Result;
 import com.inno72.common.Results;
 import com.inno72.common.util.JSR303Util;
@@ -43,7 +41,6 @@ public class AlarmMsgTypeServiceImpl extends AbstractService<AlarmMsgType> imple
 	private AlarmRuleMsgTypeMapper alarmRuleMsgTypeMapper;
 
 	@Override
-	@TargetDataSource(dataSourceKey = DataSourceKey.DB_INNO72SAAS)
 	public Result<String> saveOrUpdate(AlarmMsgType alarmMsgType){
 		Result<String> valid = JSR303Util.valid(alarmMsgType);
 		if (valid.getCode() == Result.FAILURE){
@@ -68,13 +65,11 @@ public class AlarmMsgTypeServiceImpl extends AbstractService<AlarmMsgType> imple
 	}
 
 	@Override
-	@TargetDataSource(dataSourceKey = DataSourceKey.DB_INNO72SAAS)
 	public List<AlarmMsgType> queryForPage(AlarmMsgType alarmDealLog) {
 		return alarmMsgTypeMapper.queryForPage(alarmDealLog);
 	}
 
 	@Override
-	@TargetDataSource(dataSourceKey = DataSourceKey.DB_INNO72SAAS)
 	public Result<AlarmMsgType> selectById(String id){
 		if (StringUtil.isEmpty(id)){
 			return Results.failure("非法请求!");
@@ -87,7 +82,6 @@ public class AlarmMsgTypeServiceImpl extends AbstractService<AlarmMsgType> imple
 	}
 
 	@Override
-	@TargetDataSource(dataSourceKey = DataSourceKey.DB_INNO72SAAS)
 	public Result<String> delete(String id) {
 		if (StringUtil.isEmpty(id)){
 			return Results.failure("非法请求!");

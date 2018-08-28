@@ -15,9 +15,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.alibaba.fastjson.JSON;
-import com.inno72.annotation.TargetDataSource;
 import com.inno72.common.AbstractService;
-import com.inno72.common.DataSourceKey;
 import com.inno72.common.Result;
 import com.inno72.common.Results;
 import com.inno72.common.utils.StringUtil;
@@ -52,14 +50,12 @@ public class AlarmDealLogServiceImpl extends AbstractService<AlarmDealLog> imple
 
 
 	@Override
-	@TargetDataSource(dataSourceKey = DataSourceKey.DB_INNO72SAAS)
 	public List<Map<String, String>> queryForPage(Map<String, String> params) {
 		LOGGER.info("查询列表参数 {}", JSON.toJSONString(params));
 		return alarmDealLogMapper.queryForPage(params);
 	}
 
 	@Override
-	@TargetDataSource(dataSourceKey = DataSourceKey.DB_INNO72SAAS)
 	public Result<AlarmDealLogVo> selectDetailById(String logId){
 
 		if (StringUtil.isEmpty(logId)){
@@ -86,7 +82,6 @@ public class AlarmDealLogServiceImpl extends AbstractService<AlarmDealLog> imple
 	}
 
 	@Override
-	@TargetDataSource(dataSourceKey = DataSourceKey.DB_INNO72SAAS)
 	public Result<String> addOrUpdate(String json) {
 		AlarmDealLog alarmDealLog = JSON.parseObject(json, AlarmDealLog.class);
 		if (StringUtil.isNotEmpty(alarmDealLog.getId())) {
