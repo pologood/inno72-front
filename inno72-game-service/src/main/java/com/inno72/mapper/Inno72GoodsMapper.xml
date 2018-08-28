@@ -42,14 +42,14 @@
     <result column="is_vip" jdbcType="INTEGER" property="isVip" />
     <result column="session_key" jdbcType="VARCHAR" property="sessionKey" />
     <result column="shop_name" jdbcType="VARCHAR" property="shopName" />
-    
+    <result column="activity_id" jdbcType="VARCHAR" property="activeId" />
   </resultMap>
   
   <select id="selectByCode" resultMap="BaseResultMap" parameterType="string">
   	select * from inno72_goods where code = #{code} and is_delete = 0
   </select>
   
-  <select id="selectSamplingGoods" resultMap="SamplingGoodsMap" parameterType="String">
+  <!-- <select id="selectSamplingGoods" resultMap="SamplingGoodsMap" parameterType="String">
     
     select 
         SUM(supply_channel.goods_count) as num,goods.*,activity_shops.is_vip,activity_shops.session_key,shops.shop_name
@@ -64,5 +64,17 @@
     left join inno72_shops shops on shops.id=activity_shops.shops_id
     where machine.machine_code=#{machineCode} and CURRENT_TIMESTAMP() BETWEEN plan.start_time and plan.end_time and plan.is_delete=0 
     GROUP BY goods.id
+  </select> -->
+  
+  <select id="selectSamplingGoods" resultMap="SamplingGoodsMap" parameterType="String">
+    
+    select 
+        goods.*,plan.activity_id
+    from inno72_activity_plan plan 
+    left join inno72_activity_plan_machine plan_machine on plan.id=plan_machine.activity_plan_id
+    left join inno72_activity_plan_goods plan_goods on plan_goods.activity_plan_id=plan.id
+    left join inno72_goods goods on goods.id=plan_goods.goods_id
+    left join inno72_machine machine on machine.id=plan_machine.machine_id
+    where machine.machine_code=#{machineCode} and CURRENT_TIMESTAMP() BETWEEN plan.start_time and plan.end_time and plan.is_delete=0 
   </select>
 </mapper>

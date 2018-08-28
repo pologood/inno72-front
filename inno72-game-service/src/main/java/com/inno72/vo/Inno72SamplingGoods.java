@@ -95,6 +95,11 @@ public class Inno72SamplingGoods {
 	private String shopName;
 
 	/**
+	 * 活动id
+	 */
+	private String activeId;
+
+	/**
 	 * 获取商品ID
 	 *
 	 * @return id - 商品ID
@@ -338,4 +343,13 @@ public class Inno72SamplingGoods {
 	public void setShopName(String shopName) {
 		this.shopName = shopName;
 	}
+
+	public String getActiveId() {
+		return activeId;
+	}
+
+	public void setActiveId(String activeId) {
+		this.activeId = activeId;
+	}
+
 }
