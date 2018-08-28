@@ -67,6 +67,8 @@ public class TopController {
 	private String gameServerUrl;
 	@Value("${h5_mobile_url}")
 	private String h5MobileUrl;
+	@Value("${jst_url}")
+	private String jstUrl;
 	private TaobaoClient client;
 	private TaobaoClient samplinghClient;
 
@@ -441,7 +443,7 @@ public class TopController {
 
 			try {
 				if ("1".equals(isVip)) {
-					String identityResBody = memberIdentity(taobaoUserId, sessionKey);
+					String identityResBody = memberIdentity(mid, itemId, taobaoUserId, sessionKey);
 					LOGGER.info("identityResBody is {}", identityResBody);
 					String grade_name = FastJsonUtils.getString(identityResBody, "grade_name");
 					LOGGER.info("grade_name is {}", grade_name);
@@ -487,12 +489,12 @@ public class TopController {
 	private String memberJoin(String mid, String code, String sessionUuid, String env, String itemId, String isVip,
 			String sessionKey) {
 
-		// String sessionKey = "610012905721527fc8830005792b8fa53ec2b15b0e86f0b845001562";
 		CrmMemberJoinurlGetRequest req = new CrmMemberJoinurlGetRequest();
-		String callbackUrl = "http://inno72test.ews.m.jaeapp.com/api/samplingTop/" + mid + "/" + sessionUuid + "/" + env
-				+ "/" + itemId + "/" + isVip + "/" + sessionKey + "/1=1?code=" + code;
+		String callbackUrl = jstUrl + mid + "/" + sessionUuid + "/" + env + "/" + itemId + "/" + isVip + "/"
+				+ sessionKey + "/1=1?code=" + code;
+		String extraInfo = "{\"source\":\"paiyangji\",\"deviceId\":\"" + mid + "\",\"itemId\":" + itemId + "}";
 		req.setCallbackUrl(callbackUrl);
-		req.setExtraInfo("{\"source\":\"paiyangji\",\"deviceId\":\"testId\",\"itemId\":576069787121}");
+		req.setExtraInfo(extraInfo);
 		CrmMemberJoinurlGetResponse rsp = null;
 		try {
 			rsp = samplinghClient.execute(req, sessionKey);
@@ -505,11 +507,11 @@ public class TopController {
 	/**
 	 * 是否是会员
 	 */
-	private String memberIdentity(String nickName, String sessionKey) {
+	private String memberIdentity(String mid, String itemId, String nickName, String sessionKey) {
 
-		// String sessionKey = "610012905721527fc8830005792b8fa53ec2b15b0e86f0b845001562";
 		CrmMemberIdentityGetRequest req = new CrmMemberIdentityGetRequest();
-		req.setExtraInfo("{\"source\":\"paiyangji\",\"deviceId\":\"testId\",\"itemId\":565058963761}");
+		String extraInfo = "{\"source\":\"paiyangji\",\"deviceId\":\"" + mid + "\",\"itemId\":" + itemId + "}";
+		req.setExtraInfo(extraInfo);
 		req.setMixNick(Escape.unescape(nickName));
 		CrmMemberIdentityGetResponse rsp = null;
 		try {
