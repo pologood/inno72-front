@@ -7,6 +7,7 @@ import com.inno72.wechatshare.utils.wechat.WinXinEntity;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -15,6 +16,8 @@ public class WeChatController {
     private static final Logger LOGGER = LoggerFactory.getLogger(WeChatController.class);
     @Autowired
     private WeinXinUtil util;
+    @Value("${aa}")
+    private String aa;
 
     @RequestMapping
     public Result getWeChat(String url){
@@ -25,5 +28,10 @@ public class WeChatController {
             LOGGER.error("getWeChat",e);
             return Results.failure(e.getMessage());
         }
+    }
+
+    @RequestMapping("/test")
+    public String test(){
+        return aa;
     }
 }
