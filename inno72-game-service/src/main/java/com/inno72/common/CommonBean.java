@@ -25,5 +25,4 @@ public class CommonBean {
 	public static final String PIC_BASE64_START_WITH = "base64,";
 
 
-
 }

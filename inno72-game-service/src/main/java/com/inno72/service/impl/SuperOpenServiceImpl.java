@@ -64,7 +64,7 @@ public class SuperOpenServiceImpl implements SuperOpenService {
 		/** 获取商品信息 */
 		FIND_PRODUCT("004", "findProduct", "/api/goods/findProduct", "获取商品信息", "1.0.0"),
 		/** 下单  */
-		CREATE_ORDER("005", "order", "/api/qroauth/order", "下单", "1.0.0"),
+		CREATE_ORDER("005", "order", "/api/qroauth/paiYangOrder", "下单", "1.0.0"),
 		/** 验证下单状态 */
 		ORDER_POLLING("006", "orderPolling", "/api/qroauth/order-polling", "验证下单状态", "1.0.0"),
 		/** 抽奖 */
@@ -74,16 +74,25 @@ public class SuperOpenServiceImpl implements SuperOpenService {
 		/** 没有方法 */
 		ERROR_NO_METHOD("404", "ERROR_NO_METHOD", "/inno72/noMethod/open", "出货后调用减货", "1.0.0"),
 		/** 版本不存在 */
-		ERROR_NO_VERSION("500", "ERROR_NO_VERSION", "/inno72/noVersion/open", "出货后调用减货",
-				"1.0.0"), MALFUNCTION_LOG("009", "malfunctionLog", "/api/malfunctionLog", "货道异常信息存储", "1.0.0"),
+		ERROR_NO_VERSION("500", "ERROR_NO_VERSION", "/inno72/noVersion/open", "出货后调用减货", "1.0.0"),
+		MALFUNCTION_LOG( "009", "malfunctionLog", "/api/malfunctionLog", "货道异常信息存储", "1.0.0"),
 		/** 货道异常信息存储 */
 		SHIPMENT_FAIL("010", "shipmentFail", "/api/shipmentFail", "掉货失败", "1.0.0"),
 		/** 掉货失败 */
-		USER_DURATION("011", "userDuration", "/api/userDuration", "用户互动时长", "1.0.0"), /* 用户互动时长 */
-		GET_SAMPLING("012", "getSampling", "/api/getSampling", "获取派样商品", "1.0.0"), /* 获取派样商品 */
-		ONE_KEY_ORDER("013", "oneKeyOrder", "/api/qroauth/oneKeyOrder", "一键下单（优惠券 and goods）", "1.0.0"), /* 获取派样商品 */
-		createSamplingQrCode("014", "createSamplingQrCode", "/session/createSamplingQrCode", "生成派样活动二维码",
-				"1.0.0"), /* 生成派样活动二维码 */
+		USER_DURATION("011", "userDuration", "/api/userDuration", "用户互动时长", "1.0.0"),
+		/* 用户互动时长 */
+		GET_SAMPLING("012", "getSampling", "/api/getSampling", "获取派样商品", "1.0.0"),
+		/* 获取派样商品 */
+		ONE_KEY_ORDER("013", "oneKeyOrder", "/api/qroauth/oneKeyOrder", "一键下单（优惠券 and goods）", "1.0.0"),
+		/* 获取派样商品 *//* 生成派样活动二维码 */
+		createSamplingQrCode("014", "createSamplingQrCode", "/session/createSamplingQrCode", "生成派样活动二维码", "1.0.0"),
+		/** 创建派样订单 */
+		CREATE_PARYANG_ORDER("015", "paiYangOrder", "/api/qroauth/paiYangOrder", "派样下单", "1.0.0"),
+
+
+
+
+
 		;
 
 		private String code;

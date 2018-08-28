@@ -1,30 +1,30 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.inno72.mapper.Inno72ActivityPlanMapper">
-  <resultMap id="BaseResultMap" type="com.inno72.model.Inno72ActivityPlan">
-    <!--
-      WARNING - @mbg.generated
-    -->
-    <id column="id" jdbcType="VARCHAR" property="id" />
-    <result column="activity_id" jdbcType="VARCHAR" property="activityId" />
-    <result column="prize_type" jdbcType="VARCHAR" property="prizeType" />
-    <result column="plan_code" jdbcType="VARCHAR" property="planCode" />
-    <result column="game_id" jdbcType="VARCHAR" property="gameId" />
-    <result column="start_time" jdbcType="TIMESTAMP" property="startTime" javaType="java.time.LocalDateTime"
-            typeHandler="org.apache.ibatis.type.LocalDateTimeTypeHandler"/>
-    <result column="end_time" jdbcType="TIMESTAMP" property="endTime" javaType="java.time.LocalDateTime"
-            typeHandler="org.apache.ibatis.type.LocalDateTimeTypeHandler"/>
-    <result column="is_delete" jdbcType="INTEGER" property="isDelete" />
-    <result column="user_max_times" jdbcType="INTEGER" property="userMaxTimes" />
-    <result column="day_user_max_times" jdbcType="INTEGER" property="dayUserMaxTimes" />
-    <result column="remark" jdbcType="VARCHAR" property="remark" />
-    <result column="create_id" jdbcType="VARCHAR" property="createId" />
-    <result column="create_time" jdbcType="TIMESTAMP" property="createTime" javaType="java.time.LocalDateTime"
-            typeHandler="org.apache.ibatis.type.LocalDateTimeTypeHandler"/>
-    <result column="update_id" jdbcType="VARCHAR" property="updateId" />
-    <result column="update_time" jdbcType="TIMESTAMP" property="updateTime" javaType="java.time.LocalDateTime"
-            typeHandler="org.apache.ibatis.type.LocalDateTimeTypeHandler"/>
-  </resultMap>
+    <resultMap id="BaseResultMap" type="com.inno72.model.Inno72ActivityPlan">
+        <!--
+          WARNING - @mbg.generated
+        -->
+        <id column="id" jdbcType="VARCHAR" property="id"/>
+        <result column="activity_id" jdbcType="VARCHAR" property="activityId"/>
+        <result column="prize_type" jdbcType="VARCHAR" property="prizeType"/>
+        <result column="plan_code" jdbcType="VARCHAR" property="planCode"/>
+        <result column="game_id" jdbcType="VARCHAR" property="gameId"/>
+        <result column="start_time" jdbcType="TIMESTAMP" property="startTime" javaType="java.time.LocalDateTime"
+                typeHandler="org.apache.ibatis.type.LocalDateTimeTypeHandler"/>
+        <result column="end_time" jdbcType="TIMESTAMP" property="endTime" javaType="java.time.LocalDateTime"
+                typeHandler="org.apache.ibatis.type.LocalDateTimeTypeHandler"/>
+        <result column="is_delete" jdbcType="INTEGER" property="isDelete"/>
+        <result column="user_max_times" jdbcType="INTEGER" property="userMaxTimes"/>
+        <result column="day_user_max_times" jdbcType="INTEGER" property="dayUserMaxTimes"/>
+        <result column="remark" jdbcType="VARCHAR" property="remark"/>
+        <result column="create_id" jdbcType="VARCHAR" property="createId"/>
+        <result column="create_time" jdbcType="TIMESTAMP" property="createTime" javaType="java.time.LocalDateTime"
+                typeHandler="org.apache.ibatis.type.LocalDateTimeTypeHandler"/>
+        <result column="update_id" jdbcType="VARCHAR" property="updateId"/>
+        <result column="update_time" jdbcType="TIMESTAMP" property="updateTime" javaType="java.time.LocalDateTime"
+                typeHandler="org.apache.ibatis.type.LocalDateTimeTypeHandler"/>
+    </resultMap>
 
     <select id="selectByMachineId" parameterType="string" resultMap="BaseResultMap">
         select a1.* from inno72_activity_plan a1

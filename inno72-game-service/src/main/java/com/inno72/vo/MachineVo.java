@@ -62,7 +62,7 @@ public class MachineVo {
 	 * 机器点位地址，遵守菜鸟的5及地址规则，xx省XX市XX区XX街道XX详细地址
 	 */
 	@Data
-	public class AddessVo{
+	public class AddessVo {
 		/**
 		 * 详细地址 969号小厕所
 		 */

@@ -1,16 +1,18 @@
 package com.inno72.controller;
 
-import com.inno72.msg.MsgUtil;
-import com.inno72.service.Inno72GameService;
+import java.util.HashMap;
+import java.util.Map;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.RestController;
 
-import javax.annotation.Resource;
-import java.util.HashMap;
-import java.util.Map;
+import com.inno72.msg.MsgUtil;
 
 @RestController
 public class MsgController {
@@ -25,7 +27,8 @@ public class MsgController {
 
 	@ResponseBody
 	@RequestMapping(value = "/msg/sendDDTextByGroup", method = {RequestMethod.GET, RequestMethod.POST})
-	public String sendDDTextByGroup(String code, String machineCode, String localStr, String channelNum, String sendBy) {
+	public String sendDDTextByGroup(String code, String machineCode, String localStr, String channelNum,
+			String sendBy) {
 
 		String groupId = "chatefabee5f1110f1a80a0ffe4703aa399c";
 		Map<String, String> param = new HashMap<>();

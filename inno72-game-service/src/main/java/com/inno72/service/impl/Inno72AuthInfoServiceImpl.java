@@ -215,6 +215,7 @@ public class Inno72AuthInfoServiceImpl implements Inno72AuthInfoService {
 
 				map.put("qrCodeUrl", returnUrl);
 				map.put("sessionUuid", sessionUuid);
+				map.put("env", env);
 				// LOGGER.info("二维码生成成功 - result -> {}", JSON.toJSONString(map).replace("\"",
 				// "'"));
 				LOGGER.info("二维码生成成功 - result -> {}", JsonUtil.toJson(map));

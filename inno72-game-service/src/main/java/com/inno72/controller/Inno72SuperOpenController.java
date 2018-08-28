@@ -1,7 +1,6 @@
 package com.inno72.controller;
 
 import java.io.File;
-import java.io.IOException;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
@@ -19,7 +18,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
-import com.google.zxing.WriterException;
 import com.inno72.common.Inno72GameServiceProperties;
 import com.inno72.common.Result;
 import com.inno72.common.Results;
@@ -38,9 +36,9 @@ import net.coobird.thumbnailator.Thumbnails;
  */
 @RestController
 @RequestMapping("/inno72")
-public class Inno72SuperOpenConrolelr {
+public class Inno72SuperOpenController {
 
-	private static final Logger LOGGER = LoggerFactory.getLogger(Inno72SuperOpenConrolelr.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(Inno72SuperOpenController.class);
 
 	@Resource
 	private SuperOpenService superOpenService;
@@ -76,19 +74,18 @@ public class Inno72SuperOpenConrolelr {
 	private Inno72GameServiceProperties inno72GameServiceProperties;
 
 	@RequestMapping(value = "/service/queryPicCode", method = {RequestMethod.GET, RequestMethod.POST})
-	public Result<Object> queryPicCode(@RequestParam MultipartFile file){
-		if (file == null || file.isEmpty()){
+	public Result<Object> queryPicCode(@RequestParam MultipartFile file) {
+		if (file == null || file.isEmpty()) {
 			return Results.failure("非法请求!");
 		}
 		long time = new Date().getTime();
 		int random = (int) (Math.random() * 6);
 		String name = file.getOriginalFilename();
-		if (!name.contains(".")){
+		if (!name.contains(".")) {
 			return Results.failure("格式错误!");
 		}
-		String photoName = (random % 2 == 0 ? (time - random) + "" : (time + random) + "")
-				+ time
-				+ name.substring(name.lastIndexOf("."));
+		String photoName = (random % 2 == 0 ? (time - random) + "" : (time + random) + "") + time + name
+				.substring(name.lastIndexOf("."));
 		String ossPhotoPath = "game/user/photo/" + photoName;
 		String ossPhotoCodePath = "game/user/code/" + photoName;
 
@@ -103,7 +100,7 @@ public class Inno72SuperOpenConrolelr {
 
 		try {
 			boolean result = QrCodeUtil.createQrCode(photoName, fullOssUrl, 1800, "png");
-			if (!result){
+			if (!result) {
 				return Results.failure("生成二维码失败!");
 			}
 			File localCodeFile = new File(photoName);
@@ -126,10 +123,11 @@ public class Inno72SuperOpenConrolelr {
 			e.printStackTrace();
 		}
 		Map<String, String> result = new HashMap<>(2);
-		result.put("ossPhotoCodePath",host + ossPhotoCodePath);
-		result.put("ossPhotoPath",host + ossPhotoPath);
+		result.put("ossPhotoCodePath", host + ossPhotoCodePath);
+		result.put("ossPhotoPath", host + ossPhotoPath);
 		return Results.success(result);
 	}
+
 	/**
 	 * 定义转发开放接口错误信息
 	 */
