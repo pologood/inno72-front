@@ -11,4 +11,6 @@ public interface Inno72GoodsMapper extends Mapper<Inno72Goods> {
 	Inno72Goods selectByCode(String code);
 
 	List<Inno72SamplingGoods> selectSamplingGoods(String machineCode);
+
+	Inno72SamplingGoods selectShopInfo(String shopId);
 }
