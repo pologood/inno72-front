@@ -1,7 +1,6 @@
 package com.inno72.controller;
 
 import java.io.File;
-import java.io.IOException;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
@@ -19,7 +18,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
-import com.google.zxing.WriterException;
 import com.inno72.common.Inno72GameServiceProperties;
 import com.inno72.common.Result;
 import com.inno72.common.Results;
@@ -38,9 +36,9 @@ import net.coobird.thumbnailator.Thumbnails;
  */
 @RestController
 @RequestMapping("/inno72")
-public class Inno72SuperOpenConrolelr {
+public class Inno72SuperOpenController {
 
-	private static final Logger LOGGER = LoggerFactory.getLogger(Inno72SuperOpenConrolelr.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(Inno72SuperOpenController.class);
 
 	@Resource
 	private SuperOpenService superOpenService;

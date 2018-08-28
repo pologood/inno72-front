@@ -43,5 +43,20 @@
             and i4.machine_id = #{machineId}
             group by i2.id
     </select>
+    <select id="selectByParams" resultMap="BaseResultMap" parameterType="java.util.Map">
+
+        select * from inno72_activity_plan_game_result
+                where
+                activity_plan_id = #{planId}
+            and prize_id = #{goodsId}
+            and prize_type = 1
+        union all
+        select r1.* from inno72_activity_plan_game_result r1
+            left join inno72_coupon c1 on r1.prize_id = c1.id
+            where r1.prize_type = 2
+            and c1.shops_id = #{shopId}
+            and r1.activity_plan_id = #{planId}
+
+    </select>
 
 </mapper>

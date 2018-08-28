@@ -153,7 +153,7 @@ public class Inno72AuthInfoServiceImpl implements Inno72AuthInfoService {
 	}
 
 	@Override
-	public Result<Object> createSamplingQrCode(String machineCode, String ItemId) {
+	public Result<Object> createSamplingQrCode(String machineCode, String itemId, String isVip, String sessionKey) {
 		LOGGER.info("根据机器code生成二维码 machineCode is {} ", machineCode);
 
 		Inno72Machine inno72Machine = inno72MachineMapper.findMachineByCode(machineCode);
@@ -182,10 +182,11 @@ public class Inno72AuthInfoServiceImpl implements Inno72AuthInfoService {
 		// 获取运行环境
 		String env = getActive();
 		// 调用天猫的地址
-		String url =
-				"https://oauth.taobao.com/authorize?response_type=code&client_id=24952452&redirect_uri=http://inno72.ews.m.jaeapp.com/api/samplingTop/"
-						+ _machineId + "/" + sessionUuid + "/" + env + "/" + ItemId + "/?1=1" + "&bluetoothAddAes="
-						+ bluetoothAddAes + "&machineCode=" + machineCode;
+		// String testUrl =
+		// "https://oauth.taobao.com/authorize?response_type=code&client_id=24952452&redirect_uri=http://inno72test.ews.m.jaeapp.com/api/samplingTop/";
+		String url = inno72GameServiceProperties.get("tmallSamplingUrl") + _machineId + "/" + sessionUuid + "/" + env
+				+ "/" + itemId + "/" + isVip + "/" + sessionKey + "/?1=1" + "&bluetoothAddAes=" + bluetoothAddAes
+				+ "&machineCode=" + machineCode;
 
 		LOGGER.info("二维码字符串 {} ", url);
 		// 二维码存储在本地的路径
@@ -214,6 +215,7 @@ public class Inno72AuthInfoServiceImpl implements Inno72AuthInfoService {
 
 				map.put("qrCodeUrl", returnUrl);
 				map.put("sessionUuid", sessionUuid);
+				map.put("env", env);
 				// LOGGER.info("二维码生成成功 - result -> {}", JSON.toJSONString(map).replace("\"",
 				// "'"));
 				LOGGER.info("二维码生成成功 - result -> {}", JsonUtil.toJson(map));

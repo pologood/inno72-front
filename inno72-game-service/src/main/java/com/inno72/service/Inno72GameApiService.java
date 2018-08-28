@@ -18,9 +18,12 @@ public interface Inno72GameApiService {
 
 	Result<Object> oneKeyOrder(MachineApiVo vo);
 
+	Result<Object> paiYangOrder(MachineApiVo vo);
+
 	Result<String> shipmentReport(MachineApiVo vo);
 
-	Result<String> sessionRedirect(String sessionUuid, String mid, String token, String code, String userId);
+	Result<String> sessionRedirect(String sessionUuid, String mid, String token, String code, String userId,
+			String itemId);
 
 	Result<String> malfunctionLog(String machineId, String channelCode);
 

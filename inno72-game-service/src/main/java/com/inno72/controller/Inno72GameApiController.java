@@ -61,6 +61,19 @@ public class Inno72GameApiController {
 	public Result<Object> oneKeyOrder(MachineApiVo vo) {
 		return inno72GameApiService.oneKeyOrder(vo);
 	}
+	/**
+	 * @param vo
+	 *  sessionUuid
+	 *  activityId 活动ID，表明活动的来源和品牌
+	 *  machineId 售货机ID
+	 *  itemId 商品ID
+	 *  gameId 游戏ID
+	 * @return Result<Object>
+	 */
+	@RequestMapping(value = "/qroauth/paiYangOrder", method = {RequestMethod.POST, RequestMethod.GET})
+	public Result<Object> paiYangOrder(MachineApiVo vo) {
+		return inno72GameApiService.paiYangOrder(vo);
+	}
 
 	/**
 	 * @param vo
@@ -105,8 +118,9 @@ public class Inno72GameApiController {
 	 * @return Result
 	 */
 	@RequestMapping(value = "/sessionRedirect", method = {RequestMethod.POST, RequestMethod.GET})
-	public Result<String> sessionRedirect(String sessionUuid, String mid, String token, String code, String userId) {
-		return inno72GameApiService.sessionRedirect(sessionUuid, mid, token, code, userId);
+	public Result<String> sessionRedirect(String sessionUuid, String mid, String token, String code, String userId,
+			String itemId) {
+		return inno72GameApiService.sessionRedirect(sessionUuid, mid, token, code, userId, itemId);
 	}
 
 	/**
@@ -143,7 +157,6 @@ public class Inno72GameApiController {
 
 	/**
 	 * 用户互动时长接口
-	 * @param machineId
 	 * @return Result
 	 */
 	@RequestMapping(value = "/userDuration", method = {RequestMethod.POST, RequestMethod.GET})
@@ -154,7 +167,6 @@ public class Inno72GameApiController {
 
 	/**
 	 * 获取派样商品
-	 * @param machineId
 	 * @return Result
 	 */
 	@RequestMapping(value = "/getSampling", method = {RequestMethod.POST, RequestMethod.GET})
