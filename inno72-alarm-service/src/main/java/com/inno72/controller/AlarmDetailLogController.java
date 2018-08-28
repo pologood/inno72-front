@@ -4,6 +4,8 @@ import java.util.List;
 
 import javax.annotation.Resource;
 
+import com.inno72.common.utils.StringUtil;
+import com.inno72.model.AlarmDealLog;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -17,6 +19,7 @@ import com.inno72.common.ResultGenerator;
 import com.inno72.common.ResultPages;
 import com.inno72.model.AlarmDetailLog;
 import com.inno72.service.AlarmDetailLogService;
+import tk.mybatis.mapper.entity.Condition;
 
 /**
  * Created by CodeGenerator on 2018/08/13.
@@ -52,9 +55,17 @@ public class AlarmDetailLogController {
 	}
 
 	@RequestMapping(value = "/list", method = { RequestMethod.POST,  RequestMethod.GET})
-	public Result list(@RequestParam(defaultValue = "0") Integer page, @RequestParam(defaultValue = "0") Integer size) {
+	public Result list(@RequestParam(defaultValue = "1") Integer page, @RequestParam(defaultValue = "10") Integer size ,String logId) {
 		PageHelper.startPage(page, size);
-		List<AlarmDetailLog> list = alarmDetailLogService.findAll();
+		List<AlarmDetailLog> list = null;
+		if (StringUtil.isNotEmpty(logId)) {
+			Condition condition = new Condition(AlarmDetailLog.class);
+			condition.createCriteria().andEqualTo("dealLogId", logId);
+			list = alarmDetailLogService.findByCondition(condition);
+		} else {
+			list = alarmDetailLogService.findAll();
+		}
+
 		PageInfo pageInfo = new PageInfo(list);
 		return ResultGenerator.genSuccessResult(pageInfo);
 	}

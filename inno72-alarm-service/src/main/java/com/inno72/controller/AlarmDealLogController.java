@@ -8,6 +8,10 @@ import java.util.Optional;
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 
+import com.inno72.common.utils.StringUtil;
+import com.inno72.model.AlarmRule;
+import com.inno72.service.AlarmRuleService;
+import com.inno72.service.AlarmUserService;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
 
@@ -18,6 +22,7 @@ import com.inno72.common.ResultGenerator;
 import com.inno72.common.ResultPages;
 import com.inno72.model.AlarmDealLog;
 import com.inno72.service.AlarmDealLogService;
+import tk.mybatis.mapper.entity.Condition;
 
 /**
  * Created by CodeGenerator on 2018/08/13.
@@ -28,6 +33,12 @@ import com.inno72.service.AlarmDealLogService;
 public class AlarmDealLogController {
 	@Resource
 	private AlarmDealLogService alarmDealLogService;
+
+	@Resource
+	private AlarmRuleService alarmRuleService;
+
+	@Resource
+	private AlarmUserService alarmUserService;
 
 	@RequestMapping(value = "/save", method = { RequestMethod.POST,  RequestMethod.GET})
 	public Result<String> save(@RequestBody String json){
@@ -57,9 +68,21 @@ public class AlarmDealLogController {
 	}
 
 	@RequestMapping(value = "/list", method = { RequestMethod.POST,  RequestMethod.GET})
-	public Result list(@RequestParam(defaultValue = "0") Integer page, @RequestParam(defaultValue = "0") Integer size) {
+	public Result list(@RequestParam(defaultValue = "1") Integer page, @RequestParam(defaultValue = "10") Integer size, String dealLogId) {
 		PageHelper.startPage(page, size);
-		List<AlarmDealLog> list = alarmDealLogService.findAll();
+		List<AlarmDealLog> list = null;
+		if (StringUtil.isNotEmpty(dealLogId)) {
+			Condition condition = new Condition(AlarmDealLog.class);
+			condition.createCriteria().andEqualTo("id", dealLogId);
+			list = alarmDealLogService.findByCondition(condition);
+		} else {
+			list = alarmDealLogService.findAll();
+		}
+		for (AlarmDealLog alarmDealLog : list) {
+			AlarmRule alarmRule = alarmRuleService.findById(alarmDealLog.getRuleId());
+			alarmRule.setDirector(alarmUserService.findById(alarmRule.getDirector()).getName());
+			alarmDealLog.setAlarmRule(alarmRule);
+		}
 		PageInfo pageInfo = new PageInfo(list);
 		return ResultGenerator.genSuccessResult(pageInfo);
 	}

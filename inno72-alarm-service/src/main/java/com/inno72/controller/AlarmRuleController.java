@@ -60,7 +60,7 @@ public class AlarmRuleController {
 	}
 
 	@RequestMapping(value = "/list", method = { RequestMethod.POST,  RequestMethod.GET})
-	public Result list(@RequestParam(defaultValue = "0") Integer page, @RequestParam(defaultValue = "0") Integer size) {
+	public Result list(@RequestParam(defaultValue = "1") Integer page, @RequestParam(defaultValue = "10") Integer size) {
 		PageHelper.startPage(page, size);
 		List<AlarmRule> list = alarmRuleService.findAll();
 		PageInfo pageInfo = new PageInfo(list);
