@@ -513,7 +513,7 @@ public class TopController {
 
 		CrmMemberJoinurlGetRequest req = new CrmMemberJoinurlGetRequest();
 		String callbackUrl = jstUrl + mid + "/" + sessionUuid + "/" + env + "/" + itemId + "/" + isVip + "/"
-				+ sessionKey + "/1=1?code=" + code;
+				+ sessionKey + "/?code=" + code;
 		String extraInfo = "{\"source\":\"paiyangji\",\"deviceId\":\"" + mid + "\",\"itemId\":" + itemId + "}";
 		req.setCallbackUrl(callbackUrl);
 		req.setExtraInfo(extraInfo);
