@@ -1,6 +1,8 @@
 package com.inno72.controller;
 
 
+import com.inno72.common.BizException;
+import com.inno72.common.DateUtil;
 import com.inno72.common.ParamException;
 import com.inno72.service.CommonService;
 import com.inno72.service.GoodFatherService;
@@ -11,7 +13,10 @@ import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.Date;
 
 
 @RestController
@@ -25,6 +30,9 @@ public class GoodFatherController {
 
 	@Autowired
 	private CommonService commonService;
+
+	@Value("${goodfather.openprize.time}")
+	private String openprizeTime;
 
 	@ResponseBody
 	@RequestMapping(value = "/getVerificationCode", method = {RequestMethod.GET, RequestMethod.POST})
@@ -99,15 +107,27 @@ public class GoodFatherController {
 	public Result<Object> getlotteryDrawResult(String phone) {
 
 		try{
+			checkOpenprizeTime();
 			checkLotteryDrawResultParam(phone);
 			//校验验证码
 			return goodFatherService.getlotteryDrawResult(phone);
+		}catch(BizException e){
+			LOGGER.info("获取中奖结果时间还未到时间未到");
+			return Results.failure(e.getMessage());
 		}catch(ParamException e){
-			LOGGER.error("参数异常",e);
+			LOGGER.info("参数异常",e);
 			return Results.failure("参数异常");
 		}catch(Exception e){
 			LOGGER.error("系统异常",e);
 			return Results.failure("系统异常");
+		}
+	}
+
+	private void checkOpenprizeTime() {
+		Date openDate = DateUtil.parse(openprizeTime,DateUtil.PATTERN_YYYY_MM_DDHH_MM_SS);
+		Date now = new Date();
+		if(now.getTime()<openDate.getTime()){
+			throw new BizException("获取中奖结果时间还未到时间未到");
 		}
 	}
 

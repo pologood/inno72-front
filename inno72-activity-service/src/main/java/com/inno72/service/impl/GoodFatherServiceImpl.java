@@ -46,8 +46,10 @@ public class GoodFatherServiceImpl implements GoodFatherService {
         }
         if(goodFather.getStatus()==GoodFather.STATUS_UNATTEND){
             updateStatusByPhone(phone,GoodFather.STATUS_IN_LOTTERY_DRAW);
+            return Results.success();
+        }else{
+            return Results.failure("该手机号已经参加抽奖");
         }
-        return Results.success();
     }
 
     private void updateStatusByPhone(String phone, Integer status) {
