@@ -64,7 +64,7 @@ public class GoodFatherServiceImpl implements GoodFatherService {
     public Result<Object> getlotteryDrawResult(String phone) {
         GoodFather goodFather = findByPhone(phone);
         if(goodFather==null||goodFather.getStatus()!=GoodFather.STATUS_HIT){
-            Results.success(0);
+            return Results.success(0);
         }
         return Results.success(1);
     }
