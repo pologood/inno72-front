@@ -77,4 +77,14 @@
     left join inno72_machine machine on machine.id=plan_machine.machine_id
     where machine.machine_code=#{machineCode} and CURRENT_TIMESTAMP() BETWEEN plan.start_time and plan.end_time and plan.is_delete=0 
   </select>
+  
+  <select id="selectShopInfo" resultMap="SamplingGoodsMap" parameterType="String">
+    SELECT
+	    *
+	FROM
+	    shops.shop_name,activity_shops.session_key,activity_shops.is_vip
+	LEFT JOIN inno72_activity_shops activity_shops ON activity_shops.shops_id = shops.id
+	WHERE
+	    shops.id =#{shopId}
+  </select>
 </mapper>

@@ -1543,8 +1543,11 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 			}
 			sampLingGoods.setNum(goodsCount);
 			// 设置商户名称
-			Inno72Shops shop = inno72ShopsMapper.selectByPrimaryKey(sampLingGoods.getShopId());
-			sampLingGoods.setShopName(shop.getShopName());
+			// Inno72Shops shop = inno72ShopsMapper.selectByPrimaryKey(sampLingGoods.getShopId());
+			Inno72SamplingGoods shopInfo = inno72GoodsMapper.selectShopInfo(sampLingGoods.getShopId());
+			sampLingGoods.setShopName(shopInfo.getShopName());
+			sampLingGoods.setIsVip(shopInfo.getIsVip());
+			sampLingGoods.setSessionKey(shopInfo.getSessionKey());
 
 			if (sampLingGoods.getImg() != null && !"".equals(sampLingGoods.getImg())) {
 				sampLingGoods.setImg(aliyunUrl + sampLingGoods.getImg());
