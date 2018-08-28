@@ -15,9 +15,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.alibaba.fastjson.JSON;
-import com.inno72.annotation.TargetDataSource;
 import com.inno72.common.AbstractService;
-import com.inno72.common.DataSourceKey;
 import com.inno72.common.Result;
 import com.inno72.common.Results;
 import com.inno72.common.util.JSR303Util;
@@ -49,7 +47,6 @@ public class AlarmRuleServiceImpl extends AbstractService<AlarmRule> implements 
 	private IRedisUtil redisUtil;
 
 	@Override
-	@TargetDataSource(dataSourceKey = DataSourceKey.DB_INNO72SAAS)
 	public Result<String> addOrUpdate(String json) {
 
 		if (StringUtil.isEmpty(json)){
@@ -101,13 +98,11 @@ public class AlarmRuleServiceImpl extends AbstractService<AlarmRule> implements 
 	}
 
 	@Override
-	@TargetDataSource(dataSourceKey = DataSourceKey.DB_INNO72SAAS)
 	public List<AlarmRule> queryForPage(AlarmRule alarmRule) {
 		return alarmRuleMapper.queryForPage(alarmRule);
 	}
 
 	@Override
-	@TargetDataSource(dataSourceKey = DataSourceKey.DB_INNO72SAAS)
 	public AlarmRuleRequestVo queryById(String ruleId) {
 		AlarmRule alarmRule = alarmRuleMapper.selectByPrimaryKey(ruleId);
 		List<String> msgTypeIds = alarmRuleMsgTypeMapper.selectByRuleId(ruleId);
@@ -121,7 +116,6 @@ public class AlarmRuleServiceImpl extends AbstractService<AlarmRule> implements 
 	}
 
 	@Override
-	@TargetDataSource(dataSourceKey = DataSourceKey.DB_INNO72SAAS)
 	public Result<String> delete(String id) {
 		AlarmDealLog alarmDealLog = new AlarmDealLog();
 		alarmDealLog.setRuleId(id);

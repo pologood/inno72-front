@@ -69,9 +69,11 @@ public class AlarmRuleController {
 
 
 	@RequestMapping(value = "/getList", method = { RequestMethod.POST,  RequestMethod.GET})
-	public ModelAndView getList(AlarmRule alarmRule) {
+	public ModelAndView getList(@RequestParam(defaultValue = "0") Integer page, @RequestParam(defaultValue = "0") Integer size, AlarmRule alarmRule) {
+		PageHelper.startPage(page, size);
 		List<AlarmRule> list = alarmRuleService.queryForPage(alarmRule);
-		return ResultPages.page(ResultGenerator.genSuccessResult(list));
+		PageInfo pageInfo = new PageInfo(list);
+		return ResultPages.page(ResultGenerator.genSuccessResult(pageInfo));
 	}
 
 }

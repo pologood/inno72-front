@@ -6,7 +6,6 @@ import javax.annotation.Resource;
 
 import org.springframework.stereotype.Service;
 
-import com.inno72.annotation.TargetDataSource;
 import com.inno72.common.DataSourceKey;
 import com.inno72.common.Result;
 import com.inno72.common.Results;
@@ -27,7 +26,6 @@ public class CommonServiceImpl implements CommonService {
 	private AlarmUserMapper alarmUserMapper;
 
 	@Override
-	@TargetDataSource(dataSourceKey = DataSourceKey.DB_INNO72SAAS)
 	public Result<RespCommonVo> queryInitParam() {
 
 		List<AlarmMsgType> alarmMsgTypes = alarmMsgTypeMapper.selectAll();
