@@ -443,7 +443,7 @@ public class TopController {
 
 			try {
 				if ("1".equals(isVip)) {
-					String identityResBody = memberIdentity(taobaoUserId, sessionKey);
+					String identityResBody = memberIdentity(mid, itemId, taobaoUserId, sessionKey);
 					LOGGER.info("identityResBody is {}", identityResBody);
 					String grade_name = FastJsonUtils.getString(identityResBody, "grade_name");
 					LOGGER.info("grade_name is {}", grade_name);
@@ -507,10 +507,11 @@ public class TopController {
 	/**
 	 * 是否是会员
 	 */
-	private String memberIdentity(String nickName, String sessionKey) {
+	private String memberIdentity(String mid, String itemId, String nickName, String sessionKey) {
 
 		CrmMemberIdentityGetRequest req = new CrmMemberIdentityGetRequest();
-		req.setExtraInfo("{\"source\":\"paiyangji\",\"deviceId\":\"testId\",\"itemId\":565058963761}");
+		String extraInfo = "{\"source\":\"paiyangji\",\"deviceId\":\"" + mid + "\",\"itemId\":" + itemId + "}";
+		req.setExtraInfo(extraInfo);
 		req.setMixNick(Escape.unescape(nickName));
 		CrmMemberIdentityGetResponse rsp = null;
 		try {
