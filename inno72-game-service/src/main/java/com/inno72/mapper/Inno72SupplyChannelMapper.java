@@ -13,4 +13,6 @@ public interface Inno72SupplyChannelMapper extends Mapper<Inno72SupplyChannel> {
 	List<Inno72SupplyChannel> selectListByParam(Map<String, Object> map);
 
 	Inno72SupplyChannel selectChannel(Inno72SupplyChannel inno72SupplyChannel);
+
+	List<Inno72SupplyChannel> selectByGoodsId(String goodId);
 }

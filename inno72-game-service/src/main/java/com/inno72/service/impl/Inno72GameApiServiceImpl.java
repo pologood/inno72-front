@@ -833,7 +833,7 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 
 		// 查商户CODE
 		Inno72Shops shop = inno72ShopsMapper.selectByPrimaryKey(inno72Coupon.getShopsId());
-		if ( shop == null || StringUtil.isEmpty(shop.getShopCode())) {
+		if (shop == null || StringUtil.isEmpty(shop.getShopCode())) {
 			return Results.failure("商户好像出了点问题!");
 		}
 
@@ -1529,8 +1529,26 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 			return Results.failure("machineCode为空!");
 		}
 		List<Inno72SamplingGoods> inno72SamplingGoodsList = inno72GoodsMapper.selectSamplingGoods(machineCode);
+
+
+		String aliyunUrl = inno72GameServiceProperties.get("returnUrl");
 		for (Inno72SamplingGoods sampLingGoods : inno72SamplingGoodsList) {
-			String aliyunUrl = inno72GameServiceProperties.get("returnUrl");
+			List<Inno72SupplyChannel> inno72SupplyChannels = inno72SupplyChannelMapper
+					.selectByGoodsId(sampLingGoods.getId());
+
+			Integer goodsCount = 0;
+			for (Inno72SupplyChannel channel : inno72SupplyChannels) {
+
+				goodsCount += channel.getGoodsCount();
+			}
+			sampLingGoods.setNum(goodsCount);
+			// 设置商户名称
+			// Inno72Shops shop = inno72ShopsMapper.selectByPrimaryKey(sampLingGoods.getShopId());
+			Inno72SamplingGoods shopInfo = inno72GoodsMapper.selectShopInfo(sampLingGoods.getShopId());
+			sampLingGoods.setShopName(shopInfo.getShopName());
+			sampLingGoods.setIsVip(shopInfo.getIsVip());
+			sampLingGoods.setSessionKey(shopInfo.getSessionKey());
+
 			if (sampLingGoods.getImg() != null && !"".equals(sampLingGoods.getImg())) {
 				sampLingGoods.setImg(aliyunUrl + sampLingGoods.getImg());
 			}
@@ -1538,6 +1556,7 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 				sampLingGoods.setBanner(aliyunUrl + sampLingGoods.getBanner());
 			}
 		}
+
 		LOGGER.info("返回派样商品列表 => list:{}", inno72SamplingGoodsList);
 		return Results.success(inno72SamplingGoodsList);
 	}
