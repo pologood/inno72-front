@@ -108,7 +108,7 @@
 		    inno72_supply_channel supply_channel
 		LEFT JOIN inno72_supply_channel_goods supply_channel_goods ON supply_channel_goods.supply_channel_id = supply_channel.id
 		WHERE
-		    supply_channel_goods.goods_id = #{goodId} and supply_channel.machine_id=#{machineId}
+		    supply_channel_goods.goods_id = #{goodId} and supply_channel.machine_id=#{machineId} and supply_channel.is_delete=0
     </select>
 
 </mapper>
