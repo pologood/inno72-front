@@ -691,12 +691,6 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 					continue;
 				}
 
-				Integer isDel = inno72SupplyChannel.getIsDelete();
-				LOGGER.info("paiYangOrder name is {}, isDel is {}", inno72SupplyChannel.getId(), isDel);
-				if (isDel == 1) {
-					continue;
-				}
-
 				String goodsCode = inno72SupplyChannel.getGoodsCode();
 				String code = inno72SupplyChannel.getCode();
 				Integer goodsCount = inno72SupplyChannel.getGoodsCount();
