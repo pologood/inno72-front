@@ -441,36 +441,37 @@ public class TopController {
 			userInfo.setToken(tokenResult);
 
 
-			// 设置用户信息
-			data = setUserInfo(userInfo, env, itemId);
-			LOGGER.info("data is {}", data);
-
-			if (!StringUtils.isEmpty(data)) {
-				playCode = FastJsonUtils.getString(data, "playCode");
-				qrStatus = FastJsonUtils.getString(data, "qrStatus");
-				String sId = FastJsonUtils.getString(data, "sellerId");
-				if (!StringUtils.isEmpty(sId)) {
-					sellerId = sId.trim();
-				}
-			}
-
-			// String h5Url = this.getHostGameH5Url(env);
-			// 跳转到游戏页面 手机端redirect
-			LOGGER.info("h5MobileUrl is {} , playCode is {}, env is {}", h5MobileUrl, playCode, env);
-			String formatUrl = String.format(h5MobileUrl, env, playCode) + "?qrStatus=" + qrStatus + "&sellerId="
-					+ sellerId;
-			LOGGER.info("formatUrl is {}", formatUrl);
-
 			try {
-				// 判断当前店铺是否需要
+				// 判断当前店铺是否需要入会
 				if ("1".equals(isVip)) {
 
+					// 设置用户信息
+					data = setUserInfo(userInfo, env, itemId);
+					LOGGER.info("data is {}", data);
 
+					if (!StringUtils.isEmpty(data)) {
+						playCode = FastJsonUtils.getString(data, "playCode");
+						qrStatus = FastJsonUtils.getString(data, "qrStatus");
+						String sId = FastJsonUtils.getString(data, "sellerId");
+						if (!StringUtils.isEmpty(sId)) {
+							sellerId = sId.trim();
+						}
+					}
+
+					// String h5Url = this.getHostGameH5Url(env);
+					// 跳转到游戏页面 手机端redirect
+					LOGGER.info("h5MobileUrl is {} , playCode is {}, env is {}", h5MobileUrl, playCode, env);
+					String formatUrl = String.format(h5MobileUrl, env, playCode) + "?qrStatus=" + qrStatus
+							+ "&sellerId=" + sellerId;
+					LOGGER.info("formatUrl is {}", formatUrl);
+
+					// 判断当前用户是否为会员
 					String identityResBody = memberIdentity(mid, itemId, taobaoUserId, sessionKey);
 					LOGGER.info("identityResBody is {}", identityResBody);
 					String grade_name = FastJsonUtils.getString(identityResBody, "grade_name");
 					LOGGER.info("grade_name is {}", grade_name);
 					if (grade_name == null || "".equals(grade_name)) {
+						// 如果不是会员做入会操作
 						String memberJoinResBody = memberJoin(mid, code, sessionUuid, env, itemId, isVip, sessionKey,
 								formatUrl);
 						LOGGER.info("memberJoinResBody is {}", memberJoinResBody);
@@ -479,10 +480,9 @@ public class TopController {
 						response.sendRedirect("http:" + resultUrl);
 
 					} else {
+						// 是会员直接跳转h5页面
 						response.sendRedirect(formatUrl);
 					}
-				} else {
-					response.sendRedirect(formatUrl);
 				}
 
 			} catch (IOException e) {
@@ -497,6 +497,9 @@ public class TopController {
 	private String memberJoin(String mid, String code, String sessionUuid, String env, String itemId, String isVip,
 			String sessionKey, String callbackUrl) {
 
+		LOGGER.info(
+				"mid is {}, code is {}, sessionUuid is {}, env is {}, ItemId is {}, isVip is {}, sessionKey is {}，callbackUrl is{}",
+				mid, code, sessionUuid, env, itemId, isVip, sessionKey, callbackUrl);
 		CrmMemberJoinurlGetRequest req = new CrmMemberJoinurlGetRequest();
 		// String callbackUrl = jstUrl + mid + "/" + sessionUuid + "/" + env + "/" + itemId + "/" + isVip + "/"
 		// + sessionKey + "/1=1?code=" + code;
@@ -507,6 +510,7 @@ public class TopController {
 		CrmMemberJoinurlGetResponse rsp = null;
 		try {
 			rsp = samplinghClient.execute(req, sessionKey);
+			LOGGER.info("ruhuirsp is {}", rsp);
 		} catch (ApiException e) {
 			e.printStackTrace();
 		}
@@ -518,6 +522,7 @@ public class TopController {
 	 */
 	private String memberIdentity(String mid, String itemId, String nickName, String sessionKey) {
 
+		LOGGER.info("mid is {}, itemId is {}, nickName is {}, sessionKey is {} ", mid, itemId, nickName, sessionKey);
 		CrmMemberIdentityGetRequest req = new CrmMemberIdentityGetRequest();
 		String extraInfo = "{\"source\":\"paiyangji\",\"deviceId\":\"" + mid + "\",\"itemId\":" + itemId + "}";
 		req.setExtraInfo(extraInfo);
@@ -525,6 +530,7 @@ public class TopController {
 		CrmMemberIdentityGetResponse rsp = null;
 		try {
 			rsp = samplinghClient.execute(req, sessionKey);
+			LOGGER.info("identityrsp is {}", rsp);
 		} catch (ApiException e) {
 			e.printStackTrace();
 		}
