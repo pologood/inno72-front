@@ -1,5 +1,7 @@
 package com.inno72.vo;
 
+import java.util.List;
+
 public class MachineApiVo {
 
 	/**
@@ -73,7 +75,7 @@ public class MachineApiVo {
 	/**
 	 * 出货失败原因
 	 */
-	private String describtion;
+	private List<String> describtion;
 
 	public String getGameId() {
 		return gameId;
@@ -203,11 +205,11 @@ public class MachineApiVo {
 		this.failChannelIds = failChannelIds;
 	}
 
-	public String getDescribtion() {
+	public List<String> getDescribtion() {
 		return describtion;
 	}
 
-	public void setDescribtion(String describtion) {
+	public void setDescribtion(List<String> describtion) {
 		this.describtion = describtion;
 	}
 }
