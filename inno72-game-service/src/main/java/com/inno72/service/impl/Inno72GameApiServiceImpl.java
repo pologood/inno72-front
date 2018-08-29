@@ -12,13 +12,13 @@ import java.util.Optional;
 
 import javax.annotation.Resource;
 
-import com.google.gson.Gson;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
+import com.google.gson.Gson;
 import com.inno72.common.CommonBean;
 import com.inno72.common.Inno72GameServiceProperties;
 import com.inno72.common.Result;
@@ -1207,18 +1207,18 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 	 * @return
 	 */
 	private List<GoodsVo> loadGameInfo(String mid) {
-		//获取activePlanId
-		LOGGER.info("loadGameInfo mid={}",mid);
-		List<String>  activityPlanIdList = inno72ActivityPlanMapper.findActivityPlanIdByMid(mid);
-		if(activityPlanIdList==null||activityPlanIdList.size()>1){
+		// 获取activePlanId
+		LOGGER.info("loadGameInfo mid={}", mid);
+		List<String> activityPlanIdList = inno72ActivityPlanMapper.findActivityPlanIdByMid(mid);
+		if (activityPlanIdList == null || activityPlanIdList.size() > 1) {
 			LOGGER.error("数据异常，获取activityPlanIdList");
-			//此处不抛出异常，以免影响其他业务
+			// 此处不抛出异常，以免影响其他业务
 			return null;
 		}
 		String activityPlanId = activityPlanIdList.get(0);
-		LOGGER.info("loadGameInfo activityPlanId ={}",activityPlanId);
-		List<GoodsVo> list = inno72ActivityPlanMapper.getGoodsList(activityPlanId,mid);
-		LOGGER.info("loadGameInfo GoodsList ={}",new Gson().toJson(list));
+		LOGGER.info("loadGameInfo activityPlanId ={}", activityPlanId);
+		List<GoodsVo> list = inno72ActivityPlanMapper.getGoodsList(activityPlanId, mid);
+		LOGGER.info("loadGameInfo GoodsList ={}", new Gson().toJson(list));
 		return list;
 	}
 
@@ -1562,8 +1562,11 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 		if (inno72SamplingGoodsList != null && inno72SamplingGoodsList.size() > 0) {
 			for (Inno72SamplingGoods sampLingGoods : inno72SamplingGoodsList) {
 				// 根据商品id查询货道
+				Map<String, String> channelParam = new HashMap<String, String>();
+				channelParam.put("goodId", sampLingGoods.getId());
+				channelParam.put("machineId", sampLingGoods.getMachineId());
 				List<Inno72SupplyChannel> inno72SupplyChannels = inno72SupplyChannelMapper
-						.selectByGoodsId(sampLingGoods.getId());
+						.selectByGoodsId(channelParam);
 
 				Integer goodsCount = 0;
 				if (inno72SupplyChannels != null && inno72SupplyChannels.size() > 0) {
@@ -1575,10 +1578,10 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 				sampLingGoods.setNum(goodsCount);
 
 				// 根据商品id查询相关店铺信息
-				Map<String, String> param = new HashMap<String, String>();
-				param.put("shopId", sampLingGoods.getShopId());
-				param.put("activityId", sampLingGoods.getActiveId());
-				Inno72SamplingGoods shopInfo = inno72GoodsMapper.selectShopInfo(param);
+				Map<String, String> shopParam = new HashMap<String, String>();
+				shopParam.put("shopId", sampLingGoods.getShopId());
+				shopParam.put("activityId", sampLingGoods.getActiveId());
+				Inno72SamplingGoods shopInfo = inno72GoodsMapper.selectShopInfo(shopParam);
 				if (shopInfo != null) {
 					sampLingGoods.setShopName(shopInfo.getShopName());
 					sampLingGoods.setIsVip(shopInfo.getIsVip());

@@ -100,6 +100,11 @@ public class Inno72SamplingGoods {
 	private String activeId;
 
 	/**
+	 * 机器id
+	 */
+	private String machineId;
+
+	/**
 	 * 获取商品ID
 	 *
 	 * @return id - 商品ID
@@ -350,6 +355,14 @@ public class Inno72SamplingGoods {
 
 	public void setActiveId(String activeId) {
 		this.activeId = activeId;
+	}
+
+	public String getMachineId() {
+		return machineId;
+	}
+
+	public void setMachineId(String machineId) {
+		this.machineId = machineId;
 	}
 
 }
