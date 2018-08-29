@@ -12,17 +12,18 @@ import java.util.Optional;
 
 import javax.annotation.Resource;
 
-import com.inno72.common.json.JsonUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
+import com.google.gson.Gson;
 import com.inno72.common.CommonBean;
 import com.inno72.common.Inno72GameServiceProperties;
 import com.inno72.common.Result;
 import com.inno72.common.Results;
+import com.inno72.common.json.JsonUtil;
 import com.inno72.common.util.FastJsonUtils;
 import com.inno72.common.util.GameSessionRedisUtil;
 import com.inno72.common.util.Inno72OrderNumGenUtil;
@@ -74,7 +75,6 @@ import com.inno72.vo.Inno72SamplingGoods;
 import com.inno72.vo.LogReqrest;
 import com.inno72.vo.MachineApiVo;
 import com.inno72.vo.UserSessionVo;
-import com.google.gson.Gson;
 
 @Service
 public class Inno72GameApiServiceImpl implements Inno72GameApiService {
@@ -554,7 +554,7 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 
 				Integer isDel = inno72SupplyChannel.getIsDelete();
 				if (isDel != 0) {
-					LOGGER.info("paiYangOrder channel is {} , isDel is {} " , inno72SupplyChannel.getCode(), isDel);
+					LOGGER.info("paiYangOrder channel is {} , isDel is {} ", inno72SupplyChannel.getCode(), isDel);
 					continue;
 				}
 
@@ -687,7 +687,7 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 				Integer isDel = inno72SupplyChannel.getIsDelete();
 
 				if (isDel != 0) {
-					LOGGER.info("paiYangOrder channel is {} , isDel is {} " , inno72SupplyChannel.getCode(), isDel);
+					LOGGER.info("paiYangOrder channel is {} , isDel is {} ", inno72SupplyChannel.getCode(), isDel);
 					continue;
 				}
 
@@ -927,7 +927,8 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 
 			for (String failChannelId : failChannelIds.split(",")) {
 				Result<String> failChannelResult = this.shipmentFail(machineCode, failChannelId, "");
-				LOGGER.info("machineCode is {}, failChannelId is {}, code is {} ", machineCode, failChannelId, failChannelResult.getCode());
+				LOGGER.info("machineCode is {}, failChannelId is {}, code is {} ", machineCode, failChannelId,
+						failChannelResult.getCode());
 			}
 		}
 		return Results.success();
@@ -1240,18 +1241,18 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 	 * @return
 	 */
 	private List<GoodsVo> loadGameInfo(String mid) {
-		//获取activePlanId
-		LOGGER.info("loadGameInfo mid={}",mid);
-		List<String>  activityPlanIdList = inno72ActivityPlanMapper.findActivityPlanIdByMid(mid);
-		if(activityPlanIdList==null||activityPlanIdList.size()>1){
+		// 获取activePlanId
+		LOGGER.info("loadGameInfo mid={}", mid);
+		List<String> activityPlanIdList = inno72ActivityPlanMapper.findActivityPlanIdByMid(mid);
+		if (activityPlanIdList == null || activityPlanIdList.size() > 1) {
 			LOGGER.error("数据异常，获取activityPlanIdList");
-			//此处不抛出异常，以免影响其他业务
+			// 此处不抛出异常，以免影响其他业务
 			return null;
 		}
 		String activityPlanId = activityPlanIdList.get(0);
-		LOGGER.info("loadGameInfo activityPlanId ={}",activityPlanId);
-		List<GoodsVo> list = inno72ActivityPlanMapper.getGoodsList(activityPlanId,mid);
-		LOGGER.info("loadGameInfo GoodsList ={}",new Gson().toJson(list));
+		LOGGER.info("loadGameInfo activityPlanId ={}", activityPlanId);
+		List<GoodsVo> list = inno72ActivityPlanMapper.getGoodsList(activityPlanId, mid);
+		LOGGER.info("loadGameInfo GoodsList ={}", new Gson().toJson(list));
 		return list;
 	}
 
@@ -1595,8 +1596,11 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 		if (inno72SamplingGoodsList != null && inno72SamplingGoodsList.size() > 0) {
 			for (Inno72SamplingGoods sampLingGoods : inno72SamplingGoodsList) {
 				// 根据商品id查询货道
+				Map<String, String> channelParam = new HashMap<String, String>();
+				channelParam.put("goodId", sampLingGoods.getId());
+				channelParam.put("machineId", sampLingGoods.getMachineId());
 				List<Inno72SupplyChannel> inno72SupplyChannels = inno72SupplyChannelMapper
-						.selectByGoodsId(sampLingGoods.getId());
+						.selectByGoodsId(channelParam);
 
 				Integer goodsCount = 0;
 				if (inno72SupplyChannels != null && inno72SupplyChannels.size() > 0) {
