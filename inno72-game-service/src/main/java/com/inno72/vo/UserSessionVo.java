@@ -2,6 +2,8 @@ package com.inno72.vo;
 
 import lombok.Data;
 
+import java.util.List;
+
 @Data
 public class UserSessionVo {
 
@@ -34,6 +36,8 @@ public class UserSessionVo {
 	private String activityId;
 	private String machineCode;
 	private boolean countGoods;
+
+	private List<GoodsVo> goodsList;
 
 	public UserSessionVo(String mid, String userNick, String userId, String access_token, String gameId,
 			String sessionUuid, String planId) {
@@ -99,4 +103,6 @@ public class UserSessionVo {
 	public boolean getCountGoods() {
 		return countGoods;
 	}
+
+
 }

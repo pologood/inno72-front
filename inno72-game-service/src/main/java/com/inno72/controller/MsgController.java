@@ -19,7 +19,7 @@ public class MsgController {
 
 	private static final Logger logger = LoggerFactory.getLogger(MsgController.class);
 
-	@Value("${spring.datasource.url}")
+//	@Value("${spring.datasource.url}")
 	private String url;
 
 	@Autowired

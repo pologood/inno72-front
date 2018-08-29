@@ -46,4 +46,24 @@
     <select id="selectDefaultActPlan" resultMap="BaseResultMap">
         select * from inno72_activity_plan where activity_id in (select id from inno72_activity where is_default = 1)
     </select>
+    <select id="findActivityPlanIdByMid" parameterType="string" resultType="java.lang.String">
+        select pm.activity_plan_id from inno72_activity_plan_machine pm join inno72_activity_plan plan on pm.activity_plan_id=plan.id
+        where pm.machine_id=#{mid} and (CURRENT_TIMESTAMP() BETWEEN plan.start_time AND plan.end_time) and plan.is_delete=0
+
+    </select>
+
+    <select id="getGoodsList" parameterType="string" resultType="com.inno72.vo.GoodsVo">
+        select tmp.goods_id as goodsId,tmp.name as goodsName,tmp.goods_rule as goodsRule,SUM(tmp.goods_count) as goodsCount
+        from (
+        select plan_goods.prize_id as goods_id,plan_goods.result_code as goods_rule,goods.`name`,channel.id,channel.goods_count
+        from inno72_supply_channel channel join inno72_supply_channel_goods channel_goods
+        on channel.id = channel_goods.supply_channel_id
+        join inno72_activity_plan_game_result plan_goods on plan_goods.prize_id = channel_goods.goods_id
+        left join inno72_goods goods on plan_goods.prize_id = goods.id
+
+        where plan_goods.activity_plan_id=#{activityPlanId} and plan_goods.prize_type=1 and channel.machine_id=#{mid}
+        and channel.is_delete=0 and channel.goods_count>0
+        ) tmp
+    </select>
+
 </mapper>
