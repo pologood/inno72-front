@@ -85,6 +85,6 @@
 	    inno72_shops shops
 	LEFT JOIN inno72_activity_shops activity_shops ON activity_shops.shops_id = shops.id
 	WHERE
-	    shops.id =#{shopId}
+	    shops.id =#{shopId}  and activity_shops.activity_id=#{activityId}
   </select>
 </mapper>
