@@ -64,6 +64,7 @@
         where plan_goods.activity_plan_id=#{activityPlanId} and plan_goods.prize_type=1 and channel.machine_id=#{mid}
         and channel.is_delete=0 and channel.goods_count>0
         ) tmp
+        group by tmp.goods_id,tmp.name,tmp.goods_rule
     </select>
 
 </mapper>
