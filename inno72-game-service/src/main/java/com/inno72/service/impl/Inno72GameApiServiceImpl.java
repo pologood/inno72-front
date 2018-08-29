@@ -12,6 +12,7 @@ import java.util.Optional;
 
 import javax.annotation.Resource;
 
+import com.google.gson.Gson;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -1182,6 +1183,10 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 		sessionVo.setMachineId(mid);
 		sessionVo.setMachineCode(inno72Machine.getMachineCode());
 		sessionVo.setActivityId(inno72Activity.getId());
+
+		List<GoodsVo> list = loadGameInfo(mid);
+		sessionVo.setGoodsList(list);
+
 		gameSessionRedisUtil.setSessionEx(sessionUuid, JSON.toJSONString(sessionVo));
 
 		this.startGameLife(userChannel, inno72Activity, inno72ActivityPlan, inno72Game, inno72Machine, userId);
@@ -1194,6 +1199,27 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 		resultMap.put("sellerId", inno72Merchant.getMerchantCode());
 
 		return Results.success(JSONObject.toJSONString(resultMap));
+	}
+
+	/**
+	 *
+	 * @param mid
+	 * @return
+	 */
+	private List<GoodsVo> loadGameInfo(String mid) {
+		//获取activePlanId
+		LOGGER.info("loadGameInfo mid={}",mid);
+		List<String>  activityPlanIdList = inno72ActivityPlanMapper.findActivityPlanIdByMid(mid);
+		if(activityPlanIdList==null||activityPlanIdList.size()>1){
+			LOGGER.error("数据异常，获取activityPlanIdList");
+			//此处不抛出异常，以免影响其他业务
+			return null;
+		}
+		String activityPlanId = activityPlanIdList.get(0);
+		LOGGER.info("loadGameInfo activityPlanId ={}",activityPlanId);
+		List<GoodsVo> list = inno72ActivityPlanMapper.getGoodsList(activityPlanId,mid);
+		LOGGER.info("loadGameInfo GoodsList ={}",new Gson().toJson(list));
+		return list;
 	}
 
 	@Override
