@@ -1564,8 +1564,7 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 					sampLingGoods.setBanner(aliyunUrl + sampLingGoods.getBanner());
 				}
 			}
-
-			LOGGER.info("返回派样商品列表 => list:{}", inno72SamplingGoodsList);
+			LOGGER.info("返回派样商品列表 => list:{}", JSON.toJSONString(inno72SamplingGoodsList));
 			return Results.success(inno72SamplingGoodsList);
 		} else {
 			LOGGER.info("获取派样商品接口（返回） => list:{}", "返回结果为空");
