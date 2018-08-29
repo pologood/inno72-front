@@ -677,6 +677,12 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 
 			for (Inno72SupplyChannel inno72SupplyChannel : inno72SupplyChannels) {
 
+				Integer isDel = inno72SupplyChannel.getIsDelete();
+				LOGGER.info("paiYangOrder name is {}, isDel is {}", inno72SupplyChannel.getId(), isDel);
+				if (isDel == 1) {
+					continue;
+				}
+
 				String goodsCode = inno72SupplyChannel.getGoodsCode();
 				String code = inno72SupplyChannel.getCode();
 				Integer goodsCount = inno72SupplyChannel.getGoodsCount();
@@ -708,6 +714,8 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 		result.put("time", new Date().getTime());
 		return Results.success(result);
 	}
+
+	// 设置货道不可用
 
 	/**
 	 * 重构合并抽奖和下单接口为一个接口。这是下单接口
