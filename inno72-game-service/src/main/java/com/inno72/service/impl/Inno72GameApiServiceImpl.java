@@ -1292,7 +1292,8 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 		if (inno72Machine == null) {
 			return Results.failure("机器号错误");
 		}
-		if (inno72Machine.getMachineStatus() == 4 && inno72Machine.getOpenStatus() == 0) {
+		// todo 暂时注释掉 inno72Machine.getOpenStatus() == 0
+		if (inno72Machine.getMachineStatus() == 4) {
 			machineDropGoodsBean.setMachineCode(machineId); // 实际为code
 			machineDropGoodsBean.setChannelNum(channelCode);
 			alarmMessageBean.setSystem("machineDropGoods");
