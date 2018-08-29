@@ -1532,40 +1532,56 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 
 	@Override
 	public Result<List<Inno72SamplingGoods>> getSampling(String machineCode) {
-		LOGGER.info("获取派样商品 => machineCode:{}", machineCode);
+		LOGGER.info("获取派样商品接口（入参） => machineCode:{}", machineCode);
 		if (StringUtil.isEmpty(machineCode)) {
 			return Results.failure("machineCode为空!");
 		}
-		List<Inno72SamplingGoods> inno72SamplingGoodsList = inno72GoodsMapper.selectSamplingGoods(machineCode);
-
-
+		// 获取存储图片阿里云地址
 		String aliyunUrl = inno72GameServiceProperties.get("returnUrl");
-		for (Inno72SamplingGoods sampLingGoods : inno72SamplingGoodsList) {
-			List<Inno72SupplyChannel> inno72SupplyChannels = inno72SupplyChannelMapper
-					.selectByGoodsId(sampLingGoods.getId());
 
-			Integer goodsCount = 0;
-			for (Inno72SupplyChannel channel : inno72SupplyChannels) {
+		// 根据机器code查询派样商品
+		List<Inno72SamplingGoods> inno72SamplingGoodsList = inno72GoodsMapper.selectSamplingGoods(machineCode);
+		if (inno72SamplingGoodsList != null && inno72SamplingGoodsList.size() > 0) {
+			for (Inno72SamplingGoods sampLingGoods : inno72SamplingGoodsList) {
+				// 根据商品id查询货道
+				List<Inno72SupplyChannel> inno72SupplyChannels = inno72SupplyChannelMapper
+						.selectByGoodsId(sampLingGoods.getId());
 
-				goodsCount += channel.getGoodsCount();
-			}
-			sampLingGoods.setNum(goodsCount);
-			// 设置商户名称
-			// Inno72Shops shop = inno72ShopsMapper.selectByPrimaryKey(sampLingGoods.getShopId());
-			Inno72SamplingGoods shopInfo = inno72GoodsMapper.selectShopInfo(sampLingGoods.getShopId());
-			sampLingGoods.setShopName(shopInfo.getShopName());
-			sampLingGoods.setIsVip(shopInfo.getIsVip());
-			sampLingGoods.setSessionKey(shopInfo.getSessionKey());
+				Integer goodsCount = 0;
+				if (inno72SupplyChannels != null && inno72SupplyChannels.size() > 0) {
+					// 所有具有相同商品id的货道中中道商品数量相加
+					for (Inno72SupplyChannel channel : inno72SupplyChannels) {
+						goodsCount += channel.getGoodsCount();
+					}
+				}
+				sampLingGoods.setNum(goodsCount);
 
-			if (sampLingGoods.getImg() != null && !"".equals(sampLingGoods.getImg())) {
-				sampLingGoods.setImg(aliyunUrl + sampLingGoods.getImg());
+				// 根据商品id查询相关店铺信息
+				Map<String, String> param = new HashMap<String, String>();
+				param.put("shopId", sampLingGoods.getShopId());
+				param.put("activityId", sampLingGoods.getActiveId());
+				Inno72SamplingGoods shopInfo = inno72GoodsMapper.selectShopInfo(param);
+				if (shopInfo != null) {
+					sampLingGoods.setShopName(shopInfo.getShopName());
+					sampLingGoods.setIsVip(shopInfo.getIsVip());
+					sampLingGoods.setSessionKey(shopInfo.getSessionKey());
+				}
+
+				// 为商品表中商品图片路径拼上阿里云路径
+				if (sampLingGoods.getImg() != null && !"".equals(sampLingGoods.getImg())) {
+					sampLingGoods.setImg(aliyunUrl + sampLingGoods.getImg());
+				}
+				if (sampLingGoods.getBanner() != null && !"".equals(sampLingGoods.getBanner())) {
+					sampLingGoods.setBanner(aliyunUrl + sampLingGoods.getBanner());
+				}
 			}
-			if (sampLingGoods.getBanner() != null && !"".equals(sampLingGoods.getBanner())) {
-				sampLingGoods.setBanner(aliyunUrl + sampLingGoods.getBanner());
-			}
+			LOGGER.info("返回派样商品列表 => list:{}", JSON.toJSONString(inno72SamplingGoodsList));
+			return Results.success(inno72SamplingGoodsList);
+		} else {
+			LOGGER.info("获取派样商品接口（返回） => list:{}", "返回结果为空");
+			return Results.failure("此机器当前没有排期或者没有对应的派样商品");
 		}
 
-		LOGGER.info("返回派样商品列表 => list:{}", inno72SamplingGoodsList);
-		return Results.success(inno72SamplingGoodsList);
+
 	}
 }
