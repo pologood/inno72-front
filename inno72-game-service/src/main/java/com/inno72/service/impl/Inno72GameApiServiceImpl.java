@@ -551,6 +551,12 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 
 			for (Inno72SupplyChannel inno72SupplyChannel : inno72SupplyChannels) {
 
+				Integer isDel = inno72SupplyChannel.getIsDelete();
+				if (isDel != 0) {
+					LOGGER.info("paiYangOrder channel is {} , isDel is {} " , inno72SupplyChannel.getCode(), isDel);
+					continue;
+				}
+
 				String goodsCode = inno72SupplyChannel.getGoodsCode();
 				String code = inno72SupplyChannel.getCode();
 				Integer goodsCount = inno72SupplyChannel.getGoodsCount();
@@ -677,6 +683,12 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 			Map<String, GoodsVo> goodsVoMap = new HashMap<>();
 
 			for (Inno72SupplyChannel inno72SupplyChannel : inno72SupplyChannels) {
+				Integer isDel = inno72SupplyChannel.getIsDelete();
+
+				if (isDel != 0) {
+					LOGGER.info("paiYangOrder channel is {} , isDel is {} " , inno72SupplyChannel.getCode(), isDel);
+					continue;
+				}
 
 				String goodsCode = inno72SupplyChannel.getGoodsCode();
 				String code = inno72SupplyChannel.getCode();
