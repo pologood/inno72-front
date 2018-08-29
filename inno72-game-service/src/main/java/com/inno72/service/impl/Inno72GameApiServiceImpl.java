@@ -1549,8 +1549,10 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 				sampLingGoods.setNum(goodsCount);
 
 				// 根据商品id查询相关店铺信息
-				Inno72SamplingGoods shopInfo = inno72GoodsMapper.selectShopInfo(sampLingGoods.getShopId(),
-						sampLingGoods.getActiveId());
+				Map<String, String> param = new HashMap<String, String>();
+				param.put("shopId", sampLingGoods.getShopId());
+				param.put("activityId", sampLingGoods.getActiveId());
+				Inno72SamplingGoods shopInfo = inno72GoodsMapper.selectShopInfo(param);
 				if (shopInfo != null) {
 					sampLingGoods.setShopName(shopInfo.getShopName());
 					sampLingGoods.setIsVip(shopInfo.getIsVip());

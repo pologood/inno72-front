@@ -78,7 +78,7 @@
     where machine.machine_code=#{machineCode} and CURRENT_TIMESTAMP() BETWEEN plan.start_time and plan.end_time and plan.is_delete=0 
   </select>
   
-  <select id="selectShopInfo" resultMap="SamplingGoodsMap" parameterType="String">
+  <select id="selectShopInfo" resultMap="SamplingGoodsMap" parameterType="java.util.Map">
     SELECT
 	    shops.shop_name,activity_shops.session_key,activity_shops.is_vip
 	FROM
