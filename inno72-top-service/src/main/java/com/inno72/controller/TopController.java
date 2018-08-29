@@ -441,29 +441,29 @@ public class TopController {
 			userInfo.setToken(tokenResult);
 
 
+			// 设置用户信息
+			data = setUserInfo(userInfo, env, itemId);
+			LOGGER.info("data is {}", data);
+
+			if (!StringUtils.isEmpty(data)) {
+				playCode = FastJsonUtils.getString(data, "playCode");
+				qrStatus = FastJsonUtils.getString(data, "qrStatus");
+				String sId = FastJsonUtils.getString(data, "sellerId");
+				if (!StringUtils.isEmpty(sId)) {
+					sellerId = sId.trim();
+				}
+			}
+
+			// String h5Url = this.getHostGameH5Url(env);
+			// 跳转到游戏页面 手机端redirect
+			LOGGER.info("h5MobileUrl is {} , playCode is {}, env is {}", h5MobileUrl, playCode, env);
+			String formatUrl = String.format(h5MobileUrl, env, playCode) + "?qrStatus=" + qrStatus + "&sellerId="
+					+ sellerId;
+			LOGGER.info("formatUrl is {}", formatUrl);
+
 			try {
+				// 判断当前店铺是否需要
 				if ("1".equals(isVip)) {
-
-					// 设置用户信息
-					data = setUserInfo(userInfo, env, itemId);
-					LOGGER.info("data is {}", data);
-
-					if (!StringUtils.isEmpty(data)) {
-						playCode = FastJsonUtils.getString(data, "playCode");
-						qrStatus = FastJsonUtils.getString(data, "qrStatus");
-						String sId = FastJsonUtils.getString(data, "sellerId");
-						if (!StringUtils.isEmpty(sId)) {
-							sellerId = sId.trim();
-						}
-					}
-
-					// String h5Url = this.getHostGameH5Url(env);
-					// 跳转到游戏页面 手机端redirect
-					LOGGER.info("h5MobileUrl is {} , playCode is {}, env is {}", h5MobileUrl, playCode, env);
-					String formatUrl = String.format(h5MobileUrl, env, playCode) + "?qrStatus=" + qrStatus
-							+ "&sellerId=" + sellerId;
-					LOGGER.info("formatUrl is {}", formatUrl);
-					// response.sendRedirect(formatUrl);
 
 
 					String identityResBody = memberIdentity(mid, itemId, taobaoUserId, sessionKey);
@@ -481,6 +481,8 @@ public class TopController {
 					} else {
 						response.sendRedirect(formatUrl);
 					}
+				} else {
+					response.sendRedirect(formatUrl);
 				}
 
 			} catch (IOException e) {
