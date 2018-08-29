@@ -67,14 +67,13 @@
   </select> -->
   
   <select id="selectSamplingGoods" resultMap="SamplingGoodsMap" parameterType="String">
-    
     select 
         goods.*,plan.activity_id
     from inno72_activity_plan plan 
-    left join inno72_activity_plan_machine plan_machine on plan.id=plan_machine.activity_plan_id
+    left join inno72_activity_plan_machine plan_machine on plan_machine.activity_plan_id=plan.id
+    left join inno72_machine machine on machine.id=plan_machine.machine_id
     left join inno72_activity_plan_goods plan_goods on plan_goods.activity_plan_id=plan.id
     left join inno72_goods goods on goods.id=plan_goods.goods_id
-    left join inno72_machine machine on machine.id=plan_machine.machine_id
     where machine.machine_code=#{machineCode} and CURRENT_TIMESTAMP() BETWEEN plan.start_time and plan.end_time and plan.is_delete=0 
   </select>
   
