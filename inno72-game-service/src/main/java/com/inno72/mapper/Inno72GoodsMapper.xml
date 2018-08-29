@@ -43,6 +43,7 @@
     <result column="session_key" jdbcType="VARCHAR" property="sessionKey" />
     <result column="shop_name" jdbcType="VARCHAR" property="shopName" />
     <result column="activity_id" jdbcType="VARCHAR" property="activeId" />
+    <result column="machineId" jdbcType="VARCHAR" property="machineId" />
   </resultMap>
   
   <select id="selectByCode" resultMap="BaseResultMap" parameterType="string">
@@ -67,15 +68,16 @@
   </select> -->
   
   <select id="selectSamplingGoods" resultMap="SamplingGoodsMap" parameterType="String">
-    
-    select 
-        goods.*,plan.activity_id
-    from inno72_activity_plan plan 
-    left join inno72_activity_plan_machine plan_machine on plan.id=plan_machine.activity_plan_id
-    left join inno72_activity_plan_goods plan_goods on plan_goods.activity_plan_id=plan.id
-    left join inno72_goods goods on goods.id=plan_goods.goods_id
-    left join inno72_machine machine on machine.id=plan_machine.machine_id
-    where machine.machine_code=#{machineCode} and CURRENT_TIMESTAMP() BETWEEN plan.start_time and plan.end_time and plan.is_delete=0 
+    SELECT
+	    goods.*, plan.activity_id,machine.id as machineId
+	FROM
+	    inno72_activity_plan plan
+	LEFT JOIN inno72_activity_plan_machine plan_machine ON plan_machine.activity_plan_id = plan.id
+	LEFT JOIN inno72_machine machine ON machine.id = plan_machine.machine_id
+	LEFT JOIN inno72_activity_plan_goods plan_goods ON plan_goods.activity_plan_id = plan.id
+	LEFT JOIN inno72_goods goods ON goods.id = plan_goods.goods_id
+	WHERE
+	    machine.machine_code = #{machineCode} and CURRENT_TIMESTAMP() BETWEEN plan.start_time and plan.end_time and plan.is_delete=0 
   </select>
   
   <select id="selectShopInfo" resultMap="SamplingGoodsMap" parameterType="java.util.Map">

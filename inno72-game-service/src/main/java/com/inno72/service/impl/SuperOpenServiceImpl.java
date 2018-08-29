@@ -88,10 +88,8 @@ public class SuperOpenServiceImpl implements SuperOpenService {
 		createSamplingQrCode("014", "createSamplingQrCode", "/session/createSamplingQrCode", "生成派样活动二维码", "1.0.0"),
 		/** 创建派样订单 */
 		CREATE_PARYANG_ORDER("015", "paiYangOrder", "/api/qroauth/paiYangOrder", "派样下单", "1.0.0"),
-
-
-
-
+		/** 出货后调用减货 (同时处理 成功及失败情况) */
+		SHIPMENT_REPORTV2("016", "shipmentReportV2", "/api/goods/shipmentReportV2", "出货", "1.0.0"),
 
 		;
 

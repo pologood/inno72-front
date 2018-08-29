@@ -101,14 +101,14 @@
       select  * from inno72_supply_channel where code = #{code} and machine_id = #{machineId}
     </select>
 
-    <select id="selectByGoodsId" resultMap="BaseResultMap"  parameterType="String">
+    <select id="selectByGoodsId" resultMap="BaseResultMap"  parameterType="java.util.Map">
         SELECT
 		    supply_channel.*
 		FROM
 		    inno72_supply_channel supply_channel
 		LEFT JOIN inno72_supply_channel_goods supply_channel_goods ON supply_channel_goods.supply_channel_id = supply_channel.id
 		WHERE
-		    supply_channel_goods.goods_id = #{goodId}
+		    supply_channel_goods.goods_id = #{goodId} and supply_channel.machine_id=#{machineId} and supply_channel.is_delete=0
     </select>
 
 </mapper>

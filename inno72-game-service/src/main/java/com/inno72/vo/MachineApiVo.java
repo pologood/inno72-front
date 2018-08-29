@@ -1,5 +1,7 @@
 package com.inno72.vo;
 
+import java.util.List;
+
 public class MachineApiVo {
 
 	/**
@@ -64,6 +66,16 @@ public class MachineApiVo {
 	 * 活动实例ID
 	 */
 	private String interactId;
+
+	/**
+	 * 失败货道货道号（逗号分隔）
+	 */
+	private String failChannelIds;
+
+	/**
+	 * 出货失败原因
+	 */
+	private List<String> describtion;
 
 	public String getGameId() {
 		return gameId;
@@ -183,5 +195,21 @@ public class MachineApiVo {
 
 	public void setActivityPlanId(String activityPlanId) {
 		this.activityPlanId = activityPlanId;
+	}
+
+	public String getFailChannelIds() {
+		return failChannelIds;
+	}
+
+	public void setFailChannelIds(String failChannelIds) {
+		this.failChannelIds = failChannelIds;
+	}
+
+	public List<String> getDescribtion() {
+		return describtion;
+	}
+
+	public void setDescribtion(List<String> describtion) {
+		this.describtion = describtion;
 	}
 }

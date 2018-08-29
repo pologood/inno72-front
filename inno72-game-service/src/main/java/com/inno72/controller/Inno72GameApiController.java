@@ -109,6 +109,11 @@ public class Inno72GameApiController {
 		return inno72GameApiService.shipmentReport(vo);
 	}
 
+	@RequestMapping(value = "/goods/shipmentReportV2", method = {RequestMethod.POST, RequestMethod.GET})
+	public Result<String> shipmentReportV2(MachineApiVo vo) {
+		return inno72GameApiService.shipmentReportV2(vo);
+	}
+
 	/**
 	 * @param sessionUuid sessionUuid
 	 * @param mid mid
