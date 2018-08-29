@@ -44,5 +44,6 @@ public class Inno72AuthInfoController {
 			@RequestParam String isVip, @RequestParam String sessionKey) {
 
 		return inno72AuthInfoService.createSamplingQrCode(machineCode, itemId, isVip, sessionKey);
+
 	}
 }
