@@ -913,7 +913,7 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 	}
 
 	public Result<String> shipmentReportV2(MachineApiVo vo) {
-		LOGGER.info("shipmentReportV2 params vo is ", JsonUtil.toJson(vo));
+		LOGGER.info("shipmentReportV2 params vo is {} ", JsonUtil.toJson(vo));
 		String machineCode = vo.getMachineId();
 
 		Result<String> succChannelResult = shipmentReport(vo);
@@ -921,6 +921,10 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 
 		String failChannelIds = vo.getFailChannelIds();
 		if (StringUtil.isNotEmpty(failChannelIds)) {
+
+			List<String> describtion = vo.getDescribtion();
+			LOGGER.info("describtion is {} " , JsonUtil.toJson(describtion));
+
 			for (String failChannelId : failChannelIds.split(",")) {
 				Result<String> failChannelResult = this.shipmentFail(machineCode, failChannelId, "");
 				LOGGER.info("machineCode is {}, failChannelId is {}, code is {} ", machineCode, failChannelId, failChannelResult.getCode());
