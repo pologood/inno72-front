@@ -1592,8 +1592,11 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 		if (inno72SamplingGoodsList != null && inno72SamplingGoodsList.size() > 0) {
 			for (Inno72SamplingGoods sampLingGoods : inno72SamplingGoodsList) {
 				// 根据商品id查询货道
+				Map<String, String> channelParam = new HashMap<String, String>();
+				channelParam.put("goodId", sampLingGoods.getId());
+				channelParam.put("machineId", sampLingGoods.getMachineId());
 				List<Inno72SupplyChannel> inno72SupplyChannels = inno72SupplyChannelMapper
-						.selectByGoodsId(sampLingGoods.getId());
+						.selectByGoodsId(channelParam);
 
 				Integer goodsCount = 0;
 				if (inno72SupplyChannels != null && inno72SupplyChannels.size() > 0) {
