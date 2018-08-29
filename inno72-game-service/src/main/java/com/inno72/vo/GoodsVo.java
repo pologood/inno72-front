@@ -8,6 +8,8 @@ public class GoodsVo {
 	private String goodsId;
 	private int goodsNum;
 	private String goodsName;
+	private int goodsCount;
+	private int goodsRule;
 	private List<String> channelIds;
 
 
@@ -21,6 +23,22 @@ public class GoodsVo {
 
 	public GoodsVo() {
 		super();
+	}
+
+	public int getGoodsCount() {
+		return goodsCount;
+	}
+
+	public void setGoodsCount(int goodsCount) {
+		this.goodsCount = goodsCount;
+	}
+
+	public int getGoodsRule() {
+		return goodsRule;
+	}
+
+	public void setGoodsRule(int goodsRule) {
+		this.goodsRule = goodsRule;
 	}
 
 	public String getGoodsId() {
