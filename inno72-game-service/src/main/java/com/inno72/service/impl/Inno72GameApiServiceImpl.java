@@ -915,9 +915,11 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 	public Result<String> shipmentReportV2(MachineApiVo vo) {
 		LOGGER.info("shipmentReportV2 params vo is {} ", JsonUtil.toJson(vo));
 		String machineCode = vo.getMachineId();
-
-		Result<String> succChannelResult = shipmentReport(vo);
-		LOGGER.info("succChannelResult code is {} ", succChannelResult.getCode());
+		
+		if (StringUtil.isNotEmpty(vo.getChannelId())) {
+			Result<String> succChannelResult = shipmentReport(vo);
+			LOGGER.info("succChannelResult code is {} ", succChannelResult.getCode());
+		}
 
 		String failChannelIds = vo.getFailChannelIds();
 		if (StringUtil.isNotEmpty(failChannelIds)) {
