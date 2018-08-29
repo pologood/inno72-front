@@ -443,40 +443,7 @@ public class TopController {
 
 			try {
 				if ("1".equals(isVip)) {
-					String identityResBody = memberIdentity(mid, itemId, taobaoUserId, sessionKey);
-					LOGGER.info("identityResBody is {}", identityResBody);
-					String grade_name = FastJsonUtils.getString(identityResBody, "grade_name");
-					LOGGER.info("grade_name is {}", grade_name);
-					if (grade_name == null || "".equals(grade_name)) {
-						String memberJoinResBody = memberJoin(mid, code, sessionUuid, env, itemId, isVip, sessionKey);
-						LOGGER.info("memberJoinResBody is {}", memberJoinResBody);
-						String resultUrl = FastJsonUtils.getString(memberJoinResBody, "result");
-						LOGGER.info("resultUrl is {}", resultUrl);
-						response.sendRedirect("http:" + resultUrl);
 
-					} else {
-						// 设置用户信息
-						data = setUserInfo(userInfo, env, itemId);
-						LOGGER.info("data is {}", data);
-
-						if (!StringUtils.isEmpty(data)) {
-							playCode = FastJsonUtils.getString(data, "playCode");
-							qrStatus = FastJsonUtils.getString(data, "qrStatus");
-							String sId = FastJsonUtils.getString(data, "sellerId");
-							if (!StringUtils.isEmpty(sId)) {
-								sellerId = sId.trim();
-							}
-						}
-
-						// String h5Url = this.getHostGameH5Url(env);
-						// 跳转到游戏页面 手机端redirect
-						LOGGER.info("h5MobileUrl is {} , playCode is {}, env is {}", h5MobileUrl, playCode, env);
-						String formatUrl = String.format(h5MobileUrl, env, playCode) + "?qrStatus=" + qrStatus
-								+ "&sellerId=" + sellerId;
-						LOGGER.info("formatUrl is {}", formatUrl);
-						response.sendRedirect(formatUrl);
-					}
-				} else {
 					// 设置用户信息
 					data = setUserInfo(userInfo, env, itemId);
 					LOGGER.info("data is {}", data);
@@ -496,7 +463,23 @@ public class TopController {
 					String formatUrl = String.format(h5MobileUrl, env, playCode) + "?qrStatus=" + qrStatus
 							+ "&sellerId=" + sellerId;
 					LOGGER.info("formatUrl is {}", formatUrl);
-					response.sendRedirect(formatUrl);
+					// response.sendRedirect(formatUrl);
+
+
+					String identityResBody = memberIdentity(mid, itemId, taobaoUserId, sessionKey);
+					LOGGER.info("identityResBody is {}", identityResBody);
+					String grade_name = FastJsonUtils.getString(identityResBody, "grade_name");
+					LOGGER.info("grade_name is {}", grade_name);
+					if (grade_name == null || "".equals(grade_name)) {
+						String memberJoinResBody = memberJoin(mid, code, sessionUuid, env, itemId, isVip, sessionKey, formatUrl);
+						LOGGER.info("memberJoinResBody is {}", memberJoinResBody);
+						String resultUrl = FastJsonUtils.getString(memberJoinResBody, "result");
+						LOGGER.info("resultUrl is {}", resultUrl);
+						response.sendRedirect("http:" + resultUrl);
+
+					} else {
+						response.sendRedirect(formatUrl);
+					}
 				}
 
 			} catch (IOException e) {
@@ -509,13 +492,14 @@ public class TopController {
 	 * 入会
 	 */
 	private String memberJoin(String mid, String code, String sessionUuid, String env, String itemId, String isVip,
-			String sessionKey) {
+			String sessionKey, String callbackUrl) {
 
 		CrmMemberJoinurlGetRequest req = new CrmMemberJoinurlGetRequest();
-		String callbackUrl = jstUrl + mid + "/" + sessionUuid + "/" + env + "/" + itemId + "/" + isVip + "/"
-				+ sessionKey + "/1=1?code=" + code;
+//		String callbackUrl = jstUrl + mid + "/" + sessionUuid + "/" + env + "/" + itemId + "/" + isVip + "/"
+//				+ sessionKey + "/1=1?code=" + code;
 		String extraInfo = "{\"source\":\"paiyangji\",\"deviceId\":\"" + mid + "\",\"itemId\":" + itemId + "}";
 		req.setCallbackUrl(callbackUrl);
+		LOGGER.info("callbackUrl is {} " , callbackUrl);
 		req.setExtraInfo(extraInfo);
 		CrmMemberJoinurlGetResponse rsp = null;
 		try {
