@@ -53,6 +53,8 @@ public class AlarmDealLog {
 	@Convert(converter = LocalDateTimeConverter.class)
     private LocalDateTime uodateTime;
 
+    private AlarmRule alarmRule;
+
 	public String getId() {
 		return id;
 	}
@@ -131,5 +133,13 @@ public class AlarmDealLog {
 
 	public void setUodateTime(LocalDateTime uodateTime) {
 		this.uodateTime = uodateTime;
+	}
+
+	public AlarmRule getAlarmRule() {
+		return alarmRule;
+	}
+
+	public void setAlarmRule(AlarmRule alarmRule) {
+		this.alarmRule = alarmRule;
 	}
 }

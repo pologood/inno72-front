@@ -18,4 +18,6 @@ public interface AlarmRuleService extends Service<AlarmRule> {
 	List<AlarmRule> queryForPage(AlarmRule alarmRule);
 
 	AlarmRuleRequestVo queryById(String ruleId);
+
+	Result<String> delete(String id);
 }

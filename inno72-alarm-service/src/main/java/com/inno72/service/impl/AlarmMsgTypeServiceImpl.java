@@ -5,15 +5,15 @@ import java.util.List;
 
 import javax.annotation.Resource;
 
+import com.inno72.mapper.AlarmRuleMsgTypeMapper;
+import com.inno72.model.AlarmRuleMsgType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.alibaba.fastjson.JSON;
-import com.inno72.annotation.TargetDataSource;
 import com.inno72.common.AbstractService;
-import com.inno72.common.DataSourceKey;
 import com.inno72.common.Result;
 import com.inno72.common.Results;
 import com.inno72.common.util.JSR303Util;
@@ -37,8 +37,10 @@ public class AlarmMsgTypeServiceImpl extends AbstractService<AlarmMsgType> imple
 	@Resource
 	private IRedisUtil redisUtil;
 
+	@Resource
+	private AlarmRuleMsgTypeMapper alarmRuleMsgTypeMapper;
+
 	@Override
-	@TargetDataSource(dataSourceKey = DataSourceKey.DB_INNO72SAAS)
 	public Result<String> saveOrUpdate(AlarmMsgType alarmMsgType){
 		Result<String> valid = JSR303Util.valid(alarmMsgType);
 		if (valid.getCode() == Result.FAILURE){
@@ -63,13 +65,11 @@ public class AlarmMsgTypeServiceImpl extends AbstractService<AlarmMsgType> imple
 	}
 
 	@Override
-	@TargetDataSource(dataSourceKey = DataSourceKey.DB_INNO72SAAS)
 	public List<AlarmMsgType> queryForPage(AlarmMsgType alarmDealLog) {
 		return alarmMsgTypeMapper.queryForPage(alarmDealLog);
 	}
 
 	@Override
-	@TargetDataSource(dataSourceKey = DataSourceKey.DB_INNO72SAAS)
 	public Result<AlarmMsgType> selectById(String id){
 		if (StringUtil.isEmpty(id)){
 			return Results.failure("非法请求!");
@@ -82,7 +82,6 @@ public class AlarmMsgTypeServiceImpl extends AbstractService<AlarmMsgType> imple
 	}
 
 	@Override
-	@TargetDataSource(dataSourceKey = DataSourceKey.DB_INNO72SAAS)
 	public Result<String> delete(String id) {
 		if (StringUtil.isEmpty(id)){
 			return Results.failure("非法请求!");
@@ -91,7 +90,14 @@ public class AlarmMsgTypeServiceImpl extends AbstractService<AlarmMsgType> imple
 		if (alarmMsgType == null){
 			return Results.failure("不存在!");
 		}
-		int i = alarmMsgTypeMapper.deleteByPrimaryKey(id);
+
+		AlarmRuleMsgType alarmRuleMsgType = new AlarmRuleMsgType();
+		alarmRuleMsgType.setMsgTypeId(id);
+		int i = alarmRuleMsgTypeMapper.selectCount(alarmRuleMsgType);
+		if (i > 0) {
+			return Results.failure("通知方式已经被使用!");
+		}
+		alarmMsgTypeMapper.deleteByPrimaryKey(id);
 
 		redisUtil.incr("alarm:db:version");
 

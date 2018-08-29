@@ -44,8 +44,7 @@ public class AlarmRuleController {
 
 	@RequestMapping(value = "/delete", method = { RequestMethod.POST,  RequestMethod.GET})
 	public Result delete(@RequestParam String id) {
-		alarmRuleService.deleteById(id);
-		return ResultGenerator.genSuccessResult();
+		return alarmRuleService.delete(id);
 	}
 
 	@RequestMapping(value = "/update", method = { RequestMethod.POST,  RequestMethod.GET})
@@ -61,7 +60,7 @@ public class AlarmRuleController {
 	}
 
 	@RequestMapping(value = "/list", method = { RequestMethod.POST,  RequestMethod.GET})
-	public Result list(@RequestParam(defaultValue = "0") Integer page, @RequestParam(defaultValue = "0") Integer size) {
+	public Result list(@RequestParam(defaultValue = "1") Integer page, @RequestParam(defaultValue = "10") Integer size) {
 		PageHelper.startPage(page, size);
 		List<AlarmRule> list = alarmRuleService.findAll();
 		PageInfo pageInfo = new PageInfo(list);
@@ -70,9 +69,11 @@ public class AlarmRuleController {
 
 
 	@RequestMapping(value = "/getList", method = { RequestMethod.POST,  RequestMethod.GET})
-	public ModelAndView getList(AlarmRule alarmRule) {
+	public ModelAndView getList(@RequestParam(defaultValue = "0") Integer page, @RequestParam(defaultValue = "0") Integer size, AlarmRule alarmRule) {
+		PageHelper.startPage(page, size);
 		List<AlarmRule> list = alarmRuleService.queryForPage(alarmRule);
-		return ResultPages.page(ResultGenerator.genSuccessResult(list));
+		PageInfo pageInfo = new PageInfo(list);
+		return ResultPages.page(ResultGenerator.genSuccessResult(pageInfo));
 	}
 
 }

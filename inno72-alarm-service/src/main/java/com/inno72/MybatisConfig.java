@@ -4,6 +4,7 @@ import java.util.Properties;
 
 import javax.sql.DataSource;
 
+import com.github.pagehelper.PageHelper;
 import org.apache.ibatis.plugin.Interceptor;
 import org.apache.ibatis.session.SqlSessionFactory;
 import org.mybatis.spring.SqlSessionFactoryBean;
@@ -30,15 +31,22 @@ public class MybatisConfig {
 		Properties props = new Properties();
 		props.setProperty("dialect", "mysql");
 		props.setProperty("pageSqlId", "(ByPage|ForPage)");
-		PagePlugin pagePlugin = new PagePlugin();
-		pagePlugin.setProperties(props);
+//		PagePlugin pagePlugin = new PagePlugin();
+//		pagePlugin.setProperties(props);
+		//分页插件
+		PageHelper pageHelper = new PageHelper();
+		Properties properties = new Properties();
+		properties.setProperty("dialect","mysql");
+		properties.setProperty("reasonable", "true");
+		properties.setProperty("supportMethodsArguments", "true");
+		pageHelper.setProperties(properties);
 
 		OffsetLimitInterceptor offsetLimitInterceptor = new OffsetLimitInterceptor();
 		Properties offsetLimitProps = new Properties();
 		offsetLimitProps.setProperty("dialectClass", "com.github.miemiedev.mybatis.paginator.dialect.MySQLDialect");
 		offsetLimitInterceptor.setProperties(offsetLimitProps);
 
-		bean.setPlugins(new Interceptor[] { offsetLimitInterceptor, pagePlugin });
+		bean.setPlugins(new Interceptor[] { offsetLimitInterceptor, pageHelper });
 
 		ResourcePatternResolver resolver = new PathMatchingResourcePatternResolver();
 

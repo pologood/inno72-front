@@ -9,9 +9,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.inno72.annotation.TargetDataSource;
 import com.inno72.common.AbstractService;
-import com.inno72.common.DataSourceKey;
 import com.inno72.common.Result;
 import com.inno72.common.Results;
 import com.inno72.common.utils.StringUtil;
@@ -34,7 +32,6 @@ public class AlarmUserServiceImpl extends AbstractService<AlarmUser> implements 
 	private IRedisUtil redisUtil;
 
 	@Override
-	@TargetDataSource(dataSourceKey = DataSourceKey.DB_INNO72SAAS)
 	public Result<String> syncUser(){
 		LOGGER.info("开始同步 inno72.inno72_user 用户到inno72_saas.alarm_user");
 		int i = alarmUserMapper.syncUser();
@@ -44,13 +41,11 @@ public class AlarmUserServiceImpl extends AbstractService<AlarmUser> implements 
 	}
 
 	@Override
-	@TargetDataSource(dataSourceKey = DataSourceKey.DB_INNO72SAAS)
 	public List<AlarmUser> queryForPage(AlarmUser alarmUser) {
 		return alarmUserMapper.queryForPage(alarmUser);
 	}
 
 	@Override
-	@TargetDataSource(dataSourceKey = DataSourceKey.DB_INNO72SAAS)
 	public Result<AlarmUser> login(String loginName, String password) {
 		if (StringUtil.isEmpty(loginName) || StringUtil.isEmpty(password)){
 			return Results.failure("非法请求!");

@@ -131,5 +131,7 @@
         <module>inno72-alarm-service</module>
         <module>inno72-qy-service</module>
         <module>inno72-top-service</module>
+        <module>inno72-activity-service</module>
+        <module>inno72-wechat-share-service</module>
     </modules>
 </project>
