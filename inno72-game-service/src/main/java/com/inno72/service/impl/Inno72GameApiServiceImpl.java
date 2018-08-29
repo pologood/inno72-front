@@ -23,6 +23,7 @@ import com.inno72.common.CommonBean;
 import com.inno72.common.Inno72GameServiceProperties;
 import com.inno72.common.Result;
 import com.inno72.common.Results;
+import com.inno72.common.json.JsonUtil;
 import com.inno72.common.util.FastJsonUtils;
 import com.inno72.common.util.GameSessionRedisUtil;
 import com.inno72.common.util.Inno72OrderNumGenUtil;
@@ -551,6 +552,12 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 
 			for (Inno72SupplyChannel inno72SupplyChannel : inno72SupplyChannels) {
 
+				Integer isDel = inno72SupplyChannel.getIsDelete();
+				if (isDel != 0) {
+					LOGGER.info("paiYangOrder channel is {} , isDel is {} ", inno72SupplyChannel.getCode(), isDel);
+					continue;
+				}
+
 				String goodsCode = inno72SupplyChannel.getGoodsCode();
 				String code = inno72SupplyChannel.getCode();
 				Integer goodsCount = inno72SupplyChannel.getGoodsCount();
@@ -677,6 +684,12 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 			Map<String, GoodsVo> goodsVoMap = new HashMap<>();
 
 			for (Inno72SupplyChannel inno72SupplyChannel : inno72SupplyChannels) {
+				Integer isDel = inno72SupplyChannel.getIsDelete();
+
+				if (isDel != 0) {
+					LOGGER.info("paiYangOrder channel is {} , isDel is {} ", inno72SupplyChannel.getCode(), isDel);
+					continue;
+				}
 
 				String goodsCode = inno72SupplyChannel.getGoodsCode();
 				String code = inno72SupplyChannel.getCode();
@@ -899,6 +912,23 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 		}
 	}
 
+	public Result<String> shipmentReportV2(MachineApiVo vo) {
+		LOGGER.info("shipmentReportV2 params vo is ", JsonUtil.toJson(vo));
+		String machineCode = vo.getMachineId();
+
+		Result<String> succChannelResult = shipmentReport(vo);
+		LOGGER.info("succChannelResult code is {} ", succChannelResult.getCode());
+
+		String failChannelIds = vo.getFailChannelIds();
+		if (StringUtil.isNotEmpty(failChannelIds)) {
+			for (String failChannelId : failChannelIds.split(",")) {
+				Result<String> failChannelResult = this.shipmentFail(machineCode, failChannelId, "");
+				LOGGER.info("machineCode is {}, failChannelId is {}, code is {} ", machineCode, failChannelId,
+						failChannelResult.getCode());
+			}
+		}
+		return Results.success();
+	}
 
 	/**
 	 * 出货减货接口
@@ -1562,11 +1592,8 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 		if (inno72SamplingGoodsList != null && inno72SamplingGoodsList.size() > 0) {
 			for (Inno72SamplingGoods sampLingGoods : inno72SamplingGoodsList) {
 				// 根据商品id查询货道
-				Map<String, String> channelParam = new HashMap<String, String>();
-				channelParam.put("goodId", sampLingGoods.getId());
-				channelParam.put("machineId", sampLingGoods.getMachineId());
 				List<Inno72SupplyChannel> inno72SupplyChannels = inno72SupplyChannelMapper
-						.selectByGoodsId(channelParam);
+						.selectByGoodsId(sampLingGoods.getId());
 
 				Integer goodsCount = 0;
 				if (inno72SupplyChannels != null && inno72SupplyChannels.size() > 0) {
@@ -1578,10 +1605,10 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 				sampLingGoods.setNum(goodsCount);
 
 				// 根据商品id查询相关店铺信息
-				Map<String, String> shopParam = new HashMap<String, String>();
-				shopParam.put("shopId", sampLingGoods.getShopId());
-				shopParam.put("activityId", sampLingGoods.getActiveId());
-				Inno72SamplingGoods shopInfo = inno72GoodsMapper.selectShopInfo(shopParam);
+				Map<String, String> param = new HashMap<String, String>();
+				param.put("shopId", sampLingGoods.getShopId());
+				param.put("activityId", sampLingGoods.getActiveId());
+				Inno72SamplingGoods shopInfo = inno72GoodsMapper.selectShopInfo(param);
 				if (shopInfo != null) {
 					sampLingGoods.setShopName(shopInfo.getShopName());
 					sampLingGoods.setIsVip(shopInfo.getIsVip());
