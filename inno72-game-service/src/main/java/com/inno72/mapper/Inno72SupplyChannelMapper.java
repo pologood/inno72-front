@@ -5,6 +5,7 @@ import java.util.Map;
 
 import com.inno72.common.Mapper;
 import com.inno72.model.Inno72SupplyChannel;
+import org.apache.ibatis.annotations.Param;
 
 public interface Inno72SupplyChannelMapper extends Mapper<Inno72SupplyChannel> {
 
@@ -15,4 +16,6 @@ public interface Inno72SupplyChannelMapper extends Mapper<Inno72SupplyChannel> {
 	Inno72SupplyChannel selectChannel(Inno72SupplyChannel inno72SupplyChannel);
 
 	List<Inno72SupplyChannel> selectByGoodsId(Map<String, String> param);
+
+    String findGoodsIdByChannelId(@Param(value="channelId") String channelId);
 }

@@ -6,6 +6,9 @@ import java.util.*;
 
 import javax.annotation.Resource;
 
+import com.inno72.feign.MachineCheckBackendFeignClient;
+import com.inno72.machine.vo.SupplyRequestVo;
+import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -119,6 +122,8 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 	private IRedisUtil redisUtil;
 	@Resource
 	private Inno72GameService inno72GameService;
+	@Resource
+	private MachineCheckBackendFeignClient machineCheckBackendFeignClient;
 
 	private static final String QRSTATUS_NORMAL = "0"; // 二维码正常
 	private static final String QRSTATUS_INVALID = "-1"; // 二维码失效
@@ -548,11 +553,32 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 
 				@Override
 				public int compare(Inno72SupplyChannel o1, Inno72SupplyChannel o2) {
+					if(o1.getGoodsCount() == null) o1.setGoodsCount(0);
+					if(o2.getGoodsCount()==null) o2.setGoodsCount(0);
 					if(o1.getGoodsCount()>o2.getGoodsCount()){
 						return -1;
 					}
 
 					if(o1.getGoodsCount()==o2.getGoodsCount()){
+						Integer code1 ,code2 =0;
+						try {
+							code1 = Integer.parseInt(o1.getCode());
+						}catch (Exception e){
+							LOGGER.info("数据异常code={}非数字",o1.getCode());
+							code1 = 0;
+						}
+						try {
+							code2 = Integer.parseInt(o2.getCode());
+						}catch (Exception e){
+							LOGGER.info("数据异常code={}非数字",o2.getCode());
+							code2 = 0;
+						}
+						if(code1>code2){
+							return 1;
+						}
+						if(code1<code2){
+							return -1;
+						}
 						return 0;
 					}
 
@@ -987,6 +1013,10 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 		if (inno72SupplyChannel == null) {
 			return Results.failure("货道错误");
 		}
+
+		Result r = findLockGoodsPush(machineId,inno72SupplyChannel.getId());
+		if(r.getCode()==1) return r;
+
 		LOGGER.info("减货接口 ==> 未减货货道 [{}]", JSON.toJSONString(inno72SupplyChannel));
 		Inno72SupplyChannel updateChannel = new Inno72SupplyChannel();
 		updateChannel.setId(inno72SupplyChannel.getId());
@@ -1006,6 +1036,23 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 		} else {
 			LOGGER.info("调用出货无orderId 请求参数=>{}", JSON.toJSONString(vo));
 		}
+		return Results.success();
+	}
+
+	private Result findLockGoodsPush(String machineId, String channelId) {
+		LOGGER.info("findLockGoodsPush invoked! machineId={},channelId={}",machineId,channelId);
+		//获取商品id
+		String goodsId = inno72SupplyChannelMapper.findGoodsIdByChannelId(channelId);
+		if(StringUtils.isEmpty(goodsId)){
+			LOGGER.info("findLockGoodsPush 根据channelId={}无法查到goodsId",channelId);
+			return Results.failure("数据异常");
+		}
+		//实时发送缺货报警
+		LOGGER.info("实时发送缺货报警machineId={},channelId={}",machineId,channelId);
+		SupplyRequestVo vo = new SupplyRequestVo();
+		vo.setGoodsId(goodsId);
+		vo.setMachineId(machineId);
+		machineCheckBackendFeignClient.findLockGoodsPush(vo);
 		return Results.success();
 	}
 
