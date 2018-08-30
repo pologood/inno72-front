@@ -11,6 +11,7 @@ import com.inno72.machine.vo.SupplyRequestVo;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import com.alibaba.fastjson.JSON;
@@ -124,7 +125,9 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 	private Inno72GameService inno72GameService;
 	@Resource
 	private MachineCheckBackendFeignClient machineCheckBackendFeignClient;
-
+	@Value("${machinecheckappbackend.uri}")
+	private String machinecheckappbackendUri;
+	private static String FINDLOCKGOODSPUSH_URL = "/machine/channel/findLockGoodsPush";
 	private static final String QRSTATUS_NORMAL = "0"; // 二维码正常
 	private static final String QRSTATUS_INVALID = "-1"; // 二维码失效
 	private static final String QRSTATUS_EXIST_USER = "-2"; // 存在用户登录
@@ -1058,7 +1061,8 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 		SupplyRequestVo vo = new SupplyRequestVo();
 		vo.setGoodsId(goodsId);
 		vo.setMachineId(machineId);
-		machineCheckBackendFeignClient.findLockGoodsPush(vo);
+		HttpClient.post(machinecheckappbackendUri+FINDLOCKGOODSPUSH_URL,new Gson().toJson(vo));
+//		machineCheckBackendFeignClient.findLockGoodsPush(vo);
 		return Results.success();
 	}
 
