@@ -596,8 +596,6 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 			result.put("goods", values);
 		}
 
-		LOGGER.info("oneKeyOrdertest", JsonUtil.toJson(result));
-
 		result.put("time", new Date().getTime());
 		result.put("lotteryResult", lotteryCode);
 		LOGGER.info("oneKeyOrder is {}", JsonUtil.toJson(result));
