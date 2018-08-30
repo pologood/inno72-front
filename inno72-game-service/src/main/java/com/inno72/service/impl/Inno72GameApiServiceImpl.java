@@ -505,6 +505,8 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 		}
 		LOGGER.debug("下单 userSessionVo ==> {}", JSON.toJSONString(userSessionVo));
 		List<String> resultGoodsId = new ArrayList<>();
+
+		int lotteryCode = 1;
 		for (Inno72ActivityPlanGameResult result : planGameResults) {
 			String prizeType = result.getPrizeType();
 			switch (prizeType) {
@@ -523,10 +525,11 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 
 					break;
 				case "2":
-
+					// 下优惠券订单
 					Result<Object> lottery = this.lottery(userSessionVo, vo.getUa(), vo.getUmid(), result.getPrizeId());
 					LOGGER.debug("抽取奖券 结果 ==> {}", JSON.toJSONString(lottery));
-					// 下优惠券订单
+					lotteryCode = lottery.getCode();
+					LOGGER.debug("lotteryCode is" + lottery.getCode());
 					break;
 				default:
 					return Results.failure("无商品类型");
@@ -623,6 +626,7 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 		}
 
 		result.put("time", new Date().getTime());
+		result.put("lotteryResult", lotteryCode);
 		return Results.success(result);
 	}
 
