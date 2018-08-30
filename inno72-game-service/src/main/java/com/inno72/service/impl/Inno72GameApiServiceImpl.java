@@ -480,6 +480,7 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 	 */
 	@Override
 	public Result<Object> oneKeyOrder(MachineApiVo vo) {
+		LOGGER.info("oneKeyOrder params is {}", JsonUtil.toJson(vo));
 
 		String sessionUuid = vo.getSessionUuid();
 		if (StringUtil.isEmpty(sessionUuid)) {
@@ -529,7 +530,7 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 					Result<Object> lottery = this.lottery(userSessionVo, vo.getUa(), vo.getUmid(), result.getPrizeId());
 					LOGGER.debug("抽取奖券 结果 ==> {}", JSON.toJSONString(lottery));
 					lotteryCode = lottery.getCode();
-					LOGGER.info("lotteryCode is" + lottery.getCode());
+					LOGGER.info("lotteryCode is {} " , lottery.getCode());
 					break;
 				default:
 					return Results.failure("无商品类型");
@@ -627,6 +628,7 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 
 		result.put("time", new Date().getTime());
 		result.put("lotteryResult", lotteryCode);
+		LOGGER.info("oneKeyOrder is {}", JsonUtil.toJson(result));
 		return Results.success(result);
 	}
 
