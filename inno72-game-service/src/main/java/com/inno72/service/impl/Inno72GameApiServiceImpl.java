@@ -529,7 +529,7 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 					Result<Object> lottery = this.lottery(userSessionVo, vo.getUa(), vo.getUmid(), result.getPrizeId());
 					LOGGER.debug("抽取奖券 结果 ==> {}", JSON.toJSONString(lottery));
 					lotteryCode = lottery.getCode();
-					LOGGER.debug("lotteryCode is" + lottery.getCode());
+					LOGGER.info("lotteryCode is" + lottery.getCode());
 					break;
 				default:
 					return Results.failure("无商品类型");
