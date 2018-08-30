@@ -732,6 +732,8 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 		return Results.success(result);
 	}
 
+	// 设置货道不可用
+
 	/**
 	 * 重构合并抽奖和下单接口为一个接口。这是下单接口
 	 * @param userSessionVo
