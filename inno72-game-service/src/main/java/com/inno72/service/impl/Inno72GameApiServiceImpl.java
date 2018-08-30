@@ -2,13 +2,7 @@ package com.inno72.service.impl;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 
 import javax.annotation.Resource;
 
@@ -550,6 +544,22 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 
 			Map<String, GoodsVo> goodsVoMap = new HashMap<>();
 
+			Collections.sort(inno72SupplyChannels,new Comparator<Inno72SupplyChannel>(){
+
+				@Override
+				public int compare(Inno72SupplyChannel o1, Inno72SupplyChannel o2) {
+					if(o1.getGoodsCount()>o2.getGoodsCount()){
+						return -1;
+					}
+
+					if(o1.getGoodsCount()==o2.getGoodsCount()){
+						return 0;
+					}
+
+					return 1;
+				}
+			});
+
 			for (Inno72SupplyChannel inno72SupplyChannel : inno72SupplyChannels) {
 
 				Integer isDel = inno72SupplyChannel.getIsDelete();
@@ -589,7 +599,6 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 		result.put("time", new Date().getTime());
 		return Results.success(result);
 	}
-
 
 	/**
 	 * 派样订单
