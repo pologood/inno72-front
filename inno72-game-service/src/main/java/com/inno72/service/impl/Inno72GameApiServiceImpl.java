@@ -593,6 +593,8 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 				}
 			});
 
+			LOGGER.info("inno72SupplyChannels is {} ", JsonUtil.toJson(inno72SupplyChannels));
+
 			for (Inno72SupplyChannel inno72SupplyChannel : inno72SupplyChannels) {
 
 				Integer isDel = inno72SupplyChannel.getIsDelete();
@@ -628,6 +630,8 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 			Collection<GoodsVo> values = goodsVoMap.values();
 			result.put("goods", values);
 		}
+
+		LOGGER.info("oneKeyOrdertest", JsonUtil.toJson(result));
 
 		result.put("time", new Date().getTime());
 		result.put("lotteryResult", lotteryCode);
