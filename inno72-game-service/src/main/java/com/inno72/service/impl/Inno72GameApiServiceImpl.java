@@ -556,44 +556,9 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 
 			Map<String, GoodsVo> goodsVoMap = new HashMap<>();
 
-			Collections.sort(inno72SupplyChannels,new Comparator<Inno72SupplyChannel>(){
+			channelSort(inno72SupplyChannels);
 
-				@Override
-				public int compare(Inno72SupplyChannel o1, Inno72SupplyChannel o2) {
-					if(o1.getGoodsCount() == null) o1.setGoodsCount(0);
-					if(o2.getGoodsCount()==null) o2.setGoodsCount(0);
-					if(o1.getGoodsCount()>o2.getGoodsCount()){
-						return -1;
-					}
-
-					if(o1.getGoodsCount()==o2.getGoodsCount()){
-						Integer code1 ,code2 =0;
-						try {
-							code1 = Integer.parseInt(o1.getCode());
-						}catch (Exception e){
-							LOGGER.info("数据异常code={}非数字",o1.getCode());
-							code1 = 0;
-						}
-						try {
-							code2 = Integer.parseInt(o2.getCode());
-						}catch (Exception e){
-							LOGGER.info("数据异常code={}非数字",o2.getCode());
-							code2 = 0;
-						}
-						if(code1>code2){
-							return 1;
-						}
-						if(code1<code2){
-							return -1;
-						}
-						return 0;
-					}
-
-					return 1;
-				}
-			});
-
-			LOGGER.info("inno72SupplyChannels is {} ", JsonUtil.toJson(inno72SupplyChannels));
+			LOGGER.info("inno72SupplyChannels sort is {} ", JsonUtil.toJson(inno72SupplyChannels));
 
 			for (Inno72SupplyChannel inno72SupplyChannel : inno72SupplyChannels) {
 
@@ -637,6 +602,48 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 		result.put("lotteryResult", lotteryCode);
 		LOGGER.info("oneKeyOrder is {}", JsonUtil.toJson(result));
 		return Results.success(result);
+	}
+
+	/**
+	 * 货道排序
+	 * @param inno72SupplyChannels
+	 */
+	private void channelSort(List<Inno72SupplyChannel> inno72SupplyChannels) {
+		Collections.sort(inno72SupplyChannels,new Comparator<Inno72SupplyChannel>(){
+			@Override
+			public int compare(Inno72SupplyChannel o1, Inno72SupplyChannel o2) {
+				if(o1.getGoodsCount() == null) o1.setGoodsCount(0);
+				if(o2.getGoodsCount()==null) o2.setGoodsCount(0);
+				if(o1.getGoodsCount()>o2.getGoodsCount()){
+					return -1;
+				}
+
+				if(o1.getGoodsCount()==o2.getGoodsCount()){
+					Integer code1 ,code2 =0;
+					try {
+						code1 = Integer.parseInt(o1.getCode());
+					}catch (Exception e){
+						LOGGER.info("数据异常code={}非数字",o1.getCode());
+						code1 = 0;
+					}
+					try {
+						code2 = Integer.parseInt(o2.getCode());
+					}catch (Exception e){
+						LOGGER.info("数据异常code={}非数字",o2.getCode());
+						code2 = 0;
+					}
+					if(code1>code2){
+						return 1;
+					}
+					if(code1<code2){
+						return -1;
+					}
+					return 0;
+				}
+
+				return 1;
+			}
+		});
 	}
 
 	/**
@@ -730,6 +737,10 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 			}
 
 			Map<String, GoodsVo> goodsVoMap = new HashMap<>();
+
+			channelSort(inno72SupplyChannels);
+
+			LOGGER.info("inno72SupplyChannels sort is {} ", JsonUtil.toJson(inno72SupplyChannels));
 
 			for (Inno72SupplyChannel inno72SupplyChannel : inno72SupplyChannels) {
 				Integer isDel = inno72SupplyChannel.getIsDelete();
