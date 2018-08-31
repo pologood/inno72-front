@@ -1250,6 +1250,7 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 		 * <msg_info>用户不存在</msg_info>1dd77fc18f3a409196de23baedcf8ce1 <model>e****丫</model>
 		 * </tmall_fans_automachine_getmaskusernick_response>
 		 */
+		LOGGER.info("getMaskUserNick params is {}", JsonUtil.toJson(requestForm));
 		String respJson = HttpClient.form(jstUrl + "/api/top/getMaskUserNick", requestForm, null);
 		LOGGER.info("调用聚石塔接口  【请求nickName】返回 ===> {}", JSON.toJSONString(respJson));
 
