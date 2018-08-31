@@ -26,7 +26,6 @@ public class Skin {
     @Transient
     public String percent;//打败人数百分比
 
-
     public static Integer calculationScore(Skin skin) {
         int age = skin.getAge();
         int colorLevel = skin.getColorLevel();
@@ -57,7 +56,7 @@ public class Skin {
         }else if(colorLevel == 5 || colorLevel == 6){
             //较深
             score+=17;
-        }else if(colorLevel == 5 || colorLevel == 6){
+        }else if(colorLevel == 7){
             //黝黑
             score+=16;
         }else{
@@ -65,7 +64,7 @@ public class Skin {
             score+=18;
         }
 
-        if(oilLevel == 1){
+        if(oilLevel == 0){
             //0-干性，
             score+=17;
         }else if(oilLevel == 1){
