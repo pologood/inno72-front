@@ -1243,7 +1243,7 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 
 		Map<String, String> requestForm = new HashMap<>();
 		requestForm.put("accessToken", access_token);
-		requestForm.put("mid", mid);
+		requestForm.put("mid", inno72Machine.getId());
 		requestForm.put("sellerId", inno72Merchant.getMerchantCode());
 		/*
 		 * <tmall_fans_automachine_getmaskusernick_response> <msg_code>200</msg_code>
