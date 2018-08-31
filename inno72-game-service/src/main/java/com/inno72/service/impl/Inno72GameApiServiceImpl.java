@@ -1302,6 +1302,7 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 		sessionVo.setActivityId(inno72Activity.getId());
 
 		List<GoodsVo> list = loadGameInfo(mid);
+		LOGGER.info("loadGameInfo is {} ", JsonUtil.toJson(list));
 		sessionVo.setGoodsList(list);
 
 		gameSessionRedisUtil.setSessionEx(sessionUuid, JSON.toJSONString(sessionVo));
