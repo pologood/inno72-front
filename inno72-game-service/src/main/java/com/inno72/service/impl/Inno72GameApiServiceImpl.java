@@ -930,7 +930,7 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 			return Results.failure("聚石塔无返回数据!");
 		}
 
-		LOGGER.info("调用聚石塔接口  【抽奖】返回 ===> {}", JSON.toJSONString(respJson));
+		LOGGER.info("调用聚石塔接口  【抽奖】返回 ===> {}", respJson);
 		// TODO 奖券下单
 		String orderId = "";
 		try {
@@ -944,14 +944,17 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 		try {
 
 			boolean msg_code = Boolean.parseBoolean(FastJsonUtils.getString(respJson, "succ"));
+			LOGGER.info("lottery msg_code is {}", msg_code);
 			if (!msg_code) {
-				String msg_info = FastJsonUtils.getString(respJson, "sub_msg");
+				String msg_info = FastJsonUtils.getString(respJson, "reason");
 				LOGGER.info("抽奖失败 ===> {}", msg_info);
 				return Results.failure(msg_info);
 			}
 
-			String is_success = FastJsonUtils.getString(respJson, "is_success");
+			String is_success = FastJsonUtils.getString(respJson, "is_win");
+			LOGGER.info("lottery is_success is {} ", is_success);
 			if (is_success.equals("true")) {
+				LOGGER.info("抽奖成功 is_success is {}", is_success);
 				Inno72Order inno72Order = new Inno72Order();
 				inno72Order.setId(orderId);
 				inno72Order.setGoodsStatus(Inno72Order.INNO72ORDER_GOODSSTATUS.SUCC.getKey());
@@ -959,7 +962,12 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 				inno72OrderMapper.updateByPrimaryKeySelective(inno72Order);
 				inno72OrderHistoryMapper.insert(new Inno72OrderHistory(inno72Order.getId(), inno72Order.getOrderNum(),
 						JSON.toJSONString(inno72Order), "修改状态为已发放优惠券"));
+				LOGGER.info("抽奖成功 修改状态为已发放优惠券 orderId is {}", orderId);
+			} else {
+				LOGGER.info("抽奖失败 is_success is {}", is_success);
+				return Results.failure("抽奖失败");
 			}
+
 			String data = FastJsonUtils.getString(respJson, "data");
 			LOGGER.info("结果数据 ====> {}", data);
 			JSONObject parseDataObject = JSON.parseObject(data);
