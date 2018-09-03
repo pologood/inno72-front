@@ -1726,4 +1726,25 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 
 
 	}
+
+	@Override
+	public Result<String> setHeartbeat(String machineCode, String pageInfo) {
+		LOGGER.info("设置心跳接口开始（入参） => machineCode:{}；pageInfo:{}", machineCode, pageInfo);
+		Inno72Machine inno72Machine = inno72MachineMapper.findMachineByCode(machineCode);
+		if (inno72Machine == null) {
+			return Results.failure("此机器编码没有查到相对应的机器！");
+		}
+		String backendUrl = inno72GameServiceProperties.get("backendUrl");
+		Map<String, String> requestForm = new HashMap<String, String>();
+		requestForm.put("machineId", inno72Machine.getId());
+		requestForm.put("type", "1");
+		requestForm.put("pageInfo", pageInfo);
+		Map<String, String> header = new HashMap<String, String>();
+		header.put("Content-Type", "application/json");
+		header.put("charset", "UTF-8");
+		// String respJson = HttpClient.form("http://192.168.33.248:30512/alarm/detail/add", requestForm, header);
+		String respJson = HttpClient.post("http://192.168.33.248:30512/alarm/detail/add", JsonUtil.toJson(requestForm));
+		LOGGER.info("设置心跳接口结束（出参） => respJson:{}", respJson);
+		return Results.success(respJson);
+	}
 }
