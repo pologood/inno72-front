@@ -2,12 +2,18 @@ package com.inno72.service.impl;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 
 import javax.annotation.Resource;
 
-import com.inno72.feign.MachineCheckBackendFeignClient;
-import com.inno72.machine.vo.SupplyRequestVo;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -26,6 +32,8 @@ import com.inno72.common.util.FastJsonUtils;
 import com.inno72.common.util.GameSessionRedisUtil;
 import com.inno72.common.util.Inno72OrderNumGenUtil;
 import com.inno72.common.utils.StringUtil;
+import com.inno72.feign.MachineCheckBackendFeignClient;
+import com.inno72.machine.vo.SupplyRequestVo;
 import com.inno72.mapper.Inno72ActivityMapper;
 import com.inno72.mapper.Inno72ActivityPlanGameResultMapper;
 import com.inno72.mapper.Inno72ActivityPlanMapper;
@@ -533,7 +541,7 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 					Result<Object> lottery = this.lottery(userSessionVo, vo.getUa(), vo.getUmid(), result.getPrizeId());
 					LOGGER.debug("抽取奖券 结果 ==> {}", JSON.toJSONString(lottery));
 					lotteryCode = lottery.getCode();
-					LOGGER.info("lotteryCode is {} " , lottery.getCode());
+					LOGGER.info("lotteryCode is {} ", lottery.getCode());
 					break;
 				default:
 					return Results.failure("无商品类型");
@@ -607,33 +615,33 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 	 * @param inno72SupplyChannels
 	 */
 	private void channelSort(List<Inno72SupplyChannel> inno72SupplyChannels) {
-		Collections.sort(inno72SupplyChannels,new Comparator<Inno72SupplyChannel>(){
+		Collections.sort(inno72SupplyChannels, new Comparator<Inno72SupplyChannel>() {
 			@Override
 			public int compare(Inno72SupplyChannel o1, Inno72SupplyChannel o2) {
-				if(o1.getGoodsCount() == null) o1.setGoodsCount(0);
-				if(o2.getGoodsCount()==null) o2.setGoodsCount(0);
-				if(o1.getGoodsCount()>o2.getGoodsCount()){
+				if (o1.getGoodsCount() == null) o1.setGoodsCount(0);
+				if (o2.getGoodsCount() == null) o2.setGoodsCount(0);
+				if (o1.getGoodsCount() > o2.getGoodsCount()) {
 					return -1;
 				}
 
-				if(o1.getGoodsCount()==o2.getGoodsCount()){
-					Integer code1 ,code2 =0;
+				if (o1.getGoodsCount() == o2.getGoodsCount()) {
+					Integer code1, code2 = 0;
 					try {
 						code1 = Integer.parseInt(o1.getCode());
-					}catch (Exception e){
-						LOGGER.info("数据异常code={}非数字",o1.getCode());
+					} catch (Exception e) {
+						LOGGER.info("数据异常code={}非数字", o1.getCode());
 						code1 = 0;
 					}
 					try {
 						code2 = Integer.parseInt(o2.getCode());
-					}catch (Exception e){
-						LOGGER.info("数据异常code={}非数字",o2.getCode());
+					} catch (Exception e) {
+						LOGGER.info("数据异常code={}非数字", o2.getCode());
 						code2 = 0;
 					}
-					if(code1>code2){
+					if (code1 > code2) {
 						return 1;
 					}
-					if(code1<code2){
+					if (code1 < code2) {
 						return -1;
 					}
 					return 0;
@@ -1043,11 +1051,11 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 		if (inno72SupplyChannel == null) {
 			return Results.failure("货道错误");
 		}
-		try{
-			findLockGoodsPush(machineId,inno72SupplyChannel.getId());
-//			if(r.getCode()==1) return r;
-		}catch (Exception e){
-			LOGGER.info("调用findLockGoodsPush异常",e);
+		try {
+			findLockGoodsPush(machineId, inno72SupplyChannel.getId());
+			// if(r.getCode()==1) return r;
+		} catch (Exception e) {
+			LOGGER.info("调用findLockGoodsPush异常", e);
 		}
 
 		LOGGER.info("减货接口 ==> 未减货货道 [{}]", JSON.toJSONString(inno72SupplyChannel));
@@ -1073,20 +1081,20 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 	}
 
 	private Result findLockGoodsPush(String machineId, String channelId) {
-		LOGGER.info("findLockGoodsPush invoked! machineId={},channelId={}",machineId,channelId);
-		//获取商品id
+		LOGGER.info("findLockGoodsPush invoked! machineId={},channelId={}", machineId, channelId);
+		// 获取商品id
 		String goodsId = inno72SupplyChannelMapper.findGoodsIdByChannelId(channelId);
-		if(StringUtils.isEmpty(goodsId)){
-			LOGGER.info("findLockGoodsPush 根据channelId={}无法查到goodsId",channelId);
+		if (StringUtils.isEmpty(goodsId)) {
+			LOGGER.info("findLockGoodsPush 根据channelId={}无法查到goodsId", channelId);
 			return Results.failure("数据异常");
 		}
-		//实时发送缺货报警
-		LOGGER.info("实时发送缺货报警machineId={},channelId={}",machineId,channelId);
+		// 实时发送缺货报警
+		LOGGER.info("实时发送缺货报警machineId={},channelId={}", machineId, channelId);
 		SupplyRequestVo vo = new SupplyRequestVo();
 		vo.setGoodsId(goodsId);
 		vo.setMachineId(machineId);
-		HttpClient.post(machinecheckappbackendUri+FINDLOCKGOODSPUSH_URL,new Gson().toJson(vo));
-//		machineCheckBackendFeignClient.findLockGoodsPush(vo);
+		HttpClient.post(machinecheckappbackendUri + FINDLOCKGOODSPUSH_URL, new Gson().toJson(vo));
+		// machineCheckBackendFeignClient.findLockGoodsPush(vo);
 		return Results.success();
 	}
 
@@ -1324,34 +1332,6 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 
 		LOGGER.info("playCode is" + playCode);
 
-
-		// 调用完getMaskUserNick接口后需要调用聚石塔日志接口
-		Map<String, String> requestLogForm = new HashMap<>();
-
-		requestLogForm.put("accessToken", sessionVo.getAccessToken());
-		requestLogForm.put("value1", inno72Machine.getMachineCode());
-		requestLogForm.put("sellerId", inno72Merchant.getMerchantCode());
-		requestLogForm.put("userId", "-1");
-		requestLogForm.put("type", "login");
-		requestLogForm.put("bizCode", "automachine");
-		// requestLogForm.put("logReqrest", JSON.toJSONString(logReqrest));
-
-		// private LogReqrest getLogReqrest(String bizCode, Long itemId, Long sellerId, String type, Long userId,
-		// String value1, String value2, Long value3, Long value4) {
-		// return new LogReqrest(bizCode, itemId, sellerId, type, -1L, value1, value2, value3, value4);
-		LogReqrest logReqrest = getLogReqrest("automachine", Long.valueOf(itemId), Long.valueOf(sellerId),
-				LogReqrest.LogRequest_Type.login, null, inno72Machine.getMachineCode(), null, null, null, nickName);
-		requestLogForm.put("logReqrest", JSON.toJSONString(logReqrest));
-		LOGGER.info("聚石塔日志接口参数 requestLogForm ：" + JSONObject.toJSONString(requestLogForm));
-		String result = HttpClient.form(jstUrl + "/api/top/addLog", requestLogForm, null);
-		LOGGER.info("聚石塔日志接口返回 ", JSON.toJSONString(result));
-		String msg_logCode = FastJsonUtils.getString(result, "msg_code");
-		if (!"SUCCESS".equals(msg_logCode)) {
-			String msg_info = FastJsonUtils.getString(result, "msg_info");
-			LOGGER.info("调用聚石塔日志接口 ===> {}", JSON.toJSONString(msg_info));
-		}
-
-
 		Map<String, Object> resultMap = new HashMap<>();
 		resultMap.put("playCode", playCode);
 		resultMap.put("qrStatus", qrStatus);
@@ -1583,45 +1563,8 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 		// 调用聚石塔日志
 		Map<String, String> requestLogForm = new HashMap<>();
 		requestLogForm.put("accessToken", token);
-		LogReqrest logReqrest = getLogReqrest("", Long.valueOf(itemId), Long.valueOf(sellerId), "用户互动时常",
-				Long.valueOf(userId), machineCode, playTime, null, null, null);
-		requestLogForm.put("logReqrest", JSON.toJSONString(logReqrest));
-		LOGGER.info("聚石塔日志接口参数 requestLogForm ：" + JSONObject.toJSONString(requestLogForm));
-
-		String jstUrl = inno72GameServiceProperties.get("jstUrl");
-		if (StringUtil.isEmpty(jstUrl)) {
-			return Results.failure("配置中心无聚石塔配置路径!");
-		}
-		String result = HttpClient.form(jstUrl + "/api/top/addLog", requestLogForm, null);
-		LOGGER.info("聚石塔日志接口返回 ", JSON.toJSONString(result));
-		String msg_logCode = FastJsonUtils.getString(result, "msg_code");
-		System.out.println("++++++++++++++++++" + msg_logCode);
-		String msg_info = FastJsonUtils.getString(result, "msg_info");
-		if (!"SUCCESS".equals(msg_logCode)) {
-			LOGGER.info("调用聚石塔日志接口 ===> {}", JSON.toJSONString(msg_info));
-			return Results.failure(msg_info);
-		}
-		return Results.success(msg_info);
-	}
-
-	/**
-	 * 调用聚石塔日志
-	 * @param token
-	 * @param itemId
-	 * @param sellerId
-	 * @param userId
-	 * @param machineCode
-	 * @param playTime
-	 * @return
-	 */
-	public Result<String> addLog(String token, String itemId, String sellerId, String userId, String machineCode,
-			String playTime) {
-		LOGGER.info("用户互动时长 => itemId:{}; sellerId:{}; userId:{}; token:{}", itemId, sellerId, userId, token);
-		// 调用聚石塔日志
-		Map<String, String> requestLogForm = new HashMap<>();
-		requestLogForm.put("accessToken", token);
-		LogReqrest logReqrest = getLogReqrest("", Long.valueOf(itemId), Long.valueOf(sellerId), "用户互动时常",
-				Long.valueOf(userId), machineCode, playTime, null, null, null);
+		LogReqrest logReqrest = new LogReqrest("", Long.valueOf(itemId), Long.valueOf(sellerId), "用户互动时常",
+				Long.valueOf(userId), machineCode, playTime, null, null);
 		requestLogForm.put("logReqrest", JSON.toJSONString(logReqrest));
 		LOGGER.info("聚石塔日志接口参数 requestLogForm ：" + JSONObject.toJSONString(requestLogForm));
 
