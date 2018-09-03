@@ -142,7 +142,7 @@ public class TopController {
 	 * http://open.taobao.com/doc2/apiDetail.htm?apiId=35602
 	 */
 	@RequestMapping(value = "/api/top/getMaskUserNick", method = RequestMethod.POST)
-	private String getMaskUserNick(String accessToken, String mid, Long sellerId, String mixNick) throws ApiException {
+	private String getMaskUserNick(String accessToken, String mid, Long sellerId) throws ApiException {
 		// @formatter:off
 		LOGGER.info("getMaskUserNick accessToken is {}, mid is {}, sellerId is {}", accessToken, mid, sellerId);
 		// @formatter:on
@@ -151,8 +151,7 @@ public class TopController {
 		TmallFansAutomachineGetmaskusernickRequest req = new TmallFansAutomachineGetmaskusernickRequest();
 		req.setSellerId(sellerId);
 		req.setMachineId(mid);
-		// req.setAppName(APP_NAME);
-		req.setMixNick(mixNick);
+		req.setAppName(APP_NAME);
 		TmallFansAutomachineGetmaskusernickResponse rsp = client.execute(req, accessToken);
 		String result = rsp.getBody();
 		LOGGER.info("getMaskUserNick result is {}", result);
