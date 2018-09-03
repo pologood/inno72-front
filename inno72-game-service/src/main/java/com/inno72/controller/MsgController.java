@@ -3,6 +3,8 @@ package com.inno72.controller;
 import java.util.HashMap;
 import java.util.Map;
 
+import com.inno72.feign.MachineCheckBackendFeignClient;
+import com.inno72.machine.vo.SupplyRequestVo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,6 +26,16 @@ public class MsgController {
 
 	@Autowired
 	private MsgUtil msgUtil;
+	@Autowired
+	private MachineCheckBackendFeignClient machineCheckBackendFeignClient;
+	@RequestMapping(value = "/testFeign", method = {RequestMethod.GET, RequestMethod.POST})
+	public String testFeign(String mid,String goodsId){
+		SupplyRequestVo vo = new SupplyRequestVo();
+		vo.setMachineId(mid);
+		vo.setGoodsId(goodsId);
+		machineCheckBackendFeignClient.findLockGoodsPush(vo);
+		return "ok";
+	}
 
 	@ResponseBody
 	@RequestMapping(value = "/msg/sendDDTextByGroup", method = {RequestMethod.GET, RequestMethod.POST})

@@ -110,5 +110,12 @@
 		WHERE
 		    supply_channel_goods.goods_id = #{goodId} and supply_channel.machine_id=#{machineId} and supply_channel.is_delete=0
     </select>
-
+    <select id="findGoodsIdByChannelId" resultType="string"  parameterType="java.lang.String">
+        SELECT
+		    goods_id
+		FROM
+		    inno72_supply_channel_goods
+		WHERE
+		    supply_channel_id = #{channelId} and is_delete=0
+    </select>
 </mapper>
