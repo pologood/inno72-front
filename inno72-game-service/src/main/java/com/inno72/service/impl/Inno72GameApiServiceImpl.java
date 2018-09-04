@@ -133,8 +133,13 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 	private Inno72GameService inno72GameService;
 	@Resource
 	private MachineCheckBackendFeignClient machineCheckBackendFeignClient;
+
 	@Value("${machinecheckappbackend.uri}")
 	private String machinecheckappbackendUri;
+
+	@Value("${machinealarm.uri}")
+	private String machinealarmUri;
+
 	private static String FINDLOCKGOODSPUSH_URL = "/machine/channel/findLockGoodsPush";
 	private static final String QRSTATUS_NORMAL = "0"; // 二维码正常
 	private static final String QRSTATUS_INVALID = "-1"; // 二维码失效
@@ -1728,23 +1733,29 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 	}
 
 	@Override
-	public Result<String> setHeartbeat(String machineCode, String pageInfo) {
-		LOGGER.info("设置心跳接口开始（入参） => machineCode:{}；pageInfo:{}", machineCode, pageInfo);
+	public Result<String> setHeartbeat(String machineCode, String page, String planCode, String activity, String desc) {
+		LOGGER.info("setHeartbeat machineCode is {}, page is {}, planCode is {}, activity is {}, desc is {}",
+				machineCode, page, planCode, activity, desc);
 		Inno72Machine inno72Machine = inno72MachineMapper.findMachineByCode(machineCode);
 		if (inno72Machine == null) {
 			return Results.failure("此机器编码没有查到相对应的机器！");
 		}
-		String backendUrl = inno72GameServiceProperties.get("backendUrl");
 		Map<String, String> requestForm = new HashMap<String, String>();
 		requestForm.put("machineId", inno72Machine.getId());
 		requestForm.put("type", "1");
-		requestForm.put("pageInfo", pageInfo);
-		Map<String, String> header = new HashMap<String, String>();
+		requestForm.put("pageInfo", page);
+		Map<String, String> header = new HashMap();
 		header.put("Content-Type", "application/json");
 		header.put("charset", "UTF-8");
-		// String respJson = HttpClient.form("http://192.168.33.248:30512/alarm/detail/add", requestForm, header);
-		String respJson = HttpClient.post("http://192.168.33.248:30512/alarm/detail/add", JsonUtil.toJson(requestForm));
-		LOGGER.info("设置心跳接口结束（出参） => respJson:{}", respJson);
+		LOGGER.info("setHeartbeat machinealarmUri is {}, requestForm is {} " , machinealarmUri, requestForm);
+		String respJson = "";
+		try {
+			respJson = HttpClient.post(machinealarmUri, JsonUtil.toJson(requestForm));
+			LOGGER.info("setHeartbeat respJson is {}", respJson);
+		} catch (Exception e) {
+			LOGGER.error(e.getMessage(), e);
+			Results.failure("设置心跳异常");
+		}
 		return Results.success(respJson);
 	}
 }
