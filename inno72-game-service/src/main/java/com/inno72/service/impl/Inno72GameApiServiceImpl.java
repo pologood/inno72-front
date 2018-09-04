@@ -1744,13 +1744,20 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 		requestForm.put("machineId", inno72Machine.getId());
 		requestForm.put("type", "1");
 		requestForm.put("pageInfo", page);
+
+		Map<String, String> remarkMap = new HashMap();
+		remarkMap.put("planCode", planCode);
+		remarkMap.put("activity", activity);
+		remarkMap.put("desc", desc);
+		requestForm.put("remark", JsonUtil.toJson(remarkMap));
+
 		Map<String, String> header = new HashMap();
 		header.put("Content-Type", "application/json");
 		header.put("charset", "UTF-8");
 		LOGGER.info("setHeartbeat machinealarmUri is {}, requestForm is {} " , machinealarmUri, requestForm);
 		String respJson = "";
 		try {
-			respJson = HttpClient.post(machinealarmUri, JsonUtil.toJson(requestForm));
+			respJson = HttpClient.post(machinealarmUri + "/alarm/detail/add", JsonUtil.toJson(requestForm));
 			LOGGER.info("setHeartbeat respJson is {}", respJson);
 		} catch (Exception e) {
 			LOGGER.error(e.getMessage(), e);
