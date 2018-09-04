@@ -1758,7 +1758,12 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 		String respJson = "";
 		try {
 			respJson = HttpClient.post(machinealarmUri + "/alarm/detail/add", JsonUtil.toJson(requestForm));
-			LOGGER.info("setHeartbeat respJson is {}", respJson);
+			String code = FastJsonUtils.getString(respJson, "code");
+			LOGGER.info("setHeartbeat respJson is {}， code is {}", respJson, code);
+			if (!code.equals("0")) {
+				return Results.failure("设置心跳异常");
+			}
+
 		} catch (Exception e) {
 			LOGGER.error(e.getMessage(), e);
 			Results.failure("设置心跳异常");
