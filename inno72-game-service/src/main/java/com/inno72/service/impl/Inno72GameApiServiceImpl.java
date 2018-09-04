@@ -1748,7 +1748,7 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 			return Results.failure("机器状态不正常");
 		}
 
-		if (!(inno72Machine.getOpenStatus() == 0)) { // 0 表示接受报警
+		if (inno72Machine.getOpenStatus() == null || !(inno72Machine.getOpenStatus() == 0)) { // 0 表示接受报警
 			LOGGER.info("setHeartbeat 当前机器不接收报警 machineCode is {}", machineCode);
 			return Results.failure("当前机器不接收报警");
 		}
