@@ -1739,7 +1739,20 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 		Inno72Machine inno72Machine = inno72MachineMapper.findMachineByCode(machineCode);
 		if (inno72Machine == null) {
 			return Results.failure("此机器编码没有查到相对应的机器！");
+		} else {
+			LOGGER.info("setHeartbeat inno72Machine is {}", JsonUtil.toJson(inno72Machine));
 		}
+
+		if (!inno72Machine.getMachineStatus().equals("4")) { // 4 表示机器状态正常
+			LOGGER.info("setHeartbeat 机器状态不正常 machineCode is {}", machineCode);
+			return Results.failure("机器状态不正常");
+		}
+
+		if (!inno72Machine.getOpenStatus().equals("0")) { // 0 表示接受报警
+			LOGGER.info("setHeartbeat 当前机器不接收报警 machineCode is {}", machineCode);
+			return Results.failure("当前机器不接收报警");
+		}
+
 		Map<String, String> requestForm = new HashMap<String, String>();
 		requestForm.put("machineId", inno72Machine.getId());
 		requestForm.put("type", "1");
@@ -1763,7 +1776,6 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 			if (!code.equals("0")) {
 				return Results.failure("设置心跳异常");
 			}
-
 		} catch (Exception e) {
 			LOGGER.error(e.getMessage(), e);
 			Results.failure("设置心跳异常");
