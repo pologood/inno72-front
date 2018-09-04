@@ -185,7 +185,7 @@ public class Inno72GameApiController {
 	 * @return Result
 	 */
 	@RequestMapping(value = "/setHeartbeat", method = {RequestMethod.POST, RequestMethod.GET})
-	public Result<String> setHeartbeat(String machineCode, String pageInfo) {
-		return inno72GameApiService.setHeartbeat(machineCode, pageInfo);
+	public Result<String> setHeartbeat(String machineCode, String page, String planCode, String activity, String desc) {
+		return inno72GameApiService.setHeartbeat(machineCode, page, planCode, activity, desc);
 	}
 }
