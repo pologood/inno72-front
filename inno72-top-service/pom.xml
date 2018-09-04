@@ -23,10 +23,17 @@
     <!-- Add typical dependencies for a web application -->
     <dependencies>
 
+        <!-- 聚石塔前台SDK -->
         <dependency>
             <groupId>taobao</groupId>
-            <artifactId>taobao-sdk</artifactId>
-            <version>1.0.3</version>
+            <artifactId>taobao-sdk-front</artifactId>
+            <version>1.0.0</version>
+        </dependency>
+        <!-- 聚石塔后台SDK -->
+        <dependency>
+            <groupId>taobao</groupId>
+            <artifactId>taobao-sdk-back</artifactId>
+            <version>1.0.0</version>
         </dependency>
 
         <dependency>
