@@ -1743,12 +1743,12 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 			LOGGER.info("setHeartbeat inno72Machine is {}", JsonUtil.toJson(inno72Machine));
 		}
 
-		if (!inno72Machine.getMachineStatus().equals("4")) { // 4 表示机器状态正常
+		if (!(inno72Machine.getMachineStatus() == 4)) { // 4 表示机器状态正常
 			LOGGER.info("setHeartbeat 机器状态不正常 machineCode is {}", machineCode);
 			return Results.failure("机器状态不正常");
 		}
 
-		if (!inno72Machine.getOpenStatus().equals("0")) { // 0 表示接受报警
+		if (!(inno72Machine.getOpenStatus() == 0)) { // 0 表示接受报警
 			LOGGER.info("setHeartbeat 当前机器不接收报警 machineCode is {}", machineCode);
 			return Results.failure("当前机器不接收报警");
 		}
