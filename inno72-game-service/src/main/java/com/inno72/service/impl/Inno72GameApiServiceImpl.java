@@ -497,6 +497,7 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 	}
 
 	@Override
+	@Transactional(propagation = Propagation.REQUIRED, rollbackFor = Exception.class)
 	public Result<Object> oneKeyOrderNologin(MachineApiVo vo) {
 
 		String sessionUuid = vo.getSessionUuid();
