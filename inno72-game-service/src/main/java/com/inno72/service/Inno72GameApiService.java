@@ -29,7 +29,7 @@ public interface Inno72GameApiService {
 	Result<String> sessionRedirect(String sessionUuid, String mid, String token, String code, String userId,
 			String itemId);
 
-	Result<String> sessionNologin(String mid, Boolean isNeedQrCode);
+	Result<Object> sessionNologin(String machineCode, Integer isNeedQrCode);
 
 	Result<String> malfunctionLog(String machineId, String channelCode);
 

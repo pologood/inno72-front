@@ -131,15 +131,6 @@ public class Inno72GameApiController {
 
 
 	/**
-	 * @param mid mid
-	 * @return Result
-	 */
-	@RequestMapping(value = "/sessionNologin", method = {RequestMethod.POST, RequestMethod.GET})
-	public Result<String> noLoginSession(String mid, Boolean isNeedQrCode) {
-		return inno72GameApiService.sessionNologin(mid, isNeedQrCode);
-	}
-
-	/**
 	 *
 	 * @param sessionUuid 用户登录信息
 	 * @param mid  ID

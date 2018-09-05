@@ -31,6 +31,7 @@ import com.inno72.common.CommonBean;
 import com.inno72.common.Inno72GameServiceProperties;
 import com.inno72.common.Result;
 import com.inno72.common.Results;
+import com.inno72.common.StandardLoginTypeEnum;
 import com.inno72.common.json.JsonUtil;
 import com.inno72.common.util.FastJsonUtils;
 import com.inno72.common.util.GameSessionRedisUtil;
@@ -1226,11 +1227,12 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 		// int i = inno72SupplyChannelMapper.subCount(new Inno72SupplyChannel(machineId, null, channelId));
 
 		// LOGGER.info("减货 参数 ===》 【machineId=>{}，channelId=>{}】;结果 ==> {}", machineId, channelId, i);
-
-		if (StringUtil.isNotEmpty(orderId)) {
-			new Thread(new DeliveryRecord(machineCode, channelId, userSessionVo)).run();
-		} else {
-			LOGGER.info("调用出货无orderId 请求参数=>{}", JSON.toJSONString(vo));
+		if (StandardLoginTypeEnum.ALIBABA.getValue().equals(userSessionVo.getLoginType())) {
+			if (StringUtil.isNotEmpty(orderId)) {
+				new Thread(new DeliveryRecord(machineCode, channelId, userSessionVo)).run();
+			} else {
+				LOGGER.info("调用出货无orderId 请求参数=>{}", JSON.toJSONString(vo));
+			}
 		}
 		return Results.success();
 	}
@@ -1297,18 +1299,18 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 	}
 
 	@Transactional(propagation = Propagation.REQUIRED, rollbackFor = Exception.class)
-	public Result<String> sessionNologin(String mid, Boolean isNeedQrCode) {
+	public Result<Object> sessionNologin(String machineCode, Integer isNeedQrCode) {
 
-		if (StringUtils.isBlank(mid)) {
+		if (StringUtils.isBlank(machineCode)) {
 			return Results.failure("mid 参数缺失！");
 		}
 
-		Inno72Machine inno72Machine = inno72MachineMapper.selectByPrimaryKey(mid);
+		Inno72Machine inno72Machine = inno72MachineMapper.findMachineByCode(machineCode);
 		if (inno72Machine == null) {
 			return Results.failure("机器错误！");
 		}
 
-		List<Inno72ActivityPlan> inno72ActivityPlans = inno72ActivityPlanMapper.selectByMachineId(mid);
+		List<Inno72ActivityPlan> inno72ActivityPlans = inno72ActivityPlanMapper.selectByMachineId(machineCode);
 
 		String gameId = "";
 		String playCode;
@@ -1365,19 +1367,19 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 			}
 		}
 
-		UserSessionVo sessionVo = new UserSessionVo(mid, null, null, null, gameId, sessionUuid,
+		UserSessionVo sessionVo = new UserSessionVo(machineCode, null, null, null, gameId, sessionUuid,
 				inno72ActivityPlan.getId());
 
 		boolean canOrder = inno72GameService.countSuccOrderNologin(channelId, inno72ActivityPlan.getId());
 		sessionVo.setCanOrder(canOrder);
 		sessionVo.setCountGoods(goodsCount);
 		sessionVo.setChannelId(channelId);
-		sessionVo.setMachineId(mid);
+		sessionVo.setMachineId(machineCode);
 		sessionVo.setMachineCode(inno72Machine.getMachineCode());
 		sessionVo.setActivityId(inno72Activity.getId());
+		sessionVo.setLoginType(StandardLoginTypeEnum.NOLOGIN.getValue());
 
-
-		List<GoodsVo> list = loadGameInfo(mid);
+		List<GoodsVo> list = loadGameInfo(machineCode);
 		LOGGER.info("loadGameInfo is {} ", JsonUtil.toJson(list));
 		sessionVo.setGoodsList(list);
 
@@ -1396,9 +1398,9 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 		resultMap.put("playCode", playCode);
 		resultMap.put("sellerId", inno72Merchant.getMerchantCode());
 
-		if (isNeedQrCode != null && isNeedQrCode) {
+		if (isNeedQrCode != null && isNeedQrCode == 1) {
 
-			String localUrl = String.format("feedback_%s_%s.png", mid, sessionUuid);
+			String localUrl = String.format("feedback_%s_%s.png", machineCode, sessionUuid);
 			// 存储在阿里云上的文件名
 			String objectName = "qrcode/" + localUrl;
 
@@ -1407,7 +1409,7 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 			String returnUrl = inno72GameServiceProperties.get("returnUrl") + objectName;
 
 			if (feedbackUrlTpl != null) {
-				String feedbackUrl = MessageFormat.format(feedbackUrlTpl, mid, sessionUuid);
+				String feedbackUrl = MessageFormat.format(feedbackUrlTpl, machineCode, sessionUuid);
 
 				try {
 					boolean result = QrCodeUtil.createQrCode(localUrl, feedbackUrl, 1800, "png");

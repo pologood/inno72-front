@@ -1,8 +1,8 @@
 package com.inno72.vo;
 
-import lombok.Data;
-
 import java.util.List;
+
+import lombok.Data;
 
 @Data
 public class UserSessionVo {
@@ -36,6 +36,8 @@ public class UserSessionVo {
 	private String activityId;
 	private String machineCode;
 	private boolean countGoods;
+
+	private int loginType = 0;
 
 	private List<GoodsVo> goodsList;
 
@@ -104,5 +106,12 @@ public class UserSessionVo {
 		return countGoods;
 	}
 
+	public void setLoginType(int loginType) {
+		this.loginType = loginType;
+	}
+
+	public int getLoginType() {
+		return loginType;
+	}
 
 }
