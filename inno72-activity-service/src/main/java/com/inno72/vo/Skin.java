@@ -1,6 +1,5 @@
 package com.inno72.vo;
 
-import com.inno72.common.util.FaceCacheUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.annotation.Id;

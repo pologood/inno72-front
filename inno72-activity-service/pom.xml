@@ -160,6 +160,12 @@
                 </exclusion>
             </exclusions>
         </dependency>
+        <!--微信分享 -->
+        <dependency>
+            <groupId>com.github.binarywang</groupId>
+            <artifactId>weixin-java-mp</artifactId>
+            <version>2.9.0</version>
+        </dependency>
     </dependencies>
 
     <!-- 配置插件的仓库地址 -->

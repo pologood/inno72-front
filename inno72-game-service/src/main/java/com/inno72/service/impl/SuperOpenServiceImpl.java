@@ -74,8 +74,8 @@ public class SuperOpenServiceImpl implements SuperOpenService {
 		/** 没有方法 */
 		ERROR_NO_METHOD("404", "ERROR_NO_METHOD", "/inno72/noMethod/open", "出货后调用减货", "1.0.0"),
 		/** 版本不存在 */
-		ERROR_NO_VERSION("500", "ERROR_NO_VERSION", "/inno72/noVersion/open", "出货后调用减货", "1.0.0"),
-		MALFUNCTION_LOG( "009", "malfunctionLog", "/api/malfunctionLog", "货道异常信息存储", "1.0.0"),
+		ERROR_NO_VERSION("500", "ERROR_NO_VERSION", "/inno72/noVersion/open", "出货后调用减货",
+				"1.0.0"), MALFUNCTION_LOG("009", "malfunctionLog", "/api/malfunctionLog", "货道异常信息存储", "1.0.0"),
 		/** 货道异常信息存储 */
 		SHIPMENT_FAIL("010", "shipmentFail", "/api/shipmentFail", "掉货失败", "1.0.0"),
 		/** 掉货失败 */
@@ -90,6 +90,8 @@ public class SuperOpenServiceImpl implements SuperOpenService {
 		CREATE_PARYANG_ORDER("015", "paiYangOrder", "/api/qroauth/paiYangOrder", "派样下单", "1.0.0"),
 		/** 出货后调用减货 (同时处理 成功及失败情况) */
 		SHIPMENT_REPORTV2("016", "shipmentReportV2", "/api/goods/shipmentReportV2", "出货", "1.0.0"),
+		/** 设置心跳 */
+		SET_HEARTBEAT("017", "setHeartbeat", "/api/setHeartbeat", "设置心跳", "1.0.0")
 
 		;
 
