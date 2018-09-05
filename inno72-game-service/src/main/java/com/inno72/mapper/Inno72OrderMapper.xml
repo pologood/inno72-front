@@ -41,7 +41,7 @@
         </if>
     </select>
     
-    <select id="findGoodsStatusSuccWithoutUserId" resultMap="BaseResultMap" parameterType="java.util.Map">
+    <select id="findGoodsStatusSuccWithoutUserId" resultType="Integer" parameterType="java.util.Map">
         select count(0) from inno72_order
         where inno72_activity_plan_id = #{activityPlanId}
         and goods_status = 1

@@ -1303,7 +1303,7 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 	public Result<Object> sessionNologin(String machineCode, Integer isNeedQrCode) {
 
 		if (StringUtils.isBlank(machineCode)) {
-			return Results.failure("mid 参数缺失！");
+			return Results.failure("machineCode 参数缺失！");
 		}
 
 		Inno72Machine inno72Machine = inno72MachineMapper.findMachineByCode(machineCode);
@@ -1311,7 +1311,8 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 			return Results.failure("机器错误！");
 		}
 
-		List<Inno72ActivityPlan> inno72ActivityPlans = inno72ActivityPlanMapper.selectByMachineId(machineCode);
+		String machineId = inno72Machine.getId();
+		List<Inno72ActivityPlan> inno72ActivityPlans = inno72ActivityPlanMapper.selectByMachineId(machineId);
 
 		String gameId = "";
 		String playCode;
@@ -1351,6 +1352,9 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 		LOGGER.info("sessionRedirect layCode is {}", playCode);
 
 		Inno72Merchant inno72Merchant = inno72MerchantMapper.selectByPrimaryKey(sellerId);
+		if (inno72Merchant == null) {
+			return Results.failure("供应商不存在");
+		}
 		String channelId = inno72Merchant.getChannelId();
 
 		Map<String, String> params = new HashMap<>(2);
@@ -1368,19 +1372,19 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 			}
 		}
 
-		UserSessionVo sessionVo = new UserSessionVo(machineCode, null, null, null, gameId, sessionUuid,
+		UserSessionVo sessionVo = new UserSessionVo(machineId, null, null, null, gameId, sessionUuid,
 				inno72ActivityPlan.getId());
 
 		boolean canOrder = inno72GameService.countSuccOrderNologin(channelId, inno72ActivityPlan.getId());
 		sessionVo.setCanOrder(canOrder);
 		sessionVo.setCountGoods(goodsCount);
 		sessionVo.setChannelId(channelId);
-		sessionVo.setMachineId(machineCode);
+		sessionVo.setMachineId(machineId);
 		sessionVo.setMachineCode(inno72Machine.getMachineCode());
 		sessionVo.setActivityId(inno72Activity.getId());
 		sessionVo.setLoginType(StandardLoginTypeEnum.NOLOGIN.getValue());
 
-		List<GoodsVo> list = loadGameInfo(machineCode);
+		List<GoodsVo> list = loadGameInfo(machineId);
 		LOGGER.info("loadGameInfo is {} ", JsonUtil.toJson(list));
 		sessionVo.setGoodsList(list);
 
@@ -1401,7 +1405,7 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 
 		if (isNeedQrCode != null && isNeedQrCode == 1) {
 
-			String localUrl = String.format("feedback_%s_%s.png", machineCode, sessionUuid);
+			String localUrl = String.format("feedback_%s_%s.png", machineId, sessionUuid);
 			// 存储在阿里云上的文件名
 			String objectName = "qrcode/" + localUrl;
 
@@ -1410,7 +1414,7 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 			String returnUrl = inno72GameServiceProperties.get("returnUrl") + objectName;
 
 			if (feedbackUrlTpl != null) {
-				String feedbackUrl = MessageFormat.format(feedbackUrlTpl, machineCode, sessionUuid);
+				String feedbackUrl = MessageFormat.format(feedbackUrlTpl, machineId, sessionUuid);
 
 				try {
 					boolean result = QrCodeUtil.createQrCode(localUrl, feedbackUrl, 1800, "png");
@@ -1440,7 +1444,7 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 		}
 
 
-		return Results.success(JSONObject.toJSONString(resultMap));
+		return Results.success(resultMap);
 
 	}
 
