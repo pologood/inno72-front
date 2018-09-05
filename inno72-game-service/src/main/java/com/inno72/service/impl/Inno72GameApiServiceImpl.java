@@ -2,12 +2,18 @@ package com.inno72.service.impl;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 
 import javax.annotation.Resource;
 
-import com.inno72.feign.MachineCheckBackendFeignClient;
-import com.inno72.machine.vo.SupplyRequestVo;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -26,6 +32,8 @@ import com.inno72.common.util.FastJsonUtils;
 import com.inno72.common.util.GameSessionRedisUtil;
 import com.inno72.common.util.Inno72OrderNumGenUtil;
 import com.inno72.common.utils.StringUtil;
+import com.inno72.feign.MachineCheckBackendFeignClient;
+import com.inno72.machine.vo.SupplyRequestVo;
 import com.inno72.mapper.Inno72ActivityMapper;
 import com.inno72.mapper.Inno72ActivityPlanGameResultMapper;
 import com.inno72.mapper.Inno72ActivityPlanMapper;
@@ -125,8 +133,13 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 	private Inno72GameService inno72GameService;
 	@Resource
 	private MachineCheckBackendFeignClient machineCheckBackendFeignClient;
+
 	@Value("${machinecheckappbackend.uri}")
 	private String machinecheckappbackendUri;
+
+	@Value("${machinealarm.uri}")
+	private String machinealarmUri;
+
 	private static String FINDLOCKGOODSPUSH_URL = "/machine/channel/findLockGoodsPush";
 	private static final String QRSTATUS_NORMAL = "0"; // 二维码正常
 	private static final String QRSTATUS_INVALID = "-1"; // 二维码失效
@@ -533,7 +546,7 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 					Result<Object> lottery = this.lottery(userSessionVo, vo.getUa(), vo.getUmid(), result.getPrizeId());
 					LOGGER.debug("抽取奖券 结果 ==> {}", JSON.toJSONString(lottery));
 					lotteryCode = lottery.getCode();
-					LOGGER.info("lotteryCode is {} " , lottery.getCode());
+					LOGGER.info("lotteryCode is {} ", lottery.getCode());
 					break;
 				default:
 					return Results.failure("无商品类型");
@@ -607,33 +620,33 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 	 * @param inno72SupplyChannels
 	 */
 	private void channelSort(List<Inno72SupplyChannel> inno72SupplyChannels) {
-		Collections.sort(inno72SupplyChannels,new Comparator<Inno72SupplyChannel>(){
+		Collections.sort(inno72SupplyChannels, new Comparator<Inno72SupplyChannel>() {
 			@Override
 			public int compare(Inno72SupplyChannel o1, Inno72SupplyChannel o2) {
-				if(o1.getGoodsCount() == null) o1.setGoodsCount(0);
-				if(o2.getGoodsCount()==null) o2.setGoodsCount(0);
-				if(o1.getGoodsCount()>o2.getGoodsCount()){
+				if (o1.getGoodsCount() == null) o1.setGoodsCount(0);
+				if (o2.getGoodsCount() == null) o2.setGoodsCount(0);
+				if (o1.getGoodsCount() > o2.getGoodsCount()) {
 					return -1;
 				}
 
-				if(o1.getGoodsCount()==o2.getGoodsCount()){
-					Integer code1 ,code2 =0;
+				if (o1.getGoodsCount() == o2.getGoodsCount()) {
+					Integer code1, code2 = 0;
 					try {
 						code1 = Integer.parseInt(o1.getCode());
-					}catch (Exception e){
-						LOGGER.info("数据异常code={}非数字",o1.getCode());
+					} catch (Exception e) {
+						LOGGER.info("数据异常code={}非数字", o1.getCode());
 						code1 = 0;
 					}
 					try {
 						code2 = Integer.parseInt(o2.getCode());
-					}catch (Exception e){
-						LOGGER.info("数据异常code={}非数字",o2.getCode());
+					} catch (Exception e) {
+						LOGGER.info("数据异常code={}非数字", o2.getCode());
 						code2 = 0;
 					}
-					if(code1>code2){
+					if (code1 > code2) {
 						return 1;
 					}
-					if(code1<code2){
+					if (code1 < code2) {
 						return -1;
 					}
 					return 0;
@@ -930,7 +943,7 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 			return Results.failure("聚石塔无返回数据!");
 		}
 
-		LOGGER.info("调用聚石塔接口  【抽奖】返回 ===> {}", JSON.toJSONString(respJson));
+		LOGGER.info("调用聚石塔接口  【抽奖】返回 ===> {}", respJson);
 		// TODO 奖券下单
 		String orderId = "";
 		try {
@@ -944,14 +957,17 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 		try {
 
 			boolean msg_code = Boolean.parseBoolean(FastJsonUtils.getString(respJson, "succ"));
+			LOGGER.info("lottery msg_code is {}", msg_code);
 			if (!msg_code) {
-				String msg_info = FastJsonUtils.getString(respJson, "sub_msg");
+				String msg_info = FastJsonUtils.getString(respJson, "reason");
 				LOGGER.info("抽奖失败 ===> {}", msg_info);
 				return Results.failure(msg_info);
 			}
 
-			String is_success = FastJsonUtils.getString(respJson, "is_success");
+			String is_success = FastJsonUtils.getString(respJson, "is_win");
+			LOGGER.info("lottery is_success is {} ", is_success);
 			if (is_success.equals("true")) {
+				LOGGER.info("抽奖成功 is_success is {}", is_success);
 				Inno72Order inno72Order = new Inno72Order();
 				inno72Order.setId(orderId);
 				inno72Order.setGoodsStatus(Inno72Order.INNO72ORDER_GOODSSTATUS.SUCC.getKey());
@@ -959,7 +975,12 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 				inno72OrderMapper.updateByPrimaryKeySelective(inno72Order);
 				inno72OrderHistoryMapper.insert(new Inno72OrderHistory(inno72Order.getId(), inno72Order.getOrderNum(),
 						JSON.toJSONString(inno72Order), "修改状态为已发放优惠券"));
+				LOGGER.info("抽奖成功 修改状态为已发放优惠券 orderId is {}", orderId);
+			} else {
+				LOGGER.info("抽奖失败 is_success is {}", is_success);
+				return Results.failure("抽奖失败");
 			}
+
 			String data = FastJsonUtils.getString(respJson, "data");
 			LOGGER.info("结果数据 ====> {}", data);
 			JSONObject parseDataObject = JSON.parseObject(data);
@@ -974,7 +995,7 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 	public Result<String> shipmentReportV2(MachineApiVo vo) {
 		LOGGER.info("shipmentReportV2 params vo is {} ", JsonUtil.toJson(vo));
 		String machineCode = vo.getMachineId();
-		
+
 		if (StringUtil.isNotEmpty(vo.getChannelId())) {
 			Result<String> succChannelResult = shipmentReport(vo);
 			LOGGER.info("succChannelResult code is {} ", succChannelResult.getCode());
@@ -984,7 +1005,7 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 		if (StringUtil.isNotEmpty(failChannelIds)) {
 
 			List<String> describtion = vo.getDescribtion();
-			LOGGER.info("describtion is {} " , JsonUtil.toJson(describtion));
+			LOGGER.info("describtion is {} ", JsonUtil.toJson(describtion));
 
 			for (String failChannelId : failChannelIds.split(",")) {
 				Result<String> failChannelResult = this.shipmentFail(machineCode, failChannelId, "");
@@ -1035,11 +1056,11 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 		if (inno72SupplyChannel == null) {
 			return Results.failure("货道错误");
 		}
-		try{
-			findLockGoodsPush(machineId,inno72SupplyChannel.getId());
-//			if(r.getCode()==1) return r;
-		}catch (Exception e){
-			LOGGER.info("调用findLockGoodsPush异常",e);
+		try {
+			findLockGoodsPush(machineId, inno72SupplyChannel.getId());
+			// if(r.getCode()==1) return r;
+		} catch (Exception e) {
+			LOGGER.info("调用findLockGoodsPush异常", e);
 		}
 
 		LOGGER.info("减货接口 ==> 未减货货道 [{}]", JSON.toJSONString(inno72SupplyChannel));
@@ -1065,20 +1086,20 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 	}
 
 	private Result findLockGoodsPush(String machineId, String channelId) {
-		LOGGER.info("findLockGoodsPush invoked! machineId={},channelId={}",machineId,channelId);
-		//获取商品id
+		LOGGER.info("findLockGoodsPush invoked! machineId={},channelId={}", machineId, channelId);
+		// 获取商品id
 		String goodsId = inno72SupplyChannelMapper.findGoodsIdByChannelId(channelId);
-		if(StringUtils.isEmpty(goodsId)){
-			LOGGER.info("findLockGoodsPush 根据channelId={}无法查到goodsId",channelId);
+		if (StringUtils.isEmpty(goodsId)) {
+			LOGGER.info("findLockGoodsPush 根据channelId={}无法查到goodsId", channelId);
 			return Results.failure("数据异常");
 		}
-		//实时发送缺货报警
-		LOGGER.info("实时发送缺货报警machineId={},channelId={}",machineId,channelId);
+		// 实时发送缺货报警
+		LOGGER.info("实时发送缺货报警machineId={},channelId={}", machineId, channelId);
 		SupplyRequestVo vo = new SupplyRequestVo();
 		vo.setGoodsId(goodsId);
 		vo.setMachineId(machineId);
-		HttpClient.post(machinecheckappbackendUri+FINDLOCKGOODSPUSH_URL,new Gson().toJson(vo));
-//		machineCheckBackendFeignClient.findLockGoodsPush(vo);
+		HttpClient.post(machinecheckappbackendUri + FINDLOCKGOODSPUSH_URL, new Gson().toJson(vo));
+		// machineCheckBackendFeignClient.findLockGoodsPush(vo);
 		return Results.success();
 	}
 
@@ -1245,6 +1266,7 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 		requestForm.put("accessToken", access_token);
 		requestForm.put("mid", inno72Machine.getMachineCode());
 		requestForm.put("sellerId", inno72Merchant.getMerchantCode());
+		requestForm.put("mixNick", userId);
 		/*
 		 * <tmall_fans_automachine_getmaskusernick_response> <msg_code>200</msg_code>
 		 * <msg_info>用户不存在</msg_info>1dd77fc18f3a409196de23baedcf8ce1 <model>e****丫</model>
@@ -1529,25 +1551,6 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 		return result;
 	}
 
-
-	/**
-	 * 拼装日志对象
-	 * @param bizCode
-	 * @param itemId
-	 * @param sellerId
-	 * @param type
-	 * @param userId
-	 * @param value1
-	 * @param value2
-	 * @param value3
-	 * @param value4
-	 * @return
-	 */
-	private LogReqrest getLogReqrest(String bizCode, Long itemId, Long sellerId, String type, Long userId,
-			String value1, String value2, Long value3, Long value4) {
-		return new LogReqrest(bizCode, itemId, sellerId, type, -1L, value1, value2, value3, value4);
-	}
-
 	/**
 	 * 淘宝日志接口
 	 * @param token
@@ -1565,7 +1568,7 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 		// 调用聚石塔日志
 		Map<String, String> requestLogForm = new HashMap<>();
 		requestLogForm.put("accessToken", token);
-		LogReqrest logReqrest = getLogReqrest("", Long.valueOf(itemId), Long.valueOf(sellerId), "用户互动时常",
+		LogReqrest logReqrest = new LogReqrest("", Long.valueOf(itemId), Long.valueOf(sellerId), "用户互动时常",
 				Long.valueOf(userId), machineCode, playTime, null, null);
 		requestLogForm.put("logReqrest", JSON.toJSONString(logReqrest));
 		LOGGER.info("聚石塔日志接口参数 requestLogForm ：" + JSONObject.toJSONString(requestLogForm));
@@ -1727,5 +1730,56 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 		}
 
 
+	}
+
+	@Override
+	public Result<String> setHeartbeat(String machineCode, String page, String planCode, String activity, String desc) {
+		LOGGER.info("setHeartbeat machineCode is {}, page is {}, planCode is {}, activity is {}, desc is {}",
+				machineCode, page, planCode, activity, desc);
+		Inno72Machine inno72Machine = inno72MachineMapper.findMachineByCode(machineCode);
+		if (inno72Machine == null) {
+			return Results.failure("此机器编码没有查到相对应的机器！");
+		} else {
+			LOGGER.info("setHeartbeat inno72Machine is {}", JsonUtil.toJson(inno72Machine));
+		}
+
+		if (!(inno72Machine.getMachineStatus() == 4)) { // 4 表示机器状态正常
+			LOGGER.info("setHeartbeat 机器状态不正常 machineCode is {}", machineCode);
+			return Results.failure("机器状态不正常");
+		}
+
+		if (inno72Machine.getOpenStatus() == null || !(inno72Machine.getOpenStatus() == 0)) { // 0 表示接受报警
+			LOGGER.info("setHeartbeat 当前机器不接收报警 machineCode is {}", machineCode);
+			return Results.failure("当前机器不接收报警");
+		}
+
+		Map<String, String> requestForm = new HashMap<String, String>();
+		requestForm.put("machineId", inno72Machine.getId());
+		requestForm.put("type", "1");
+		requestForm.put("pageInfo", page);
+
+		Map<String, String> remarkMap = new HashMap();
+		remarkMap.put("planCode", planCode);
+		remarkMap.put("activity", activity);
+		remarkMap.put("desc", desc);
+		requestForm.put("remark", JsonUtil.toJson(remarkMap));
+
+		Map<String, String> header = new HashMap();
+		header.put("Content-Type", "application/json");
+		header.put("charset", "UTF-8");
+		LOGGER.info("setHeartbeat machinealarmUri is {}, requestForm is {} " , machinealarmUri, requestForm);
+		String respJson = "";
+		try {
+			respJson = HttpClient.post(machinealarmUri + "/alarm/detail/add", JsonUtil.toJson(requestForm));
+			String code = FastJsonUtils.getString(respJson, "code");
+			LOGGER.info("setHeartbeat respJson is {}， code is {}", respJson, code);
+			if (!code.equals("0")) {
+				return Results.failure("设置心跳异常");
+			}
+		} catch (Exception e) {
+			LOGGER.error(e.getMessage(), e);
+			Results.failure("设置心跳异常");
+		}
+		return Results.success(respJson);
 	}
 }
