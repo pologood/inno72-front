@@ -40,4 +40,14 @@
             and DATE_FORMAT(order_time, '%Y-%m-%d') = CURDATE()
         </if>
     </select>
+    
+    <select id="findGoodsStatusSuccWithoutUserId" resultMap="BaseResultMap" parameterType="java.util.Map">
+        select count(0) from inno72_order
+        where inno72_activity_plan_id = #{activityPlanId}
+        and goods_status = 1
+        <if test="orderTime != null and orderTime != ''">
+            and DATE_FORMAT(order_time, '%Y-%m-%d') = CURDATE()
+        </if>
+    </select>
+    
 </mapper>

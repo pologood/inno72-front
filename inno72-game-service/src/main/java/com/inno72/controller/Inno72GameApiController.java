@@ -61,6 +61,7 @@ public class Inno72GameApiController {
 	public Result<Object> oneKeyOrder(MachineApiVo vo) {
 		return inno72GameApiService.oneKeyOrder(vo);
 	}
+
 	/**
 	 * @param vo
 	 *  sessionUuid
@@ -126,6 +127,16 @@ public class Inno72GameApiController {
 	public Result<String> sessionRedirect(String sessionUuid, String mid, String token, String code, String userId,
 			String itemId) {
 		return inno72GameApiService.sessionRedirect(sessionUuid, mid, token, code, userId, itemId);
+	}
+
+
+	/**
+	 * @param mid mid
+	 * @return Result
+	 */
+	@RequestMapping(value = "/sessionNologin", method = {RequestMethod.POST, RequestMethod.GET})
+	public Result<String> noLoginSession(String mid, Boolean isNeedQrCode) {
+		return inno72GameApiService.sessionNologin(mid, isNeedQrCode);
 	}
 
 	/**

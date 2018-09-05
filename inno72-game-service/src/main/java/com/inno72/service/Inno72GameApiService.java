@@ -18,6 +18,8 @@ public interface Inno72GameApiService {
 
 	Result<Object> oneKeyOrder(MachineApiVo vo);
 
+	Result<Object> oneKeyOrderNologin(MachineApiVo vo);
+
 	Result<Object> paiYangOrder(MachineApiVo vo);
 
 	Result<String> shipmentReport(MachineApiVo vo);
@@ -27,6 +29,8 @@ public interface Inno72GameApiService {
 	Result<String> sessionRedirect(String sessionUuid, String mid, String token, String code, String userId,
 			String itemId);
 
+	Result<String> sessionNologin(String mid, Boolean isNeedQrCode);
+
 	Result<String> malfunctionLog(String machineId, String channelCode);
 
 	Result<String> shipmentFail(String machineId, String channelCode, String describtion);
@@ -35,4 +39,5 @@ public interface Inno72GameApiService {
 			String playTime);
 
 	Result<List<Inno72SamplingGoods>> getSampling(String machineCode);
+
 }
