@@ -2,6 +2,7 @@ package com.inno72.controller;
 
 import javax.annotation.Resource;
 
+import com.inno72.service.Inno72MachineService;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -23,6 +24,11 @@ import com.inno72.vo.StandardOrderReqVo;
 import com.inno72.vo.StandardShipmentReqVo;
 import com.inno72.vo.UserSessionVo;
 
+import java.util.Map;
+
+/**
+ * 标准接口
+ */
 @RestController
 @RequestMapping(value = "/api/standard")
 public class Inno72StandardController {
@@ -37,8 +43,16 @@ public class Inno72StandardController {
 	private Inno72GameApiService inno72GameApiService;
 
 	@Resource
+	private Inno72MachineService inno72MachineService;
+
+	@Resource
 	private GameSessionRedisUtil gameSessionRedisUtil;
 
+	/**
+	 * 登录（包括需要登录和非登录的场景）
+	 * @param req
+	 * @return
+	 */
 	@ResponseBody
 	@RequestMapping(value = "/login", method = {RequestMethod.POST})
 	public Result<Object> Login(@RequestBody StandardLoginReqVo req) {
@@ -63,6 +77,11 @@ public class Inno72StandardController {
 		}
 	}
 
+	/**
+	 * 下单（包括订单及优惠券）
+	 * @param req
+	 * @return
+	 */
 	@ResponseBody
 	@RequestMapping(value = "/order", method = {RequestMethod.POST})
 	public Result<Object> order(@RequestBody StandardOrderReqVo req) {
@@ -85,6 +104,11 @@ public class Inno72StandardController {
 		}
 	}
 
+	/**
+	 * 出货（包括正常异常流程）
+	 * @param req
+	 * @return
+	 */
 	@ResponseBody
 	@RequestMapping(value = "/shipment", method = {RequestMethod.POST})
 	public Result<String> shipment(@RequestBody StandardShipmentReqVo req) {
@@ -97,4 +121,43 @@ public class Inno72StandardController {
 		return inno72GameApiService.shipmentReportV2(vo);
 
 	}
+
+	/**
+	 * 获得活动信息
+	 * @param map
+	 * @return
+	 */
+	@ResponseBody
+	@RequestMapping(value = "/findGame", method = {RequestMethod.POST})
+	public Result findGame(@RequestBody Map<String, String> map) {
+		String mid = map.get("machineId");
+		String planId = map.get("planId");
+		String version = map.get("version");
+		String versionInno72 = map.get("versionInno72");
+		return inno72MachineService.findGame(mid, planId, version, versionInno72);
+	}
+
+	/**
+	 * polling 用户登录信息
+	 * @param sessionUuid
+	 * @return
+	 */
+	@ResponseBody
+	@RequestMapping(value = "/sessionPolling", method = {RequestMethod.POST})
+	public Result<Object> sessionPolling(@RequestBody String sessionUuid) {
+		return inno72AuthInfoService.sessionPolling(sessionUuid);
+	}
+
+	/**
+	 * polling 订单支付状态
+	 * @param vo
+	 * @return
+	 */
+	@ResponseBody
+	@RequestMapping(value = "/orderPolling", method = {RequestMethod.POST})
+	public Result<Boolean> orderPolling(@RequestBody MachineApiVo vo) {
+		return inno72GameApiService.orderPolling(vo);
+	}
+
+
 }
