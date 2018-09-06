@@ -42,7 +42,9 @@ public class Inno72TopServiceImpl implements Inno72TopService {
 		logReqrest.setType(LogReqrest.LogRequest_Type.lottery.getBizType());
 		logReqrest.setValue2(interactId);
 		logReqrest.setSellerId(Long.valueOf(sellerId));
+		LOGGER.info("lotteryLog before");
 		this.addLog(sessionUuid, logReqrest);
+		LOGGER.info("lotteryLog after");
 	}
 
 	private void addLog(String sessionUuid, LogReqrest reqrest) {
