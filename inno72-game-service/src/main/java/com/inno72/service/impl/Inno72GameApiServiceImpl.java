@@ -15,6 +15,7 @@ import java.util.Optional;
 import javax.annotation.Resource;
 
 import com.inno72.model.*;
+import com.inno72.service.Inno72TopService;
 import com.inno72.util.AlarmUtil;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
@@ -114,6 +115,8 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 	private IRedisUtil redisUtil;
 	@Resource
 	private Inno72GameService inno72GameService;
+	@Resource
+	private Inno72TopService inno72TopService;
 	@Resource
 	private MachineCheckBackendFeignClient machineCheckBackendFeignClient;
 	@Resource
@@ -953,6 +956,9 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 			String is_success = FastJsonUtils.getString(respJson, "is_win");
 			LOGGER.info("lottery is_success is {} ", is_success);
 			if (is_success.equals("true")) {
+
+				inno72TopService.lotteryLog(sessionUuid, inno72Coupon.getCode(), shop.getSellerId());
+
 				LOGGER.info("抽奖成功 is_success is {}", is_success);
 				Inno72Order inno72Order = new Inno72Order();
 				inno72Order.setId(orderId);
