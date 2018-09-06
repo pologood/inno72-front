@@ -681,6 +681,8 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 			return Results.failure("商品没有店铺配置，尴尬了!");
 		}
 
+		LOGGER.info("problem itemId is {}, shopId is {}, activityPlanId is {}");
+		// todo gxg 查找数据有问题
 		Map<String, String> params = new HashMap<>(3);
 		params.put("goodsId", itemId);
 		params.put("shopId", shopId);
