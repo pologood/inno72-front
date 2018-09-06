@@ -913,6 +913,7 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 		if (shop == null || StringUtil.isEmpty(shop.getShopCode())) {
 			return Results.failure("商户好像出了点问题!");
 		}
+		LOGGER.info("problem shop is {}, shopsId is {}", JsonUtil.toJson(shop), inno72Coupon.getShopsId());
 
 		String accessToken = vo.getAccessToken();
 
