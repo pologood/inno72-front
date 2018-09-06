@@ -956,8 +956,8 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 			String is_success = FastJsonUtils.getString(respJson, "is_win");
 			LOGGER.info("lottery is_success is {} ", is_success);
 			if (is_success.equals("true")) {
-
-				inno72TopService.lotteryLog(sessionUuid, inno72Coupon.getCode(), shop.getSellerId());
+				Inno72Merchant inno72Merchant = inno72MerchantMapper.selectByPrimaryKey(shop.getSellerId());
+				inno72TopService.lotteryLog(sessionUuid, inno72Coupon.getCode(), inno72Merchant.getMerchantCode());
 
 				LOGGER.info("抽奖成功 is_success is {}", is_success);
 				Inno72Order inno72Order = new Inno72Order();
