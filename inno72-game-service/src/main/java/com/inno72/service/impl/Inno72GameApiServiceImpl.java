@@ -825,7 +825,7 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 		requestForm.put("activityId", activityId);
 		requestForm.put("mid", machineCode); // 实际为code
 		requestForm.put("goodsId", itemId);
-		requestForm.put("mixnick", userSessionVo.getUserId()); // 实际为taobao_user_nick
+		requestForm.put("mixNick", userSessionVo.getUserId()); // 实际为taobao_user_nick
 
 		String respJson;
 		try {
