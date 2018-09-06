@@ -14,6 +14,8 @@ import java.util.Optional;
 
 import javax.annotation.Resource;
 
+import com.inno72.model.*;
+import com.inno72.util.AlarmUtil;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -52,25 +54,6 @@ import com.inno72.mapper.Inno72OrderHistoryMapper;
 import com.inno72.mapper.Inno72OrderMapper;
 import com.inno72.mapper.Inno72ShopsMapper;
 import com.inno72.mapper.Inno72SupplyChannelMapper;
-import com.inno72.model.Inno72Activity;
-import com.inno72.model.Inno72ActivityPlan;
-import com.inno72.model.Inno72ActivityPlanGameResult;
-import com.inno72.model.Inno72Channel;
-import com.inno72.model.Inno72Coupon;
-import com.inno72.model.Inno72Game;
-import com.inno72.model.Inno72GameUser;
-import com.inno72.model.Inno72GameUserChannel;
-import com.inno72.model.Inno72GameUserLife;
-import com.inno72.model.Inno72Goods;
-import com.inno72.model.Inno72Locale;
-import com.inno72.model.Inno72Machine;
-import com.inno72.model.Inno72Merchant;
-import com.inno72.model.Inno72Order;
-import com.inno72.model.Inno72OrderGoods;
-import com.inno72.model.Inno72OrderHistory;
-import com.inno72.model.Inno72Shops;
-import com.inno72.model.Inno72SupplyChannel;
-import com.inno72.model.MachineDropGoodsBean;
 import com.inno72.plugin.http.HttpClient;
 import com.inno72.redis.IRedisUtil;
 import com.inno72.service.Inno72GameApiService;
@@ -133,6 +116,8 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 	private Inno72GameService inno72GameService;
 	@Resource
 	private MachineCheckBackendFeignClient machineCheckBackendFeignClient;
+	@Resource
+	private AlarmUtil alarmUtil;
 
 	@Value("${machinecheckappbackend.uri}")
 	private String machinecheckappbackendUri;
@@ -835,6 +820,7 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 		requestForm.put("activityId", activityId);
 		requestForm.put("mid", machineCode); // 实际为code
 		requestForm.put("goodsId", itemId);
+		requestForm.put("mixnick", userSessionVo.getUserId()); // 实际为taobao_user_nick
 
 		String respJson;
 		try {
@@ -1266,7 +1252,7 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 		requestForm.put("accessToken", access_token);
 		requestForm.put("mid", inno72Machine.getMachineCode());
 		requestForm.put("sellerId", inno72Merchant.getMerchantCode());
-		requestForm.put("mixNick", userId);
+		requestForm.put("mixNick", userId); // 实际为taobao_user_nick
 		/*
 		 * <tmall_fans_automachine_getmaskusernick_response> <msg_code>200</msg_code>
 		 * <msg_info>用户不存在</msg_info>1dd77fc18f3a409196de23baedcf8ce1 <model>e****丫</model>
@@ -1753,33 +1739,25 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 			return Results.failure("当前机器不接收报警");
 		}
 
-		Map<String, String> requestForm = new HashMap<String, String>();
-		requestForm.put("machineId", inno72Machine.getId());
-		requestForm.put("type", "1");
-		requestForm.put("pageInfo", page);
-
 		Map<String, String> remarkMap = new HashMap();
 		remarkMap.put("planCode", planCode);
 		remarkMap.put("activity", activity);
 		remarkMap.put("desc", desc);
-		requestForm.put("remark", JsonUtil.toJson(remarkMap));
 
-		Map<String, String> header = new HashMap();
-		header.put("Content-Type", "application/json");
-		header.put("charset", "UTF-8");
-		LOGGER.info("setHeartbeat machinealarmUri is {}, requestForm is {} " , machinealarmUri, requestForm);
-		String respJson = "";
+		AlarmDetailBean alarmDetailBean = new AlarmDetailBean();
+		alarmDetailBean.setMachineId(inno72Machine.getId());
+		alarmDetailBean.setType(1);
+		alarmDetailBean.setPageInfo(page);
+		alarmDetailBean.setRemark(JsonUtil.toJson(remarkMap));
+
+		LOGGER.info("setHeartbeat alarmDetailBean is {}", JsonUtil.toJson(alarmDetailBean));
+
 		try {
-			respJson = HttpClient.post(machinealarmUri + "/alarm/detail/add", JsonUtil.toJson(requestForm));
-			String code = FastJsonUtils.getString(respJson, "code");
-			LOGGER.info("setHeartbeat respJson is {}， code is {}", respJson, code);
-			if (!code.equals("0")) {
-				return Results.failure("设置心跳异常");
-			}
+			alarmUtil.saveAlarmDetail(alarmDetailBean);
 		} catch (Exception e) {
 			LOGGER.error(e.getMessage(), e);
-			Results.failure("设置心跳异常");
 		}
-		return Results.success(respJson);
+
+		return Results.failure("设置心跳失败");
 	}
 }
