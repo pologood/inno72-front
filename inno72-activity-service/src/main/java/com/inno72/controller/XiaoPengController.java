@@ -6,6 +6,7 @@ import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -49,8 +50,15 @@ public class XiaoPengController {
 	}
 
 	@ResponseBody
+	@RequestMapping(value = "/makeQrCode", method = {RequestMethod.GET, RequestMethod.POST})
+	public Result<Object> makeQrCode(String machinedCode, String sessionUuid) {
+		return xiaoPengService.makeQrCode(machinedCode, sessionUuid);
+	}
+
+
+	@ResponseBody
 	@RequestMapping(value = "/save", method = {RequestMethod.GET, RequestMethod.POST})
-	public Result<Object> save(XiaoPeng xiaoPeng) {
+	public Result<Object> save(@RequestBody XiaoPeng xiaoPeng) {
 		try {
 			checkSaveParam(xiaoPeng);
 			// 校验验证码

@@ -5,7 +5,6 @@ import javax.annotation.Resource;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -18,8 +17,9 @@ import com.inno72.common.util.GameSessionRedisUtil;
 import com.inno72.service.Inno72AuthInfoService;
 import com.inno72.service.Inno72GameApiService;
 import com.inno72.vo.MachineApiVo;
-import com.inno72.vo.StandardLoginReqVo;
 import com.inno72.vo.StandardOrderReqVo;
+import com.inno72.vo.StandardPrepareLoginReqVo;
+import com.inno72.vo.StandardRedirectLoginReqVo;
 import com.inno72.vo.StandardShipmentReqVo;
 import com.inno72.vo.UserSessionVo;
 
@@ -40,8 +40,8 @@ public class Inno72StandardController {
 	private GameSessionRedisUtil gameSessionRedisUtil;
 
 	@ResponseBody
-	@RequestMapping(value = "/login", method = {RequestMethod.POST})
-	public Result<Object> Login(@RequestBody StandardLoginReqVo req) {
+	@RequestMapping(value = "/prepareLogin", method = {RequestMethod.POST})
+	public Result<Object> prepareLogin(StandardPrepareLoginReqVo req) {
 		if (StringUtils.isBlank(req.getMachineCode())) {
 			logger.warn("机器Code为空 " + req.toString());
 			return Results.failure("机器Code为空");
@@ -54,18 +54,24 @@ public class Inno72StandardController {
 
 		if (StandardLoginTypeEnum.ALIBABA.getValue().equals(req.getLoginType())) {
 
-			return inno72AuthInfoService.createQrCode(req.getMachineCode());
+			return inno72GameApiService.prepareLoginQrCode(req.getMachineCode(), req.getLoginType());
 
 		} else {
 
-			return inno72GameApiService.sessionNologin(req.getMachineCode(), req.getIsNeedQrCode());
+			return inno72GameApiService.prepareLoginNologin(req.getMachineCode());
 
 		}
 	}
 
+	@RequestMapping(value = "/redirectLogin", method = {RequestMethod.GET})
+	public String redirectLogin(StandardRedirectLoginReqVo req) {
+		return "redirect:" + inno72GameApiService.redirectLogin(req);
+	}
+
+
 	@ResponseBody
 	@RequestMapping(value = "/order", method = {RequestMethod.POST})
-	public Result<Object> order(@RequestBody StandardOrderReqVo req) {
+	public Result<Object> order(StandardOrderReqVo req) {
 
 		UserSessionVo userSessionVo = gameSessionRedisUtil.getSessionKey(req.getSessionUuid());
 		if (userSessionVo == null) {
@@ -87,7 +93,7 @@ public class Inno72StandardController {
 
 	@ResponseBody
 	@RequestMapping(value = "/shipment", method = {RequestMethod.POST})
-	public Result<String> shipment(@RequestBody StandardShipmentReqVo req) {
+	public Result<String> shipment(StandardShipmentReqVo req) {
 
 		MachineApiVo vo = new MachineApiVo();
 		vo.setMachineId(req.getMachineCode());

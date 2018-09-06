@@ -71,7 +71,7 @@ public class CommonServiceImpl implements CommonService {
 		String redisCode = template.opsForValue().get(VERIFICATIONCODE_KEY + phone);
 		if (StringUtils.isEmpty(redisCode)) {
 
-			LOGGER.info("发送短信验证码phone={},code={},appName=");
+			LOGGER.info("发送短信验证码phone={},code={},appName=", phone, code);
 			template.opsForValue().set(VERIFICATIONCODE_KEY + phone, code, EXPIRE_TIME, TimeUnit.SECONDS);
 			Map<String, String> param = new HashMap<>();
 			param.put("code", code);

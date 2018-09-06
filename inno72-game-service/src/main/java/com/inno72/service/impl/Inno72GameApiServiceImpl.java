@@ -2,7 +2,6 @@ package com.inno72.service.impl;
 
 import java.io.File;
 import java.math.BigDecimal;
-import java.text.MessageFormat;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -33,6 +32,7 @@ import com.inno72.common.Result;
 import com.inno72.common.Results;
 import com.inno72.common.StandardLoginTypeEnum;
 import com.inno72.common.json.JsonUtil;
+import com.inno72.common.util.AesUtils;
 import com.inno72.common.util.FastJsonUtils;
 import com.inno72.common.util.GameSessionRedisUtil;
 import com.inno72.common.util.Inno72OrderNumGenUtil;
@@ -88,6 +88,7 @@ import com.inno72.vo.GoodsVo;
 import com.inno72.vo.Inno72SamplingGoods;
 import com.inno72.vo.LogReqrest;
 import com.inno72.vo.MachineApiVo;
+import com.inno72.vo.StandardRedirectLoginReqVo;
 import com.inno72.vo.UserSessionVo;
 
 import net.coobird.thumbnailator.Thumbnails;
@@ -545,12 +546,7 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 
 					break;
 				case "2":
-					// 下优惠券订单
-					Result<Object> lottery = this.lottery(userSessionVo, vo.getUa(), vo.getUmid(), result.getPrizeId());
-					LOGGER.debug("抽取奖券 结果 ==> {}", JSON.toJSONString(lottery));
-					lotteryCode = lottery.getCode();
-					LOGGER.info("lotteryCode is {} ", lottery.getCode());
-					break;
+					return Results.failure("lottery商品不支持");
 				default:
 					return Results.failure("无商品类型");
 			}
@@ -1299,8 +1295,93 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 		}
 	}
 
+	public String redirectLogin(StandardRedirectLoginReqVo req) {
+		// 调用天猫的地址
+		String url = inno72GameServiceProperties.get("tmallUrl") + req.getMachineId() + "/" + req.getMachineCode() + "/"
+				+ req.getEnv() + "/?1=1" + "&bluetoothAddAes=" + req.getEnv() + "&machineCode=" + req.getMachineCode();
+
+		LOGGER.info("返回 redirectLogin url {}", url);
+		return url;
+	}
+
+	@Override
+	public Result<Object> prepareLoginQrCode(String machineId, int loginType) {
+
+		Inno72Machine inno72Machine = inno72MachineMapper.findMachineByCode(machineId);
+		Map<String, Object> map = new HashMap<String, Object>();
+		// 在machine库查询bluetooth地址 "6893a2ada9dd4f7eb8dc33adfc6eda73"
+		String bluetoothAdd = "";
+		String bluetoothAddAes = "";
+		String _machineId = "";
+		if (inno72Machine != null) {
+			bluetoothAdd = inno72Machine.getBluetoothAddress();
+			if (!StringUtil.isEmpty(bluetoothAdd)) {
+				bluetoothAddAes = AesUtils.encrypt(bluetoothAdd);
+			}
+			_machineId = inno72Machine.getId();
+		} else {
+			return Results.failure(machineId + "对应的 inno72Machine 不存在");
+		}
+		String machineCode = "";
+		if (!StringUtil.isEmpty(machineId)) {
+			machineCode = AesUtils.encrypt(machineId);
+		}
+
+		LOGGER.info("Mac蓝牙地址 {} ", bluetoothAddAes);
+
+		// 生成sessionUuid
+		String sessionUuid = UuidUtil.getUUID32();
+		// 获取运行环境
+		String env = getActive();
+
+		String url = String.format(
+				"%s?machineId=%s&sessionUuid=%s&env=%s&bluetoothAddAes=%s&machineCode=%s&loginType=%s",
+				inno72GameServiceProperties.get("qrCode"), _machineId, sessionUuid, env, bluetoothAddAes, machineCode,
+				loginType);
+
+		LOGGER.info("二维码字符串 {} ", url);
+		// 二维码存储在本地的路径
+		String localUrl = "pre" + _machineId + sessionUuid + ".png";
+
+		// 存储在阿里云上的文件名
+		String objectName = "qrcode/" + localUrl;
+		// 提供给前端用来调用二维码的地址
+		String returnUrl = inno72GameServiceProperties.get("returnUrl") + objectName;
+
+		try {
+			boolean result = QrCodeUtil.createQrCode(localUrl, url, 1800, "png");
+			if (result) {
+				File f = new File(localUrl);
+				if (f.exists()) {
+					// 压缩图片
+					Thumbnails.of(localUrl).scale(0.5f).outputQuality(0f).toFile(localUrl);
+					// 上传阿里云
+					OSSUtil.uploadLocalFile(localUrl, objectName);
+					// 删除本地文件
+					f.delete();
+				}
+
+				// 设置二维码过期时间
+				gameSessionRedisUtil.setSessionEx(sessionUuid, "");
+
+				map.put("qrCodeUrl", returnUrl);
+				map.put("sessionUuid", sessionUuid);
+				// LOGGER.info("二维码生成成功 - result -> {}", JSON.toJSONString(map).replace("\"",
+				// "'"));
+				LOGGER.info("二维码生成成功 - result -> {}", JsonUtil.toJson(map));
+			} else {
+				LOGGER.info("二维码生成失败");
+			}
+
+		} catch (Exception e) {
+			LOGGER.error(e.getMessage(), e);
+		}
+		return Results.success(map);
+	}
+
+	@Override
 	@Transactional(propagation = Propagation.REQUIRED, rollbackFor = Exception.class)
-	public Result<Object> sessionNologin(String machineCode, Integer isNeedQrCode) {
+	public Result<Object> prepareLoginNologin(String machineCode) {
 
 		if (StringUtils.isBlank(machineCode)) {
 			return Results.failure("machineCode 参数缺失！");
@@ -1372,6 +1453,9 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 			}
 		}
 
+		Inno72GameUserLife life = this.startGameLife(null, inno72Activity, inno72ActivityPlan, inno72Game,
+				inno72Machine, null);
+
 		UserSessionVo sessionVo = new UserSessionVo(machineId, null, null, null, gameId, sessionUuid,
 				inno72ActivityPlan.getId());
 
@@ -1387,62 +1471,17 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 		List<GoodsVo> list = loadGameInfo(machineId);
 		LOGGER.info("loadGameInfo is {} ", JsonUtil.toJson(list));
 		sessionVo.setGoodsList(list);
+		sessionVo.setRefOrderId(life.getId());
 
 		gameSessionRedisUtil.setSessionEx(sessionUuid, JSON.toJSONString(sessionVo));
 
-		Inno72GameUserLife life = this.startGameLife(null, inno72Activity, inno72ActivityPlan, inno72Game,
-				inno72Machine, null);
-
-		sessionVo.setRefOrderId(life.getId());
 
 		LOGGER.info("playCode is" + playCode);
 
 		Map<String, Object> resultMap = new HashMap<>();
 
 		resultMap.put("sessionUuid", sessionUuid);
-		resultMap.put("playCode", playCode);
 		resultMap.put("sellerId", inno72Merchant.getMerchantCode());
-
-		if (isNeedQrCode != null && isNeedQrCode == 1) {
-
-			String localUrl = String.format("feedback_%s_%s.png", machineId, sessionUuid);
-			// 存储在阿里云上的文件名
-			String objectName = "qrcode/" + localUrl;
-
-			String feedbackUrlTpl = inno72GameServiceProperties.get("feedbackUrl");
-			// 提供给前端用来调用二维码的地址
-			String returnUrl = inno72GameServiceProperties.get("returnUrl") + objectName;
-
-			if (feedbackUrlTpl != null) {
-				String feedbackUrl = MessageFormat.format(feedbackUrlTpl, machineId, sessionUuid);
-
-				try {
-					boolean result = QrCodeUtil.createQrCode(localUrl, feedbackUrl, 1800, "png");
-					if (result) {
-						File f = new File(localUrl);
-						if (f.exists()) {
-							// 压缩图片
-							Thumbnails.of(localUrl).scale(0.5f).outputQuality(0f).toFile(localUrl);
-							// 上传阿里云
-							OSSUtil.uploadLocalFile(localUrl, objectName);
-							// 删除本地文件
-							f.delete();
-						}
-
-						resultMap.put("qrCodeUrl", returnUrl);
-
-						LOGGER.info("二维码生成成功 - result -> {}", JsonUtil.toJson(resultMap));
-
-					} else {
-						LOGGER.info("二维码生成失败");
-					}
-
-				} catch (Exception e) {
-					LOGGER.error(e.getMessage(), e);
-				}
-			}
-		}
-
 
 		return Results.success(resultMap);
 
@@ -1655,7 +1694,7 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 		// 获取activePlanId
 		LOGGER.info("loadGameInfo mid={}", mid);
 		List<String> activityPlanIdList = inno72ActivityPlanMapper.findActivityPlanIdByMid(mid);
-		if (activityPlanIdList == null || activityPlanIdList.size() > 1) {
+		if (activityPlanIdList == null || activityPlanIdList.size() == 0 || activityPlanIdList.size() > 1) {
 			LOGGER.error("数据异常，获取activityPlanIdList");
 			// 此处不抛出异常，以免影响其他业务
 			return null;
@@ -2135,5 +2174,15 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 		}
 
 
+	}
+
+	private String getActive() {
+		String active = System.getenv("spring_profiles_active");
+		LOGGER.info("获取spring_profiles_active：{}", active);
+		if (active == null || active.equals("")) {
+			LOGGER.info("未读取到spring_profiles_active的环境变量,使用默认值: dev");
+			active = "dev";
+		}
+		return active;
 	}
 }

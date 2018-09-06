@@ -10,4 +10,6 @@ public interface XiaoPengService {
 
 	public Result<Object> feedBackPolling(String sessionUuid);
 
+	public Result<Object> makeQrCode(String machinedCode, String sessionUuid);
+
 }
