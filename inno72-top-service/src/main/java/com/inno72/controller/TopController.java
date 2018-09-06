@@ -418,7 +418,7 @@ public class TopController {
 			@PathVariable("sessionUuid") String sessionUuid, String code, @PathVariable("env") String env,
 			@PathVariable("itemId") String itemId, @PathVariable("isVip") String isVip,
 			@PathVariable("sessionKey") String sessionKey) throws Exception {
-		LOGGER.info("mid is {}, code is {}, sessionUuid is {}, env is {}, ItemId is {}, isVip is {}, sessionKey is {}",
+		LOGGER.info("samplingHome mid is {}, code is {}, sessionUuid is {}, env is {}, ItemId is {}, isVip is {}, sessionKey is {}",
 				mid, code, sessionUuid, env, itemId, isVip, sessionKey);
 		String playCode = "";
 		String data;

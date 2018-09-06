@@ -681,8 +681,8 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 			return Results.failure("商品没有店铺配置，尴尬了!");
 		}
 
-		LOGGER.info("problem itemId is {}, shopId is {}, activityPlanId is {}", itemId, shopId, activityPlanId);
-		// todo gxg 查找数据有问题
+		LOGGER.info("paiYangOrder itemId is {}, shopId is {}, activityPlanId is {}", itemId, shopId, activityPlanId);
+
 		Map<String, String> params = new HashMap<>(3);
 		params.put("goodsId", itemId);
 		params.put("shopId", shopId);
@@ -913,7 +913,7 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 		if (shop == null || StringUtil.isEmpty(shop.getShopCode())) {
 			return Results.failure("商户好像出了点问题!");
 		}
-		LOGGER.info("problem shop is {}, shopsId is {}", JsonUtil.toJson(shop), inno72Coupon.getShopsId());
+		LOGGER.info("lottery shop is {}, shopsId is {}", JsonUtil.toJson(shop), inno72Coupon.getShopsId());
 
 		String accessToken = vo.getAccessToken();
 
