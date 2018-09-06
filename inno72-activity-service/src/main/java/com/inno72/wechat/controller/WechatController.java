@@ -40,7 +40,11 @@ public class WechatController {
         log.info("【微信网页授权】获取code,redirectURL={}", redirectURL);
         return "redirect:" + redirectURL;
     }
- 
+
+    public static void main(String[] args) {
+        System.out.println(URLEncoder.encode("https://h5.heat.inno72.com/?pageto=get_score_panel&taskId=5b8fa45b92b83d31125f629c"));
+    }
+
     @GetMapping("/userInfo")
     public String userInfo(@RequestParam("code") String code,
                          @RequestParam("state") String returnUrl) throws Exception {

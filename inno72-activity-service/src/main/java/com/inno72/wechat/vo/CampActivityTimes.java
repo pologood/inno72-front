@@ -28,13 +28,11 @@ public class CampActivityTimes implements Serializable {
     /**
      * 开始时间
      */
-    @DateTimeFormat(iso=DateTimeFormat.ISO.DATE_TIME)
-    private Date startTime;
+    private Long startTime;
     /**
      * 结束时间
      */
-    @DateTimeFormat(iso=DateTimeFormat.ISO.DATE_TIME)
-    private Date endTime;
+    private Long endTime;
 
     public String getId() {
         return id;
@@ -44,19 +42,19 @@ public class CampActivityTimes implements Serializable {
         this.id = id;
     }
 
-    public Date getStartTime() {
+    public Long getStartTime() {
         return startTime;
     }
 
-    public void setStartTime(Date startTime) {
+    public void setStartTime(Long startTime) {
         this.startTime = startTime;
     }
 
-    public Date getEndTime() {
+    public Long getEndTime() {
         return endTime;
     }
 
-    public void setEndTime(Date endTime) {
+    public void setEndTime(Long endTime) {
         this.endTime = endTime;
     }
 

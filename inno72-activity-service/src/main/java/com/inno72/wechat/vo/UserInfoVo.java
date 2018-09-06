@@ -24,6 +24,8 @@ public class UserInfoVo implements Serializable {
      */
     private Integer gameFlag;
 
+    private String nickName;
+
     public static Integer GAMEFLAG_UNSTARTED=0;
 
     public static Integer GAMEFLAG_STARTED=1;
@@ -58,5 +60,13 @@ public class UserInfoVo implements Serializable {
 
     public void setGameFlag(Integer gameFlag) {
         this.gameFlag = gameFlag;
+    }
+
+    public String getNickName() {
+        return nickName;
+    }
+
+    public void setNickName(String nickName) {
+        this.nickName = nickName;
     }
 }

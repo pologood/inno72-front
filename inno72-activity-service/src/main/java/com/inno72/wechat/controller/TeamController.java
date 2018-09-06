@@ -1,12 +1,18 @@
 package com.inno72.wechat.controller;
 
+import com.google.gson.Gson;
 import com.inno72.common.BizException;
+import com.inno72.common.util.AESUtil;
 import com.inno72.vo.Result;
 import com.inno72.vo.Results;
 import com.inno72.wechat.service.TeamService;
+import com.inno72.wechat.vo.CampActivityTimes;
+import com.inno72.wechat.vo.CampTask;
+import com.inno72.wechat.vo.CampTeam;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -22,6 +28,8 @@ public class TeamController {
     private static final Logger LOGGER = LoggerFactory.getLogger(TeamController.class);
     @Autowired
     private TeamService service;
+    @Value("${goodfather.openprize.time}")
+    private String date;
 
     /**
      *
@@ -100,9 +108,9 @@ public class TeamController {
      * @return
      */
     @RequestMapping(value = "/finishTash",method = RequestMethod.POST)
-    public Result<Object> finishTash(@RequestParam String userId ,@RequestParam String tashId) {
+    public Result<Object> finishTash(@RequestParam String userId ,@RequestParam String taskId) {
         try{
-            return service.finishTash(userId,tashId);
+            return service.finishTash(userId,taskId);
         }catch (BizException e){
             LOGGER.error(e.getMessage(),e);
             return Results.failure(e.getMessage());
@@ -197,4 +205,87 @@ public class TeamController {
             return Results.failure("系统异常");
         }
     }
+
+    /**
+     * 保存活动场次
+     * @return
+     */
+    @RequestMapping(value = "/saveActivityTimes")
+    public Result<Object> saveActivityTimes(CampActivityTimes times) {
+        try{
+            return service.saveActivityTimes(times);
+        }catch (BizException e){
+            LOGGER.error(e.getMessage(),e);
+            return Results.failure(e.getMessage());
+        }catch (Exception e){
+            LOGGER.error("系统异常",e);
+            return Results.failure("系统异常");
+        }
+    }
+
+    /**
+     * 保存阵营
+     * @return
+     */
+    @RequestMapping(value = "/saveTeam")
+    public Result<Object> saveActivityTimes(CampTeam team) {
+        try{
+            return service.saveTeam(team);
+        }catch (BizException e){
+            LOGGER.error(e.getMessage(),e);
+            return Results.failure(e.getMessage());
+        }catch (Exception e){
+            LOGGER.error("系统异常",e);
+            return Results.failure("系统异常");
+        }
+    }
+    /**
+     * 积分兑换抽奖记录
+     * @return
+     */
+    @RequestMapping(value = "/saveTask")
+    public Result<Object> saveTask(CampTask task) {
+        try{
+            return service.saveTask(task);
+        }catch (BizException e){
+            LOGGER.error(e.getMessage(),e);
+            return Results.failure(e.getMessage());
+        }catch (Exception e){
+            LOGGER.error("系统异常",e);
+            return Results.failure("系统异常");
+        }
+    }
+
+    @RequestMapping(value = "/getProperty")
+    public Result<Object> saveTask() {
+        return Results.success(date);
+    }
+
+    /**
+     * 第三方获取用户积分信息
+     * @param userId
+     * @return
+     */
+    @RequestMapping(value = "/getUserScore")
+    public String getUserScore(@RequestParam String userId ) {
+        Result result = null;
+        try{
+            LOGGER.info("第三方获取用户积分信息获取加密userId={}",userId);
+            //解密
+            userId = AESUtil.decrypt(userId);
+            LOGGER.info("第三方获取用户积分信息解密后userId={}",userId);
+            result = service.getUserInfo(userId);
+        }catch (BizException e){
+            LOGGER.error(e.getMessage(),e);
+            result = Results.failure(e.getMessage());
+        }catch (Exception e){
+            LOGGER.error("系统异常",e);
+            result = Results.failure("系统异常");
+        }
+        String json = new Gson().toJson(result);
+        //加密json
+        String retString = AESUtil.encrypt(json);
+        return retString;
+    }
+
 }
