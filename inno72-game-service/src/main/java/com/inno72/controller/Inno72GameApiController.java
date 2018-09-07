@@ -180,4 +180,13 @@ public class Inno72GameApiController {
 	public Result<List<Inno72SamplingGoods>> getSampling(String machineCode) {
 		return inno72GameApiService.getSampling(machineCode);
 	}
+
+	/**
+	 * 心跳接口
+	 * @return Result
+	 */
+	@RequestMapping(value = "/setHeartbeat", method = {RequestMethod.POST, RequestMethod.GET})
+	public Result<String> setHeartbeat(String machineCode, String page, String planCode, String activity, String desc) {
+		return inno72GameApiService.setHeartbeat(machineCode, page, planCode, activity, desc);
+	}
 }

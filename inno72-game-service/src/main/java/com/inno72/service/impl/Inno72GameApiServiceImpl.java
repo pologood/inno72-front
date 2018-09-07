@@ -59,6 +59,7 @@ import com.inno72.mapper.Inno72OrderHistoryMapper;
 import com.inno72.mapper.Inno72OrderMapper;
 import com.inno72.mapper.Inno72ShopsMapper;
 import com.inno72.mapper.Inno72SupplyChannelMapper;
+import com.inno72.model.AlarmDetailBean;
 import com.inno72.model.Inno72Activity;
 import com.inno72.model.Inno72ActivityPlan;
 import com.inno72.model.Inno72ActivityPlanGameResult;
@@ -83,6 +84,8 @@ import com.inno72.plugin.http.HttpClient;
 import com.inno72.redis.IRedisUtil;
 import com.inno72.service.Inno72GameApiService;
 import com.inno72.service.Inno72GameService;
+import com.inno72.service.Inno72TopService;
+import com.inno72.util.AlarmUtil;
 import com.inno72.vo.AlarmMessageBean;
 import com.inno72.vo.GoodsVo;
 import com.inno72.vo.Inno72SamplingGoods;
@@ -144,9 +147,18 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 	private Inno72GameService inno72GameService;
 
 	@Resource
+	private Inno72TopService inno72TopService;
+	@Resource
 	private MachineCheckBackendFeignClient machineCheckBackendFeignClient;
+	@Resource
+	private AlarmUtil alarmUtil;
+
 	@Value("${machinecheckappbackend.uri}")
 	private String machinecheckappbackendUri;
+
+	@Value("${machinealarm.uri}")
+	private String machinealarmUri;
+
 	private static String FINDLOCKGOODSPUSH_URL = "/machine/channel/findLockGoodsPush";
 	private static final String QRSTATUS_NORMAL = "0"; // 二维码正常
 	private static final String QRSTATUS_INVALID = "-1"; // 二维码失效
@@ -819,6 +831,8 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 			return Results.failure("商品没有店铺配置，尴尬了!");
 		}
 
+		LOGGER.info("paiYangOrder itemId is {}, shopId is {}, activityPlanId is {}", itemId, shopId, activityPlanId);
+
 		Map<String, String> params = new HashMap<>(3);
 		params.put("goodsId", itemId);
 		params.put("shopId", shopId);
@@ -984,6 +998,7 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 		requestForm.put("activityId", activityId);
 		requestForm.put("mid", machineCode); // 实际为code
 		requestForm.put("goodsId", itemId);
+		requestForm.put("mixNick", userSessionVo.getUserId()); // 实际为taobao_user_nick
 
 		String respJson;
 		try {
@@ -1071,6 +1086,7 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 		if (shop == null || StringUtil.isEmpty(shop.getShopCode())) {
 			return Results.failure("商户好像出了点问题!");
 		}
+		LOGGER.info("lottery shop is {}, shopsId is {}", JsonUtil.toJson(shop), inno72Coupon.getShopsId());
 
 		String accessToken = vo.getAccessToken();
 
@@ -1116,6 +1132,9 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 			String is_success = FastJsonUtils.getString(respJson, "is_win");
 			LOGGER.info("lottery is_success is {} ", is_success);
 			if (is_success.equals("true")) {
+				Inno72Merchant inno72Merchant = inno72MerchantMapper.selectByPrimaryKey(shop.getSellerId());
+				inno72TopService.lotteryLog(sessionUuid, inno72Coupon.getCode(), inno72Merchant.getMerchantCode());
+
 				LOGGER.info("抽奖成功 is_success is {}", is_success);
 				Inno72Order inno72Order = new Inno72Order();
 				inno72Order.setId(orderId);
@@ -1611,6 +1630,7 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 		requestForm.put("accessToken", access_token);
 		requestForm.put("mid", inno72Machine.getMachineCode());
 		requestForm.put("sellerId", inno72Merchant.getMerchantCode());
+		requestForm.put("mixNick", userId); // 实际为taobao_user_nick
 		/*
 		 * <tmall_fans_automachine_getmaskusernick_response> <msg_code>200</msg_code>
 		 * <msg_info>用户不存在</msg_info>1dd77fc18f3a409196de23baedcf8ce1 <model>e****丫</model>
@@ -1981,25 +2001,6 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 		return result;
 	}
 
-
-	/**
-	 * 拼装日志对象
-	 * @param bizCode
-	 * @param itemId
-	 * @param sellerId
-	 * @param type
-	 * @param userId
-	 * @param value1
-	 * @param value2
-	 * @param value3
-	 * @param value4
-	 * @return
-	 */
-	private LogReqrest getLogReqrest(String bizCode, Long itemId, Long sellerId, String type, Long userId,
-			String value1, String value2, Long value3, Long value4) {
-		return new LogReqrest(bizCode, itemId, sellerId, type, -1L, value1, value2, value3, value4);
-	}
-
 	/**
 	 * 淘宝日志接口
 	 * @param token
@@ -2017,7 +2018,7 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 		// 调用聚石塔日志
 		Map<String, String> requestLogForm = new HashMap<>();
 		requestLogForm.put("accessToken", token);
-		LogReqrest logReqrest = getLogReqrest("", Long.valueOf(itemId), Long.valueOf(sellerId), "用户互动时常",
+		LogReqrest logReqrest = new LogReqrest("", Long.valueOf(itemId), Long.valueOf(sellerId), "用户互动时常",
 				Long.valueOf(userId), machineCode, playTime, null, null);
 		requestLogForm.put("logReqrest", JSON.toJSONString(logReqrest));
 		LOGGER.info("聚石塔日志接口参数 requestLogForm ：" + JSONObject.toJSONString(requestLogForm));
@@ -2181,6 +2182,7 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 
 	}
 
+
 	private String getActive() {
 		String active = System.getenv("spring_profiles_active");
 		LOGGER.info("获取spring_profiles_active：{}", active);
@@ -2189,5 +2191,48 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 			active = "dev";
 		}
 		return active;
+	}
+	
+	@Override
+	public Result<String> setHeartbeat(String machineCode, String page, String planCode, String activity, String desc) {
+		LOGGER.info("setHeartbeat machineCode is {}, page is {}, planCode is {}, activity is {}, desc is {}",
+				machineCode, page, planCode, activity, desc);
+		Inno72Machine inno72Machine = inno72MachineMapper.findMachineByCode(machineCode);
+		if (inno72Machine == null) {
+			return Results.failure("此机器编码没有查到相对应的机器！");
+		} else {
+			LOGGER.info("setHeartbeat inno72Machine is {}", JsonUtil.toJson(inno72Machine));
+		}
+
+		if (!(inno72Machine.getMachineStatus() == 4)) { // 4 表示机器状态正常
+			LOGGER.info("setHeartbeat 机器状态不正常 machineCode is {}", machineCode);
+			return Results.failure("机器状态不正常");
+		}
+
+		if (inno72Machine.getOpenStatus() == null || !(inno72Machine.getOpenStatus() == 0)) { // 0 表示接受报警
+			LOGGER.info("setHeartbeat 当前机器不接收报警 machineCode is {}", machineCode);
+			return Results.failure("当前机器不接收报警");
+		}
+
+		Map<String, String> remarkMap = new HashMap();
+		remarkMap.put("planCode", planCode);
+		remarkMap.put("activity", activity);
+		remarkMap.put("desc", desc);
+
+		AlarmDetailBean alarmDetailBean = new AlarmDetailBean();
+		alarmDetailBean.setMachineId(inno72Machine.getId());
+		alarmDetailBean.setType(1);
+		alarmDetailBean.setPageInfo(page);
+		alarmDetailBean.setRemark(JsonUtil.toJson(remarkMap));
+
+		LOGGER.info("setHeartbeat alarmDetailBean is {}", JsonUtil.toJson(alarmDetailBean));
+
+		try {
+			alarmUtil.saveAlarmDetail(alarmDetailBean);
+		} catch (Exception e) {
+			LOGGER.error(e.getMessage(), e);
+		}
+
+		return Results.failure("设置心跳失败");
 	}
 }

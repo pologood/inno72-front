@@ -16,4 +16,14 @@ public class DateUtil {
             return null;
         }
     }
+
+    public static String format(Date date,String pattern){
+        DateFormat format = new SimpleDateFormat(pattern);
+        try {
+            return format.format(date);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
 }

@@ -142,16 +142,17 @@ public class TopController {
 	 * http://open.taobao.com/doc2/apiDetail.htm?apiId=35602
 	 */
 	@RequestMapping(value = "/api/top/getMaskUserNick", method = RequestMethod.POST)
-	private String getMaskUserNick(String accessToken, String mid, Long sellerId) throws ApiException {
+	private String getMaskUserNick(String accessToken, String mid, Long sellerId, String mixNick) throws ApiException {
 		// @formatter:off
-		LOGGER.info("getMaskUserNick accessToken is {}, mid is {}, sellerId is {}", accessToken, mid, sellerId);
+		LOGGER.info("getMaskUserNick accessToken is {}, mid is {}, sellerId is {}, mixNick is {}", accessToken, mid, sellerId, mixNick);
 		// @formatter:on
 		Validators.checkParamNotNull(accessToken, mid, sellerId);
 
 		TmallFansAutomachineGetmaskusernickRequest req = new TmallFansAutomachineGetmaskusernickRequest();
 		req.setSellerId(sellerId);
+		req.setMixNick(mixNick);
 		req.setMachineId(mid);
-		req.setAppName(APP_NAME);
+		// req.setAppName(APP_NAME);
 		TmallFansAutomachineGetmaskusernickResponse rsp = client.execute(req, accessToken);
 		String result = rsp.getBody();
 		LOGGER.info("getMaskUserNick result is {}", result);
@@ -199,10 +200,11 @@ public class TopController {
 	@RequestMapping(value = "/api/top/addLog", method = RequestMethod.POST)
 	public String addLog(String accessToken, TmallFansAutomachineOrderAddlogRequest.LogReqrest logReqrest)
 			throws ApiException {
-		LOGGER.info("addLog accessToken is {}", accessToken);
+		LOGGER.info("addLog accessToken is {}, logReqrest is {} ", accessToken, FastJsonUtils.toJson(logReqrest));
 		Validators.checkParamNotNull(accessToken, logReqrest);
 
 		TmallFansAutomachineOrderAddlogRequest req = new TmallFansAutomachineOrderAddlogRequest();
+		logReqrest.setBizCode("automachine");
 		req.setLogRequest(logReqrest);
 		TmallFansAutomachineOrderAddlogResponse rsp = client.execute(req, accessToken);
 		String result = rsp.getBody();
@@ -211,9 +213,9 @@ public class TopController {
 	}
 
 	@RequestMapping(value = "/api/top/order", method = RequestMethod.POST)
-	public String order(String accessToken, String mid, String activityId, Long goodsId) throws ApiException {
-		LOGGER.info("order accessToken is {}, mid is {}, activityId is {}, goodsId is {}", accessToken, mid, activityId,
-				goodsId);
+	public String order(String accessToken, String mid, String activityId, Long goodsId, String mixNick) throws ApiException {
+		LOGGER.info("order accessToken is {}, mid is {}, activityId is {}, goodsId is {}, mixNick is {} ", accessToken, mid, activityId,
+				goodsId, mixNick);
 		Validators.checkParamNotNull(accessToken, mid, activityId, goodsId);
 
 		TmallFansAutomachineOrderCreateorderbyitemidRequest req = new TmallFansAutomachineOrderCreateorderbyitemidRequest();
@@ -222,6 +224,7 @@ public class TopController {
 		req.setSkuId(0L);
 		req.setItemId(goodsId);
 		req.setMachineId(mid);
+		req.setMixnick(mixNick);
 		TmallFansAutomachineOrderCreateorderbyitemidResponse rsp = client.execute(req, accessToken);
 		String result = rsp.getBody();
 		LOGGER.info("order result is {}", result);
@@ -415,7 +418,7 @@ public class TopController {
 			@PathVariable("sessionUuid") String sessionUuid, String code, @PathVariable("env") String env,
 			@PathVariable("itemId") String itemId, @PathVariable("isVip") String isVip,
 			@PathVariable("sessionKey") String sessionKey) throws Exception {
-		LOGGER.info("mid is {}, code is {}, sessionUuid is {}, env is {}, ItemId is {}, isVip is {}, sessionKey is {}",
+		LOGGER.info("samplingHome mid is {}, code is {}, sessionUuid is {}, env is {}, ItemId is {}, isVip is {}, sessionKey is {}",
 				mid, code, sessionUuid, env, itemId, isVip, sessionKey);
 		String playCode = "";
 		String data;
