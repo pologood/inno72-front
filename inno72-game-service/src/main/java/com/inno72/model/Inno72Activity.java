@@ -34,6 +34,20 @@ public class Inno72Activity {
 	@Column(name = "code")
 	private String code;
 
+	public enum ActivityType {
+		COMMON(0), PAIYANG(1);
+
+		private Integer type;
+
+		ActivityType(Integer type){
+			this.type = type;
+		}
+
+		public Integer getType() {
+			return type;
+		}
+	}
+
 	/**
 	 * 活动类型（0：互动游戏 1：派样互动）
 	 */

@@ -285,6 +285,7 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 
 	/**
 	 *
+	 * todo gxg 非零元单需要返回货道信息
 	 * @param vo
 	 * sessionUuid
 	 * orderId
@@ -646,6 +647,7 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 	}
 
 	/**
+	 * todo gxg 统一标准化接口 paiYangOrder
 	 * 派样订单
 	 *
 	 * @param vo
