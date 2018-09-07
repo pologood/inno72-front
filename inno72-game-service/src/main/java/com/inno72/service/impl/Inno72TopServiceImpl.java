@@ -62,6 +62,7 @@ public class Inno72TopServiceImpl implements Inno72TopService {
 		requestForm.put("sellerId", reqrest.getSellerId().toString());
 		requestForm.put("type", reqrest.getType());
 		requestForm.put("accessToken", accessToken);
+		requestForm.put("mixnick", sessionVo.getUserId());
 
 		try {
 			LOGGER.info("addLog params is {}", JsonUtil.toJson(requestForm));
