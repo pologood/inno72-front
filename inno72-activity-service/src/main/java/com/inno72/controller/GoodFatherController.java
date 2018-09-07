@@ -112,7 +112,7 @@ public class GoodFatherController {
 			//校验验证码
 			return goodFatherService.getlotteryDrawResult(phone);
 		}catch(BizException e){
-			LOGGER.info("获取中奖结果时间还未到时间未到");
+			LOGGER.info("获取中奖结果时间还未到");
 			return Results.failure(e.getMessage());
 		}catch(ParamException e){
 			LOGGER.info("参数异常",e);
@@ -127,7 +127,7 @@ public class GoodFatherController {
 		Date openDate = DateUtil.parse(openprizeTime,DateUtil.PATTERN_YYYY_MM_DDHH_MM_SS);
 		Date now = new Date();
 		if(now.getTime()<openDate.getTime()){
-			throw new BizException("获取中奖结果时间还未到时间未到");
+			throw new BizException("开奖时间：9月10日 18:00pm");
 		}
 	}
 

@@ -104,6 +104,28 @@ public class Inno72GameServiceImpl extends AbstractService<Inno72Game> implement
 	}
 
 	@Override
+	public boolean countSuccOrderNologin(String channelId, String activityPlanId) {
+
+		Map<String, String> orderParams = new HashMap<>();
+		orderParams.put("activityPlanId", activityPlanId);
+		int totalOrders = inno72OrderMapper.findGoodsStatusSuccWithoutUserId(orderParams);
+
+		Inno72ActivityPlan inno72ActivityPlan = inno72ActivityPlanMapper.selectByPrimaryKey(activityPlanId);
+		Integer userMaxTimes = inno72ActivityPlan.getUserMaxTimes();
+
+		orderParams.put("orderTime", "1");
+		int todayOrders = inno72OrderMapper.findGoodsStatusSuccWithoutUserId(orderParams);
+
+		Integer dayUserMaxTimes = inno72ActivityPlan.getDayUserMaxTimes();
+
+		LOGGER.info(
+				"countSuccOrderNologin  totalOrders=>{}; todayOrders => {}; dayUserMaxTimes => {}; userMaxTimes => {}",
+				totalOrders, todayOrders, dayUserMaxTimes, userMaxTimes);
+
+		return totalOrders < userMaxTimes && todayOrders < dayUserMaxTimes;
+	}
+
+	@Override
 	public boolean countSuccOrder(String channelId, String channelUserKey, String activityPlanId) {
 		Map<String, String> paramsChannel = new HashMap<>();
 		paramsChannel.put("channelId", channelId);
