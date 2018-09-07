@@ -2,7 +2,6 @@ package com.inno72.wechat.service.impl;
 
 import com.google.gson.Gson;
 import com.inno72.common.BizException;
-import com.inno72.common.DateUtil;
 import com.inno72.mongo.MongoUtil;
 import com.inno72.service.GoodFatherService;
 import com.inno72.vo.Result;
@@ -46,12 +45,9 @@ public class TeamServiceImpl implements TeamService {
     private String TEAM_KEY_PRE = "team:";
 
     private Integer findTimesCode() {
-        Date now = new Date();
-        Query query = new Query();
-        query.addCriteria(Criteria.where("startTime").lt(now)).addCriteria(Criteria.where("endTime").gt(now));
-        CampActivityTimes times = mongoUtil.findOne(query,CampActivityTimes.class);
+        CampActivityTimes times = findCampActivityTimes();
         if(times!=null) return times.getTimesCode();
-        LOGGER.info("查询游戏场次为空，date={}", DateUtil.format(now,DateUtil.PATTERN_YYYY_MM_DDHH_MM_SS));
+        LOGGER.info("查询游戏场次为空，date={}", System.currentTimeMillis());
         return null;
     }
 
@@ -112,6 +108,10 @@ public class TeamServiceImpl implements TeamService {
         //查询目前场次
         Integer timesCode = findTimesCode();
         UserInfoVo userInfo = new UserInfoVo();
+        //获取昵称
+        CampUser user = findUser(userId);
+        if(user == null) throw new BizException("用户不存在");
+        userInfo.setNickName(user.getNickName());
         if(timesCode == null){
             userInfo.setGameFlag(UserInfoVo.GAMEFLAG_UNSTARTED);
             userInfo.setScore(0);
@@ -134,6 +134,12 @@ public class TeamServiceImpl implements TeamService {
         Integer quickChannelSize = findQuickChannel(userId);
         userInfo.setQuickChannelSize(quickChannelSize);
         return Results.success(userInfo);
+    }
+
+    private CampUser findUser(String userId) {
+        Query query = new Query();
+        query.addCriteria(Criteria.where("id").is(userId));
+        return mongoUtil.findOne(query,CampUser.class);
     }
 
     @Override
@@ -160,21 +166,25 @@ public class TeamServiceImpl implements TeamService {
     @Override
     public Result<Object> getAllTeamTopN() {
         LOGGER.info("获取各个阵营排行榜");
-        Date now = new Date();
-        Query query = new Query();
-        query.addCriteria(Criteria.where("startTime").lt(now)).addCriteria(Criteria.where("endTime").gt(now));
-        CampActivityTimes times = mongoUtil.findOne(query,CampActivityTimes.class);
+        CampActivityTimes times = findCampActivityTimes();
         if(times == null) throw new BizException("游戏未开始");
 
         Integer timesCode = times.getTimesCode();
-        Date finishTime = times.getEndTime();
         Map<String,Object> map = new HashMap<>();
         map.put("nowTime",System.currentTimeMillis());
-        map.put("finishTime",finishTime.getTime());
+        map.put("finishTime",times.getEndTime());
         //获取本场次排名
         List<TopNVo> list = getAllTeamTopN(timesCode);
         map.put("list",list);
         return Results.success(map);
+    }
+
+    private CampActivityTimes findCampActivityTimes() {
+        Date now = new Date();
+        Query query = new Query();
+        query.addCriteria(Criteria.where("startTime").lt(now.getTime())).addCriteria(Criteria.where("endTime").gt(now.getTime()));
+        CampActivityTimes times = mongoUtil.findOne(query,CampActivityTimes.class);
+        return times;
     }
 
     @Override
@@ -254,7 +264,7 @@ public class TeamServiceImpl implements TeamService {
                 quickChannel.setQuickChannelSize(1);
                 quickChannel.setUserId(userId);
                 saveQuickChannel(quickChannel);
-                Results.warn("获得快速通道票",2);
+                return Results.warn("获得快速通道票",2,multScore);
             }
         }
         return Results.success(multScore);
@@ -287,6 +297,7 @@ public class TeamServiceImpl implements TeamService {
         LOGGER.info("积分兑换抽奖次数userId={}",userId);
         Integer timesCode = findTimesCodeWithException();
         CampUserTeam userTeam = findTeamUser(userId,timesCode);
+        if(userTeam == null) return Results.failure("请先加入阵营");
         Integer score = userTeam.getScore();
         if(score == null) score=0;
         Integer size = userTeam.getAwardsSize();
@@ -353,7 +364,7 @@ public class TeamServiceImpl implements TeamService {
         Query query = new Query();
         query.addCriteria(Criteria.where("teamCode")
                 .is(userTeam.getTeamCode()))
-                .with(new Sort(new Sort.Order(Sort.Direction.ASC,"type")));
+                .with(new Sort(new Sort.Order(Sort.Direction.ASC,"type"),new Sort.Order(Sort.Direction.DESC,"score")));
         List<CampTask> list = mongoUtil.find(query,CampTask.class);
         if(list == null || list.size()==0){
             LOGGER.error("无法找到任务teamCode={}",userTeam.getTeamCode());
@@ -373,7 +384,7 @@ public class TeamServiceImpl implements TeamService {
         query = new Query();
         query.addCriteria(Criteria.where("teamCode")
                 .ne(userTeam.getTeamCode()))
-                .with(new Sort(new Sort.Order(Sort.Direction.ASC,"teamCode"),new Sort.Order(Sort.Direction.ASC,"type")));
+                .with(new Sort(new Sort.Order(Sort.Direction.ASC,"teamCode"),new Sort.Order(Sort.Direction.ASC,"type"),new Sort.Order(Sort.Direction.DESC,"score")));
         List<CampTask> otherlist = mongoUtil.find(query,CampTask.class);
         if(list == null || list.size()==0){
             LOGGER.error("无法找到其他阵营任务teamCode={}",userTeam.getTeamCode());
@@ -397,8 +408,10 @@ public class TeamServiceImpl implements TeamService {
             Iterator<CampTask> it = list.iterator();
             while(it.hasNext()){
                 CampTask task = it.next();
+                task.setFinishFlag(CampTask.FINISHFLAG_UNFINISH);
                 if(taskIds.contains(task.getId())){
                     it.remove();
+                    task.setFinishFlag(CampTask.FINISHFLAG_FINISH);
                     downTask.add(task);
                 }
             }
@@ -448,6 +461,24 @@ public class TeamServiceImpl implements TeamService {
         return campUser.getId();
     }
 
+    @Override
+    public Result<Object> saveActivityTimes(CampActivityTimes times) {
+        mongoUtil.save(times);
+        return Results.success();
+    }
+
+    @Override
+    public Result<Object> saveTeam(CampTeam team) {
+        mongoUtil.save(team);
+        return Results.success();
+    }
+
+    @Override
+    public Result<Object> saveTask(CampTask task) {
+        mongoUtil.save(task);
+        return Results.success();
+    }
+
     /**
      * 获取今天是本月几号
      * @return
@@ -468,7 +499,7 @@ public class TeamServiceImpl implements TeamService {
     private CampUserTask findUserTask(String userId, String tashId, Integer timesCode) {
         Query query = new Query();
         query.addCriteria(Criteria.where("userId").is(userId))
-                .addCriteria(Criteria.where("tashId").is(tashId))
+                .addCriteria(Criteria.where("taskId").is(tashId))
                 .addCriteria(Criteria.where("timesCode").is(timesCode));
         return mongoUtil.findOne(query,CampUserTask.class);
     }
@@ -490,7 +521,7 @@ public class TeamServiceImpl implements TeamService {
             Query query = new Query();
             query.addCriteria(Criteria.where("timesCode").is(timesCode)).addCriteria(Criteria.where("teamCode").is(teamCode))
             .with(new Sort(new Sort.Order(Sort.Direction.ASC,"createTime")))
-            .skip(4999).limit(1);
+            .skip(1).limit(1);
             CampUserTeam userTeam = mongoUtil.findOne(query,CampUserTeam.class);
             if(userTeam!=null&&userTeam.getId().equalsIgnoreCase(userTeamId)){
                 return true;
@@ -594,6 +625,14 @@ public class TeamServiceImpl implements TeamService {
             vo.setRanking(i+1);
             vo.setTeamCode(ct.get(i).getTeamCode());
             list.add(vo);
+        }
+        if(list.get(1).getScore() == list.get(0).getScore()){
+            //如果第二名和第一名分数一样
+            list.get(1).setRanking(list.get(0).getRanking());
+        }
+        if(list.get(2).getScore() == list.get(1).getScore()){
+            //如果第三名和第二名分数一样
+            list.get(2).setRanking(list.get(1).getRanking());
         }
         return list;
     }

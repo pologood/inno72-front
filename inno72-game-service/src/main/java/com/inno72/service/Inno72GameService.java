@@ -15,4 +15,6 @@ public interface Inno72GameService extends Service<Inno72Game> {
 	public void updateOrderReport(UserSessionVo userSessionVo);
 
 	public boolean countSuccOrder(String channelId, String channelUserKey, String activityPlanId);
+
+	public boolean countSuccOrderNologin(String channelId, String activityPlanId);
 }

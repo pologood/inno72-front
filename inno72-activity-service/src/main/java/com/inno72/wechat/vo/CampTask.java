@@ -49,6 +49,8 @@ public class CampTask implements Serializable {
      */
     @Transient
     private Integer finishFlag;
+    public static Integer FINISHFLAG_FINISH =1;
+    public static Integer FINISHFLAG_UNFINISH =0;
     public String getId() {
         return id;
     }

@@ -1,6 +1,9 @@
 package com.inno72.wechat.service;
 
 import com.inno72.vo.Result;
+import com.inno72.wechat.vo.CampActivityTimes;
+import com.inno72.wechat.vo.CampTask;
+import com.inno72.wechat.vo.CampTeam;
 import me.chanjar.weixin.mp.bean.result.WxMpUser;
 
 public interface TeamService {
@@ -81,4 +84,25 @@ public interface TeamService {
      * @return
      */
     String saveUserInfo(WxMpUser user);
+
+    /**
+     * 保存活动场次
+     * @param times
+     * @return
+     */
+    Result<Object> saveActivityTimes(CampActivityTimes times);
+
+    /**
+     * 保存阵营
+     * @param team
+     * @return
+     */
+    Result<Object> saveTeam(CampTeam team);
+
+    /**
+     * 保存任务
+     * @param task
+     * @return
+     */
+    Result<Object> saveTask(CampTask task);
 }
