@@ -1238,21 +1238,18 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 		inno72GameService.updateOrderReport(userSessionVo);
 		// int i = inno72SupplyChannelMapper.subCount(new Inno72SupplyChannel(machineId, null, channelId));
 
-		// 调整调用位置 by gxg 20180907
+		// LOGGER.info("减货 参数 ===》 【machineId=>{}，channelId=>{}】;结果 ==> {}", machineId, channelId, i);
+
 		try {
 			findLockGoodsPush(machineId, inno72SupplyChannel.getId());
-			// if(r.getCode()==1) return r;
 		} catch (Exception e) {
 			LOGGER.info("调用findLockGoodsPush异常", e);
 		}
 
-		// LOGGER.info("减货 参数 ===》 【machineId=>{}，channelId=>{}】;结果 ==> {}", machineId, channelId, i);
-		if (StandardLoginTypeEnum.ALIBABA.getValue().equals(userSessionVo.getLoginType())) {
-			if (StringUtil.isNotEmpty(orderId)) {
-				new Thread(new DeliveryRecord(machineCode, channelId, userSessionVo)).run();
-			} else {
-				LOGGER.info("调用出货无orderId 请求参数=>{}", JSON.toJSONString(vo));
-			}
+		if (StringUtil.isNotEmpty(orderId)) {
+			new Thread(new DeliveryRecord(machineCode, channelId, userSessionVo)).run();
+		} else {
+			LOGGER.info("调用出货无orderId 请求参数=>{}", JSON.toJSONString(vo));
 		}
 		return Results.success();
 	}
@@ -1406,9 +1403,9 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 	@Override
 	@Transactional(propagation = Propagation.REQUIRED, rollbackFor = Exception.class)
 	public Result<Object> prepareLoginNologin(String machineCode) {
-		
+
 		LOGGER.info("prepareLoginNologin {}", machineCode);
-		
+
 		if (StringUtils.isBlank(machineCode)) {
 			return Results.failure("machineCode 参数缺失！");
 		}
@@ -1808,7 +1805,7 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 
 	private String genInno72NologinOrder(String channelId, String activityPlanId, String machineId, String goodsId,
 			Inno72Order.INNO72ORDER_GOODSTYPE product) {
-		
+
 		LOGGER.info("genInno72NologinOrder input {} {} {} {}", channelId, activityPlanId, machineId, goodsId);
 		// 活动计划
 		Inno72ActivityPlan inno72ActivityPlan = inno72ActivityPlanMapper.selectByPrimaryKey(activityPlanId);
@@ -2195,7 +2192,7 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 		}
 		return active;
 	}
-	
+
 	@Override
 	public Result<String> setHeartbeat(String machineCode, String page, String planCode, String activity, String desc) {
 		LOGGER.info("setHeartbeat machineCode is {}, page is {}, planCode is {}, activity is {}, desc is {}",
