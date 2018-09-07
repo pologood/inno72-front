@@ -26,7 +26,8 @@ public class Inno72TopServiceImpl implements Inno72TopService {
 	@Resource
 	private GameSessionRedisUtil gameSessionRedisUtil;
 
-	public String jstUrl = inno72GameServiceProperties.get("jstUrl");
+	// public String jstUrl = inno72GameServiceProperties.get("jstUrl");
+	public String jstUrl = "";
 
 	@Override
 	public String order(String sessionUuid, String activityId, String itemId) {
