@@ -60,7 +60,9 @@ public class XiaoPengController {
 	@RequestMapping(value = "/save", method = {RequestMethod.GET, RequestMethod.POST})
 	public Result<Object> save(@RequestBody XiaoPeng xiaoPeng) {
 		try {
-			checkSaveParam(xiaoPeng);
+			if(!checkSaveParam(xiaoPeng)) {
+				return Results.warn("提交信息不完整", -2);
+			}
 			// 校验验证码
 			if (commonService.verificationCode(xiaoPeng.getPhone(), xiaoPeng.getCode())) {
 				try {
@@ -88,13 +90,14 @@ public class XiaoPengController {
 		return xiaoPengService.feedBackPolling(sessionUuid);
 	}
 
-	private void checkSaveParam(XiaoPeng xiaoPeng) throws ParamException {
+	private boolean checkSaveParam(XiaoPeng xiaoPeng) throws ParamException {
 		if (xiaoPeng == null || StringUtils.isBlank(xiaoPeng.getCode()) || StringUtils.isBlank(xiaoPeng.getName())
 				|| StringUtils.isBlank(xiaoPeng.getSessionUuid()) || StringUtils.isBlank(xiaoPeng.getCode())
 				|| StringUtils.isBlank(xiaoPeng.getQuestion1()) || StringUtils.isBlank(xiaoPeng.getQuestion2())
 				|| StringUtils.isBlank(xiaoPeng.getQuestion3()) || StringUtils.isBlank(xiaoPeng.getQuestion4())) {
-			throw new ParamException("参数异常");
+			return false;
 		}
+		return true;
 	}
 
 }
