@@ -364,7 +364,7 @@ public class TeamServiceImpl implements TeamService {
         Query query = new Query();
         query.addCriteria(Criteria.where("teamCode")
                 .is(userTeam.getTeamCode()))
-                .with(new Sort(new Sort.Order(Sort.Direction.ASC,"type")));
+                .with(new Sort(new Sort.Order(Sort.Direction.ASC,"type"),new Sort.Order(Sort.Direction.DESC,"score")));
         List<CampTask> list = mongoUtil.find(query,CampTask.class);
         if(list == null || list.size()==0){
             LOGGER.error("无法找到任务teamCode={}",userTeam.getTeamCode());
@@ -384,7 +384,7 @@ public class TeamServiceImpl implements TeamService {
         query = new Query();
         query.addCriteria(Criteria.where("teamCode")
                 .ne(userTeam.getTeamCode()))
-                .with(new Sort(new Sort.Order(Sort.Direction.ASC,"teamCode"),new Sort.Order(Sort.Direction.ASC,"type")));
+                .with(new Sort(new Sort.Order(Sort.Direction.ASC,"teamCode"),new Sort.Order(Sort.Direction.ASC,"type"),new Sort.Order(Sort.Direction.DESC,"score")));
         List<CampTask> otherlist = mongoUtil.find(query,CampTask.class);
         if(list == null || list.size()==0){
             LOGGER.error("无法找到其他阵营任务teamCode={}",userTeam.getTeamCode());
