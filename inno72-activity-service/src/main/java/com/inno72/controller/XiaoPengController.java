@@ -6,6 +6,7 @@ import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -33,6 +34,7 @@ public class XiaoPengController {
 	@Autowired
 	private XiaoPengService xiaoPengService;
 
+	@CrossOrigin(origins = "*", maxAge = 3600)
 	@ResponseBody
 	@RequestMapping(value = "/getVerificationCode", method = {RequestMethod.POST})
 	public Result<Object> getVerificationCode(@RequestBody XiaoPengReq reqBean) {
@@ -50,13 +52,14 @@ public class XiaoPengController {
 		return String.format("%04d", random.nextInt(10000));
 	}
 
+	@CrossOrigin(origins = "*", maxAge = 3600)
 	@ResponseBody
 	@RequestMapping(value = "/makeQrCode", method = {RequestMethod.POST})
 	public Result<Object> makeQrCode(@RequestBody XiaoPengReq reqBean) {
 		return xiaoPengService.makeQrCode(reqBean.getMachinedCode(), reqBean.getSessionUuid());
 	}
 
-
+	@CrossOrigin(origins = "*", maxAge = 3600)
 	@ResponseBody
 	@RequestMapping(value = "/save", method = {RequestMethod.POST})
 	public Result<Object> save(@RequestBody XiaoPeng xiaoPeng) {
@@ -84,7 +87,8 @@ public class XiaoPengController {
 			return Results.failure("系统异常");
 		}
 	}
-
+	
+	@CrossOrigin(origins = "*", maxAge = 3600)
 	@ResponseBody
 	@RequestMapping(value = "/feedBackPolling", method = {RequestMethod.POST})
 	public Result<Object> feedBackPolling(@RequestBody XiaoPengReq reqBean) {
