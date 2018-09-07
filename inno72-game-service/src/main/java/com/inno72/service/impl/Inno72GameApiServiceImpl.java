@@ -610,7 +610,7 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 
 		result.put("time", new Date().getTime());
 		result.put("lotteryResult", lotteryCode);
-		LOGGER.info("oneKeyOrder is {}", JsonUtil.toJson(result));
+		LOGGER.info("oneKeyOrderNologin is {}", JsonUtil.toJson(result));
 		return Results.success(result);
 	}
 
@@ -1382,7 +1382,9 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 	@Override
 	@Transactional(propagation = Propagation.REQUIRED, rollbackFor = Exception.class)
 	public Result<Object> prepareLoginNologin(String machineCode) {
-
+		
+		LOGGER.info("prepareLoginNologin {}", machineCode);
+		
 		if (StringUtils.isBlank(machineCode)) {
 			return Results.failure("machineCode 参数缺失！");
 		}
@@ -1476,7 +1478,7 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 		gameSessionRedisUtil.setSessionEx(sessionUuid, JSON.toJSONString(sessionVo));
 
 
-		LOGGER.info("playCode is" + playCode);
+		LOGGER.info("prepareLoginNologin output {} {}", sessionUuid, inno72Merchant.getMerchantCode());
 
 		Map<String, Object> resultMap = new HashMap<>();
 
@@ -1781,7 +1783,8 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 
 	private String genInno72NologinOrder(String channelId, String activityPlanId, String machineId, String goodsId,
 			Inno72Order.INNO72ORDER_GOODSTYPE product) {
-
+		
+		LOGGER.info("genInno72NologinOrder input {} {} {} {}", channelId, activityPlanId, machineId, goodsId);
 		// 活动计划
 		Inno72ActivityPlan inno72ActivityPlan = inno72ActivityPlanMapper.selectByPrimaryKey(activityPlanId);
 		// 活动
