@@ -1051,12 +1051,6 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 		if (inno72SupplyChannel == null) {
 			return Results.failure("货道错误");
 		}
-		try {
-			findLockGoodsPush(machineId, inno72SupplyChannel.getId());
-			// if(r.getCode()==1) return r;
-		} catch (Exception e) {
-			LOGGER.info("调用findLockGoodsPush异常", e);
-		}
 
 		LOGGER.info("减货接口 ==> 未减货货道 [{}]", JSON.toJSONString(inno72SupplyChannel));
 		Inno72SupplyChannel updateChannel = new Inno72SupplyChannel();
@@ -1071,6 +1065,14 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 		// int i = inno72SupplyChannelMapper.subCount(new Inno72SupplyChannel(machineId, null, channelId));
 
 		// LOGGER.info("减货 参数 ===》 【machineId=>{}，channelId=>{}】;结果 ==> {}", machineId, channelId, i);
+
+		// 调整调用位置 by gxg 20180907
+		try {
+			findLockGoodsPush(machineId, inno72SupplyChannel.getId());
+			// if(r.getCode()==1) return r;
+		} catch (Exception e) {
+			LOGGER.info("调用findLockGoodsPush异常", e);
+		}
 
 		if (StringUtil.isNotEmpty(orderId)) {
 			new Thread(new DeliveryRecord(machineCode, channelId, userSessionVo)).run();
