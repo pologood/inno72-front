@@ -19,6 +19,7 @@ import com.inno72.service.XiaoPengService;
 import com.inno72.vo.Result;
 import com.inno72.vo.Results;
 import com.inno72.vo.XiaoPeng;
+import com.inno72.vo.XiaoPengReq;
 
 @RestController
 @RequestMapping("/xiaopeng")
@@ -33,11 +34,11 @@ public class XiaoPengController {
 	private XiaoPengService xiaoPengService;
 
 	@ResponseBody
-	@RequestMapping(value = "/getVerificationCode", method = {RequestMethod.GET, RequestMethod.POST})
-	public Result<Object> getVerificationCode(String phone) {
+	@RequestMapping(value = "/getVerificationCode", method = {RequestMethod.POST})
+	public Result<Object> getVerificationCode(@RequestBody XiaoPengReq reqBean) {
 		String code = makeVerifiedCode();
 		try {
-			return commonService.sendSMSVerificationCode(phone, code);
+			return commonService.sendSMSVerificationCode(reqBean.getPhone(), code);
 		} catch (Exception e) {
 			LOGGER.error(e.getMessage(), e);
 			return Results.failure("短信发送异常");
@@ -50,14 +51,14 @@ public class XiaoPengController {
 	}
 
 	@ResponseBody
-	@RequestMapping(value = "/makeQrCode", method = {RequestMethod.GET, RequestMethod.POST})
-	public Result<Object> makeQrCode(String machinedCode, String sessionUuid) {
-		return xiaoPengService.makeQrCode(machinedCode, sessionUuid);
+	@RequestMapping(value = "/makeQrCode", method = {RequestMethod.POST})
+	public Result<Object> makeQrCode(@RequestBody XiaoPengReq reqBean) {
+		return xiaoPengService.makeQrCode(reqBean.getMachinedCode(), reqBean.getSessionUuid());
 	}
 
 
 	@ResponseBody
-	@RequestMapping(value = "/save", method = {RequestMethod.GET, RequestMethod.POST})
+	@RequestMapping(value = "/save", method = {RequestMethod.POST})
 	public Result<Object> save(@RequestBody XiaoPeng xiaoPeng) {
 		try {
 			if(!checkSaveParam(xiaoPeng)) {
@@ -85,9 +86,9 @@ public class XiaoPengController {
 	}
 
 	@ResponseBody
-	@RequestMapping(value = "/feedBackPolling", method = {RequestMethod.GET, RequestMethod.POST})
-	public Result<Object> feedBackPolling(String sessionUuid) {
-		return xiaoPengService.feedBackPolling(sessionUuid);
+	@RequestMapping(value = "/feedBackPolling", method = {RequestMethod.POST})
+	public Result<Object> feedBackPolling(@RequestBody XiaoPengReq reqBean) {
+		return xiaoPengService.feedBackPolling(reqBean.getSessionUuid());
 	}
 
 	private boolean checkSaveParam(XiaoPeng xiaoPeng) throws ParamException {
