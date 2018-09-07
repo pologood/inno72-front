@@ -1244,19 +1244,12 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 		// int i = inno72SupplyChannelMapper.subCount(new Inno72SupplyChannel(machineId, null, channelId));
 
 		// LOGGER.info("减货 参数 ===》 【machineId=>{}，channelId=>{}】;结果 ==> {}", machineId, channelId, i);
-
-		// 调整调用位置 by gxg 20180907
-		try {
-			findLockGoodsPush(machineId, inno72SupplyChannel.getId());
-			// if(r.getCode()==1) return r;
-		} catch (Exception e) {
-			LOGGER.info("调用findLockGoodsPush异常", e);
-		}
-
-		if (StringUtil.isNotEmpty(orderId)) {
-			new Thread(new DeliveryRecord(machineCode, channelId, userSessionVo)).run();
-		} else {
-			LOGGER.info("调用出货无orderId 请求参数=>{}", JSON.toJSONString(vo));
+		if (StandardLoginTypeEnum.ALIBABA.getValue().equals(userSessionVo.getLoginType())) {
+			if (StringUtil.isNotEmpty(orderId)) {
+				new Thread(new DeliveryRecord(machineCode, channelId, userSessionVo)).run();
+			} else {
+				LOGGER.info("调用出货无orderId 请求参数=>{}", JSON.toJSONString(vo));
+			}
 		}
 		return Results.success();
 	}
@@ -1293,6 +1286,7 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 
 		@Override
 		public void run() {
+			// todo gxg 抽到聚石塔 出货
 			Map<String, String> requestForm = new HashMap<>();
 
 			requestForm.put("accessToken", userSessionVo.getAccessToken());
@@ -1320,6 +1314,200 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 			}
 
 		}
+	}
+
+	public String redirectLogin(StandardRedirectLoginReqVo req) {
+		// 调用天猫的地址
+		String url = inno72GameServiceProperties.get("tmallUrl") + req.getMachineId() + "/" + req.getMachineCode() + "/"
+				+ req.getEnv() + "/?1=1" + "&bluetoothAddAes=" + req.getEnv() + "&machineCode=" + req.getMachineCode();
+
+		LOGGER.info("返回 redirectLogin url {}", url);
+		return url;
+	}
+
+	@Override
+	public Result<Object> prepareLoginQrCode(String machineId, int loginType) {
+
+		Inno72Machine inno72Machine = inno72MachineMapper.findMachineByCode(machineId);
+		Map<String, Object> map = new HashMap<String, Object>();
+		// 在machine库查询bluetooth地址 "6893a2ada9dd4f7eb8dc33adfc6eda73"
+		String bluetoothAdd = "";
+		String bluetoothAddAes = "";
+		String _machineId = "";
+		if (inno72Machine != null) {
+			bluetoothAdd = inno72Machine.getBluetoothAddress();
+			if (!StringUtil.isEmpty(bluetoothAdd)) {
+				bluetoothAddAes = AesUtils.encrypt(bluetoothAdd);
+			}
+			_machineId = inno72Machine.getId();
+		} else {
+			return Results.failure(machineId + "对应的 inno72Machine 不存在");
+		}
+		String machineCode = "";
+		if (!StringUtil.isEmpty(machineId)) {
+			machineCode = AesUtils.encrypt(machineId);
+		}
+
+		LOGGER.info("Mac蓝牙地址 {} ", bluetoothAddAes);
+
+		// 生成sessionUuid
+		String sessionUuid = UuidUtil.getUUID32();
+		// 获取运行环境
+		String env = getActive();
+
+		String url = String.format(
+				"%s?machineId=%s&sessionUuid=%s&env=%s&bluetoothAddAes=%s&machineCode=%s&loginType=%s",
+				inno72GameServiceProperties.get("qrCode"), _machineId, sessionUuid, env, bluetoothAddAes, machineCode,
+				loginType);
+
+		LOGGER.info("二维码字符串 {} ", url);
+		// 二维码存储在本地的路径
+		String localUrl = "pre" + _machineId + sessionUuid + ".png";
+
+		// 存储在阿里云上的文件名
+		String objectName = "qrcode/" + localUrl;
+		// 提供给前端用来调用二维码的地址
+		String returnUrl = inno72GameServiceProperties.get("returnUrl") + objectName;
+
+		try {
+			boolean result = QrCodeUtil.createQrCode(localUrl, url, 1800, "png");
+			if (result) {
+				File f = new File(localUrl);
+				if (f.exists()) {
+					// 压缩图片
+					Thumbnails.of(localUrl).scale(0.5f).outputQuality(0f).toFile(localUrl);
+					// 上传阿里云
+					OSSUtil.uploadLocalFile(localUrl, objectName);
+					// 删除本地文件
+					f.delete();
+				}
+
+				// 设置二维码过期时间
+				gameSessionRedisUtil.setSessionEx(sessionUuid, "");
+
+				map.put("qrCodeUrl", returnUrl);
+				map.put("sessionUuid", sessionUuid);
+				// LOGGER.info("二维码生成成功 - result -> {}", JSON.toJSONString(map).replace("\"",
+				// "'"));
+				LOGGER.info("二维码生成成功 - result -> {}", JsonUtil.toJson(map));
+			} else {
+				LOGGER.info("二维码生成失败");
+			}
+
+		} catch (Exception e) {
+			LOGGER.error(e.getMessage(), e);
+		}
+		return Results.success(map);
+	}
+
+	@Override
+	@Transactional(propagation = Propagation.REQUIRED, rollbackFor = Exception.class)
+	public Result<Object> prepareLoginNologin(String machineCode) {
+		
+		LOGGER.info("prepareLoginNologin {}", machineCode);
+		
+		if (StringUtils.isBlank(machineCode)) {
+			return Results.failure("machineCode 参数缺失！");
+		}
+
+		Inno72Machine inno72Machine = inno72MachineMapper.findMachineByCode(machineCode);
+		if (inno72Machine == null) {
+			return Results.failure("机器错误！");
+		}
+
+		String machineId = inno72Machine.getId();
+		List<Inno72ActivityPlan> inno72ActivityPlans = inno72ActivityPlanMapper.selectByMachineId(machineId);
+
+		String gameId = "";
+		String playCode;
+
+		Inno72ActivityPlan inno72ActivityPlan = null;
+		if (inno72ActivityPlans.size() > 0) {
+			inno72ActivityPlan = inno72ActivityPlans.get(0);
+			gameId = inno72ActivityPlan.getGameId();
+		}
+
+		if (StringUtil.isEmpty(gameId)) {
+			return Results.failure("没有绑定的游戏！");
+		}
+
+		if (inno72ActivityPlan == null) {
+			return Results.failure("当前没有活动排期！");
+		}
+
+		Inno72Game inno72Game = inno72GameMapper.selectByPrimaryKey(gameId);
+		if (inno72Game == null) {
+			return Results.failure("不存在的游戏！");
+		}
+
+		String sessionUuid = UuidUtil.getUUID32();
+
+		// 设置统计每个计划的已完次数
+		redisUtil.sadd(CommonBean.REDIS_ACTIVITY_PLAN_LOGIN_TIMES_KEY + inno72ActivityPlan.getId(),
+				"nologin" + sessionUuid);
+
+		Inno72Activity inno72Activity = inno72ActivityMapper.selectByPrimaryKey(inno72ActivityPlan.getActivityId());
+		if (inno72Activity == null) {
+			return Results.failure("你存在此活动");
+		}
+
+		String sellerId = inno72Activity.getSellerId();
+		playCode = inno72Activity.getCode();
+		LOGGER.info("sessionRedirect layCode is {}", playCode);
+
+		Inno72Merchant inno72Merchant = inno72MerchantMapper.selectByPrimaryKey(sellerId);
+		if (inno72Merchant == null) {
+			return Results.failure("供应商不存在");
+		}
+		String channelId = inno72Merchant.getChannelId();
+
+		Map<String, String> params = new HashMap<>(2);
+		params.put("platId", inno72ActivityPlan.getId());
+		params.put("machineId", inno72Machine.getId());
+		List<Integer> countGoods = inno72ActivityPlanGameResultMapper.selectCountGoods(params);
+		boolean goodsCount = true;
+		if (countGoods.size() == 0) {
+			goodsCount = false;
+		}
+		for (Integer count : countGoods) {
+			if (count < 1) {
+				goodsCount = false;
+				break;
+			}
+		}
+
+		Inno72GameUserLife life = this.startGameLife(null, inno72Activity, inno72ActivityPlan, inno72Game,
+				inno72Machine, null);
+
+		UserSessionVo sessionVo = new UserSessionVo(machineId, null, null, null, gameId, sessionUuid,
+				inno72ActivityPlan.getId());
+
+		boolean canOrder = inno72GameService.countSuccOrderNologin(channelId, inno72ActivityPlan.getId());
+		sessionVo.setCanOrder(canOrder);
+		sessionVo.setCountGoods(goodsCount);
+		sessionVo.setChannelId(channelId);
+		sessionVo.setMachineId(machineId);
+		sessionVo.setMachineCode(inno72Machine.getMachineCode());
+		sessionVo.setActivityId(inno72Activity.getId());
+		sessionVo.setLoginType(StandardLoginTypeEnum.NOLOGIN.getValue());
+
+		List<GoodsVo> list = loadGameInfo(machineId);
+		LOGGER.info("loadGameInfo is {} ", JsonUtil.toJson(list));
+		sessionVo.setGoodsList(list);
+		sessionVo.setRefOrderId(life.getId());
+
+		gameSessionRedisUtil.setSessionEx(sessionUuid, JSON.toJSONString(sessionVo));
+
+
+		LOGGER.info("prepareLoginNologin output {} {}", sessionUuid, inno72Merchant.getMerchantCode());
+
+		Map<String, Object> resultMap = new HashMap<>();
+
+		resultMap.put("sessionUuid", sessionUuid);
+		resultMap.put("sellerId", inno72Merchant.getMerchantCode());
+
+		return Results.success(resultMap);
+
 	}
 
 	/**
@@ -1530,7 +1718,7 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 		// 获取activePlanId
 		LOGGER.info("loadGameInfo mid={}", mid);
 		List<String> activityPlanIdList = inno72ActivityPlanMapper.findActivityPlanIdByMid(mid);
-		if (activityPlanIdList == null || activityPlanIdList.size() > 1) {
+		if (activityPlanIdList == null || activityPlanIdList.size() == 0 || activityPlanIdList.size() > 1) {
 			LOGGER.error("数据异常，获取activityPlanIdList");
 			// 此处不抛出异常，以免影响其他业务
 			return null;
@@ -1599,18 +1787,104 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 	 * @param inno72Machine
 	 * @param userId
 	 */
-	private void startGameLife(Inno72GameUserChannel userChannel, Inno72Activity inno72Activity,
+	private Inno72GameUserLife startGameLife(Inno72GameUserChannel userChannel, Inno72Activity inno72Activity,
 			Inno72ActivityPlan inno72ActivityPlan, Inno72Game inno72Game, Inno72Machine inno72Machine, String userId) {
 		Inno72Locale inno72Locale = inno72LocaleMapper.selectByPrimaryKey(inno72Machine.getLocaleId());
-		Inno72GameUserLife life = new Inno72GameUserLife(userChannel.getGameUserId(), userChannel.getId(),
-				inno72Machine.getMachineCode(), userChannel.getUserNick(), inno72ActivityPlan.getActivityId(),
+		Inno72GameUserLife life = new Inno72GameUserLife(userChannel == null ? null : userChannel.getGameUserId(),
+				userChannel == null ? null : userChannel.getId(), inno72Machine.getMachineCode(),
+				userChannel == null ? null : userChannel.getUserNick(), inno72ActivityPlan.getActivityId(),
 				inno72Activity.getName(), inno72ActivityPlan.getId(), inno72Game.getId(), inno72Game.getName(),
 				inno72Machine.getLocaleId(), inno72Locale == null ? "" : inno72Locale.getMall(), null, "", null, null,
 				userId);
 		LOGGER.info("插入用户游戏记录 ===> {}", JSON.toJSONString(life));
 		inno72GameUserLifeMapper.insert(life);
+		return life;
 
 	}
+
+
+	private String genInno72NologinOrder(String channelId, String activityPlanId, String machineId, String goodsId,
+			Inno72Order.INNO72ORDER_GOODSTYPE product) {
+		
+		LOGGER.info("genInno72NologinOrder input {} {} {} {}", channelId, activityPlanId, machineId, goodsId);
+		// 活动计划
+		Inno72ActivityPlan inno72ActivityPlan = inno72ActivityPlanMapper.selectByPrimaryKey(activityPlanId);
+		// 活动
+		Inno72Activity inno72Activity = inno72ActivityMapper.selectByPrimaryKey(inno72ActivityPlan.getActivityId());
+
+		Inno72Machine inno72Machine = inno72MachineMapper.selectByPrimaryKey(machineId);
+
+		Inno72Channel inno72Channel = inno72ChannelMapper.selectByPrimaryKey(channelId);
+
+		String orderNum = Inno72OrderNumGenUtil.genOrderNum(inno72Channel.getChannelCode(),
+				inno72Machine.getMachineCode());
+		LocalDateTime now = LocalDateTime.now();
+
+		boolean b = inno72GameService.countSuccOrderNologin(channelId, activityPlanId);
+
+		Integer rep = null;
+		if (product.getKey().equals(Inno72Order.INNO72ORDER_GOODSTYPE.PRODUCT.getKey())) {
+			rep = Inno72Order.INNO72ORDER_REPETITION.NOT.getKey();
+		} else {
+			rep = b ? Inno72Order.INNO72ORDER_REPETITION.NOT.getKey()
+					: Inno72Order.INNO72ORDER_REPETITION.REPETITION.getKey();
+		}
+
+		Inno72Order inno72Order = new Inno72Order();
+		inno72Order.setChannelId(channelId);
+		inno72Order.setGoodsStatus(Inno72Order.INNO72ORDER_GOODSSTATUS.WAIT.getKey());
+		inno72Order.setInno72ActivityId(inno72ActivityPlan.getActivityId());
+		inno72Order.setInno72ActivityPlanId(activityPlanId);
+		inno72Order.setMachineId(machineId);
+		inno72Order.setMerchantId(inno72Activity.getSellerId());
+		inno72Order.setOrderNum(orderNum);
+		inno72Order.setOrderPrice(BigDecimal.ZERO);
+		inno72Order.setOrderTime(now);
+		inno72Order.setOrderType(Inno72Order.INNO72ORDER_ORDERTYPE.DEFAULT.getKey());
+		inno72Order.setPayPrice(BigDecimal.ZERO);
+		inno72Order.setPayStatus(Inno72Order.INNO72ORDER_PAYSTATUS.SUCC.getKey());
+		inno72Order.setPayTime(LocalDateTime.now());
+		inno72Order.setRefOrderId(null);
+		inno72Order.setRefOrderStatus(null);
+		inno72Order.setGoodsType(product.getKey());
+		inno72Order.setRepetition(rep);
+
+		Inno72OrderGoods orderGoods = new Inno72OrderGoods();
+		if (product.getKey().equals(Inno72Order.INNO72ORDER_GOODSTYPE.PRODUCT.getKey())) {
+			Inno72Goods inno72Goods = inno72GoodsMapper.selectByCode(goodsId);
+			orderGoods.setGoodsCode(inno72Goods.getCode());
+			orderGoods.setGoodsId(inno72Goods.getId());
+			orderGoods.setGoodsName(inno72Goods.getName());
+			orderGoods.setGoodsPrice(inno72Goods.getPrice());
+
+			Inno72Shops inno72Shops = inno72ShopsMapper.selectByPrimaryKey(inno72Goods.getShopId());
+			inno72Order.setShopsId(inno72Shops.getId());
+			inno72Order.setShopsName(inno72Shops.getShopName());
+
+		} else {
+			Inno72Coupon inno72Coupon = inno72CouponMapper.selectByPrimaryKey(goodsId);
+			orderGoods.setGoodsCode(inno72Coupon.getCode());
+			orderGoods.setGoodsId(inno72Coupon.getId());
+			orderGoods.setGoodsName(inno72Coupon.getName());
+			orderGoods.setGoodsPrice(BigDecimal.ZERO);
+			Inno72Shops inno72Shops = inno72ShopsMapper.selectByPrimaryKey(inno72Coupon.getShopsId());
+			inno72Order.setShopsId(inno72Shops.getId());
+			inno72Order.setShopsName(inno72Shops.getShopName());
+		}
+
+		orderGoods.setOrderId(inno72Order.getId());
+		orderGoods.setOrderNum(inno72Order.getOrderNum());
+		orderGoods.setStatus(Inno72Order.INNO72ORDER_GOODSSTATUS.WAIT.getKey());
+		inno72OrderMapper.insert(inno72Order);
+		inno72OrderGoodsMapper.insert(orderGoods);
+
+		inno72OrderHistoryMapper.insert(new Inno72OrderHistory(inno72Order.getId(), inno72Order.getOrderNum(),
+				JSON.toJSONString(inno72Order), "初始化插入订单!"));
+
+		return rep == 0 ? rep + "" : inno72Order.getId();
+
+	}
+
 
 	/**
 	 * 下inno72订单，优惠券 or 商品
@@ -1908,6 +2182,17 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 
 	}
 
+
+	private String getActive() {
+		String active = System.getenv("spring_profiles_active");
+		LOGGER.info("获取spring_profiles_active：{}", active);
+		if (active == null || active.equals("")) {
+			LOGGER.info("未读取到spring_profiles_active的环境变量,使用默认值: dev");
+			active = "dev";
+		}
+		return active;
+	}
+	
 	@Override
 	public Result<String> setHeartbeat(String machineCode, String page, String planCode, String activity, String desc) {
 		LOGGER.info("setHeartbeat machineCode is {}, page is {}, planCode is {}, activity is {}, desc is {}",
