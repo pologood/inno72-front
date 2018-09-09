@@ -41,6 +41,30 @@ public class UserSessionVo {
 
 	private List<GoodsVo> goodsList;
 
+	/**
+	 * 是否登录 true 已登录 false 没登录
+	 */
+	private boolean logged;
+
+	/**
+	 * 商品编码
+	 */
+	private String goodsId;
+	/**
+	 * 商品编码
+	 */
+	private String goodsCode;
+
+	/**
+	 * 淘宝认证url
+	 */
+	private String authUrl;
+
+	/**
+	 * 是否需要支付
+	 */
+	private boolean needPay;
+
 	public UserSessionVo(String mid, String userNick, String userId, String access_token, String gameId,
 			String sessionUuid, String planId) {
 		super();
@@ -114,4 +138,11 @@ public class UserSessionVo {
 		return loginType;
 	}
 
+	public boolean getNeedPay() {
+		return needPay;
+	}
+
+	public void setNeedPay(boolean needPay) {
+		this.needPay = needPay;
+	}
 }

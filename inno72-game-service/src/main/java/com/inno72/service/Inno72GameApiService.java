@@ -13,11 +13,13 @@ public interface Inno72GameApiService {
 
 	Result<Object> order(MachineApiVo vo);
 
-	Result<Boolean> orderPolling(MachineApiVo vo);
+	Result<Object> orderPolling(MachineApiVo vo);
 
 	Result<Object> luckyDraw(MachineApiVo vo);
 
 	Result<Object> oneKeyOrder(MachineApiVo vo);
+
+	Result<Object> standardOrder(MachineApiVo vo);
 
 	Result<Object> oneKeyOrderNologin(MachineApiVo vo);
 
@@ -32,9 +34,9 @@ public interface Inno72GameApiService {
 
 	Result<Object> prepareLoginNologin(String machineCode);
 
-	Result<Object> prepareLoginQrCode(String machineId, int LoginType);
+	Result<Object> prepareLoginQrCode(String machineId, int LoginType, String ext);
 
-	String redirectLogin(StandardRedirectLoginReqVo req);
+	String redirectLogin(String sessionUuid);
 
 	Result<String> malfunctionLog(String machineId, String channelCode);
 

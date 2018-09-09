@@ -80,6 +80,85 @@ public class TopController {
 				propertiesBean.getSecret());
 	}
 
+
+	/**
+	 * 登录回调接口
+	 */
+	@RequestMapping("/api/top/{sessionUuid}/{env}")
+	public void home2(HttpServletResponse response,
+			@PathVariable("sessionUuid") String sessionUuid, String code, @PathVariable("env") String env)
+			throws Exception {
+		LOGGER.info("code is {}, sessionUuid is {}, env is {}", code, sessionUuid, env);
+		String playCode = "";
+		String data;
+		String qrStatus = "";
+		String sellerId = "";
+		if (!StringUtils.isEmpty(code) && !StringUtils.isEmpty(sessionUuid)) {
+
+			String authInfo = getAuthInfo(code);
+			LOGGER.debug("authInfo is {}", authInfo);
+
+			String tokenResult = FastJsonUtils.getString(authInfo, "token_result");
+			LOGGER.info("tokenResult is {}", tokenResult);
+
+			String taobaoUserId = FastJsonUtils.getString(tokenResult, "taobao_user_nick");
+			LOGGER.info("taobaoUserId is {}", taobaoUserId);
+
+			UserInfo userInfo = new UserInfo();
+			userInfo.setSessionUuid(sessionUuid);
+			userInfo.setAuthInfo(tokenResult);
+
+			// 设置用户信息
+			// data = setUserInfo(userInfo, env, null);
+
+			data = this.processBeforeLogged(userInfo, env);
+			LOGGER.info("processBeforeLogged result is {}", data);
+
+			String machineCode = "";
+			String goodsCode = "";
+			String isVip = "";
+			String sessionKey = "";
+
+			if (!StringUtils.isEmpty(data)) {
+				playCode = FastJsonUtils.getString(data, "playCode");
+				qrStatus = FastJsonUtils.getString(data, "qrStatus");
+				String sId = FastJsonUtils.getString(data, "sellerId");
+				machineCode = FastJsonUtils.getString(data, "machineCode");
+				goodsCode = FastJsonUtils.getString(data, "goodsCode");
+				isVip = FastJsonUtils.getString(data, "isVip");
+				sessionKey = FastJsonUtils.getString(data, "sessionKey");
+
+				if (!StringUtils.isEmpty(sId)) {
+					sellerId = sId.trim();
+				}
+			}
+
+			// todo gxg 判断是否入会
+			if (!StringUtils.isEmpty(isVip) && Integer.valueOf(isVip) == 1) {
+				LOGGER.info("派样活动逻辑");
+				// 派样活动逻辑
+				this.memberIdentity(machineCode, goodsCode, taobaoUserId, sessionKey);
+			} else {
+				// 正常逻辑
+				String logged = this.setLogged(sessionUuid, env);
+			}
+
+			LOGGER.info("data is {}", data);
+		}
+		try {
+			// String h5Url = this.getHostGameH5Url(env);
+			// 跳转到游戏页面 手机端redirect
+			LOGGER.info("h5MobileUrl is {} , playCode is {}, env is {}", h5MobileUrl, playCode, env);
+			String formatUrl = String.format(h5MobileUrl, env, playCode) + "?qrStatus=" + qrStatus + "&sellerId="
+					+ sellerId;
+			LOGGER.info("formatUrl is {}", formatUrl);
+			response.sendRedirect(formatUrl);
+		} catch (IOException e) {
+			LOGGER.error(e.getMessage(), e);
+		}
+	}
+
+
 	/**
 	 * 登录回调接口
 	 */
@@ -112,17 +191,32 @@ public class TopController {
 			userInfo.setToken(tokenResult);
 
 			// 设置用户信息
-			data = setUserInfo(userInfo, env, null);
-			LOGGER.info("data is {}", data);
+			// data = setUserInfo(userInfo, env, null);
+
+			data = this.processBeforeLogged(userInfo, env);
+
+			String activityType = "";
 
 			if (!StringUtils.isEmpty(data)) {
 				playCode = FastJsonUtils.getString(data, "playCode");
 				qrStatus = FastJsonUtils.getString(data, "qrStatus");
 				String sId = FastJsonUtils.getString(data, "sellerId");
+				activityType = FastJsonUtils.getString(data, "activityType");
 				if (!StringUtils.isEmpty(sId)) {
 					sellerId = sId.trim();
 				}
 			}
+
+			if (!StringUtils.isEmpty(activityType) && Integer.valueOf(activityType) == 1) {
+				// 派样活动逻辑
+				LOGGER.info("进入入会逻辑");
+			} else {
+				// 正常逻辑
+				LOGGER.info("进入正常逻辑");
+				String logged = this.setLogged(sessionUuid, env);
+			}
+
+			LOGGER.info("data is {}", data);
 		}
 		try {
 			// String h5Url = this.getHostGameH5Url(env);
@@ -135,6 +229,67 @@ public class TopController {
 		} catch (IOException e) {
 			LOGGER.error(e.getMessage(), e);
 		}
+	}
+
+	/**
+	 * 登录前处理
+	 * processBeforeLogged
+	 */
+	private String processBeforeLogged(UserInfo userInfo, String env) {
+		LOGGER.info("gameServerUrl is " + gameServerUrl);
+		RestTemplate client = new RestTemplate();
+		MultiValueMap<String, Object> postParameters = new LinkedMultiValueMap<>();
+		postParameters.add("sessionUuid", userInfo.getSessionUuid());
+		postParameters.add("authInfo", userInfo.getAuthInfo());
+		HttpHeaders headers = new HttpHeaders();
+		headers.add("Content-Type", "application/x-www-form-urlencoded");
+		String result;
+		try {
+			String gameserverUrl = propertiesBean.getValue(env + "HostGame");
+			LOGGER.info("gameserverUrl is {}", gameserverUrl);
+
+			HttpEntity<MultiValueMap<String, Object>> requestEntity = new HttpEntity<>(postParameters, headers);
+			result = client.postForObject(gameserverUrl + "/api/standard/processBeforeLogged/", requestEntity, String.class);
+			LOGGER.info("setUserInfo result is {} ", result);
+
+			String code = FastJsonUtils.getString(result, "code");
+			String data = FastJsonUtils.getString(result, "data");
+			LOGGER.info("code is {}, data is {}", code, data);
+			if (!StringUtils.isEmpty(code) && !StringUtils.isEmpty(data) && code.equals("0")) {
+				LOGGER.info("setUserInfo gameId is {} ", data);
+				return data;
+			}
+		} catch (Exception e) {
+			LOGGER.error(e.getMessage(), e);
+		}
+		return "";
+	}
+
+	/**
+	 * 登录前处理
+	 * processBeforeLogged
+	 */
+	private String setLogged(String sessionUuid, String env) {
+		LOGGER.info("setLogged sessionUuid is " + sessionUuid);
+		RestTemplate client = new RestTemplate();
+		MultiValueMap<String, Object> postParameters = new LinkedMultiValueMap<>();
+		postParameters.add("sessionUuid",sessionUuid);
+		HttpHeaders headers = new HttpHeaders();
+		headers.add("Content-Type", "application/x-www-form-urlencoded");
+		String result;
+		try {
+
+			String gameserverUrl = propertiesBean.getValue(env + "HostGame");
+			LOGGER.info("gameserverUrl ", gameserverUrl);
+
+			HttpEntity<MultiValueMap<String, Object>> requestEntity = new HttpEntity<>(postParameters, headers);
+			result = client.postForObject(gameserverUrl + "/api/standard/setLogged/", requestEntity, String.class);
+			LOGGER.info("setLogged result is {} ", result);
+
+		} catch (Exception e) {
+			LOGGER.error(e.getMessage(), e);
+		}
+		return "";
 	}
 
 	/**
@@ -260,7 +415,7 @@ public class TopController {
 		Validators.checkParamNotNull(accessToken, interactId, shopId, ua, umid);
 
 		TmallInteractIsvlotteryDrawRequest req = new TmallInteractIsvlotteryDrawRequest();
-		req.setAsac("1A18228U6DKEXP78A4PAT4"); // todo gxg 更换 appkey 后需确认
+		req.setAsac("1A18228U6DKEXP78A4PAT4");
 		req.setUa(ua);
 		req.setUmid(umid);
 		req.setInteractId(interactId);
@@ -523,17 +678,17 @@ public class TopController {
 	/**
 	 * 是否是会员
 	 */
-	private String memberIdentity(String mid, String itemId, String nickName, String sessionKey) {
+	private String memberIdentity(String machineCode, String itemId, String nickName, String sessionKey) {
 
-		LOGGER.info("mid is {}, itemId is {}, nickName is {}, sessionKey is {} ", mid, itemId, nickName, sessionKey);
+		LOGGER.info("machineCode is {}, itemId is {}, nickName is {}, sessionKey is {} ", machineCode, itemId, nickName, sessionKey);
 		CrmMemberIdentityGetRequest req = new CrmMemberIdentityGetRequest();
-		String extraInfo = "{\"source\":\"paiyangji\",\"deviceId\":\"" + mid + "\",\"itemId\":" + itemId + "}";
+		String extraInfo = "{\"source\":\"paiyangji\",\"deviceId\":\"" + machineCode + "\",\"itemId\":" + itemId + "}";
 		req.setExtraInfo(extraInfo);
 		req.setMixNick(Escape.unescape(nickName));
 		CrmMemberIdentityGetResponse rsp = null;
 		try {
 			rsp = samplinghClient.execute(req, sessionKey);
-			LOGGER.info("identityrsp is {}", rsp);
+			LOGGER.info("memberIdentity rsp is {}", rsp);
 		} catch (ApiException e) {
 			e.printStackTrace();
 		}

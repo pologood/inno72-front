@@ -6,6 +6,11 @@ public class StandardPrepareLoginReqVo {
 
 	private Integer loginType;
 
+	/**
+	 * 扩展字段，需要传递json格式数据
+	 */
+	private String ext;
+
 	public String getMachineCode() {
 		return machineCode;
 	}
@@ -22,5 +27,11 @@ public class StandardPrepareLoginReqVo {
 		this.loginType = loginType;
 	}
 
+	public String getExt() {
+		return ext;
+	}
 
+	public void setExt(String ext) {
+		this.ext = ext;
+	}
 }

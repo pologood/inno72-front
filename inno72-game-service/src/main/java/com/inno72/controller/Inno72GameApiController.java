@@ -83,7 +83,7 @@ public class Inno72GameApiController {
 	 * @return Result<Boolean>
 	 */
 	@RequestMapping(value = "/qroauth/order-polling", method = {RequestMethod.POST, RequestMethod.GET})
-	public Result<Boolean> orderPolling(MachineApiVo vo) {
+	public Result<Object> orderPolling(MachineApiVo vo) {
 		return inno72GameApiService.orderPolling(vo);
 	}
 

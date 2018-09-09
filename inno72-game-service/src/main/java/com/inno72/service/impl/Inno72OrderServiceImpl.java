@@ -87,7 +87,7 @@ public class Inno72OrderServiceImpl implements Inno72OrderService {
 			return Results.failure("登录失效!");
 		}
 
-		// todo gxg 通过排期id 查找活动属于什么类型 如果一般类型通过 report ，派样类型通过 itemid
+		// 通过排期id 查找活动属于什么类型 如果一般类型通过 report ，派样类型通过 itemid
 		List<Inno72ActivityPlanGameResult> planGameResults = this.getPlanGameResult(vo);
 
 		if (planGameResults.size() == 0) {
@@ -365,7 +365,6 @@ public class Inno72OrderServiceImpl implements Inno72OrderService {
 	private String genInno72Order(String channelId, String activityPlanId, String machineId, String goodsId,
 			String channelUserKey, Inno72Order.INNO72ORDER_GOODSTYPE product) {
 
-		// todo gxg inno72_game_user_channel ?
 		Map<String, String> paramsChannel = new HashMap<>();
 		paramsChannel.put("channelId", channelId);
 		paramsChannel.put("channelUserKey", channelUserKey);

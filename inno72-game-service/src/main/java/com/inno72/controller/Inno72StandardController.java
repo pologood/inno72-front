@@ -1,17 +1,14 @@
 package com.inno72.controller;
 
-import java.util.Map;
+import java.io.IOException;
 
 import javax.annotation.Resource;
+import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.ResponseBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import com.inno72.common.Result;
 import com.inno72.common.Results;
@@ -23,7 +20,6 @@ import com.inno72.service.Inno72MachineService;
 import com.inno72.vo.MachineApiVo;
 import com.inno72.vo.StandardOrderReqVo;
 import com.inno72.vo.StandardPrepareLoginReqVo;
-import com.inno72.vo.StandardRedirectLoginReqVo;
 import com.inno72.vo.StandardShipmentReqVo;
 import com.inno72.vo.UserSessionVo;
 
@@ -69,7 +65,7 @@ public class Inno72StandardController {
 
 		if (StandardLoginTypeEnum.ALIBABA.getValue().equals(req.getLoginType())) {
 
-			return inno72GameApiService.prepareLoginQrCode(req.getMachineCode(), req.getLoginType());
+			return inno72GameApiService.prepareLoginQrCode(req.getMachineCode(), req.getLoginType(), req.getExt());
 
 		} else {
 
@@ -79,16 +75,19 @@ public class Inno72StandardController {
 	}
 
 	@RequestMapping(value = "/redirectLogin", method = {RequestMethod.GET})
-	public String redirectLogin(StandardRedirectLoginReqVo req) {
-		return "redirect:" + inno72GameApiService.redirectLogin(req);
+	public void redirectLogin(String sessionUuid, HttpServletResponse response) {
+		try {
+			response.sendRedirect(inno72GameApiService.redirectLogin(sessionUuid));
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 	}
 
-
-/**
- * 下单（包括订单及优惠券）
- * @param req
- * @return
- */
+	/**
+	 * 下单（包括订单及优惠券）
+	 * @param req
+	 * @return
+	 */
 	@ResponseBody
 	@RequestMapping(value = "/order", method = {RequestMethod.POST})
 	public Result<Object> order(StandardOrderReqVo req) {
@@ -102,7 +101,7 @@ public class Inno72StandardController {
 			MachineApiVo vo = new MachineApiVo();
 			vo.setSessionUuid(req.getSessionUuid());
 			vo.setReport(req.getReport());
-			return inno72GameApiService.oneKeyOrder(vo);
+			return inno72GameApiService.standardOrder(vo);
 		} else {
 			MachineApiVo vo = new MachineApiVo();
 			vo.setSessionUuid(req.getSessionUuid());
@@ -131,16 +130,12 @@ public class Inno72StandardController {
 
 	/**
 	 * 获得活动信息
-	 * @param map
 	 * @return
 	 */
 	@ResponseBody
-	@RequestMapping(value = "/findGame", method = {RequestMethod.POST})
-	public Result findGame(@RequestBody Map<String, String> map) {
-		String mid = map.get("machineId");
-		String planId = map.get("planId");
-		String version = map.get("version");
-		String versionInno72 = map.get("versionInno72");
+	@RequestMapping(value = "/findActivity", method = {RequestMethod.POST})
+	public Result findActivity(@RequestParam(name = "machineId") String mid, String planId, String version,
+			String versionInno72) {
 		return inno72MachineService.findGame(mid, planId, version, versionInno72);
 	}
 
@@ -151,7 +146,7 @@ public class Inno72StandardController {
 	 */
 	@ResponseBody
 	@RequestMapping(value = "/sessionPolling", method = {RequestMethod.POST})
-	public Result<Object> sessionPolling(@RequestBody String sessionUuid) {
+	public Result<Object> sessionPolling(String sessionUuid) {
 		return inno72AuthInfoService.sessionPolling(sessionUuid);
 	}
 
@@ -162,8 +157,31 @@ public class Inno72StandardController {
 	 */
 	@ResponseBody
 	@RequestMapping(value = "/orderPolling", method = {RequestMethod.POST})
-	public Result<Boolean> orderPolling(@RequestBody MachineApiVo vo) {
+	public Result<Object> orderPolling(MachineApiVo vo) {
 		return inno72GameApiService.orderPolling(vo);
+	}
+
+	/**
+	 * 设置用户已登录
+	 */
+	@ResponseBody
+	@RequestMapping(value = "/setLogged", method = {RequestMethod.POST})
+	public Result<Boolean> setLogged (String sessionUuid) {
+		boolean b = inno72AuthInfoService.setLogged(sessionUuid);
+		if (!b) {
+			Results.failure("登录失败");
+		}
+		return Results.success();
+	}
+
+	/**
+	 * 登录前的操作（目前聚石塔回调）
+	 */
+	@ResponseBody
+	@RequestMapping(value = "/processBeforeLogged", method = {RequestMethod.POST})
+	public Result<Object> processBeforeLogged (String sessionUuid, String authInfo) {
+		Result<Object> result = inno72AuthInfoService.processBeforeLogged(sessionUuid, authInfo);
+		return Results.success(result);
 	}
 
 

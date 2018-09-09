@@ -11,6 +11,7 @@ public class UserInfo implements Serializable {
 	private String code;
 	private String userId;
 
+	private String authInfo;
 
 	public String getSessionUuid() {
 		return sessionUuid;
@@ -50,5 +51,13 @@ public class UserInfo implements Serializable {
 
 	public void setUserId(String userId) {
 		this.userId = userId;
+	}
+
+	public String getAuthInfo() {
+		return authInfo;
+	}
+
+	public void setAuthInfo(String authInfo) {
+		this.authInfo = authInfo;
 	}
 }
