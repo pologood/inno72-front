@@ -129,6 +129,7 @@ public class Inno72GameApiController {
 		return inno72GameApiService.sessionRedirect(sessionUuid, mid, token, code, userId, itemId);
 	}
 
+
 	/**
 	 *
 	 * @param sessionUuid 用户登录信息

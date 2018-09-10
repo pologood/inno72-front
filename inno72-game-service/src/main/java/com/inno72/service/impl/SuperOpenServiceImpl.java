@@ -91,8 +91,18 @@ public class SuperOpenServiceImpl implements SuperOpenService {
 		/** 出货后调用减货 (同时处理 成功及失败情况) */
 		SHIPMENT_REPORTV2("016", "shipmentReportV2", "/api/goods/shipmentReportV2", "出货", "1.0.0"),
 		/** 设置心跳 */
-		SET_HEARTBEAT("017", "setHeartbeat", "/api/setHeartbeat", "设置心跳", "1.0.0")
+		SET_HEARTBEAT("017", "setHeartbeat", "/api/setHeartbeat", "设置心跳", "1.0.0"),
 
+		
+		
+		STANDARD_PREPARELOGIN("100", "standardPrepareLogin", "/api/standard/prepareLogin", "预登陆", "1.0.0"),
+		
+		STANDARD_REDIRECTLOGIN("101", "standardRedirectLogin", "/api/standard/redirectLogin", "跳转登陆", "1.0.0"),
+		
+		STANDARD_ORDER("102", "standardOrder", "/api/standard/order", "下单", "1.0.0"),
+		
+		STANDARD_SHIPMENT("103", "standardShipment", "/api/standard/shipment", "出货", "1.0.0"),
+		
 		;
 
 		private String code;

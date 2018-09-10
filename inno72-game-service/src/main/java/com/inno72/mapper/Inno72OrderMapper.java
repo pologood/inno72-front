@@ -10,4 +10,7 @@ public interface Inno72OrderMapper extends Mapper<Inno72Order> {
 	Inno72Order selectByRefOrderId(String orderId);
 
 	List<Inno72Order> findGoodsStatusSucc(Map<String, String> orderParams);
+
+	Integer findGoodsStatusSuccWithoutUserId(Map<String, String> orderParams);
+
 }
