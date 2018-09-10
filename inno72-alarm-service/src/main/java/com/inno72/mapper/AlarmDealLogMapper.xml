@@ -17,7 +17,7 @@
             typeHandler="org.apache.ibatis.type.LocalDateTimeTypeHandler"/>
     <result column="create_time" jdbcType="TIMESTAMP" property="createTime" javaType="java.time.LocalDateTime"
             typeHandler="org.apache.ibatis.type.LocalDateTimeTypeHandler"/>
-    <result column="uodate_time" jdbcType="TIMESTAMP" property="uodateTime" javaType="java.time.LocalDateTime"
+    <result column="update_time" jdbcType="TIMESTAMP" property="updateTime" javaType="java.time.LocalDateTime"
             typeHandler="org.apache.ibatis.type.LocalDateTimeTypeHandler"/>
   </resultMap>
     <select id="queryForPage" parameterType="java.util.Map" resultType="java.util.Map">
