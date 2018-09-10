@@ -646,7 +646,7 @@ public class TeamServiceImpl implements TeamService {
         LOGGER.info("获取阵营排名teamCode={}",teamCode);
         Query query = new Query();
         query.addCriteria(Criteria.where("teamCode").is(teamCode))
-                .with(new Sort(new Sort.Order(Sort.Direction.ASC,"createTime"))).limit(5);
+                .with(new Sort(new Sort.Order(Sort.Direction.DESC,"score"),new Sort.Order(Sort.Direction.ASC,"createTime"))).limit(5);
         List<CampUserTeam> list = mongoUtil.find(query,CampUserTeam.class);
 
         List<TopNVo> retList = null;
