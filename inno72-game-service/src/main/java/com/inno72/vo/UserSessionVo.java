@@ -41,6 +41,8 @@ public class UserSessionVo {
 
 	private List<GoodsVo> goodsList;
 
+	private boolean logged;
+
 	public UserSessionVo(String mid, String userNick, String userId, String access_token, String gameId,
 			String sessionUuid, String planId) {
 		super();
