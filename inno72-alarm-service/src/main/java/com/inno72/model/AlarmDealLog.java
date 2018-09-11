@@ -48,10 +48,10 @@ public class AlarmDealLog {
 	@Convert(converter = LocalDateTimeConverter.class)
     private LocalDateTime createTime;
 
-    @Column(name = "uodate_time")
+    @Column(name = "update_time")
 	@JsonSerialize(using = CustomLocalDateTimeSerializer.class)
 	@Convert(converter = LocalDateTimeConverter.class)
-    private LocalDateTime uodateTime;
+    private LocalDateTime updateTime;
 
     private AlarmRule alarmRule;
 
@@ -127,12 +127,12 @@ public class AlarmDealLog {
 		this.createTime = createTime;
 	}
 
-	public LocalDateTime getUodateTime() {
-		return uodateTime;
+	public LocalDateTime getUpdateTime() {
+		return updateTime;
 	}
 
-	public void setUodateTime(LocalDateTime uodateTime) {
-		this.uodateTime = uodateTime;
+	public void setUpdateTime(LocalDateTime updateTime) {
+		this.updateTime = updateTime;
 	}
 
 	public AlarmRule getAlarmRule() {

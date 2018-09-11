@@ -7,6 +7,8 @@ public class FeedbackCash {
 	private String phone;
 
 	private String sessionUuid;
+	
+	private UserSessionVo sessionInfo;
 
 	public Boolean getIsCompleted() {
 		return isCompleted;
@@ -31,6 +33,16 @@ public class FeedbackCash {
 	public void setSessionUuid(String sessionUuid) {
 		this.sessionUuid = sessionUuid;
 	}
+
+	public UserSessionVo getSessionInfo() {
+		return sessionInfo;
+	}
+
+	public void setSessionInfo(UserSessionVo sessionInfo) {
+		this.sessionInfo = sessionInfo;
+	}
+	
+	
 
 
 }

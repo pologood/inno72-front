@@ -4,6 +4,12 @@ import java.util.List;
 
 import javax.annotation.Resource;
 
+import com.inno72.common.Results;
+import com.inno72.common.json.JsonUtil;
+import com.inno72.common.util.GameSessionRedisUtil;
+import com.inno72.vo.UserSessionVo;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
@@ -17,8 +23,13 @@ import com.inno72.vo.MachineApiVo;
 @RequestMapping(value = "api")
 public class Inno72GameApiController {
 
+	private static final Logger LOGGER = LoggerFactory.getLogger(Inno72GameApiController.class);
+
 	@Resource
 	private Inno72GameApiService inno72GameApiService;
+
+	@Resource
+	private GameSessionRedisUtil gameSessionRedisUtil;
 
 	/**
 	 *
@@ -129,6 +140,22 @@ public class Inno72GameApiController {
 		return inno72GameApiService.sessionRedirect(sessionUuid, mid, token, code, userId, itemId);
 	}
 
+	/**
+	 * 设置用户已为已登录
+	 * @param sessionUuid
+	 * @return
+	 */
+	@RequestMapping(value = "/setUserLogged", method = {RequestMethod.POST, RequestMethod.GET})
+	public Result<String> setUserLogged(String sessionUuid) {
+		try {
+			UserSessionVo userSessionVo = gameSessionRedisUtil.getSessionKey(sessionUuid);
+			userSessionVo.setLogged(true);
+			gameSessionRedisUtil.setSessionEx(sessionUuid, JsonUtil.toJson(userSessionVo));
+		} catch (Exception e) {
+			LOGGER.error(e.getMessage(), e);
+		}
+		return Results.success();
+	}
 
 	/**
 	 *

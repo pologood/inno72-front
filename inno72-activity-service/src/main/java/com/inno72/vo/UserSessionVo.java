@@ -1,6 +1,7 @@
 package com.inno72.vo;
 
-import com.google.gson.Gson;
+import java.util.List;
+
 import lombok.Data;
 
 @Data
@@ -35,6 +36,12 @@ public class UserSessionVo {
 	private String activityId;
 	private String machineCode;
 	private boolean countGoods;
+
+	private int loginType = 0;
+
+	private List<GoodsVo> goodsList;
+
+	private boolean logged;
 
 	public UserSessionVo(String mid, String userNick, String userId, String access_token, String gameId,
 			String sessionUuid, String planId) {
@@ -101,14 +108,12 @@ public class UserSessionVo {
 		return countGoods;
 	}
 
-
-	public static void main(String[] args) {
-		Gson gson = new Gson();
-		UserSessionVo vo = new UserSessionVo();
-		vo.setAccessToken("62019158fe858e3b855e648ZZ07142ae9385aaa59d274a062516446");
-		vo.setUserId("123");
-		vo.setUserNick("恰同学少年344194911");
-		System.out.println(gson.toJson(vo));
-
+	public void setLoginType(int loginType) {
+		this.loginType = loginType;
 	}
+
+	public int getLoginType() {
+		return loginType;
+	}
+
 }

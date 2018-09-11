@@ -83,6 +83,44 @@ public class CommonServiceImpl implements CommonService {
 			return Results.failure("验证码仍然有效，请查收短信");
 		}
 	}
+	
+	
+	@Override
+	public Result<Object> sendSMSVerificationCodeWithTemplate(String phone, String code, String veriCode, String smsCode) {
+
+		String redisCode = template.opsForValue().get(veriCode + phone);
+		if (StringUtils.isEmpty(redisCode)) {
+
+			LOGGER.info("发送短信验证码phone={},code={},smsCode={}", phone, code, smsCode);
+			template.opsForValue().set(veriCode + phone, code, EXPIRE_TIME, TimeUnit.SECONDS);
+			Map<String, String> param = new HashMap<>();
+			param.put("code", code);
+			msgUtil.sendSMS(smsCode, param, phone, APPNAME);
+			return Results.success();
+
+		} else {
+			LOGGER.info("验证码仍然有效,有效时间为：{},phone={}", template.getExpire(veriCode + phone), phone);
+			return Results.failure("验证码仍然有效，请查收短信");
+		}
+	}
+	
+	
+	@Override
+	public boolean verificationCodeWithTemplate(String phone, String code, String veriCode) {
+
+		String redisCode = template.opsForValue().get(veriCode + phone);
+
+		LOGGER.info("校验验证码phone={},code={},redisCode={},veriCode={}", phone, code, redisCode, veriCode);
+		if (StringUtils.isEmpty(phone) || StringUtils.isEmpty(code)) {
+			LOGGER.error("参数错误");
+			return false;
+		}
+		if (code.equalsIgnoreCase(redisCode)) {
+			return true;
+		} else {
+			return false;
+		}
+	}
 
 	@Override
 	public boolean verificationCode(String phone, String code) {

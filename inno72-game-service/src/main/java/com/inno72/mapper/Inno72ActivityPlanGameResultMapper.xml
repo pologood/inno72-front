@@ -41,6 +41,7 @@
             where i1.prize_type = 1
             and i1.activity_plan_id = #{platId}
             and i4.machine_id = #{machineId}
+            and i4.is_delete = 0
             group by i2.id
     </select>
     <select id="selectByParams" resultMap="BaseResultMap" parameterType="java.util.Map">

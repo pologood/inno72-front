@@ -27,12 +27,16 @@ import com.inno72.vo.XiaoPengReq;
 public class XiaoPengController {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(XiaoPengController.class);
-
+	
 	@Autowired
 	private CommonService commonService;
 
 	@Autowired
 	private XiaoPengService xiaoPengService;
+	
+	private final String SMS_CODE = "xpqc_validate_code";
+	
+	private String VERIFICATIONCODE_KEY = "verification:xiaopeng:";
 
 	@CrossOrigin(origins = "*", maxAge = 3600)
 	@ResponseBody
@@ -40,7 +44,7 @@ public class XiaoPengController {
 	public Result<Object> getVerificationCode(@RequestBody XiaoPengReq reqBean) {
 		String code = makeVerifiedCode();
 		try {
-			return commonService.sendSMSVerificationCode(reqBean.getPhone(), code);
+			return commonService.sendSMSVerificationCodeWithTemplate(reqBean.getPhone(), code, VERIFICATIONCODE_KEY, SMS_CODE);
 		} catch (Exception e) {
 			LOGGER.error(e.getMessage(), e);
 			return Results.failure("短信发送异常");
@@ -68,7 +72,7 @@ public class XiaoPengController {
 				return Results.warn("提交信息不完整", -2);
 			}
 			// 校验验证码
-			if (commonService.verificationCode(xiaoPeng.getPhone(), xiaoPeng.getCode())) {
+			if (commonService.verificationCodeWithTemplate(xiaoPeng.getPhone(), xiaoPeng.getCode(), VERIFICATIONCODE_KEY)) {
 				try {
 					xiaoPengService.save(xiaoPeng);
 

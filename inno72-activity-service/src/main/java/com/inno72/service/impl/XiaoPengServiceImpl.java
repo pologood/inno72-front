@@ -20,6 +20,7 @@ import com.inno72.common.BizException;
 import com.inno72.common.Inno72GameServiceProperties;
 import com.inno72.common.QrCodeUtil;
 import com.inno72.common.json.JsonUtil;
+import com.inno72.common.util.GameSessionRedisUtil;
 import com.inno72.mongo.MongoUtil;
 import com.inno72.oss.OSSUtil;
 import com.inno72.service.CommonService;
@@ -27,6 +28,7 @@ import com.inno72.service.XiaoPengService;
 import com.inno72.vo.FeedbackCash;
 import com.inno72.vo.Result;
 import com.inno72.vo.Results;
+import com.inno72.vo.UserSessionVo;
 import com.inno72.vo.XiaoPeng;
 
 import net.coobird.thumbnailator.Thumbnails;
@@ -41,6 +43,8 @@ public class XiaoPengServiceImpl implements XiaoPengService {
 	@Autowired
 	private CommonService commonService;
 
+	@Autowired
+	private GameSessionRedisUtil gameSessionRedisUtil;
 
 	@Resource
 	private Inno72GameServiceProperties inno72GameServiceProperties;
@@ -74,17 +78,20 @@ public class XiaoPengServiceImpl implements XiaoPengService {
 
 	@Override
 	public Result<Object> feedBackPolling(String sessionUuid) {
-
-		if (!commonService.isSessionExist(sessionUuid)) {
+		
+		UserSessionVo userSessionVo = gameSessionRedisUtil.getSessionKey(sessionUuid);
+		if (userSessionVo == null) {
 			LOGGER.info("会话不存在! sessionUuid=" + sessionUuid);
 			return Results.failure("会话不存在!");
 		}
 
 		FeedbackCash feedBackCash = commonService.getFeedBack(sessionUuid);
 		if (feedBackCash == null) {
-			LOGGER.info("反馈未完成! sessionUuid=" + sessionUuid);
-			return Results.failure("反馈未完成!");
+			feedBackCash = new FeedbackCash();
+			feedBackCash.setIsCompleted(false);
+			feedBackCash.setSessionUuid(sessionUuid);
 		}
+		feedBackCash.setSessionInfo(userSessionVo);
 
 		return Results.success(feedBackCash);
 	}
