@@ -12,6 +12,7 @@ import me.chanjar.weixin.mp.bean.result.WxMpUser;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
@@ -43,6 +44,8 @@ public class TeamServiceImpl implements TeamService {
     private StringRedisTemplate redisTemplate;
 
     private String TEAM_KEY_PRE = "team:";
+    @Value("${team.hitnum}")
+    private Integer hitNum;
 
     private Integer findTimesCode() {
         CampActivityTimes times = findCampActivityTimes();
@@ -531,7 +534,7 @@ public class TeamServiceImpl implements TeamService {
             Query query = new Query();
             query.addCriteria(Criteria.where("timesCode").is(timesCode)).addCriteria(Criteria.where("teamCode").is(teamCode))
             .with(new Sort(new Sort.Order(Sort.Direction.ASC,"createTime")))
-            .skip(1).limit(1);
+            .skip(hitNum-1).limit(1);
             CampUserTeam userTeam = mongoUtil.findOne(query,CampUserTeam.class);
             if(userTeam!=null&&userTeam.getId().equalsIgnoreCase(userTeamId)){
                 return true;
@@ -654,8 +657,10 @@ public class TeamServiceImpl implements TeamService {
      */
     private List<TopNVo> getTeamTopN(Integer teamCode) {
         LOGGER.info("获取阵营排名teamCode={}",teamCode);
+        Integer timesCode = findTimesCodeWithException();
         Query query = new Query();
         query.addCriteria(Criteria.where("teamCode").is(teamCode))
+                .addCriteria(Criteria.where("timesCode").is(timesCode))
                 .with(new Sort(new Sort.Order(Sort.Direction.DESC,"score"),new Sort.Order(Sort.Direction.ASC,"createTime"))).limit(5);
         List<CampUserTeam> list = mongoUtil.find(query,CampUserTeam.class);
 
