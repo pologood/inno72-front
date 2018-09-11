@@ -2231,8 +2231,9 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 			alarmUtil.saveAlarmDetail(alarmDetailBean);
 		} catch (Exception e) {
 			LOGGER.error(e.getMessage(), e);
+			return Results.failure("设置心跳失败");
 		}
 
-		return Results.failure("设置心跳失败");
+		return Results.success();
 	}
 }
