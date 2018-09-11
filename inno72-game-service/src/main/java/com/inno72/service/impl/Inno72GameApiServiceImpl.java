@@ -1605,10 +1605,13 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 			userSessionVo.setLogged(false);
 
 			// 如果是派样商品的话，goodsCode 先保存到缓存里
-			String goodsCode = FastJsonUtils.getString(ext, "goodsCode");
-			if (StringUtil.isNotEmpty(goodsCode)) {
-				userSessionVo.setGoodsCode(goodsCode);
+			if (StringUtil.isNotEmpty(ext)) {
+				String goodsCode = FastJsonUtils.getString(ext, "goodsCode");
+				if (StringUtil.isNotEmpty(goodsCode)) {
+					userSessionVo.setGoodsCode(goodsCode);
+				}
 			}
+
 			gameSessionRedisUtil.setSessionEx(sessionUuid, JsonUtil.toJson(userSessionVo));
 
 			map.put("qrCodeUrl", returnUrl);

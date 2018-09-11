@@ -85,29 +85,18 @@ public class Inno72StandardController {
 
 	/**
 	 * 下单（包括订单及优惠券）
-	 * @param req
 	 * @return
 	 */
 	@ResponseBody
 	@RequestMapping(value = "/order", method = {RequestMethod.POST})
-	public Result<Object> order(StandardOrderReqVo req) {
+	public Result<Object> order(MachineApiVo vo) {
 
-		UserSessionVo userSessionVo = gameSessionRedisUtil.getSessionKey(req.getSessionUuid());
+		UserSessionVo userSessionVo = gameSessionRedisUtil.getSessionKey(vo.getSessionUuid());
 		if (userSessionVo == null) {
-			return Results.failure("会话不存在!" + req.toString());
+			return Results.failure("会话不存在!" + vo.toString());
 		}
 
-		if (StandardLoginTypeEnum.ALIBABA.getValue().equals(userSessionVo.getLoginType())) {
-			MachineApiVo vo = new MachineApiVo();
-			vo.setSessionUuid(req.getSessionUuid());
-			vo.setReport(req.getReport());
-			return inno72GameApiService.standardOrder(vo);
-		} else {
-			MachineApiVo vo = new MachineApiVo();
-			vo.setSessionUuid(req.getSessionUuid());
-			vo.setReport(req.getReport());
-			return inno72GameApiService.oneKeyOrderNologin(vo);
-		}
+		return inno72GameApiService.standardOrder(vo);
 	}
 
 	/**
