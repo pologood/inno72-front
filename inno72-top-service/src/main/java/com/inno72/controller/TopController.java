@@ -191,32 +191,17 @@ public class TopController {
 			userInfo.setToken(tokenResult);
 
 			// 设置用户信息
-			// data = setUserInfo(userInfo, env, null);
-
-			data = this.processBeforeLogged(userInfo, env);
-
-			String activityType = "";
+			data = setUserInfo(userInfo, env, null);
+			LOGGER.info("data is {}", data);
 
 			if (!StringUtils.isEmpty(data)) {
 				playCode = FastJsonUtils.getString(data, "playCode");
 				qrStatus = FastJsonUtils.getString(data, "qrStatus");
 				String sId = FastJsonUtils.getString(data, "sellerId");
-				activityType = FastJsonUtils.getString(data, "activityType");
 				if (!StringUtils.isEmpty(sId)) {
 					sellerId = sId.trim();
 				}
 			}
-
-			if (!StringUtils.isEmpty(activityType) && Integer.valueOf(activityType) == 1) {
-				// 派样活动逻辑
-				LOGGER.info("进入入会逻辑");
-			} else {
-				// 正常逻辑
-				LOGGER.info("进入正常逻辑");
-				String logged = this.setLogged(sessionUuid, env);
-			}
-
-			LOGGER.info("data is {}", data);
 		}
 		try {
 			// String h5Url = this.getHostGameH5Url(env);
