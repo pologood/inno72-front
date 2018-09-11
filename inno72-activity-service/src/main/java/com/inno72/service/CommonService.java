@@ -24,4 +24,8 @@ public interface CommonService {
 	public void setFeedBackEx(String sessionUuid, String value);
 
 	public FeedbackCash getFeedBack(String sessionUuid);
+	
+	public Result<Object> sendSMSVerificationCodeWithTemplate(String phone, String code, String veriCode, String smsCode);
+	
+	public boolean verificationCodeWithTemplate(String phone, String code, String veriCode);
 }

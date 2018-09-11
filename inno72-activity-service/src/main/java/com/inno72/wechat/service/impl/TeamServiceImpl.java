@@ -205,6 +205,11 @@ public class TeamServiceImpl implements TeamService {
         }
         //没做过此任务插入任务记录表
         userTask = new CampUserTask();
+        if(userTeam.getTeamCode() == task.getTeamCode() && task.getType()== CampTask.TYPE_BIG){
+            userTask.setMainFlag(CampUserTask.MAINFLAG_MAIN);
+        }else{
+            userTask.setMainFlag(CampUserTask.MAINFLAG_NOT_MAIN);
+        }
         userTask.setCreateTime(new Date());
         userTask.setTaskId(tashId);
         userTask.setTimesCode(timesCode);
@@ -298,6 +303,11 @@ public class TeamServiceImpl implements TeamService {
         Integer timesCode = findTimesCodeWithException();
         CampUserTeam userTeam = findTeamUser(userId,timesCode);
         if(userTeam == null) return Results.failure("请先加入阵营");
+        Integer teamCode = userTeam.getTeamCode();
+
+        //校验是否做过主线任务
+        checkDownMainTask(userId,timesCode,teamCode);
+
         Integer score = userTeam.getScore();
         if(score == null) score=0;
         Integer size = userTeam.getAwardsSize();
@@ -328,6 +338,16 @@ public class TeamServiceImpl implements TeamService {
         log.setUserId(userId);
         mongoUtil.save(log);
         return Results.success(awardsSize);
+    }
+
+    private void checkDownMainTask(String userId, Integer timesCode, Integer teamCode) {
+        Query query = new Query();
+        query.addCriteria(Criteria.where("userId").is(userId))
+                .addCriteria(Criteria.where("timesCode").is(timesCode))
+                .addCriteria(Criteria.where("teamCode").is(teamCode))
+                .addCriteria(Criteria.where("mainFlag").is(CampUserTask.MAINFLAG_MAIN));
+        long count = mongoUtil.count(query,CampUserTask.class);
+        if(count == 0) throw new BizException("完成主线任务才能兑换积分");
     }
 
     @Override
@@ -646,7 +666,7 @@ public class TeamServiceImpl implements TeamService {
         LOGGER.info("获取阵营排名teamCode={}",teamCode);
         Query query = new Query();
         query.addCriteria(Criteria.where("teamCode").is(teamCode))
-                .with(new Sort(new Sort.Order(Sort.Direction.ASC,"createTime"))).limit(5);
+                .with(new Sort(new Sort.Order(Sort.Direction.DESC,"score"),new Sort.Order(Sort.Direction.ASC,"createTime"))).limit(5);
         List<CampUserTeam> list = mongoUtil.find(query,CampUserTeam.class);
 
         List<TopNVo> retList = null;

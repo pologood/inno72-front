@@ -17,6 +17,12 @@ public class CampUserTask implements Serializable {
     private String id;
 
     private String userId;
+    /**
+     * 是否主线任务
+     */
+    private Integer mainFlag;
+    public static Integer MAINFLAG_MAIN =1;
+    public static Integer MAINFLAG_NOT_MAIN =0;
 
     private String taskId;
     /**
@@ -79,5 +85,13 @@ public class CampUserTask implements Serializable {
 
     public void setTimesCode(Integer timesCode) {
         this.timesCode = timesCode;
+    }
+
+    public Integer getMainFlag() {
+        return mainFlag;
+    }
+
+    public void setMainFlag(Integer mainFlag) {
+        this.mainFlag = mainFlag;
     }
 }
