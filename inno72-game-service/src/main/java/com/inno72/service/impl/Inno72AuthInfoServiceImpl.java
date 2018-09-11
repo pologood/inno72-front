@@ -13,8 +13,8 @@ import com.google.gson.Gson;
 import com.inno72.common.util.*;
 import com.inno72.mapper.*;
 import com.inno72.model.*;
-import com.inno72.plugin.http.HttpClient;
 import com.inno72.service.Inno72GameService;
+import com.inno72.service.Inno72TopService;
 import com.inno72.vo.GoodsVo;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -80,7 +80,10 @@ public class Inno72AuthInfoServiceImpl implements Inno72AuthInfoService {
 	private Inno72ActivityShopsMapper inno72ActivityShopsMapper;
 	@Resource
 	private Inno72GoodsMapper inno72GoodsMapper;
+	@Resource
+	private Inno72TopService inno72TopService;
 
+	// todo gxg 使用枚举
 	private static final String QRSTATUS_NORMAL = "0"; // 二维码正常
 	private static final String QRSTATUS_INVALID = "-1"; // 二维码失效
 	private static final String QRSTATUS_EXIST_USER = "-2"; // 存在用户登录
@@ -121,27 +124,21 @@ public class Inno72AuthInfoServiceImpl implements Inno72AuthInfoService {
 				+ "&bluetoothAddAes=" + bluetoothAddAes + "&machineCode=" + machineCode;
 
 		LOGGER.info("二维码字符串 {} ", url);
+
 		// 二维码存储在本地的路径
 		String localUrl = _machineId + sessionUuid + ".png";
 
 		// 存储在阿里云上的文件名
 		String objectName = "qrcode/" + localUrl;
+
 		// 提供给前端用来调用二维码的地址
 		String returnUrl = inno72GameServiceProperties.get("returnUrl") + objectName;
 
 		try {
 			boolean result = QrCodeUtil.createQrCode(localUrl, url, 1800, "png");
 			if (result) {
-				// todo gxg 代码单独封装
-				File f = new File(localUrl);
-				if (f.exists()) {
-					// 压缩图片
-					Thumbnails.of(localUrl).scale(0.5f).outputQuality(0f).toFile(localUrl);
-					// 上传阿里云
-					OSSUtil.uploadLocalFile(localUrl, objectName);
-					// 删除本地文件
-					f.delete();
-				}
+
+				this.dealLocalQrCodeImg(localUrl, objectName);
 
 				// 设置二维码过期时间
 				gameSessionRedisUtil.setSessionEx(sessionUuid, "");
@@ -159,6 +156,25 @@ public class Inno72AuthInfoServiceImpl implements Inno72AuthInfoService {
 			LOGGER.error(e.getMessage(), e);
 		}
 		return Results.success(map);
+	}
+
+	/**
+	 * 处理本地生成二维码
+	 */
+	private void dealLocalQrCodeImg(String localUrl, String objectName) {
+		try {
+			File f = new File(localUrl);
+			if (f.exists()) {
+				// 压缩图片
+				Thumbnails.of(localUrl).scale(0.5f).outputQuality(0f).toFile(localUrl);
+				// 上传阿里云
+				OSSUtil.uploadLocalFile(localUrl, objectName);
+				// 删除本地文件
+				f.delete();
+			}
+		} catch (Exception e) {
+			LOGGER.error(e.getMessage(), e);
+		}
 	}
 
 	@Override
@@ -332,26 +348,7 @@ public class Inno72AuthInfoServiceImpl implements Inno72AuthInfoService {
 
 		Inno72Merchant inno72Merchant = inno72MerchantMapper.selectByPrimaryKey(sellerId);
 
-		// todo gxg 调用聚石塔接口单独抽出 getMaskUserNick
-		Map<String, String> requestForm = new HashMap<>();
-		requestForm.put("accessToken", accessToken);
-		requestForm.put("mid", inno72Machine.getMachineCode());
-		requestForm.put("sellerId", inno72Merchant.getMerchantCode());
-		requestForm.put("mixNick", userId); // 实际为taobao_user_nick
-		/*
-		 * <tmall_fans_automachine_getmaskusernick_response> <msg_code>200</msg_code>
-		 * <msg_info>用户不存在</msg_info>1dd77fc18f3a409196de23baedcf8ce1 <model>e****丫</model>
-		 * </tmall_fans_automachine_getmaskusernick_response>
-		 */
-		LOGGER.info("getMaskUserNick params is {}", JsonUtil.toJson(requestForm));
-		String respJson = HttpClient.form(jstUrl + "/api/top/getMaskUserNick", requestForm, null);
-		LOGGER.info("调用聚石塔接口  【请求nickName】返回 ===> {}", JSON.toJSONString(respJson));
-
-		if (StringUtil.isEmpty(respJson)) {
-			return Results.failure("请求用户名失败!");
-		}
-
-		String nickName = FastJsonUtils.getString(respJson, "model");
+		String nickName = inno72TopService.getMaskUserNick(sessionUuid, inno72Merchant.getMerchantCode());
 
 		String channelId = inno72Merchant.getChannelId();
 
@@ -492,9 +489,9 @@ public class Inno72AuthInfoServiceImpl implements Inno72AuthInfoService {
 			qrStatus = QRSTATUS_INVALID;
 			LOGGER.info("二维码已经过期");
 		} else {
-			// todo gxg 重新判断已经有用户操作
-			UserSessionVo sessionStr = gameSessionRedisUtil.getSessionKey(sessionUuid);
-			if (sessionStr != null) {
+			// 判断已经有用户操作
+			UserSessionVo userSessionVo = gameSessionRedisUtil.getSessionKey(sessionUuid);
+			if (userSessionVo.isLogged()) {
 				qrStatus = QRSTATUS_EXIST_USER;
 				LOGGER.info("已经有用户正在操作");
 			}

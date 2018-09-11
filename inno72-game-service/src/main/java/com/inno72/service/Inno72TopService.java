@@ -29,5 +29,13 @@ public interface Inno72TopService {
 	 */
 	Result lottory(String sessionUuid, String ua, String umid, String interactId, String shopId);
 
+	/**
+	 *
+	 * @param sessionUuid
+	 * @param sellerId 商户id
+	 * @return
+	 */
+	String getMaskUserNick(String sessionUuid, String sellerId);
+
 
 }

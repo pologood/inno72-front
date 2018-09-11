@@ -74,15 +74,6 @@ public class Inno72StandardController {
 		}
 	}
 
-	@RequestMapping(value = "/redirectLogin", method = {RequestMethod.GET})
-	public void redirectLogin(String sessionUuid, HttpServletResponse response) {
-		try {
-			response.sendRedirect(inno72GameApiService.redirectLogin(sessionUuid));
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-	}
-
 	/**
 	 * 下单（包括订单及优惠券）
 	 * @return
@@ -155,7 +146,7 @@ public class Inno72StandardController {
 	 */
 	@ResponseBody
 	@RequestMapping(value = "/setLogged", method = {RequestMethod.POST})
-	public Result<Boolean> setLogged (String sessionUuid) {
+	public Result<Boolean> setLogged(String sessionUuid) {
 		boolean b = inno72AuthInfoService.setLogged(sessionUuid);
 		if (!b) {
 			Results.failure("登录失败");
@@ -168,7 +159,7 @@ public class Inno72StandardController {
 	 */
 	@ResponseBody
 	@RequestMapping(value = "/processBeforeLogged", method = {RequestMethod.POST})
-	public Result<Object> processBeforeLogged (String sessionUuid, String authInfo) {
+	public Result<Object> processBeforeLogged(String sessionUuid, String authInfo) {
 		Result<Object> result = inno72AuthInfoService.processBeforeLogged(sessionUuid, authInfo);
 		return Results.success(result);
 	}

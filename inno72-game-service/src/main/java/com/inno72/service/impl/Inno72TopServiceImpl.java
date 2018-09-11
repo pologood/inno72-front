@@ -5,6 +5,7 @@ import com.inno72.common.Inno72GameServiceProperties;
 import com.inno72.common.Result;
 import com.inno72.common.Results;
 import com.inno72.common.json.JsonUtil;
+import com.inno72.common.util.FastJsonUtils;
 import com.inno72.common.util.GameSessionRedisUtil;
 import com.inno72.common.utils.StringUtil;
 import com.inno72.plugin.http.HttpClient;
@@ -76,6 +77,33 @@ public class Inno72TopServiceImpl implements Inno72TopService {
 			return Results.failure("聚石塔无返回数据!");
 		}
 		return Results.success(respJson);
+	}
+
+	@Override
+	public String getMaskUserNick(String sessionUuid, String sellerId) {
+		LOGGER.info("getMaskUserNick params sessionUuid is {}, sellerId is {}", sessionUuid, sellerId);
+		String nickName = "";
+		String respJson = "";
+		String jstUrl = inno72GameServiceProperties.get("jstUrl");
+		UserSessionVo sessionVo = gameSessionRedisUtil.getSessionKey(sessionUuid);
+		Map<String, String> requestForm = new HashMap<>();
+		requestForm.put("accessToken", sessionVo.getAccessToken());
+		requestForm.put("mid", sessionVo.getMachineCode());
+		requestForm.put("sellerId", sellerId);
+		requestForm.put("mixNick", sessionVo.getUserId()); // 实际为taobao_user_nick
+
+		try {
+			LOGGER.info("getMaskUserNick params is {}", JsonUtil.toJson(requestForm));
+			respJson = HttpClient.form(jstUrl + "/api/top/getMaskUserNick", requestForm, null);
+			LOGGER.info("调用聚石塔接口 getMaskUserNick 返回 {}", JSON.toJSONString(respJson));
+		} catch (Exception e) {
+			LOGGER.error(e.getMessage(), e);
+		}
+
+		if (StringUtil.isNotEmpty(respJson)) {
+			nickName = FastJsonUtils.getString(respJson, "model");
+		}
+		return nickName;
 	}
 
 	private void addLog(String sessionUuid, LogReqrest reqrest) {

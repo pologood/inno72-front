@@ -85,7 +85,7 @@ public class TopController {
 	 * 登录回调接口
 	 */
 	@RequestMapping("/api/top/{sessionUuid}/{env}")
-	public void home2(HttpServletResponse response,
+	public void topIndex(HttpServletResponse response,
 			@PathVariable("sessionUuid") String sessionUuid, String code, @PathVariable("env") String env)
 			throws Exception {
 		LOGGER.info("code is {}, sessionUuid is {}, env is {}", code, sessionUuid, env);
@@ -107,9 +107,6 @@ public class TopController {
 			UserInfo userInfo = new UserInfo();
 			userInfo.setSessionUuid(sessionUuid);
 			userInfo.setAuthInfo(tokenResult);
-
-			// 设置用户信息
-			// data = setUserInfo(userInfo, env, null);
 
 			data = this.processBeforeLogged(userInfo, env);
 			LOGGER.info("processBeforeLogged result is {}", data);
@@ -137,7 +134,37 @@ public class TopController {
 			if (!StringUtils.isEmpty(isVip) && Integer.valueOf(isVip) == 1) {
 				LOGGER.info("派样活动逻辑");
 				// 派样活动逻辑
-				this.memberIdentity(machineCode, goodsCode, taobaoUserId, sessionKey);
+				String identityResBody = this.memberIdentity(machineCode, goodsCode, taobaoUserId, sessionKey);
+
+				LOGGER.info("identityResBody is {}", identityResBody);
+				String grade_name = FastJsonUtils.getString(identityResBody, "grade_name");
+				LOGGER.info("grade_name is {}", grade_name);
+
+				String formatUrl = String.format(h5MobileUrl, env, playCode) + "?qrStatus=" + qrStatus + "&sellerId=" + sellerId;
+
+				LOGGER.info("formatUrl is {}", formatUrl);
+				if (grade_name == null || "".equals(grade_name)) {
+
+					String meberJoinCallBackUrl = jstUrl + "/api/meberJoinCallBack/" + sessionUuid + "/" + env + "/" + playCode + "/"
+									+ qrStatus + "/" + sellerId;
+					LOGGER.info("meberJoinCallBackUrl is {}", meberJoinCallBackUrl);
+
+//					// 如果不是会员做入会操作
+//					String memberJoinResBody = memberJoin(mid, code, sessionUuid, env, itemId, isVip, sessionKey,
+//							meberJoinCallBackUrl);
+//					LOGGER.info("memberJoinResBody is {}", memberJoinResBody);
+//					String resultUrl = FastJsonUtils.getString(memberJoinResBody, "result");
+//					LOGGER.info("resultUrl is {}", resultUrl);
+//					response.sendRedirect("http:" + resultUrl);
+
+				} else {
+					// 设置用户已登录
+					boolean logged = this.setUserLogged(sessionUuid, env);
+					LOGGER.info("logged is {}", logged);
+					// 是会员直接跳转h5页面
+					response.sendRedirect(formatUrl);
+				}
+
 			} else {
 				// 正常逻辑
 				String logged = this.setLogged(sessionUuid, env);

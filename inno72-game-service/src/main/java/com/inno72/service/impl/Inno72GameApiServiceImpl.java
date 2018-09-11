@@ -1812,7 +1812,6 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 				qrStatus = QRSTATUS_INVALID;
 				LOGGER.info("二维码已经过期");
 			} else {
-				// todo gxg 重新判断已经有用户操作
 				UserSessionVo sessionStr = gameSessionRedisUtil.getSessionKey(sessionUuid);
 				if (sessionStr != null) {
 					qrStatus = QRSTATUS_EXIST_USER;

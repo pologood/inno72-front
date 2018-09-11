@@ -104,13 +104,16 @@ public class SuperOpenServiceImpl implements SuperOpenService {
 		STANDARD_SHIPMENT("103", "standardShipment", "/api/standard/shipment", "出货", "1.0.0"),
 
 		/** 获取登录信息 */
-		SESSION_POLLING_TANDARD("104", "sessionPolling", "/api/standard/sessionPolling", "获取登录信息", "1.0.0"),
+		SESSION_POLLING_TANDARD("104", "standardSessionPolling", "/api/standard/sessionPolling", "获取登录信息", "1.0.0"),
 
 		/** 标准下单接口 */
 		ORDER_STANDARD("105", "standardOrder", "/api/standard/order", "标准下单接口", "1.0.0"),
 
 		/** 标准订单polling接口 */
 		ORDER_POLLING_STANDARD("106", "standardOrderPolling", "/api/standard/orderPolling", "标准订单polling接口", "1.0.0"),
+
+		/** 标准查找活动接口 */
+		FINDACTIVITY_STANDARD("107", "standardFindActivity", "/api/standard/findActivity", "标准订单polling接口", "1.0.0"),
 
 		;
 
