@@ -654,8 +654,10 @@ public class TeamServiceImpl implements TeamService {
      */
     private List<TopNVo> getTeamTopN(Integer teamCode) {
         LOGGER.info("获取阵营排名teamCode={}",teamCode);
+        Integer timesCode = findTimesCodeWithException();
         Query query = new Query();
         query.addCriteria(Criteria.where("teamCode").is(teamCode))
+                .addCriteria(Criteria.where("timesCode").is(timesCode))
                 .with(new Sort(new Sort.Order(Sort.Direction.DESC,"score"),new Sort.Order(Sort.Direction.ASC,"createTime"))).limit(5);
         List<CampUserTeam> list = mongoUtil.find(query,CampUserTeam.class);
 
