@@ -227,22 +227,12 @@ public class TeamServiceImpl implements TeamService {
         if(teamCode == userTeam.getTeamCode()){
             //同种族任务
             if(type == CampTask.TYPE_BIG){
-                multScore = CampTask.SCORE_BIG*2;
                 //同种族的大展位可以抽奖
                 ifCanQuick = true;
-            }else if(type == CampTask.TYPE_MID){
-                multScore = CampTask.SCORE_MID*2;
-            }else if(type == CampTask.TYPE_LITTLE){
-                multScore = CampTask.SCORE_LITTLE*2;
             }
+            multScore = score*2;
         }else{
-            if(type == CampTask.TYPE_BIG){
-                multScore = CampTask.SCORE_BIG;
-            }else if(type == CampTask.TYPE_MID){
-                multScore = CampTask.SCORE_MID;
-            }else if(type == CampTask.TYPE_LITTLE){
-                multScore = CampTask.SCORE_LITTLE;
-            }
+            multScore = score;
         }
 
         //更新个人分数
