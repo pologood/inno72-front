@@ -26,9 +26,9 @@ public class CampTask implements Serializable {
      * 任务分数
      */
     private Integer score;
-    public static Integer SCORE_BIG = 85;
-    public static Integer SCORE_MID = 50;
-    public static Integer SCORE_LITTLE = 20;
+//    public static Integer SCORE_BIG = 85;
+//    public static Integer SCORE_MID = 50;
+//    public static Integer SCORE_LITTLE = 20;
     /**
      * 任务所属阵营
      */
