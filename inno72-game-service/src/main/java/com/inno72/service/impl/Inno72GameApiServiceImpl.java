@@ -1973,10 +1973,10 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 			inno72Order.setShopsName(inno72Shops.getShopName());
 		}
 
-		orderGoods.setOrderId(inno72Order.getId());
 		orderGoods.setOrderNum(inno72Order.getOrderNum());
 		orderGoods.setStatus(Inno72Order.INNO72ORDER_GOODSSTATUS.WAIT.getKey());
 		inno72OrderMapper.insert(inno72Order);
+		orderGoods.setOrderId(inno72Order.getId());
 		inno72OrderGoodsMapper.insert(orderGoods);
 
 		inno72OrderHistoryMapper.insert(new Inno72OrderHistory(inno72Order.getId(), inno72Order.getOrderNum(),
