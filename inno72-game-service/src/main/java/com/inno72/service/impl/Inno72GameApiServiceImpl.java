@@ -343,6 +343,11 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 			return Results.failure("请求失败");
 		}
 
+//		Result orderPollingResult = inno72TopService.orderPolling(sessionUuid, orderId);
+//		if (orderPollingResult.getCode() == Result.FAILURE) {
+//			return Results.failure(orderPollingResult.getMsg());
+//		}
+
 		// todo gxg 统一维护到聚石塔服务 order-polling
 		String accessToken = userSessionVo.getAccessToken();
 		Map<String, String> requestForm = new HashMap<>();
@@ -1705,6 +1710,9 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 		}
 		String channelId = inno72Merchant.getChannelId();
 
+		// 保存用户游戏渠道 信息
+		this.saveGameUserChannel(sessionUuid, channelId);
+
 		Map<String, String> params = new HashMap<>(2);
 		params.put("platId", inno72ActivityPlan.getId());
 		params.put("machineId", inno72Machine.getId());
@@ -1727,6 +1735,7 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 				inno72ActivityPlan.getId());
 
 		boolean canOrder = inno72GameService.countSuccOrderNologin(channelId, inno72ActivityPlan.getId());
+		sessionVo.setUserId(sessionUuid); // 非第三方用户 使用 sessionUuid 作为userid
 		sessionVo.setCanOrder(canOrder);
 		sessionVo.setCountGoods(goodsCount);
 		sessionVo.setChannelId(channelId);
@@ -1752,6 +1761,26 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 
 		return Results.success(resultMap);
 
+	}
+
+	/**
+	 * 保存用户游戏渠道 信息
+	 */
+	private void saveGameUserChannel(String sessionUuid, String channelId) {
+		Map<String, String> userChannelParams = new HashMap<>();
+		userChannelParams.put("channelId", channelId);
+		userChannelParams.put("channelUserKey", sessionUuid);
+		Inno72GameUserChannel userChannel = inno72GameUserChannelMapper.selectByChannelUserKey(userChannelParams);
+		Inno72Channel inno72Channel = inno72ChannelMapper.selectByPrimaryKey(channelId);
+		if (userChannel == null) {
+			Inno72GameUser inno72GameUser = new Inno72GameUser();
+			inno72GameUserMapper.insert(inno72GameUser);
+			LOGGER.info("插入游戏用户表 完成 ===> {}", JSON.toJSONString(inno72GameUser));
+			userChannel = new Inno72GameUserChannel(sessionUuid, "", channelId, inno72GameUser.getId(),
+					inno72Channel.getChannelName(), sessionUuid);
+			inno72GameUserChannelMapper.insert(userChannel);
+			LOGGER.info("插入游戏用户渠道表 完成 ===> {}", JSON.toJSONString(userChannel));
+		}
 	}
 
 	/**

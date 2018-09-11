@@ -106,6 +106,28 @@ public class Inno72TopServiceImpl implements Inno72TopService {
 		return nickName;
 	}
 
+	@Override
+	public Result<String> orderPolling(String sessionUuid, String orderId) {
+		String respJson = "";
+		String jstUrl = inno72GameServiceProperties.get("jstUrl");
+		UserSessionVo sessionVo = gameSessionRedisUtil.getSessionKey(sessionUuid);
+		String accessToken = sessionVo.getAccessToken();
+		Map<String, String> requestForm = new HashMap<>();
+
+		requestForm.put("accessToken", accessToken);
+		requestForm.put("orderId", orderId);
+		try {
+			respJson = HttpClient.form(jstUrl + "/api/top/order-polling", requestForm, null);
+		} catch (Exception e) {
+			LOGGER.error(e.getMessage(), e);
+			Results.failure("调用聚石塔order-polling出错");
+		}
+		if (StringUtil.isEmpty(respJson)) {
+			Results.failure("调用聚石塔order-polling返回内容为空");
+		}
+		return Results.success(respJson);
+	}
+
 	private void addLog(String sessionUuid, LogReqrest reqrest) {
 		LOGGER.info("addLog sessionUuid is {}, reqrest is {} ", sessionUuid, JsonUtil.toJson(reqrest));
 		UserSessionVo sessionVo = gameSessionRedisUtil.getSessionKey(sessionUuid);

@@ -30,12 +30,17 @@ public interface Inno72TopService {
 	Result lottory(String sessionUuid, String ua, String umid, String interactId, String shopId);
 
 	/**
-	 *
+	 * 获得脱敏名称
 	 * @param sessionUuid
 	 * @param sellerId 商户id
 	 * @return
 	 */
 	String getMaskUserNick(String sessionUuid, String sellerId);
 
+	/**
+	 * 订单polling
+	 * @return
+	 */
+	Result<String> orderPolling(String sessionUuid, String orderId);
 
 }
