@@ -1564,9 +1564,13 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 		// 获取运行环境
 		String env = getActive();
 
+//		String url = String.format(
+//				"%s?sessionUuid=%s&bluetoothAddAes=%s&machineCode=%s",
+//				inno72GameServiceProperties.get("returnUrl"), sessionUuid, _machineId, sessionUuid, env, bluetoothAddAes, machineCode);
+
 		String url = String.format(
-				"%s?sessionUuid=%s&bluetoothAddAes=%s&machineCode=%s",
-				inno72GameServiceProperties.get("returnUrl"), sessionUuid, _machineId, sessionUuid, env, bluetoothAddAes, machineCode);
+				"%s/%s?bluetoothAddAes=%s&machineCode=%s",
+				inno72GameServiceProperties.get("tmallUrl"), sessionUuid, env, bluetoothAddAes, machineCode);
 
 		LOGGER.info("二维码访问 url is {} ", url);
 
@@ -1595,7 +1599,7 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 			LOGGER.info("taobaoAuthUrl is {}", taobaoAuthUrl);
 
 			UserSessionVo userSessionVo = new UserSessionVo();
-			userSessionVo.setAuthUrl(taobaoAuthUrl);
+			// userSessionVo.setAuthUrl(taobaoAuthUrl);
 			userSessionVo.setMachineCode(inno72Machine.getMachineCode());
 			userSessionVo.setMachineId(inno72Machine.getId());
 			userSessionVo.setLogged(false);
