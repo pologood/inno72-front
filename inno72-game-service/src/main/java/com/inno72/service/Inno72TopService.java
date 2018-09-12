@@ -32,10 +32,12 @@ public interface Inno72TopService {
 	/**
 	 * 获得脱敏名称
 	 * @param sessionUuid
-	 * @param sellerId 商户id
+	 * @param accessToken
+	 * @param sellerId
+	 * @param mixNick
 	 * @return
 	 */
-	String getMaskUserNick(String sessionUuid, String sellerId);
+	String getMaskUserNick(String sessionUuid, String accessToken, String sellerId, String mixNick);
 
 	/**
 	 * 订单polling

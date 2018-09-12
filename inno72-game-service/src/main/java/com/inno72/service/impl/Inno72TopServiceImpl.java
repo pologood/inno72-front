@@ -80,17 +80,17 @@ public class Inno72TopServiceImpl implements Inno72TopService {
 	}
 
 	@Override
-	public String getMaskUserNick(String sessionUuid, String sellerId) {
+	public String getMaskUserNick(String sessionUuid, String accessToken, String sellerId, String mixNick) {
 		LOGGER.info("getMaskUserNick params sessionUuid is {}, sellerId is {}", sessionUuid, sellerId);
 		String nickName = "";
 		String respJson = "";
 		String jstUrl = inno72GameServiceProperties.get("jstUrl");
 		UserSessionVo sessionVo = gameSessionRedisUtil.getSessionKey(sessionUuid);
 		Map<String, String> requestForm = new HashMap<>();
-		requestForm.put("accessToken", sessionVo.getAccessToken());
+		requestForm.put("accessToken", accessToken);
 		requestForm.put("mid", sessionVo.getMachineCode());
 		requestForm.put("sellerId", sellerId);
-		requestForm.put("mixNick", sessionVo.getUserId()); // 实际为taobao_user_nick
+		requestForm.put("mixNick", mixNick); // 实际为taobao_user_nick
 
 		try {
 			LOGGER.info("getMaskUserNick params is {}", JsonUtil.toJson(requestForm));
