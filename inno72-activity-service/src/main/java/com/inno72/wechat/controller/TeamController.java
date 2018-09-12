@@ -262,7 +262,7 @@ public class TeamController {
     }
 
     /**
-     * 第三方获取用户积分信息
+     * 第三方获取用户积分信息 //test
      * @param userId
      * @return
      */
