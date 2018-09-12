@@ -678,6 +678,7 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 		int lotteryCode = 1;
 		boolean needPay = false;
 		String payQrcodeImage = "";
+		int orderCode = 1;
 
 		for (Inno72ActivityPlanGameResult result : planGameResults) {
 			String prizeType = result.getPrizeType();
@@ -692,6 +693,7 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 					}
 					String code = inno72Goods.getCode();
 					Result<Object> orderResult = this.sendOrder(userSessionVo, code);
+					orderCode = orderResult.getCode();
 					if (orderResult.getCode() == Result.SUCCESS) {
 						Map map = (Map)orderResult.getData();
 						needPay = (Boolean)map.get("needPay");
@@ -717,6 +719,8 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 
 		result.put("time", new Date().getTime());
 		result.put("lotteryResult", lotteryCode);
+		result.put("orderResult", orderCode);
+
 		result.put("needPay", needPay);
 		result.put("payQrcodeImage", payQrcodeImage);
 
@@ -1222,6 +1226,8 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 					needPay = true;
 					payQrcodeImage = _payQrcodeImage;
 				}
+			} else {
+				return Results.failure("淘宝下单失败！");
 			}
 
 			ref_order_id = FastJsonUtils.getString(respJson, "order_id");
