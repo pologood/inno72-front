@@ -4,13 +4,12 @@ import com.inno72.common.BizException;
 import com.inno72.service.ZhiLianService;
 import com.inno72.vo.Result;
 import com.inno72.vo.Results;
+import com.inno72.vo.ZhiLianUser;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.ResponseBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.http.MediaType;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/zhilian")
@@ -39,11 +38,11 @@ public class ZhiLianController {
 
 
     @ResponseBody
-    @RequestMapping(value = "/getUserId", method = {RequestMethod.POST})
-    public Result<Object> getUserId(String code) {
+    @RequestMapping(value = "/getUserId", method = {RequestMethod.POST},produces = MediaType.APPLICATION_JSON_VALUE)
+    public Result<Object> getUserId(@RequestBody ZhiLianUser user) {
         Result result = null;
         try {
-            return service.getUserId(code);
+            return service.getUserId(user.getCode());
         } catch (BizException e){
             LOGGER.error(e.getMessage(),e);
             result = Results.failure(e.getMessage());
@@ -55,11 +54,11 @@ public class ZhiLianController {
     }
 
     @ResponseBody
-    @RequestMapping(value = "/finish", method = {RequestMethod.POST})
-    public Result<Object> finish(String userId) {
+    @RequestMapping(value = "/finish", method = {RequestMethod.POST},produces = MediaType.APPLICATION_JSON_VALUE)
+    public Result<Object> finish(@RequestBody ZhiLianUser user) {
         Result result = null;
         try {
-            return service.finish(userId);
+            return service.finish(user.getUserId());
         } catch (BizException e){
             LOGGER.error(e.getMessage(),e);
             result = Results.failure(e.getMessage());
