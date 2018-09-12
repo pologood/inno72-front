@@ -348,7 +348,7 @@ public class Inno72AuthInfoServiceImpl implements Inno72AuthInfoService {
 
 		Inno72Merchant inno72Merchant = inno72MerchantMapper.selectByPrimaryKey(sellerId);
 
-		String nickName = inno72TopService.getMaskUserNick(sessionUuid, inno72Merchant.getMerchantCode());
+		String nickName = inno72TopService.getMaskUserNick(sessionUuid, accessToken, sellerId, userId);
 
 		String channelId = inno72Merchant.getChannelId();
 
