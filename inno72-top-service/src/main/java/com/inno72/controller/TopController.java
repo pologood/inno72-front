@@ -1,6 +1,8 @@
 package com.inno72.controller;
 
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
+import java.net.URLDecoder;
 import java.text.MessageFormat;
 
 import javax.annotation.PostConstruct;
@@ -23,7 +25,6 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.client.RestTemplate;
 
 import com.alibaba.fastjson.JSON;
-import com.inno72.util.Escape;
 import com.inno72.util.FastJsonUtils;
 import com.inno72.validator.Validators;
 import com.inno72.vo.FansActVo;
@@ -763,7 +764,8 @@ public class TopController {
 		CrmMemberIdentityGetRequest req = new CrmMemberIdentityGetRequest();
 		String extraInfo = "{\"source\":\"paiyangji\",\"deviceId\":\"" + machineCode + "\",\"itemId\":" + itemId + "}";
 		req.setExtraInfo(extraInfo);
-		req.setMixNick(Escape.unescape(nickName));
+		// nickName 需要转义
+		req.setMixNick(this.unescape(nickName));
 		CrmMemberIdentityGetResponse rsp = null;
 		try {
 			rsp = samplinghClient.execute(req, sessionKey);
@@ -772,5 +774,16 @@ public class TopController {
 			e.printStackTrace();
 		}
 		return rsp.getBody();
+	}
+
+	private String unescape(String escapeStr) {
+		String decode = "";
+		try {
+			decode = URLDecoder.decode(escapeStr, "UTF-8");
+		} catch (UnsupportedEncodingException e) {
+			e.printStackTrace();
+		}
+		LOGGER.info("unescape is {}", decode);
+		return decode;
 	}
 }

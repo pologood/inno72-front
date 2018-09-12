@@ -680,6 +680,11 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 		String payQrcodeImage = "";
 		int orderCode = 1;
 
+//		boolean hasGoods = checkHasGoods(planGameResults, userSessionVo.getMachineId());
+//		if (!hasGoods) {
+//			return Results.failure("货道可用商品数量为0！");
+//		}
+
 		for (Inno72ActivityPlanGameResult result : planGameResults) {
 			String prizeType = result.getPrizeType();
 			switch (prizeType) {
@@ -726,6 +731,44 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 
 		LOGGER.info("standardOrder is {}", JsonUtil.toJson(result));
 		return Results.success(result);
+	}
+
+	/**
+	 * 判断是否有货
+	 * @return
+	 */
+	private boolean checkHasGoods(List<Inno72ActivityPlanGameResult> planGameResults, String machineId) {
+		boolean hasGoods = false;
+		int goodsCount = 0;
+		for (Inno72ActivityPlanGameResult planGameResult : planGameResults) {
+			String prizeType = planGameResult.getPrizeType();
+			if (prizeType.equals("2")) {
+				continue;
+			}
+			String prizeId = planGameResult.getPrizeId();
+
+			Map<String, String> channelParam = new HashMap<String, String>();
+			channelParam.put("goodId", prizeId);
+			channelParam.put("machineId", machineId);
+			List<Inno72SupplyChannel> inno72SupplyChannels = inno72SupplyChannelMapper.selectByGoodsId(channelParam);
+
+			if (inno72SupplyChannels.size() == 0) {
+				break;
+			}
+
+			for (Inno72SupplyChannel inno72SupplyChannel : inno72SupplyChannels) {
+				Integer isDelete = inno72SupplyChannel.getIsDelete();
+				if (isDelete == 1) {
+					continue;
+				} else if (isDelete == 0) {
+					goodsCount += inno72SupplyChannel.getGoodsCount();
+				}
+			}
+		}
+		if (goodsCount > 0) {
+			hasGoods = true;
+		}
+		return hasGoods;
 	}
 
 	/**
