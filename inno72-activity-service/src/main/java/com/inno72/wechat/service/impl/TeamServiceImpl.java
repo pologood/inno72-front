@@ -208,7 +208,7 @@ public class TeamServiceImpl implements TeamService {
         }
         //没做过此任务插入任务记录表
         userTask = new CampUserTask();
-        if(userTeam.getTeamCode() == task.getTeamCode() && task.getType()== CampTask.TYPE_BIG){
+        if(userTeam.getTeamCode() == task.getTeamCode() && (task.getType()== CampTask.TYPE_BIG || task.getType()== CampTask.TYPE_MID) ){
             userTask.setMainFlag(CampUserTask.MAINFLAG_MAIN);
         }else{
             userTask.setMainFlag(CampUserTask.MAINFLAG_NOT_MAIN);
@@ -240,9 +240,13 @@ public class TeamServiceImpl implements TeamService {
 
         //更新个人分数
         Integer userScore = userTeam.getScore();
+        Integer topScore = userTeam.getTopScore();
+        if(topScore == null) topScore = 0;
         if(userScore == null) userScore = 0;
         userScore+= multScore;
-        updateUserScore(userScore,userTeam.getId());
+        topScore+= multScore;
+
+        updateUserScore(userScore,topScore,userTeam.getId());
 
         //更新种族分数
         updateTeamScore(userTeam.getTeamCode(),multScore,timesCode);
@@ -334,13 +338,30 @@ public class TeamServiceImpl implements TeamService {
     }
 
     private void checkDownMainTask(String userId, Integer timesCode, Integer teamCode) {
+        //查询主线任务个数
+        long mainTaskCount = findMainTask(teamCode);
         Query query = new Query();
         query.addCriteria(Criteria.where("userId").is(userId))
                 .addCriteria(Criteria.where("timesCode").is(timesCode))
                 .addCriteria(Criteria.where("teamCode").is(teamCode))
                 .addCriteria(Criteria.where("mainFlag").is(CampUserTask.MAINFLAG_MAIN));
         long count = mongoUtil.count(query,CampUserTask.class);
-        if(count == 0) throw new BizException("完成主线任务才能兑换积分");
+        if(count < mainTaskCount) throw new BizException("完成主线任务才能兑换积分");
+    }
+
+    /**
+     * 查找阵营主线任务个数
+     * @param teamCode
+     * @return
+     */
+    private long findMainTask(Integer teamCode) {
+        Query query = new Query();
+        Criteria  c = new Criteria();
+        c.orOperator(Criteria.where("type").is(CampTask.TYPE_BIG),Criteria.where("type").is(CampTask.TYPE_MID));
+        query.addCriteria(Criteria.where("teamCode").is(teamCode))
+                .addCriteria(c);
+        long count = mongoUtil.count(query,CampTask.class);
+        return count;
     }
 
     @Override
@@ -492,6 +513,12 @@ public class TeamServiceImpl implements TeamService {
         return Results.success();
     }
 
+    @Override
+    public Result<Object> saveUser(CampUser user) {
+        mongoUtil.save(user);
+        return Results.success();
+    }
+
     /**
      * 获取今天是本月几号
      * @return
@@ -595,12 +622,13 @@ public class TeamServiceImpl implements TeamService {
      * @param userScore
      * @param userTeamId
      */
-    private void updateUserScore(Integer userScore, String userTeamId) {
-        LOGGER.info("更新个人分数userScore={},userTeamId={}",userScore,userTeamId);
+    private void updateUserScore(Integer userScore,Integer topScore, String userTeamId) {
+        LOGGER.info("更新个人分数userScore={},topScore={},userTeamId={}",userScore,topScore,userTeamId);
         CampUserTeam param = new CampUserTeam();
         param.setId(userTeamId);
         Map<String,Object> map = new HashMap<String,Object>(1);
         map.put("score",userScore);
+        map.put("topScore",topScore);
         mongoUtil.update(param,map,CampUserTeam.class);
     }
 
@@ -661,7 +689,7 @@ public class TeamServiceImpl implements TeamService {
         Query query = new Query();
         query.addCriteria(Criteria.where("teamCode").is(teamCode))
                 .addCriteria(Criteria.where("timesCode").is(timesCode))
-                .with(new Sort(new Sort.Order(Sort.Direction.DESC,"score"),new Sort.Order(Sort.Direction.ASC,"createTime"))).limit(5);
+                .with(new Sort(new Sort.Order(Sort.Direction.DESC,"topScore"),new Sort.Order(Sort.Direction.ASC,"createTime"))).limit(5);
         List<CampUserTeam> list = mongoUtil.find(query,CampUserTeam.class);
 
         List<TopNVo> retList = null;
@@ -671,7 +699,7 @@ public class TeamServiceImpl implements TeamService {
                 TopNVo vo = new TopNVo();
                 vo.setNickName(list.get(i).getNickName());
                 vo.setRanking(i+1);
-                vo.setScore(list.get(i).getScore());
+                vo.setScore(list.get(i).getTopScore());
                 vo.setTeamCode(teamCode);
                 retList.add(vo);
             }
@@ -689,14 +717,14 @@ public class TeamServiceImpl implements TeamService {
         LOGGER.info("获取我的阵营积分排行userId={}",userId);
 
         Integer teamCode = campUserTeam.getTeamCode();
-        Integer score = campUserTeam.getScore();
+        Integer score = campUserTeam.getTopScore();
         if(score == null ) score = 0;
 
         //查询比我比分高的个数
         Query query = new Query();
         query.addCriteria(Criteria.where("teamCode").is(teamCode))
                 .addCriteria(Criteria.where("timesCode").is(campUserTeam.getTimesCode()))
-                .addCriteria(Criteria.where("score").gt(score));
+                .addCriteria(Criteria.where("topScore").gt(score));
         Long size = mongoUtil.count(query,CampUserTeam.class);
         if(size == null) size = 0L;
 
@@ -704,7 +732,7 @@ public class TeamServiceImpl implements TeamService {
         query = new Query();
         query.addCriteria(Criteria.where("teamCode").is(teamCode))
                 .addCriteria(Criteria.where("timesCode").is(campUserTeam.getTimesCode()))
-                .addCriteria(Criteria.where("score").is(score))
+                .addCriteria(Criteria.where("topScore").is(score))
                 .addCriteria(Criteria.where("createTime").lt(campUserTeam.getCreateTime()));
         Long size2 = mongoUtil.count(query,CampUserTeam.class);
         if(size2 == null) size2=0L;
