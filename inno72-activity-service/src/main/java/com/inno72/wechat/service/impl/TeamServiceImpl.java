@@ -685,7 +685,7 @@ public class TeamServiceImpl implements TeamService {
         Query query = new Query();
         query.addCriteria(Criteria.where("teamCode").is(teamCode))
                 .addCriteria(Criteria.where("timesCode").is(timesCode))
-                .with(new Sort(new Sort.Order(Sort.Direction.DESC,"score"),new Sort.Order(Sort.Direction.ASC,"createTime"))).limit(5);
+                .with(new Sort(new Sort.Order(Sort.Direction.DESC,"topScore"),new Sort.Order(Sort.Direction.ASC,"createTime"))).limit(5);
         List<CampUserTeam> list = mongoUtil.find(query,CampUserTeam.class);
 
         List<TopNVo> retList = null;
@@ -695,7 +695,7 @@ public class TeamServiceImpl implements TeamService {
                 TopNVo vo = new TopNVo();
                 vo.setNickName(list.get(i).getNickName());
                 vo.setRanking(i+1);
-                vo.setScore(list.get(i).getScore());
+                vo.setScore(list.get(i).getTopScore());
                 vo.setTeamCode(teamCode);
                 retList.add(vo);
             }
@@ -713,14 +713,14 @@ public class TeamServiceImpl implements TeamService {
         LOGGER.info("获取我的阵营积分排行userId={}",userId);
 
         Integer teamCode = campUserTeam.getTeamCode();
-        Integer score = campUserTeam.getScore();
+        Integer score = campUserTeam.getTopScore();
         if(score == null ) score = 0;
 
         //查询比我比分高的个数
         Query query = new Query();
         query.addCriteria(Criteria.where("teamCode").is(teamCode))
                 .addCriteria(Criteria.where("timesCode").is(campUserTeam.getTimesCode()))
-                .addCriteria(Criteria.where("score").gt(score));
+                .addCriteria(Criteria.where("topScore").gt(score));
         Long size = mongoUtil.count(query,CampUserTeam.class);
         if(size == null) size = 0L;
 
@@ -728,7 +728,7 @@ public class TeamServiceImpl implements TeamService {
         query = new Query();
         query.addCriteria(Criteria.where("teamCode").is(teamCode))
                 .addCriteria(Criteria.where("timesCode").is(campUserTeam.getTimesCode()))
-                .addCriteria(Criteria.where("score").is(score))
+                .addCriteria(Criteria.where("topScore").is(score))
                 .addCriteria(Criteria.where("createTime").lt(campUserTeam.getCreateTime()));
         Long size2 = mongoUtil.count(query,CampUserTeam.class);
         if(size2 == null) size2=0L;
