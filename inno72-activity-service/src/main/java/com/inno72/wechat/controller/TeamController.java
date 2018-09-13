@@ -9,6 +9,7 @@ import com.inno72.wechat.service.TeamService;
 import com.inno72.wechat.vo.CampActivityTimes;
 import com.inno72.wechat.vo.CampTask;
 import com.inno72.wechat.vo.CampTeam;
+import com.inno72.wechat.vo.CampUser;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -287,5 +288,24 @@ public class TeamController {
         String retString = AESUtil.encrypt(json);
         return retString;
     }
+    /**
+     * 积分兑换抽奖记录
+     * @return
+     */
+    @RequestMapping(value = "/initUser")
+    public Result<Object> initUser(CampUser user) {
+        try{
+            return service.saveUser(user);
+        }catch (BizException e){
+            LOGGER.error(e.getMessage(),e);
+            return Results.failure(e.getMessage());
+        }catch (Exception e){
+            LOGGER.error("系统异常",e);
+            return Results.failure("系统异常");
+        }
+    }
+
+
+
 
 }

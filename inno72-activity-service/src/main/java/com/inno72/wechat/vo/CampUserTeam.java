@@ -24,6 +24,10 @@ public class CampUserTeam implements Serializable {
      */
     private Integer teamCode;
     /**
+     * 最高分数
+     */
+    private Integer topScore;
+    /**
      * 分数
      */
     private Integer score;
@@ -132,5 +136,13 @@ public class CampUserTeam implements Serializable {
 
     public void setNickName(String nickName) {
         this.nickName = nickName;
+    }
+
+    public Integer getTopScore() {
+        return topScore;
+    }
+
+    public void setTopScore(Integer topScore) {
+        this.topScore = topScore;
     }
 }
