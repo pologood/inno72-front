@@ -208,7 +208,7 @@ public class TeamServiceImpl implements TeamService {
         }
         //没做过此任务插入任务记录表
         userTask = new CampUserTask();
-        if(userTeam.getTeamCode() == task.getTeamCode() && task.getType()== CampTask.TYPE_BIG){
+        if(userTeam.getTeamCode() == task.getTeamCode() && (task.getType()== CampTask.TYPE_BIG || task.getType()== CampTask.TYPE_MID) ){
             userTask.setMainFlag(CampUserTask.MAINFLAG_MAIN);
         }else{
             userTask.setMainFlag(CampUserTask.MAINFLAG_NOT_MAIN);
@@ -334,13 +334,30 @@ public class TeamServiceImpl implements TeamService {
     }
 
     private void checkDownMainTask(String userId, Integer timesCode, Integer teamCode) {
+        //查询主线任务个数
+        long mainTaskCount = findMainTask(teamCode);
         Query query = new Query();
         query.addCriteria(Criteria.where("userId").is(userId))
                 .addCriteria(Criteria.where("timesCode").is(timesCode))
                 .addCriteria(Criteria.where("teamCode").is(teamCode))
                 .addCriteria(Criteria.where("mainFlag").is(CampUserTask.MAINFLAG_MAIN));
         long count = mongoUtil.count(query,CampUserTask.class);
-        if(count == 0) throw new BizException("完成主线任务才能兑换积分");
+        if(count < mainTaskCount) throw new BizException("完成主线任务才能兑换积分");
+    }
+
+    /**
+     * 查找阵营主线任务个数
+     * @param teamCode
+     * @return
+     */
+    private long findMainTask(Integer teamCode) {
+        Query query = new Query();
+        Criteria  c = new Criteria();
+        c.orOperator(Criteria.where("type").is(CampTask.TYPE_BIG),Criteria.where("type").is(CampTask.TYPE_MID));
+        query.addCriteria(Criteria.where("teamCode").is(teamCode))
+                .addCriteria(c);
+        long count = mongoUtil.count(query,CampTask.class);
+        return count;
     }
 
     @Override
