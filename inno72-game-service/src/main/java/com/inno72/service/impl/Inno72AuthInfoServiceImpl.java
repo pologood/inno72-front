@@ -394,8 +394,6 @@ public class Inno72AuthInfoServiceImpl implements Inno72AuthInfoService {
 		LOGGER.info("loadGameInfo is {} ", JsonUtil.toJson(list));
 		sessionVo.setGoodsList(list);
 
-
-
 		this.startGameLife(userChannel, inno72Activity, inno72ActivityPlan, inno72Game, inno72Machine, userId);
 
 		LOGGER.info("playCode is" + playCode);
@@ -407,12 +405,20 @@ public class Inno72AuthInfoServiceImpl implements Inno72AuthInfoService {
 		resultMap.put("playCode", playCode);
 		resultMap.put("qrStatus", qrStatus);
 		resultMap.put("sellerId", inno72Merchant.getMerchantCode());
-		// todo gxg 需要返回是否入会信息 ，强制入会？ 临时处理派样就要入会
-		String goodsCode = sessionVo.getGoodsCode();
-		if (StringUtil.isNotEmpty(goodsCode)) {
-			Inno72Goods inno72Goods = inno72GoodsMapper.selectByCode(goodsCode);
-			sessionVo.setGoodsId(inno72Goods.getId());
-			this.checkInMemember(resultMap, sessionVo, inno72Activity.getId());
+
+		// 如果需要入会写入会信息
+		String isVip = sessionVo.getIsVip();
+		if (StringUtil.isNotEmpty(isVip) && sessionVo.equals("1")) {
+			String goodsId = sessionVo.getGoodsId();
+			Inno72Goods inno72Goods = inno72GoodsMapper.selectByPrimaryKey(goodsId);
+			String goodsCode = inno72Goods.getCode();
+			sessionVo.setGoodsCode(goodsCode);
+
+			LOGGER.info("返回给聚石塔的入会信息 goodsCode is {}  isVip is {}, sessionKey is {}", goodsCode, sessionVo.getIsVip(), sessionVo.getSessionKey());
+
+			resultMap.put("goodsCode", goodsCode);
+			resultMap.put("isVip", sessionVo.getIsVip());
+			resultMap.put("sessionKey", sessionVo.getSessionKey());
 		}
 
 		resultMap.put("activityType", activityType);
@@ -426,7 +432,7 @@ public class Inno72AuthInfoServiceImpl implements Inno72AuthInfoService {
 	}
 
 	/**
-	 * 校验是否入会
+	 * 校验是否入会(暂时没用到)
 	 */
 	private void checkInMemember(Map<String, Object> resultMap, UserSessionVo sessionVo, String activityId) {
 		String goodsCode = sessionVo.getGoodsCode();

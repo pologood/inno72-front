@@ -47,7 +47,7 @@ public class UserSessionVo {
 	private boolean logged;
 
 	/**
-	 * 商品编码
+	 * 商品id
 	 */
 	private String goodsId;
 	/**
@@ -64,6 +64,16 @@ public class UserSessionVo {
 	 * 是否需要支付
 	 */
 	private boolean needPay;
+
+	/**
+	 * 是否入会
+	 */
+	private String isVip;
+
+	/**
+	 * 入会sessionkey
+	 */
+	private String sessionKey;
 
 	public UserSessionVo(String mid, String userNick, String userId, String access_token, String gameId,
 			String sessionUuid, String planId) {
