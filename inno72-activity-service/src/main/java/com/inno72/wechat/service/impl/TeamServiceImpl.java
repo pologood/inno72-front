@@ -509,6 +509,12 @@ public class TeamServiceImpl implements TeamService {
         return Results.success();
     }
 
+    @Override
+    public Result<Object> saveUser(CampUser user) {
+        mongoUtil.save(user);
+        return Results.success();
+    }
+
     /**
      * 获取今天是本月几号
      * @return
@@ -618,6 +624,7 @@ public class TeamServiceImpl implements TeamService {
         param.setId(userTeamId);
         Map<String,Object> map = new HashMap<String,Object>(1);
         map.put("score",userScore);
+        map.put("topScore",userScore);
         mongoUtil.update(param,map,CampUserTeam.class);
     }
 
