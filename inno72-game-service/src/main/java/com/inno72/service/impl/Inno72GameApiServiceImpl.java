@@ -1789,7 +1789,8 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 		UserSessionVo sessionVo = new UserSessionVo(machineId, null, null, null, gameId, sessionUuid,
 				inno72ActivityPlan.getId());
 
-		boolean canOrder = inno72GameService.countSuccOrderNologin(channelId, inno72ActivityPlan.getId());
+		boolean canOrder = inno72GameService.countSuccOrder(channelId, sessionUuid, inno72ActivityPlan.getId());
+
 		sessionVo.setUserId(sessionUuid); // 非第三方用户 使用 sessionUuid 作为userid
 		sessionVo.setCanOrder(canOrder);
 		sessionVo.setCountGoods(goodsCount);
