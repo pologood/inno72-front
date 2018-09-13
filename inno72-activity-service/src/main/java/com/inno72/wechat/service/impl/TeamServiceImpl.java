@@ -240,9 +240,13 @@ public class TeamServiceImpl implements TeamService {
 
         //更新个人分数
         Integer userScore = userTeam.getScore();
+        Integer topScore = userTeam.getTopScore();
+        if(topScore == null) topScore = 0;
         if(userScore == null) userScore = 0;
         userScore+= multScore;
-        updateUserScore(userScore,userTeam.getId());
+        topScore+= multScore;
+
+        updateUserScore(userScore,topScore,userTeam.getId());
 
         //更新种族分数
         updateTeamScore(userTeam.getTeamCode(),multScore,timesCode);
@@ -618,13 +622,13 @@ public class TeamServiceImpl implements TeamService {
      * @param userScore
      * @param userTeamId
      */
-    private void updateUserScore(Integer userScore, String userTeamId) {
-        LOGGER.info("更新个人分数userScore={},userTeamId={}",userScore,userTeamId);
+    private void updateUserScore(Integer userScore,Integer topScore, String userTeamId) {
+        LOGGER.info("更新个人分数userScore={},topScore={},userTeamId={}",userScore,topScore,userTeamId);
         CampUserTeam param = new CampUserTeam();
         param.setId(userTeamId);
         Map<String,Object> map = new HashMap<String,Object>(1);
         map.put("score",userScore);
-        map.put("topScore",userScore);
+        map.put("topScore",topScore);
         mongoUtil.update(param,map,CampUserTeam.class);
     }
 
