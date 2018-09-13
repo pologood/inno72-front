@@ -122,6 +122,7 @@ public class TopController {
 				qrStatus = FastJsonUtils.getString(data, "qrStatus");
 				String sId = FastJsonUtils.getString(data, "sellerId");
 				machineCode = FastJsonUtils.getString(data, "machineCode");
+
 				goodsCode = FastJsonUtils.getString(data, "goodsCode");
 				isVip = FastJsonUtils.getString(data, "isVip");
 				sessionKey = FastJsonUtils.getString(data, "sessionKey");
@@ -131,9 +132,9 @@ public class TopController {
 				}
 			}
 
-			// todo gxg 判断是否入会
+			// 判断是否入会
 			if (!StringUtils.isEmpty(isVip) && Integer.valueOf(isVip) == 1) {
-				LOGGER.info("派样活动逻辑");
+				LOGGER.info("派样入会逻辑");
 				// 派样活动逻辑
 				String identityResBody = this.memberIdentity(machineCode, goodsCode, taobaoUserId, sessionKey);
 
@@ -150,13 +151,13 @@ public class TopController {
 									+ qrStatus + "/" + sellerId;
 					LOGGER.info("meberJoinCallBackUrl is {}", meberJoinCallBackUrl);
 
-//					// 如果不是会员做入会操作
-//					String memberJoinResBody = memberJoin(mid, code, sessionUuid, env, itemId, isVip, sessionKey,
-//							meberJoinCallBackUrl);
-//					LOGGER.info("memberJoinResBody is {}", memberJoinResBody);
-//					String resultUrl = FastJsonUtils.getString(memberJoinResBody, "result");
-//					LOGGER.info("resultUrl is {}", resultUrl);
-//					response.sendRedirect("http:" + resultUrl);
+					// 如果不是会员做入会操作
+					String memberJoinResBody = memberJoin(machineCode, code, sessionUuid, env, goodsCode, isVip, sessionKey,
+							meberJoinCallBackUrl);
+					LOGGER.info("memberJoinResBody is {}", memberJoinResBody);
+					String resultUrl = FastJsonUtils.getString(memberJoinResBody, "result");
+					LOGGER.info("resultUrl is {}", resultUrl);
+					response.sendRedirect("http:" + resultUrl);
 
 				} else {
 					// 设置用户已登录
