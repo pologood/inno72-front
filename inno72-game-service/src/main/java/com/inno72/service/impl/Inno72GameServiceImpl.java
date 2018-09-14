@@ -6,6 +6,9 @@ import java.util.Map;
 
 import javax.annotation.Resource;
 
+import com.inno72.common.utils.StringUtil;
+import com.inno72.mapper.*;
+import com.inno72.model.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -15,18 +18,6 @@ import com.alibaba.fastjson.JSON;
 import com.inno72.common.AbstractService;
 import com.inno72.common.Result;
 import com.inno72.common.Results;
-import com.inno72.mapper.Inno72ActivityPlanMapper;
-import com.inno72.mapper.Inno72GameMapper;
-import com.inno72.mapper.Inno72GameUserChannelMapper;
-import com.inno72.mapper.Inno72GameUserLifeMapper;
-import com.inno72.mapper.Inno72OrderHistoryMapper;
-import com.inno72.mapper.Inno72OrderMapper;
-import com.inno72.model.Inno72ActivityPlan;
-import com.inno72.model.Inno72Game;
-import com.inno72.model.Inno72GameUserChannel;
-import com.inno72.model.Inno72GameUserLife;
-import com.inno72.model.Inno72Order;
-import com.inno72.model.Inno72OrderHistory;
 import com.inno72.service.Inno72GameService;
 import com.inno72.vo.UserSessionVo;
 
@@ -53,7 +44,8 @@ public class Inno72GameServiceImpl extends AbstractService<Inno72Game> implement
 	private Inno72GameUserChannelMapper inno72GameUserChannelMapper;
 	@Resource
 	private Inno72ActivityPlanMapper inno72ActivityPlanMapper;
-
+	@Resource
+	private Inno72ActivityPlanGoodsMapper inno72ActivityPlanGoodsMapper;
 
 	@Override
 	public Result<String> updateRefOrderId(String inno72OrderId, String refId, String thirdUserId) {
@@ -150,4 +142,37 @@ public class Inno72GameServiceImpl extends AbstractService<Inno72Game> implement
 
 		return inno72Orders.size() < userMaxTimes && todayInno72Orders.size() < dayUserMaxTimes;
 	}
+
+	@Override
+	public boolean countSuccOrderPy(String channelId, String channelUserKey, String activityPlanId, String goodsId) {
+		boolean canOrder = false;
+		Inno72ActivityPlanGoods activityPlanGoods = new Inno72ActivityPlanGoods();
+		activityPlanGoods.setActivityPlanId(activityPlanId);
+		activityPlanGoods.setGoodsId(goodsId);
+		Inno72ActivityPlanGoods inno72ActivityPlanGoods = inno72ActivityPlanGoodsMapper.selectOne(activityPlanGoods);
+
+		Map<String, String> paramsChannel = new HashMap<>();
+		paramsChannel.put("channelId", channelId);
+		paramsChannel.put("channelUserKey", channelUserKey);
+		Inno72GameUserChannel userChannel = inno72GameUserChannelMapper.selectByChannelUserKey(paramsChannel);
+		String gameUserId = userChannel.getGameUserId();
+
+		Map<String, String> orderParams = new HashMap<>();
+		orderParams.put("activityPlanId", activityPlanId);
+		orderParams.put("gameUserId", gameUserId);
+		orderParams.put("goodsId", goodsId);
+		List<Inno72Order> inno72Orders = inno72OrderMapper.findGoodsStatusSuccPy(orderParams);
+
+		String userDayNumber = inno72ActivityPlanGoods.getUserDayNumber();
+		LOGGER.info("countSuccOrderPy inno72Orders size is {} ,userDayNumber is {}", inno72Orders.size(), userDayNumber);
+
+		if (StringUtil.isEmpty(userDayNumber) || (StringUtil.isNotEmpty(userDayNumber) && inno72Orders.size() <= Integer
+				.valueOf(userDayNumber))) {
+			canOrder = true;
+		}
+
+		return canOrder;
+	}
+
+
 }

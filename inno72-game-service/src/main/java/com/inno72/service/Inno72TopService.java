@@ -32,7 +32,6 @@ public interface Inno72TopService {
 	/**
 	 * 获得脱敏名称
 	 * @param sessionUuid
-	 * @param accessToken
 	 * @param sellerId
 	 * @param mixNick
 	 * @return

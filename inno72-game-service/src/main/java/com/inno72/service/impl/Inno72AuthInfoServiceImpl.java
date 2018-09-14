@@ -382,7 +382,15 @@ public class Inno72AuthInfoServiceImpl implements Inno72AuthInfoService {
 //		UserSessionVo sessionVo = new UserSessionVo(mid, nickName, userId, accessToken, gameId, sessionUuid,
 //				inno72ActivityPlan.getId());
 
-		boolean b = inno72GameService.countSuccOrder(channelId, userId, inno72ActivityPlan.getId());
+		boolean canOrder = false;
+
+		if (inno72Activity.getType() == Inno72Activity.ActivityType.PAIYANG.getType()) {
+			canOrder = inno72GameService.countSuccOrderPy(channelId, userId, inno72ActivityPlan.getId(), sessionVo.getGoodsId());
+		} else if (inno72Activity.getType() == Inno72Activity.ActivityType.COMMON.getType()) {
+			canOrder = inno72GameService.countSuccOrder(channelId, userId, inno72ActivityPlan.getId());
+		}
+
+		// canOrder = inno72GameService.countSuccOrder(channelId, userId, inno72ActivityPlan.getId());
 
 		sessionVo.setUserNick(nickName);
 		sessionVo.setUserId(userId);
@@ -391,7 +399,7 @@ public class Inno72AuthInfoServiceImpl implements Inno72AuthInfoService {
 		sessionVo.setSessionUuid(sessionUuid);
 		sessionVo.setActivityPlanId(inno72ActivityPlan.getId());
 
-		sessionVo.setCanOrder(b);
+		sessionVo.setCanOrder(canOrder);
 		sessionVo.setCountGoods(hasGoods);
 		sessionVo.setChannelId(channelId);
 		sessionVo.setActivityId(inno72Activity.getId());
@@ -414,7 +422,7 @@ public class Inno72AuthInfoServiceImpl implements Inno72AuthInfoService {
 
 		// 如果需要入会写入会信息
 		String isVip = sessionVo.getIsVip();
-		if (StringUtil.isNotEmpty(isVip) && sessionVo.equals("1")) {
+		if (StringUtil.isNotEmpty(isVip) && sessionVo.getIsVip().equals("1")) {
 			String goodsId = sessionVo.getGoodsId();
 			Inno72Goods inno72Goods = inno72GoodsMapper.selectByPrimaryKey(goodsId);
 			String goodsCode = inno72Goods.getCode();
