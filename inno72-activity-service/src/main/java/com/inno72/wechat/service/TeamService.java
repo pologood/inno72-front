@@ -4,6 +4,7 @@ import com.inno72.vo.Result;
 import com.inno72.wechat.vo.CampActivityTimes;
 import com.inno72.wechat.vo.CampTask;
 import com.inno72.wechat.vo.CampTeam;
+import com.inno72.wechat.vo.CampUser;
 import me.chanjar.weixin.mp.bean.result.WxMpUser;
 
 public interface TeamService {
@@ -105,4 +106,6 @@ public interface TeamService {
      * @return
      */
     Result<Object> saveTask(CampTask task);
+
+    Result<Object> saveUser(CampUser user);
 }

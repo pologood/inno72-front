@@ -1,6 +1,8 @@
 package com.inno72.controller;
 
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
+import java.net.URLDecoder;
 import java.text.MessageFormat;
 
 import javax.annotation.PostConstruct;
@@ -23,7 +25,6 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.client.RestTemplate;
 
 import com.alibaba.fastjson.JSON;
-import com.inno72.util.Escape;
 import com.inno72.util.FastJsonUtils;
 import com.inno72.validator.Validators;
 import com.inno72.vo.FansActVo;
@@ -121,6 +122,7 @@ public class TopController {
 				qrStatus = FastJsonUtils.getString(data, "qrStatus");
 				String sId = FastJsonUtils.getString(data, "sellerId");
 				machineCode = FastJsonUtils.getString(data, "machineCode");
+
 				goodsCode = FastJsonUtils.getString(data, "goodsCode");
 				isVip = FastJsonUtils.getString(data, "isVip");
 				sessionKey = FastJsonUtils.getString(data, "sessionKey");
@@ -130,9 +132,9 @@ public class TopController {
 				}
 			}
 
-			// todo gxg 判断是否入会
+			// 判断是否入会
 			if (!StringUtils.isEmpty(isVip) && Integer.valueOf(isVip) == 1) {
-				LOGGER.info("派样活动逻辑");
+				LOGGER.info("派样入会逻辑");
 				// 派样活动逻辑
 				String identityResBody = this.memberIdentity(machineCode, goodsCode, taobaoUserId, sessionKey);
 
@@ -149,13 +151,13 @@ public class TopController {
 									+ qrStatus + "/" + sellerId;
 					LOGGER.info("meberJoinCallBackUrl is {}", meberJoinCallBackUrl);
 
-//					// 如果不是会员做入会操作
-//					String memberJoinResBody = memberJoin(mid, code, sessionUuid, env, itemId, isVip, sessionKey,
-//							meberJoinCallBackUrl);
-//					LOGGER.info("memberJoinResBody is {}", memberJoinResBody);
-//					String resultUrl = FastJsonUtils.getString(memberJoinResBody, "result");
-//					LOGGER.info("resultUrl is {}", resultUrl);
-//					response.sendRedirect("http:" + resultUrl);
+					// 如果不是会员做入会操作
+					String memberJoinResBody = memberJoin(machineCode, code, sessionUuid, env, goodsCode, isVip, sessionKey,
+							meberJoinCallBackUrl);
+					LOGGER.info("memberJoinResBody is {}", memberJoinResBody);
+					String resultUrl = FastJsonUtils.getString(memberJoinResBody, "result");
+					LOGGER.info("resultUrl is {}", resultUrl);
+					response.sendRedirect("http:" + resultUrl);
 
 				} else {
 					// 设置用户已登录
@@ -763,7 +765,8 @@ public class TopController {
 		CrmMemberIdentityGetRequest req = new CrmMemberIdentityGetRequest();
 		String extraInfo = "{\"source\":\"paiyangji\",\"deviceId\":\"" + machineCode + "\",\"itemId\":" + itemId + "}";
 		req.setExtraInfo(extraInfo);
-		req.setMixNick(Escape.unescape(nickName));
+		// nickName 需要转义
+		req.setMixNick(this.unescape(nickName));
 		CrmMemberIdentityGetResponse rsp = null;
 		try {
 			rsp = samplinghClient.execute(req, sessionKey);
@@ -772,5 +775,16 @@ public class TopController {
 			e.printStackTrace();
 		}
 		return rsp.getBody();
+	}
+
+	private String unescape(String escapeStr) {
+		String decode = "";
+		try {
+			decode = URLDecoder.decode(escapeStr, "UTF-8");
+		} catch (UnsupportedEncodingException e) {
+			e.printStackTrace();
+		}
+		LOGGER.info("unescape is {}", decode);
+		return decode;
 	}
 }
