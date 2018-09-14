@@ -1,6 +1,8 @@
 package com.inno72.service.impl;
 
 import java.io.File;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -10,7 +12,11 @@ import javax.annotation.Resource;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.google.gson.Gson;
+import com.inno72.common.datetime.LocalDateTimeUtil;
 import com.inno72.common.util.*;
+import com.inno72.log.LogAllContext;
+import com.inno72.log.PointLogContext;
+import com.inno72.log.vo.LogType;
 import com.inno72.mapper.*;
 import com.inno72.model.*;
 import com.inno72.service.Inno72GameService;
@@ -436,6 +442,9 @@ public class Inno72AuthInfoServiceImpl implements Inno72AuthInfoService {
 
 		gameSessionRedisUtil.setSessionEx(sessionUuid, JSON.toJSONString(sessionVo));
 
+		CommonBean.logger(CommonBean.POINT_TYPE_LOGIN, inno72Machine.getMachineCode(),
+				"用户" + nickName + "登录机器 ["+inno72Machine.getMachineCode()+"], 当前活动 ["+ inno72Activity.getName() +"]");
+
 		return Results.success(JSONObject.toJSONString(resultMap));
 	}
 
@@ -572,4 +581,5 @@ public class Inno72AuthInfoServiceImpl implements Inno72AuthInfoService {
 		}
 		return logged;
 	}
+
 }

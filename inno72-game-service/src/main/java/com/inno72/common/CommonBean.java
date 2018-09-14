@@ -1,8 +1,19 @@
 package com.inno72.common;
 
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import com.alibaba.fastjson.JSON;
+import com.inno72.common.datetime.LocalDateTimeUtil;
+import com.inno72.log.PointLogContext;
+import com.inno72.log.vo.LogType;
+
 public class CommonBean {
 
-
+	private static final Logger LOGGER = LoggerFactory.getLogger(CommonBean.class);
 	/**
 	 * game session key
 	 *
@@ -24,5 +35,27 @@ public class CommonBean {
 	 */
 	public static final String PIC_BASE64_START_WITH = "base64,";
 
+	/************************************************* -> 埋点 <- ******************************************************/
+
+	public static final String POINT_TYPE_LOGIN = "31";
+	public static final String POINT_TYPE_ORDER = "32";
+	public static final String POINT_TYPE_FINISH = "33";
+
+	/**
+	 * @param msg 消息体
+	 *            msg[0] type 日志类型
+	 *            msg[1] machineCode 机器code
+	 *            msg[2] detail 详情
+	 */
+	public static void logger(String ... msg){
+		new PointLogContext(LogType.POINT)
+				.machineCode(msg[1])
+				.pointTime(LocalDateTimeUtil.transfer(LocalDateTime.now(), DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")))
+				.type(msg[0])
+				.detail(msg[2])
+				.tag("").bulid();
+		LOGGER.info("记录埋点数据 [{}]", JSON.toJSONString(msg));
+	}
+	/************************************************* -> 埋点 <- ******************************************************/
 
 }
