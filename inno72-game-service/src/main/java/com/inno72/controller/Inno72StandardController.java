@@ -1,6 +1,8 @@
 package com.inno72.controller;
 
 import java.io.IOException;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletResponse;
@@ -8,12 +10,18 @@ import javax.servlet.http.HttpServletResponse;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.web.bind.annotation.*;
 
 import com.inno72.common.Result;
 import com.inno72.common.Results;
 import com.inno72.common.StandardLoginTypeEnum;
+import com.inno72.common.datetime.LocalDateTimeUtil;
 import com.inno72.common.util.GameSessionRedisUtil;
+import com.inno72.log.LogAllContext;
+import com.inno72.log.LogContext;
+import com.inno72.log.PointLogContext;
+import com.inno72.log.vo.LogType;
 import com.inno72.service.Inno72AuthInfoService;
 import com.inno72.service.Inno72GameApiService;
 import com.inno72.service.Inno72MachineService;
@@ -72,6 +80,24 @@ public class Inno72StandardController {
 			return inno72GameApiService.prepareLoginNologin(req.getMachineCode());
 
 		}
+	}
+
+	private static final Logger LOGGER = LoggerFactory.getLogger(Inno72StandardController.class);
+	/**
+	 * 登录（包括需要登录和非登录的场景）
+	 * @param req
+	 * @return
+	 */
+	@ResponseBody
+	@RequestMapping(value = "/logger", method = {RequestMethod.POST})
+	public void logger(StandardPrepareLoginReqVo req) {
+		new PointLogContext(LogType.POINT)
+				.machineCode("ceshimachinecode123")
+				.pointTime(LocalDateTimeUtil.transfer(LocalDateTime.now(), DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")))
+				.type("31")
+				.detail("测试")
+				.tag("测试tag");
+		LOGGER.info("记录埋点数据 [测试]");
 	}
 
 	/**
