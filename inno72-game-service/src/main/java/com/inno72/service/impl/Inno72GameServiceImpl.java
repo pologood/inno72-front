@@ -160,7 +160,8 @@ public class Inno72GameServiceImpl extends AbstractService<Inno72Game> implement
 		Map<String, String> orderParams = new HashMap<>();
 		orderParams.put("activityPlanId", activityPlanId);
 		orderParams.put("gameUserId", gameUserId);
-		List<Inno72Order> inno72Orders = inno72OrderMapper.findGoodsStatusSucc(orderParams);
+		orderParams.put("goodsId", goodsId);
+		List<Inno72Order> inno72Orders = inno72OrderMapper.findGoodsStatusSuccPy(orderParams);
 
 		String userDayNumber = inno72ActivityPlanGoods.getUserDayNumber();
 		LOGGER.info("countSuccOrderPy inno72Orders size is {} ,userDayNumber is {}", inno72Orders.size(), userDayNumber);
