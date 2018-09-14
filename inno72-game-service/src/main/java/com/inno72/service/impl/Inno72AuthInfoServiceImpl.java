@@ -384,13 +384,13 @@ public class Inno72AuthInfoServiceImpl implements Inno72AuthInfoService {
 
 		boolean canOrder = false;
 
-//		if (inno72Activity.getType() == Inno72Activity.ActivityType.PAIYANG.getType()) {
-//			canOrder = inno72GameService.countSuccOrderPy(channelId, userId, inno72ActivityPlan.getId(), sessionVo.getGoodsId());
-//		} else if (inno72Activity.getType() == Inno72Activity.ActivityType.COMMON.getType()) {
-//			canOrder = inno72GameService.countSuccOrder(channelId, userId, inno72ActivityPlan.getId());
-//		}
+		if (inno72Activity.getType() == Inno72Activity.ActivityType.PAIYANG.getType()) {
+			canOrder = inno72GameService.countSuccOrderPy(channelId, userId, inno72ActivityPlan.getId(), sessionVo.getGoodsId());
+		} else if (inno72Activity.getType() == Inno72Activity.ActivityType.COMMON.getType()) {
+			canOrder = inno72GameService.countSuccOrder(channelId, userId, inno72ActivityPlan.getId());
+		}
 
-		canOrder = inno72GameService.countSuccOrder(channelId, userId, inno72ActivityPlan.getId());
+		// canOrder = inno72GameService.countSuccOrder(channelId, userId, inno72ActivityPlan.getId());
 
 		sessionVo.setUserNick(nickName);
 		sessionVo.setUserId(userId);

@@ -163,6 +163,8 @@ public class Inno72GameServiceImpl extends AbstractService<Inno72Game> implement
 		List<Inno72Order> inno72Orders = inno72OrderMapper.findGoodsStatusSucc(orderParams);
 
 		String userDayNumber = inno72ActivityPlanGoods.getUserDayNumber();
+		LOGGER.info("countSuccOrderPy inno72Orders size is {} ,userDayNumber is {}", inno72Orders.size(), userDayNumber);
+
 		if (StringUtil.isEmpty(userDayNumber) || (StringUtil.isNotEmpty(userDayNumber) && inno72Orders.size() <= Integer
 				.valueOf(userDayNumber))) {
 			canOrder = true;
