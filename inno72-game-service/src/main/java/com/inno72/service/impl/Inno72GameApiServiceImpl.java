@@ -1676,7 +1676,7 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 			String sessionKey = FastJsonUtils.getString(ext, "sessionKey");
 
 			if (StringUtil.isNotEmpty(isVip)) {
-				userSessionVo.setGoodsId(isVip);
+				userSessionVo.setIsVip(isVip);
 			}
 			if (StringUtil.isNotEmpty(itemId)) {
 				userSessionVo.setGoodsId(itemId);
