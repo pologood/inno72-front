@@ -50,8 +50,8 @@
         </if>
     </select>
 
-    <select id="findGoodsStatusSuccPY" resultMap="BaseResultMap" parameterType="java.util.Map">
-        select * from inno72_order o left join inno72_order_goods og
+    <select id="findGoodsStatusSuccPy" resultMap="BaseResultMap" parameterType="java.util.Map">
+        select o.id from inno72_order o left join inno72_order_goods og
         on o.id = og.order_id
         where o.inno72_activity_plan_id = #{activityPlanId}
         and o.user_id = #{gameUserId}
