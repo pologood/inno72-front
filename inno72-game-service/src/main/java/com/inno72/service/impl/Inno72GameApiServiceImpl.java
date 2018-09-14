@@ -1514,7 +1514,7 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 		/* 埋点 */
 		CommonBean.logger(CommonBean.POINT_TYPE_FINISH, machineCode,
 				"机器 ["+machineCode+"] 货道 ["+inno72SupplyChannel.getName()+"(code:"+inno72SupplyChannel.getCode()+")] "
-						+ "出货 ["+inno72SupplyChannel.getGoodsName()+"(商品code: "+inno72SupplyChannel.getGoodsCode()+" )] 完成."
+						+ "出货完成."
 						+ "货道容量 ["+inno72SupplyChannel.getVolumeCount()+"]. "
 						+ "原数量 ["+inno72SupplyChannel.getGoodsCount()+"], 当前数量 ["+updateChannel.getGoodsCount()+"]");
 
