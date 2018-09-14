@@ -36,7 +36,7 @@ public interface Inno72TopService {
 	 * @param mixNick
 	 * @return
 	 */
-	String getMaskUserNick(String sessionUuid, String sellerId, String mixNick);
+	String getMaskUserNick(String sessionUuid, String accessToken, String sellerId, String mixNick);
 
 	/**
 	 * 订单polling
