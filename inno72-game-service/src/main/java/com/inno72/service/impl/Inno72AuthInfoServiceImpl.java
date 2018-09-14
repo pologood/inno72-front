@@ -416,7 +416,7 @@ public class Inno72AuthInfoServiceImpl implements Inno72AuthInfoService {
 
 		// 如果需要入会写入会信息
 		String isVip = sessionVo.getIsVip();
-		if (StringUtil.isNotEmpty(isVip) && sessionVo.equals("1")) {
+		if (StringUtil.isNotEmpty(isVip) && sessionVo.getIsVip().equals("1")) {
 			String goodsId = sessionVo.getGoodsId();
 			Inno72Goods inno72Goods = inno72GoodsMapper.selectByPrimaryKey(goodsId);
 			String goodsCode = inno72Goods.getCode();
