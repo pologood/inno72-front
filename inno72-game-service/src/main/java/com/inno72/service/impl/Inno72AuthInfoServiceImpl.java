@@ -579,7 +579,7 @@ public class Inno72AuthInfoServiceImpl implements Inno72AuthInfoService {
 				.pointTime(LocalDateTimeUtil.transfer(LocalDateTime.now(), DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")))
 				.type(msg[0])
 				.detail(msg[2])
-				.tag("");
+				.tag("").bulid();
 		LOGGER.info("记录埋点数据 [{}]", JSON.toJSONString(msg));
 	}
 }

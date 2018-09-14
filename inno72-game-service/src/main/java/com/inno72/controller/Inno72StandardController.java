@@ -96,7 +96,7 @@ public class Inno72StandardController {
 				.pointTime(LocalDateTimeUtil.transfer(LocalDateTime.now(), DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")))
 				.type("31")
 				.detail("测试")
-				.tag("测试tag");
+				.tag("测试tag").bulid();
 		LOGGER.info("记录埋点数据 [测试]");
 	}
 
