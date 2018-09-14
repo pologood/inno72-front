@@ -11,6 +11,8 @@ public interface Inno72OrderMapper extends Mapper<Inno72Order> {
 
 	List<Inno72Order> findGoodsStatusSucc(Map<String, String> orderParams);
 
+	List<Inno72Order> findGoodsStatusSuccPy(Map<String, String> orderParams);
+
 	Integer findGoodsStatusSuccWithoutUserId(Map<String, String> orderParams);
 
 }
