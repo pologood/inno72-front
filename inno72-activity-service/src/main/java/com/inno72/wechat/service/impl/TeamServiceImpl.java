@@ -83,6 +83,7 @@ public class TeamServiceImpl implements TeamService {
             cut.setScore(0);
             cut.setTeamCode(teamCode);
             cut.setTimesCode(timesCode);
+            cut.setTopScore(0);
             cut.setUserId(userId);
             //获取昵称
             String nickName = findNickName(userId);

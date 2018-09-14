@@ -28,6 +28,12 @@ public class Inno72ActivityPlanGoods {
 	private String goodsId;
 
 	/**
+	 * 每个用户每天领多少限制
+	 */
+	@Column(name = "user_day_number")
+	private String userDayNumber;
+
+	/**
 	 * 获取ID
 	 *
 	 * @return id - ID
@@ -79,5 +85,13 @@ public class Inno72ActivityPlanGoods {
 	 */
 	public void setGoodsId(String goodsId) {
 		this.goodsId = goodsId;
+	}
+
+	public String getUserDayNumber() {
+		return userDayNumber;
+	}
+
+	public void setUserDayNumber(String userDayNumber) {
+		this.userDayNumber = userDayNumber;
 	}
 }

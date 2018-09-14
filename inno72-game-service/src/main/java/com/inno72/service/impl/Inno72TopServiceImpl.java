@@ -81,7 +81,7 @@ public class Inno72TopServiceImpl implements Inno72TopService {
 
 	@Override
 	public String getMaskUserNick(String sessionUuid, String accessToken, String sellerId, String mixNick) {
-		LOGGER.info("getMaskUserNick params sessionUuid is {}, sellerId is {}", sessionUuid, sellerId);
+		LOGGER.info("getMaskUserNick params sessionUuid is {}, sellerId is {}, mixNick is {}", sessionUuid, sellerId, mixNick);
 		String nickName = "";
 		String respJson = "";
 		String jstUrl = inno72GameServiceProperties.get("jstUrl");
