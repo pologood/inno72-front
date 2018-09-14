@@ -428,7 +428,8 @@ public class Inno72AuthInfoServiceImpl implements Inno72AuthInfoService {
 
 		gameSessionRedisUtil.setSessionEx(sessionUuid, JSON.toJSONString(sessionVo));
 
-		logger("31", inno72Machine.getMachineCode(), "用户" + nickName + "登录机器");
+		CommonBean.logger(CommonBean.POINT_TYPE_LOGIN, inno72Machine.getMachineCode(),
+				"用户" + nickName + "登录机器 ["+inno72Machine.getMachineCode()+"], 当前活动 ["+ inno72Activity.getName() +"]");
 
 		return Results.success(JSONObject.toJSONString(resultMap));
 	}
@@ -567,19 +568,4 @@ public class Inno72AuthInfoServiceImpl implements Inno72AuthInfoService {
 		return logged;
 	}
 
-	/**
-	 * @param msg 消息体
-	 *            msg[0] type 日志类型
-	 *            msg[1] machineCode 机器code
-	 *            msg[2] detail 详情
-	 */
-	private void logger(String ... msg){
-		new PointLogContext(LogType.POINT)
-				.machineCode(msg[1])
-				.pointTime(LocalDateTimeUtil.transfer(LocalDateTime.now(), DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")))
-				.type(msg[0])
-				.detail(msg[2])
-				.tag("").bulid();
-		LOGGER.info("记录埋点数据 [{}]", JSON.toJSONString(msg));
-	}
 }

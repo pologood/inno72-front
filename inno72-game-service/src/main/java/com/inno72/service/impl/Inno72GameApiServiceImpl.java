@@ -1468,9 +1468,13 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 		} else {
 			LOGGER.info("调用出货无orderId 请求参数=>{}", JSON.toJSONString(vo));
 		}
+		/* 埋点 */
+		CommonBean.logger(CommonBean.POINT_TYPE_FINISH, machineCode,
+				"机器 ["+machineCode+"] 货道 ["+inno72SupplyChannel.getName()+"(code:"+inno72SupplyChannel.getCode()+")] "
+						+ "出货 ["+inno72SupplyChannel.getGoodsName()+"(商品code: "+inno72SupplyChannel.getGoodsCode()+" )] 完成."
+						+ "货道容量 ["+inno72SupplyChannel.getVolumeCount()+"]. "
+						+ "原数量 ["+inno72SupplyChannel.getGoodsCount()+"], 当前数量 ["+updateChannel.getGoodsCount()+"]");
 
-		this.logger("33", machineCode,
-				"出货完成.");
 		return Results.success();
 	}
 
@@ -2256,8 +2260,8 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 			inno72Order.setShopsId(inno72Shops.getId());
 			inno72Order.setShopsName(inno72Shops.getShopName());
 		}
-
-		this.logger("32", inno72Machine.getMachineCode(),
+		/* 埋点 */
+		CommonBean.logger(CommonBean.POINT_TYPE_ORDER, inno72Machine.getMachineCode(),
 				"用户[" + userChannel.getUserNick() + "]生成["+ goodsName + "]订单，订单号[" + orderNum +"].");
 
 		orderGoods.setOrderNum(inno72Order.getOrderNum());
@@ -2270,22 +2274,6 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 				JSON.toJSONString(inno72Order), "初始化插入订单!"));
 
 		return rep == 0 ? rep + "" : inno72Order.getId();
-	}
-
-	/**
-	 * @param msg 消息体
-	 *            msg[0] type 日志类型
-	 *            msg[1] machineCode 机器code
-	 *            msg[2] detail 详情
-	 */
-	private void logger(String ... msg){
-		new PointLogContext(LogType.POINT)
-				.machineCode(msg[1])
-				.pointTime(LocalDateTimeUtil.transfer(LocalDateTime.now(), DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")))
-				.type(msg[0])
-				.detail(msg[2])
-				.tag("").bulid();
-		LOGGER.info("记录埋点数据 [{}]", JSON.toJSONString(msg));
 	}
 
 	/**
