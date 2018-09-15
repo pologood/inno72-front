@@ -231,6 +231,8 @@ public class TeamServiceImpl implements TeamService {
         if(teamCode == userTeam.getTeamCode()){
             //同种族任务
             if(type == CampTask.TYPE_BIG){
+                //插入扫大展位日志（用于抽奖）
+                saveUserMainBigTask(userId,timesCode,teamCode);
                 //同种族的大展位可以抽奖
                 ifCanQuick = true;
             }
@@ -254,15 +256,16 @@ public class TeamServiceImpl implements TeamService {
         Integer date = getTodayDate();
         //抽快速通道票
         if(ifCanQuick){
-            boolean ifHit = drawQuickChannel(userTeam.getId(),userTeam.getTimesCode(),userTeam.getTeamCode(),date);
+            boolean ifHit = drawQuickChannel(userTeam.getUserId(),userTeam.getTimesCode(),userTeam.getTeamCode(),date);
             if(ifHit){
                 //如果中奖
                 //此处不用枷锁
                 //更新redis缓存
-                redisTemplate.opsForValue().set(TEAM_KEY_PRE+date+":"+userTeam.getTeamCode(),"1");
+                redisTemplate.opsForValue().set(TEAM_KEY_PRE+timesCode+":"+userTeam.getTeamCode(),"1");
 
                 //插入数据
                 CampQuickChannel quickChannel = new CampQuickChannel();
+                quickChannel.setTimesCode(timesCode);
                 quickChannel.setDate(date);
                 quickChannel.setQuickChannelSize(1);
                 quickChannel.setUserId(userId);
@@ -271,6 +274,15 @@ public class TeamServiceImpl implements TeamService {
             }
         }
         return Results.success(multScore);
+    }
+
+    private void saveUserMainBigTask(String userId, Integer timesCode,Integer teamCode) {
+        CampUserMainBigTask task = new CampUserMainBigTask();
+        task.setCreateTime(System.currentTimeMillis());
+        task.setTimesCode(timesCode);
+        task.setUserId(userId);
+        task.setTeamCode(teamCode);
+        mongoUtil.save(task);
     }
 
     @Override
@@ -547,15 +559,15 @@ public class TeamServiceImpl implements TeamService {
 
     /**
      * 抽奖部分代码
-     * @param userTeamId
+     * @param userId
      * @param timesCode
      * @param teamCode
      * @param date
      * @return
      */
-    private boolean drawQuickChannel(String userTeamId, Integer timesCode, Integer teamCode, Integer date) {
-        LOGGER.info("抽快速通道票userTeamId={},timesCode={},teamCode,date={}",userTeamId,timesCode,teamCode,date);
-        Boolean haskey = redisTemplate.hasKey(TEAM_KEY_PRE+date+":"+teamCode);
+    private boolean drawQuickChannel(String userId, Integer timesCode, Integer teamCode, Integer date) {
+        LOGGER.info("抽快速通道票userId={},timesCode={},teamCode,date={}",userId,timesCode,teamCode,date);
+        Boolean haskey = redisTemplate.hasKey(TEAM_KEY_PRE+timesCode+":"+teamCode);
         if(!haskey){
             //没人得奖
             //查询第五千个人和自己的id对比
@@ -563,8 +575,8 @@ public class TeamServiceImpl implements TeamService {
             query.addCriteria(Criteria.where("timesCode").is(timesCode)).addCriteria(Criteria.where("teamCode").is(teamCode))
             .with(new Sort(new Sort.Order(Sort.Direction.ASC,"createTime")))
             .skip(hitNum-1).limit(1);
-            CampUserTeam userTeam = mongoUtil.findOne(query,CampUserTeam.class);
-            if(userTeam!=null&&userTeam.getId().equalsIgnoreCase(userTeamId)){
+            CampUserMainBigTask task = mongoUtil.findOne(query,CampUserMainBigTask.class);
+            if(task!=null&&task.getUserId().equalsIgnoreCase(userId)){
                 return true;
             }
         }
@@ -764,10 +776,10 @@ public class TeamServiceImpl implements TeamService {
      * @return
      */
     private CampQuickChannel findQuickChannelObj(String userId) {
-        Integer date = getTodayDate();
-        LOGGER.info("查找快速通道票对象userId={},date={}",userId,date);
+        Integer timesCode = findTimesCodeWithException();
+        LOGGER.info("查找快速通道票对象userId={},timesCode={}",userId,timesCode);
         Query query = new Query();
-        query.addCriteria(Criteria.where("userId").is(userId)).addCriteria(Criteria.where("date").is(date));
+        query.addCriteria(Criteria.where("userId").is(userId)).addCriteria(Criteria.where("timesCode").is(timesCode));
         CampQuickChannel quickChannel = mongoUtil.findOne(query,CampQuickChannel.class);
         return quickChannel;
     }

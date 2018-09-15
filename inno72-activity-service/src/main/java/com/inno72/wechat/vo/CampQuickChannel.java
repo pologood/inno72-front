@@ -18,6 +18,8 @@ public class CampQuickChannel implements Serializable {
      * 只存几号
      */
     private Integer date;
+
+    private Integer timesCode;
     /**
      * 快速通道票个数
      */
@@ -53,5 +55,13 @@ public class CampQuickChannel implements Serializable {
 
     public void setQuickChannelSize(Integer quickChannelSize) {
         this.quickChannelSize = quickChannelSize;
+    }
+
+    public Integer getTimesCode() {
+        return timesCode;
+    }
+
+    public void setTimesCode(Integer timesCode) {
+        this.timesCode = timesCode;
     }
 }
