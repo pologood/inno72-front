@@ -779,7 +779,7 @@ public class TeamServiceImpl implements TeamService {
         Integer timesCode = findTimesCodeWithException();
         LOGGER.info("查找快速通道票对象userId={},timesCode={}",userId,timesCode);
         Query query = new Query();
-        query.addCriteria(Criteria.where("userId").is(userId)).addCriteria(Criteria.where("timesCode").is(timesCode));
+        query.addCriteria(Criteria.where("userId").is(userId));
         CampQuickChannel quickChannel = mongoUtil.findOne(query,CampQuickChannel.class);
         return quickChannel;
     }
