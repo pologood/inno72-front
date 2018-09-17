@@ -1686,6 +1686,7 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 		if (StringUtil.isNotEmpty(ext)) {
 			String isVip = FastJsonUtils.getString(ext, "isVip");
 			String itemId = FastJsonUtils.getString(ext, "itemId");
+			String goodsCode = FastJsonUtils.getString(ext, "goodsCode");
 			String sessionKey = FastJsonUtils.getString(ext, "sessionKey");
 
 			if (StringUtil.isNotEmpty(isVip)) {
@@ -1696,6 +1697,9 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 			}
 			if (StringUtil.isNotEmpty(sessionKey)) {
 				userSessionVo.setSessionKey(sessionKey);
+			}
+			if (StringUtil.isNotEmpty(goodsCode)) {
+				userSessionVo.setGoodsCode(goodsCode);
 			}
 		}
 	}

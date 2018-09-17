@@ -420,20 +420,7 @@ public class Inno72AuthInfoServiceImpl implements Inno72AuthInfoService {
 		resultMap.put("qrStatus", qrStatus);
 		resultMap.put("sellerId", inno72Merchant.getMerchantCode());
 
-		// 如果需要入会写入会信息
-		String isVip = sessionVo.getIsVip();
-		if (StringUtil.isNotEmpty(isVip) && sessionVo.getIsVip().equals("1")) {
-			String goodsId = sessionVo.getGoodsId();
-			Inno72Goods inno72Goods = inno72GoodsMapper.selectByPrimaryKey(goodsId);
-			String goodsCode = inno72Goods.getCode();
-			sessionVo.setGoodsCode(goodsCode);
-
-			LOGGER.info("返回给聚石塔的入会信息 goodsCode is {}  isVip is {}, sessionKey is {}", goodsCode, sessionVo.getIsVip(), sessionVo.getSessionKey());
-
-			resultMap.put("goodsCode", goodsCode);
-			resultMap.put("isVip", sessionVo.getIsVip());
-			resultMap.put("sessionKey", sessionVo.getSessionKey());
-		}
+		this.dealIsVip(resultMap, sessionVo);
 
 		resultMap.put("activityType", activityType);
 		resultMap.put("goodsCode", sessionVo.getGoodsCode() != null ? sessionVo.getGoodsCode() : "");
@@ -446,6 +433,28 @@ public class Inno72AuthInfoServiceImpl implements Inno72AuthInfoService {
 				"用户" + nickName + "登录机器 ["+inno72Machine.getMachineCode()+"], 当前活动 ["+ inno72Activity.getName() +"]");
 
 		return Results.success(JSONObject.toJSONString(resultMap));
+	}
+
+	/**
+	 * 处理是否入会
+	 */
+	void dealIsVip(Map<String, Object> resultMap, UserSessionVo sessionVo) {
+		LOGGER.info("dealIsVip params sessionVo is {}", sessionVo);
+		// 如果需要入会写入会信息
+		String isVip = sessionVo.getIsVip();
+		if (StringUtil.isNotEmpty(isVip) && sessionVo.getIsVip().equals("1")) {
+			String goodsId = sessionVo.getGoodsId();
+			if (!StringUtil.isEmpty(goodsId)) {
+				Inno72Goods inno72Goods = inno72GoodsMapper.selectByPrimaryKey(goodsId);
+				String goodsCode = inno72Goods.getCode();
+				sessionVo.setGoodsCode(goodsCode);
+			}
+			String goodsCode = sessionVo.getGoodsCode();
+			LOGGER.info("返回给聚石塔的入会信息 goodsCode is {}  isVip is {}, sessionKey is {}", goodsCode, sessionVo.getIsVip(), sessionVo.getSessionKey());
+			resultMap.put("goodsCode", goodsCode);
+			resultMap.put("isVip", sessionVo.getIsVip());
+			resultMap.put("sessionKey", sessionVo.getSessionKey());
+		}
 	}
 
 	/**
