@@ -49,30 +49,43 @@ public class XiaoPengServiceImpl implements XiaoPengService {
 	@Resource
 	private Inno72GameServiceProperties inno72GameServiceProperties;
 
+	public static final String NO_SESSION_UUID = "noSessionUuid";
 
 	@Override
 	public void save(XiaoPeng xiaoPeng) throws BizException {
-
-
-		if (!commonService.isSessionExist(xiaoPeng.getSessionUuid())) {
-			LOGGER.warn("会话不存在无法提交,session={}", xiaoPeng.getSessionUuid());
-			throw new BizException("会话不存在无法提交");
-		}
 
 		if (findByPhone(xiaoPeng.getPhone()) != null) {
 			LOGGER.warn("该手机号已经参加游戏,phone={}", xiaoPeng.getPhone());
 			throw new BizException("该手机号已经参加过活动");
 		}
 
-		FeedbackCash feedbackCash = new FeedbackCash();
-		feedbackCash.setIsCompleted(true);
-		feedbackCash.setPhone(xiaoPeng.getPhone());
-		feedbackCash.setSessionUuid(xiaoPeng.getSessionUuid());
-		commonService.setFeedBackEx(xiaoPeng.getSessionUuid(), JSON.toJSONString(feedbackCash));
+		if (!this.isNoSessionUuid(xiaoPeng)) {
+			if (!commonService.isSessionExist(xiaoPeng.getSessionUuid())) {
+				LOGGER.warn("会话不存在无法提交,session={}", xiaoPeng.getSessionUuid());
+				throw new BizException("会话不存在无法提交");
+			}
+
+			FeedbackCash feedbackCash = new FeedbackCash();
+			feedbackCash.setIsCompleted(true);
+			feedbackCash.setPhone(xiaoPeng.getPhone());
+			feedbackCash.setSessionUuid(xiaoPeng.getSessionUuid());
+			commonService.setFeedBackEx(xiaoPeng.getSessionUuid(), JSON.toJSONString(feedbackCash));
+		}
 
 		xiaoPeng.setCreateTime(new Date());
 		mongoUtil.save(xiaoPeng);
 
+	}
+
+	/**
+	 * 是否没有 sessionUuid
+	 * @param xiaoPeng
+	 * @return
+	 */
+	public boolean isNoSessionUuid(XiaoPeng xiaoPeng) {
+		String sessionUuid = xiaoPeng.getSessionUuid();
+		LOGGER.info("isNoSessionUuid is {}", sessionUuid);
+		return sessionUuid.equals(NO_SESSION_UUID) ? true : false;
 	}
 
 
@@ -110,7 +123,6 @@ public class XiaoPengServiceImpl implements XiaoPengService {
 
 	@Override
 	public Result<Object> makeQrCode(String machinedCode, String sessionUuid) {
-
 		String url = String.format("%s?sessionUuid=%s", inno72GameServiceProperties.get("xiaopengUrl"), sessionUuid);
 
 
