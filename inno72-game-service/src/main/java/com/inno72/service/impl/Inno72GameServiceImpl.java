@@ -166,7 +166,7 @@ public class Inno72GameServiceImpl extends AbstractService<Inno72Game> implement
 		String userDayNumber = inno72ActivityPlanGoods.getUserDayNumber();
 		LOGGER.info("countSuccOrderPy inno72Orders size is {} ,userDayNumber is {}", inno72Orders.size(), userDayNumber);
 
-		if (StringUtil.isEmpty(userDayNumber) || (StringUtil.isNotEmpty(userDayNumber) && inno72Orders.size() <= Integer
+		if (StringUtil.isEmpty(userDayNumber) || (StringUtil.isNotEmpty(userDayNumber) && inno72Orders.size() < Integer
 				.valueOf(userDayNumber))) {
 			canOrder = true;
 		}
