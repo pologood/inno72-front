@@ -510,7 +510,7 @@ public class Inno72AuthInfoServiceImpl implements Inno72AuthInfoService {
 	 * @param sessionUuid
 	 * @return
 	 */
-	private String checkQrCode(String sessionUuid) {
+	private synchronized String checkQrCode(String sessionUuid) {
 		// 判断是否有他人登录以及二维码是否过期
 		String qrStatus = QRSTATUS_NORMAL;
 		LOGGER.info("sessionUuid is {}", sessionUuid);
