@@ -76,11 +76,6 @@ public class UserSessionVo {
 	private String sessionKey;
 
 	/**
-	 * session 是否被使用 true 被使用 false 没有被使用
-	 */
-	private boolean sessionUsed;
-
-	/**
 	 * 活动类型
 	 * @see com.inno72.model.Inno72Activity.ActivityType
 	 */
@@ -166,4 +161,5 @@ public class UserSessionVo {
 	public void setNeedPay(boolean needPay) {
 		this.needPay = needPay;
 	}
+
 }

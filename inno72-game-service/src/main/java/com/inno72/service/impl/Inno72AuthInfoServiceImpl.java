@@ -293,6 +293,17 @@ public class Inno72AuthInfoServiceImpl implements Inno72AuthInfoService {
 		LOGGER.info("processBeforeLogged params sessionUuid is {}, authInfo is {} ", sessionUuid, authInfo);
 
 		UserSessionVo sessionVo = gameSessionRedisUtil.getSessionKey(sessionUuid);
+
+		// 检查二维码是否可以重复扫
+		String qrStatus = this.checkQrCode(sessionUuid, sessionVo);
+
+		// 判断是否有用户已经登录
+		if (!StringUtil.isEmpty(redisUtil.get(sessionUuid + "exist"))) {
+			qrStatus = QRSTATUS_EXIST_USER;
+		} else {
+			redisUtil.set(sessionUuid + "exist", sessionUuid);
+		}
+
 		String mid = sessionVo.getMachineId();
 
 		if (StringUtil.isEmpty(authInfo)) {
@@ -343,9 +354,6 @@ public class Inno72AuthInfoServiceImpl implements Inno72AuthInfoService {
 		if (StringUtil.isEmpty(jstUrl)) {
 			return Results.failure("配置中心无聚石塔配置路径!");
 		}
-
-		// 检查二维码是否可以重复扫
-		String qrStatus = this.checkQrCode(sessionUuid);
 
 		Inno72Activity inno72Activity = inno72ActivityMapper.selectByPrimaryKey(inno72ActivityPlan.getActivityId());
 		String sellerId = inno72Activity.getSellerId();
@@ -510,7 +518,7 @@ public class Inno72AuthInfoServiceImpl implements Inno72AuthInfoService {
 	 * @param sessionUuid
 	 * @return
 	 */
-	private synchronized String checkQrCode(String sessionUuid) {
+	private synchronized String checkQrCode(String sessionUuid, UserSessionVo sessionVo) {
 		// 判断是否有他人登录以及二维码是否过期
 		String qrStatus = QRSTATUS_NORMAL;
 		LOGGER.info("sessionUuid is {}", sessionUuid);
@@ -520,26 +528,8 @@ public class Inno72AuthInfoServiceImpl implements Inno72AuthInfoService {
 		if (!result) {
 			qrStatus = QRSTATUS_INVALID;
 			LOGGER.info("二维码已经过期");
-		} else {
-			// 判断已经有用户操作
-			UserSessionVo userSessionVo = gameSessionRedisUtil.getSessionKey(sessionUuid);
-			if (userSessionVo.isSessionUsed()) {
-				qrStatus = QRSTATUS_EXIST_USER;
-				LOGGER.info("已经有用户正在操作");
-			} else {
-				this.setSesssionUsed(sessionUuid);
-			}
 		}
 		return qrStatus;
-	}
-
-	/**
-	 * 设置sessionUuid 已被使用
-	 */
-	private void setSesssionUsed(String sessionUuid) {
-		UserSessionVo userSessionVo = gameSessionRedisUtil.getSessionKey(sessionUuid);
-		userSessionVo.setSessionUsed(true);
-		gameSessionRedisUtil.setSessionEx(sessionUuid, JSON.toJSONString(userSessionVo));
 	}
 
 	/**
