@@ -301,7 +301,7 @@ public class Inno72AuthInfoServiceImpl implements Inno72AuthInfoService {
 		if (!StringUtil.isEmpty(redisUtil.get(sessionUuid + "exist"))) {
 			qrStatus = QRSTATUS_EXIST_USER;
 		} else {
-			redisUtil.set(sessionUuid + "exist", sessionUuid);
+			redisUtil.setex(sessionUuid + "exist", 1600, sessionUuid);
 		}
 
 		String mid = sessionVo.getMachineId();
