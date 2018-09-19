@@ -429,6 +429,7 @@ public class Inno72AuthInfoServiceImpl implements Inno72AuthInfoService {
 		resultMap.put("sellerId", inno72Merchant.getMerchantCode());
 
 		this.dealIsVip(resultMap, sessionVo);
+		this.checkGoodsId(sessionVo);
 
 		resultMap.put("activityType", activityType);
 		resultMap.put("goodsCode", sessionVo.getGoodsCode() != null ? sessionVo.getGoodsCode() : "");
@@ -442,6 +443,17 @@ public class Inno72AuthInfoServiceImpl implements Inno72AuthInfoService {
 
 		return Results.success(JSONObject.toJSONString(resultMap));
 	}
+
+	/**
+	 * 检查goodsid
+	 */
+	private void checkGoodsId(UserSessionVo sessionVo) {
+		if (StringUtil.isEmpty(sessionVo.getGoodsId()) && StringUtil.isNotEmpty(sessionVo.getGoodsCode())) {
+			Inno72Goods inno72Goods = inno72GoodsMapper.selectByCode(sessionVo.getGoodsCode());
+			sessionVo.setGoodsId(inno72Goods.getId());
+		}
+	}
+
 
 	/**
 	 * 处理是否入会
