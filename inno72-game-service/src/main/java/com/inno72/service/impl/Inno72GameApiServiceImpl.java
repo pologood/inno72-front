@@ -1700,6 +1700,8 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 			}
 			if (StringUtil.isNotEmpty(goodsCode)) {
 				userSessionVo.setGoodsCode(goodsCode);
+				Inno72Goods inno72Goods = inno72GoodsMapper.selectByCode(goodsCode);
+				userSessionVo.setGoodsId(inno72Goods.getId());
 			}
 		}
 	}
