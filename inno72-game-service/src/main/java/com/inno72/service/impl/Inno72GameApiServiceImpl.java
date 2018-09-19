@@ -400,7 +400,7 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 
 			// 如果需要支付 polling时 需要返回货道信息
 			boolean needPay = userSessionVo.getNeedPay();
-			if (!needPay) {
+			if (needPay) {
 				String goodsId = userSessionVo.getGoodsId();
 				List<String> goodsIds = new ArrayList<>();
 				goodsIds.add(goodsId);
