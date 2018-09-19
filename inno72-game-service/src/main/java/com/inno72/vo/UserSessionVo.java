@@ -80,6 +80,12 @@ public class UserSessionVo {
 	 */
 	private boolean sessionUsed;
 
+	/**
+	 * 活动类型
+	 * @see com.inno72.model.Inno72Activity.ActivityType
+	 */
+	private Integer activityType = 0;
+
 	public UserSessionVo(String mid, String userNick, String userId, String access_token, String gameId,
 			String sessionUuid, String planId) {
 		super();

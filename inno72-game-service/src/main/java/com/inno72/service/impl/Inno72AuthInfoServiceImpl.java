@@ -391,7 +391,7 @@ public class Inno72AuthInfoServiceImpl implements Inno72AuthInfoService {
 		}
 
 		// canOrder = inno72GameService.countSuccOrder(channelId, userId, inno72ActivityPlan.getId());
-
+		sessionVo.setActivityType(inno72Activity.getType());
 		sessionVo.setUserNick(nickName);
 		sessionVo.setUserId(userId);
 		sessionVo.setAccessToken(accessToken);

@@ -845,10 +845,11 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 		String report = vo.getReport();
 		String activityPlanId = userSessionVo.getActivityPlanId();
 		String goodsId = userSessionVo.getGoodsId();
+		Integer activityType = userSessionVo.getActivityType();
 
 		List<Inno72ActivityPlanGameResult> planGameResults = null;
 
-		if (StringUtil.isNotEmpty(goodsId)) {
+		if (activityType == Inno72Activity.ActivityType.PAIYANG.getType()) {
 			Inno72Goods inno72GoodsCheck = inno72GoodsMapper.selectByPrimaryKey(goodsId);
 			String shopId = inno72GoodsCheck.getShopId();
 
@@ -1700,8 +1701,6 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 			}
 			if (StringUtil.isNotEmpty(goodsCode)) {
 				userSessionVo.setGoodsCode(goodsCode);
-				Inno72Goods inno72Goods = inno72GoodsMapper.selectByCode(goodsCode);
-				userSessionVo.setGoodsId(inno72Goods.getId());
 			}
 		}
 	}
