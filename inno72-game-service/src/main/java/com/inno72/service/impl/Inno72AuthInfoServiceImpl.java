@@ -523,12 +523,23 @@ public class Inno72AuthInfoServiceImpl implements Inno72AuthInfoService {
 		} else {
 			// 判断已经有用户操作
 			UserSessionVo userSessionVo = gameSessionRedisUtil.getSessionKey(sessionUuid);
-			if (userSessionVo.isLogged()) {
+			if (userSessionVo.isSessionUsed()) {
 				qrStatus = QRSTATUS_EXIST_USER;
 				LOGGER.info("已经有用户正在操作");
+			} else {
+				this.setSesssionUsed(sessionUuid);
 			}
 		}
 		return qrStatus;
+	}
+
+	/**
+	 * 设置sessionUuid 已被使用
+	 */
+	private void setSesssionUsed(String sessionUuid) {
+		UserSessionVo userSessionVo = gameSessionRedisUtil.getSessionKey(sessionUuid);
+		userSessionVo.setSessionUsed(true);
+		gameSessionRedisUtil.setSessionEx(sessionUuid, JSON.toJSONString(userSessionVo));
 	}
 
 	/**

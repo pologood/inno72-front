@@ -75,6 +75,11 @@ public class UserSessionVo {
 	 */
 	private String sessionKey;
 
+	/**
+	 * session 是否被使用 true 被使用 false 没有被使用
+	 */
+	private boolean sessionUsed;
+
 	public UserSessionVo(String mid, String userNick, String userId, String access_token, String gameId,
 			String sessionUuid, String planId) {
 		super();
