@@ -3,7 +3,6 @@ package com.inno72.service.impl;
 import java.io.File;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -32,7 +31,6 @@ import com.inno72.common.Inno72GameServiceProperties;
 import com.inno72.common.Result;
 import com.inno72.common.Results;
 import com.inno72.common.StandardLoginTypeEnum;
-import com.inno72.common.datetime.LocalDateTimeUtil;
 import com.inno72.common.json.JsonUtil;
 import com.inno72.common.util.AesUtils;
 import com.inno72.common.util.FastJsonUtils;
@@ -42,9 +40,6 @@ import com.inno72.common.util.QrCodeUtil;
 import com.inno72.common.util.UuidUtil;
 import com.inno72.common.utils.StringUtil;
 import com.inno72.feign.MachineCheckBackendFeignClient;
-import com.inno72.log.LogAllContext;
-import com.inno72.log.PointLogContext;
-import com.inno72.log.vo.LogType;
 import com.inno72.machine.vo.SupplyRequestVo;
 import com.inno72.mapper.Inno72ActivityMapper;
 import com.inno72.mapper.Inno72ActivityPlanGameResultMapper;
@@ -96,7 +91,6 @@ import com.inno72.vo.GoodsVo;
 import com.inno72.vo.Inno72SamplingGoods;
 import com.inno72.vo.LogReqrest;
 import com.inno72.vo.MachineApiVo;
-import com.inno72.vo.StandardRedirectLoginReqVo;
 import com.inno72.vo.UserSessionVo;
 
 import net.coobird.thumbnailator.Thumbnails;
@@ -1512,11 +1506,14 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 			LOGGER.info("调用出货无orderId 请求参数=>{}", JSON.toJSONString(vo));
 		}
 		/* 埋点 */
-		CommonBean.logger(CommonBean.POINT_TYPE_FINISH, machineCode,
+		CommonBean.logger(
+				CommonBean.POINT_TYPE_FINISH,
+				machineCode,
 				"机器 ["+machineCode+"] 货道 ["+inno72SupplyChannel.getName()+"(code:"+inno72SupplyChannel.getCode()+")] "
 						+ "出货完成."
 						+ "货道容量 ["+inno72SupplyChannel.getVolumeCount()+"]. "
-						+ "原数量 ["+inno72SupplyChannel.getGoodsCount()+"], 当前数量 ["+updateChannel.getGoodsCount()+"]");
+						+ "原数量 ["+inno72SupplyChannel.getGoodsCount()+"], 当前数量 ["+updateChannel.getGoodsCount()+"]",
+				userSessionVo.getActivityId());
 
 		return Results.success();
 	}
@@ -2314,6 +2311,12 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 			Inno72Shops inno72Shops = inno72ShopsMapper.selectByPrimaryKey(inno72Goods.getShopId());
 			inno72Order.setShopsId(inno72Shops.getId());
 			inno72Order.setShopsName(inno72Shops.getShopName());
+			/* 埋点 */
+			CommonBean.logger(
+					CommonBean.POINT_TYPE_GOODS_ORDER,
+					inno72Machine.getMachineCode(),
+					"用户[" + userChannel.getUserNick() + "]生成商品["+ goodsName + "]订单，订单号[" + orderNum +"].",
+					inno72ActivityPlan.getActivityId()+"|"+inno72Goods.getCode());
 
 		} else {
 			Inno72Coupon inno72Coupon = inno72CouponMapper.selectByPrimaryKey(goodsId);
@@ -2325,10 +2328,14 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 			Inno72Shops inno72Shops = inno72ShopsMapper.selectByPrimaryKey(inno72Coupon.getShopsId());
 			inno72Order.setShopsId(inno72Shops.getId());
 			inno72Order.setShopsName(inno72Shops.getShopName());
+			/* 埋点 */
+			CommonBean.logger(
+					CommonBean.POINT_TYPE_COUPON_ORDER,
+					inno72Machine.getMachineCode(),
+					"用户[" + userChannel.getUserNick() + "]生成优惠券["+ goodsName + "]订单，订单号[" + orderNum +"].",
+					inno72ActivityPlan.getActivityId()+"|"+inno72Coupon.getCode());
 		}
-		/* 埋点 */
-		CommonBean.logger(CommonBean.POINT_TYPE_ORDER, inno72Machine.getMachineCode(),
-				"用户[" + userChannel.getUserNick() + "]生成["+ goodsName + "]订单，订单号[" + orderNum +"].");
+
 
 		orderGoods.setOrderNum(inno72Order.getOrderNum());
 		orderGoods.setStatus(Inno72Order.INNO72ORDER_GOODSSTATUS.WAIT.getKey());
