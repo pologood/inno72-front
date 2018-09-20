@@ -32,6 +32,7 @@ import com.inno72.common.Result;
 import com.inno72.common.Results;
 import com.inno72.common.StandardLoginTypeEnum;
 import com.inno72.common.json.JsonUtil;
+import com.inno72.common.shiro.filter.JWTUtil;
 import com.inno72.common.util.AesUtils;
 import com.inno72.common.util.FastJsonUtils;
 import com.inno72.common.util.GameSessionRedisUtil;
@@ -2052,6 +2053,8 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 		resultMap.put("playCode", playCode);
 		resultMap.put("qrStatus", qrStatus);
 		resultMap.put("sellerId", inno72Merchant.getMerchantCode());
+
+		resultMap.put("Authorization", JWTUtil.sign(sessionUuid, mid));
 
 		return Results.success(JSONObject.toJSONString(resultMap));
 	}

@@ -84,7 +84,7 @@ public class Inno72StandardController {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(Inno72StandardController.class);
 	/**
-	 * 登录（包括需要登录和非登录的场景）
+	 * 测试埋点接口
 	 * @param req
 	 * @return
 	 */

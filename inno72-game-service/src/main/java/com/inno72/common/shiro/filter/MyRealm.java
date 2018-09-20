@@ -14,8 +14,11 @@ import org.apache.shiro.realm.AuthorizingRealm;
 import org.apache.shiro.subject.PrincipalCollection;
 import org.springframework.stereotype.Service;
 
+import com.inno72.common.util.GameSessionRedisUtil;
+import com.inno72.common.utils.StringUtil;
 import com.inno72.model.Inno72Authentication;
 import com.inno72.service.Inno72AuthenticationService;
+import com.inno72.vo.UserSessionVo;
 
 @Service
 public class MyRealm extends AuthorizingRealm {
@@ -24,7 +27,7 @@ public class MyRealm extends AuthorizingRealm {
 	private static final Logger LOGGER = LogManager.getLogger(MyRealm.class);
 
 	@Resource
-	private Inno72AuthenticationService inno72AuthenticationService;
+	private GameSessionRedisUtil gameSessionRedisUtil;
 
 	/**
 	 * 大坑！，必须重写此方法，不然Shiro会报错
@@ -40,8 +43,8 @@ public class MyRealm extends AuthorizingRealm {
 	@SuppressWarnings("unused")
 	@Override
 	protected AuthorizationInfo doGetAuthorizationInfo(PrincipalCollection principals) {
-		String username = JWTUtil.getUsername(principals.toString());
-		Inno72Authentication user = inno72AuthenticationService.getUser(username);
+		String session = JWTUtil.getSession(principals.toString());
+		UserSessionVo sessionKey = gameSessionRedisUtil.getSessionKey(session);
 		SimpleAuthorizationInfo simpleAuthorizationInfo = new SimpleAuthorizationInfo();
 
 		return simpleAuthorizationInfo;
@@ -54,17 +57,16 @@ public class MyRealm extends AuthorizingRealm {
 	protected AuthenticationInfo doGetAuthenticationInfo(AuthenticationToken auth) throws AuthenticationException {
 		String token = (String) auth.getCredentials();
 		// 解密获得username，用于和数据库进行对比
-		String username = JWTUtil.getUsername(token);
-		if (username == null) {
+		String session = JWTUtil.getSession(token);
+		if (StringUtil.isEmpty(session)) {
 			throw new AuthenticationException("token invalid");
 		}
-
-		Inno72Authentication user = inno72AuthenticationService.getUser(username);
-		if (user == null) {
+		UserSessionVo sessionKey = gameSessionRedisUtil.getSessionKey(session);
+		if (sessionKey == null) {
 			throw new AuthenticationException("User didn't existed!");
 		}
 
-		if (!JWTUtil.verify(token, username, user.getuPassword())) {
+		if (!JWTUtil.verify(token, session, sessionKey.getMachineCode())) {
 			throw new AuthenticationException("Username or password error");
 		}
 
