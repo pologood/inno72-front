@@ -42,6 +42,12 @@ public class Inno72Shops {
 	private Integer isDelete;
 
 	/**
+	 * 状态：0正常，1停止
+	 */
+	@Column(name = "session_key")
+	private String sessionKey;
+
+	/**
 	 * 备注描述
 	 */
 	private String remark;
@@ -248,5 +254,13 @@ public class Inno72Shops {
 	 */
 	public void setUpdateTime(Date updateTime) {
 		this.updateTime = updateTime;
+	}
+
+	public String getSessionKey() {
+		return sessionKey;
+	}
+
+	public void setSessionKey(String sessionKey) {
+		this.sessionKey = sessionKey;
 	}
 }

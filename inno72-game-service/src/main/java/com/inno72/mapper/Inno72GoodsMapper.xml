@@ -89,4 +89,12 @@
 	WHERE
 	    shops.id =#{shopId}  and activity_shops.activity_id=#{activityId}
   </select>
+
+    <select id="findSamplingGoodsById" resultMap="SamplingGoodsMap" parameterType="String">
+    SELECT
+	    *
+	FROM inno72_goods
+	WHERE
+	    id=#{goodsId}
+  </select>
 </mapper>

@@ -81,6 +81,10 @@ public class Inno72SamplingGoods {
 	 */
 	private Integer num;
 	/**
+	 * 机器配置的商品数量-发放的数量
+	 */
+	private Integer machineSurplusGoodsNum;
+	/**
 	 * 是否需要入会   0否，1是
 	 */
 	private Integer isVip;
@@ -365,4 +369,11 @@ public class Inno72SamplingGoods {
 		this.machineId = machineId;
 	}
 
+	public Integer getMachineSurplusGoodsNum() {
+		return machineSurplusGoodsNum;
+	}
+
+	public void setMachineSurplusGoodsNum(Integer machineSurplusGoodsNum) {
+		this.machineSurplusGoodsNum = machineSurplusGoodsNum;
+	}
 }

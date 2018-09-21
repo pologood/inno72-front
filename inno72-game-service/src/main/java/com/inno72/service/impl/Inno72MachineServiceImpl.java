@@ -8,6 +8,7 @@ import java.util.Map;
 
 import javax.annotation.Resource;
 
+import com.inno72.model.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
@@ -25,11 +26,6 @@ import com.inno72.mapper.Inno72ActivityPlanMapper;
 import com.inno72.mapper.Inno72GameMapper;
 import com.inno72.mapper.Inno72MachineMapper;
 import com.inno72.mapper.Inno72MerchantMapper;
-import com.inno72.model.Inno72Activity;
-import com.inno72.model.Inno72ActivityPlan;
-import com.inno72.model.Inno72Game;
-import com.inno72.model.Inno72Machine;
-import com.inno72.model.Inno72Merchant;
 import com.inno72.redis.IRedisUtil;
 import com.inno72.service.Inno72MachineService;
 import com.inno72.vo.Inno72MachineVo;
@@ -57,6 +53,8 @@ public class Inno72MachineServiceImpl extends AbstractService<Inno72Machine> imp
 	private Inno72ActivityMapper inno72ActivityMapper;
 	@Resource
 	private IRedisUtil redisUtil;
+//	@Resource
+//	private InteractMachineTimeService interactMachineTimeService;
 
 
 	@Override
@@ -157,12 +155,23 @@ public class Inno72MachineServiceImpl extends AbstractService<Inno72Machine> imp
 
 			List<Inno72ActivityPlan> inno72ActivityPlans = inno72ActivityPlanMapper
 					.selectByMachineId(inno72Machine.getId());
-
+			boolean paiyangFlag = false;
+//			Inno72Interact interact = null;
 			if (inno72ActivityPlans.size() == 0) {
-				LOGGER.debug("机器 【{}】 没有配置 活动计划!", inno72Machine.getMachineCode());
-				return Results.warn("无活动计划!", 2);
+				LOGGER.debug("机器 【{}】 没有配置 活动计划!查询派样", inno72Machine.getMachineCode());
+				//查看派样
+//				findPaiYangActivity(machineId);
+//				interact = interactMachineTimeService.findPaiYangInteract(machineId);
+//				if(interact == null){
+//					return Results.warn("无活动计划!", 2);
+//				}
+				paiyangFlag = true;
 			}
+			if(paiyangFlag){
 
+			}else{
+
+			}
 			Inno72ActivityPlan inno72ActivityPlan = inno72ActivityPlans.get(0);
 			LOGGER.debug("活动计划详情 =====> {}", JSON.toJSONString(inno72ActivityPlan));
 
