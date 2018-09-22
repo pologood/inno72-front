@@ -292,10 +292,15 @@ public class Inno72AuthInfoServiceImpl implements Inno72AuthInfoService {
 	public Result<Object> processBeforeLogged(String sessionUuid, String authInfo) {
 		LOGGER.info("processBeforeLogged params sessionUuid is {}, authInfo is {} ", sessionUuid, authInfo);
 
-		UserSessionVo sessionVo = gameSessionRedisUtil.getSessionKey(sessionUuid);
-
 		// 检查二维码是否可以重复扫
-		String qrStatus = this.checkQrCode(sessionUuid, sessionVo);
+		String qrStatus = this.checkQrCode(sessionUuid);
+
+		// 判断二维码是否已经过期
+		if (qrStatus == QRSTATUS_INVALID) {
+			return Results.failure("二维码已经过期");
+		}
+
+		UserSessionVo sessionVo = gameSessionRedisUtil.getSessionKey(sessionUuid);
 
 		// 判断是否有用户已经登录
 		if (!StringUtil.isEmpty(redisUtil.get(sessionUuid + "exist"))) {
@@ -530,7 +535,7 @@ public class Inno72AuthInfoServiceImpl implements Inno72AuthInfoService {
 	 * @param sessionUuid
 	 * @return
 	 */
-	private synchronized String checkQrCode(String sessionUuid, UserSessionVo sessionVo) {
+	private synchronized String checkQrCode(String sessionUuid) {
 		// 判断是否有他人登录以及二维码是否过期
 		String qrStatus = QRSTATUS_NORMAL;
 		LOGGER.info("sessionUuid is {}", sessionUuid);
