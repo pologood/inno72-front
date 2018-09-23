@@ -599,10 +599,14 @@ public class Inno72AuthInfoServiceImpl implements Inno72AuthInfoService {
 	public boolean setLogged(String sessionUuid) {
 		boolean logged = false;
 		try {
-			UserSessionVo userSessionVo = gameSessionRedisUtil.getSessionKey(sessionUuid);
-			userSessionVo.setLogged(true);
-			gameSessionRedisUtil.setSessionEx(userSessionVo.getSessionUuid(), JSON.toJSONString(userSessionVo));
-			logged = true;
+			boolean hasKey = gameSessionRedisUtil.hasKey(sessionUuid);
+			LOGGER.info("setLogged hasKey is {}, sessionUuid is {}", hasKey, sessionUuid);
+			if (hasKey) {
+				UserSessionVo userSessionVo = gameSessionRedisUtil.getSessionKey(sessionUuid);
+				userSessionVo.setLogged(true);
+				gameSessionRedisUtil.setSessionEx(userSessionVo.getSessionUuid(), JSON.toJSONString(userSessionVo));
+				logged = true;
+			}
 		} catch (Exception e) {
 			LOGGER.error(e.getMessage(), e);
 		}
