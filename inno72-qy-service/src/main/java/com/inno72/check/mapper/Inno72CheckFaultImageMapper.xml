@@ -1,17 +1,17 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.inno72.check.mapper.Inno72CheckFaultImageMapper">
-  <resultMap id="BaseResultMap" type="com.inno72.check.model.Inno72CheckFaultImage">
-    <!--
-      WARNING - @mbg.generated
-    -->
-    <id column="id" jdbcType="VARCHAR" property="id" />
-    <result column="fault_id" jdbcType="VARCHAR" property="faultId"/>
-    <result column="remark_id" jdbcType="VARCHAR" property="remarkId"/>
-    <result column="image" jdbcType="VARCHAR" property="image"/>
-    <result column="sort" jdbcType="INTEGER" property="sort"/>
-    <result column="is_delete" jdbcType="INTEGER" property="isDelete"/>
-    <result column="create_time" jdbcType="TIMESTAMP" property="createTime"/>
-  </resultMap>
+    <resultMap id="BaseResultMap" type="com.inno72.check.model.Inno72CheckFaultImage">
+        <!--
+          WARNING - @mbg.generated
+        -->
+        <id column="id" jdbcType="VARCHAR" property="id" />
+        <result column="fault_id" jdbcType="VARCHAR" property="faultId"/>
+        <result column="remark_id" jdbcType="VARCHAR" property="remarkId"/>
+        <result column="image" jdbcType="VARCHAR" property="image"/>
+        <result column="sort" jdbcType="INTEGER" property="sort"/>
+        <result column="is_delete" jdbcType="INTEGER" property="isDelete"/>
+        <result column="create_time" jdbcType="TIMESTAMP" property="createTime"/>
+    </resultMap>
 
 </mapper>
