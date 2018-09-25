@@ -1594,6 +1594,9 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 
 	@Override
 	public Result<Object> prepareLoginQrCode(String machineId, int loginType , String ext) {
+
+		gameSessionRedisUtil.delSession(machineId);
+
 		Inno72Machine inno72Machine = inno72MachineMapper.findMachineByCode(machineId);
 		Map<String, Object> map = new HashMap<String, Object>();
 		// 在machine库查询bluetooth地址 "6893a2ada9dd4f7eb8dc33adfc6eda73"
