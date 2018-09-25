@@ -1,58 +1,59 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.inno72.machine.mapper.Inno72MachineMapper">
-	<resultMap id="BaseResultMap" type="com.inno72.machine.model.Inno72Machine">
-		<!-- WARNING - @mbg.generated -->
-		<id column="id" jdbcType="VARCHAR" property="id" />
-		<result column="machine_code" jdbcType="VARCHAR" property="machineCode" />
-		<result column="machine_name" jdbcType="VARCHAR" property="machineName" />
-		<result column="locale_id" jdbcType="VARCHAR" property="localeId" />
-		<result column="tag" jdbcType="VARCHAR" property="tag" />
-		<result column="create_id" jdbcType="VARCHAR" property="createId" />
-		<result column="update_id" jdbcType="VARCHAR" property="updateId" />
-		<result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
-		<result column="update_time" jdbcType="TIMESTAMP" property="updateTime" />
-		<result column="machine_status" jdbcType="INTEGER" property="machineStatus" />
-		<result column="net_status" jdbcType="INTEGER" property="netStatus" />
-		<result column="device_id" jdbcType="VARCHAR" property="deviceId" />
-		<result column="address" jdbcType="VARCHAR" property="address" />
-		<result column="localeStr" jdbcType="VARCHAR" property="localeStr"/>
-		<association property="supplyChannelVoList" resultMap="supplyChannelVoList"/>
-		<association property="checkUserVoList" resultMap="checkUserVoList"/>
-		<association property="faultVoList" resultMap="faultVoList"/>
-		<association property="signInList" resultMap="signInList"/>
-	</resultMap>
+    <resultMap id="BaseResultMap" type="com.inno72.machine.model.Inno72Machine">
+        <!-- WARNING - @mbg.generated -->
+        <id column="id" jdbcType="VARCHAR" property="id" />
+        <result column="machine_code" jdbcType="VARCHAR" property="machineCode" />
+        <result column="machine_name" jdbcType="VARCHAR" property="machineName" />
+        <result column="locale_id" jdbcType="VARCHAR" property="localeId" />
+        <result column="tag" jdbcType="VARCHAR" property="tag" />
+        <result column="create_id" jdbcType="VARCHAR" property="createId" />
+        <result column="update_id" jdbcType="VARCHAR" property="updateId" />
+        <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
+        <result column="update_time" jdbcType="TIMESTAMP" property="updateTime" />
+        <result column="machine_status" jdbcType="INTEGER" property="machineStatus" />
+        <result column="net_status" jdbcType="INTEGER" property="netStatus" />
+        <result column="device_id" jdbcType="VARCHAR" property="deviceId" />
+        <result column="inside_time" jdbcType="TIMESTAMP" property="insideTime"/>
+        <result column="address" jdbcType="VARCHAR" property="address" />
+        <result column="localeStr" jdbcType="VARCHAR" property="localeStr"/>
+        <association property="supplyChannelVoList" resultMap="supplyChannelVoList"/>
+        <association property="checkUserVoList" resultMap="checkUserVoList"/>
+        <association property="faultVoList" resultMap="faultVoList"/>
+        <association property="signInList" resultMap="signInList"/>
+    </resultMap>
 
-	<resultMap id="supplyChannelVoList" type="com.inno72.machine.vo.SupplyChannelVo">
-		<result column="channelCode" jdbcType="VARCHAR" property="channelCode" />
-		<result column="channelName" jdbcType="VARCHAR" property="channelName" />
-		<result column="channelStatus" jdbcType="INTEGER" property="channelStatus" />
-		<result column="machine_id" jdbcType="VARCHAR" property="machineId" />
-		<result column="parent_code" jdbcType="VARCHAR" property="parentCode" />
-		<result column="volume_count" jdbcType="INTEGER" property="volumeCount" />
-		<result column="goods_count" jdbcType="INTEGER" property="goodsCount" />
-		<result column="goodsId" jdbcType="VARCHAR" property="goodsId"/>
-	</resultMap>
+    <resultMap id="supplyChannelVoList" type="com.inno72.machine.vo.SupplyChannelVo">
+        <result column="channelCode" jdbcType="VARCHAR" property="channelCode" />
+        <result column="channelName" jdbcType="VARCHAR" property="channelName" />
+        <result column="channelStatus" jdbcType="INTEGER" property="channelStatus" />
+        <result column="machine_id" jdbcType="VARCHAR" property="machineId" />
+        <result column="parent_code" jdbcType="VARCHAR" property="parentCode" />
+        <result column="volume_count" jdbcType="INTEGER" property="volumeCount" />
+        <result column="goods_count" jdbcType="INTEGER" property="goodsCount" />
+        <result column="goodsId" jdbcType="VARCHAR" property="goodsId"/>
+    </resultMap>
 
-	<resultMap id="checkUserVoList" type="com.inno72.check.vo.CheckUserVo">
-		<result column="checkUserId" jdbcType="VARCHAR" property="id"/>
-		<result column="checkUserName" jdbcType="VARCHAR" property="name"/>
-		<result column="checkUserPhone" jdbcType="VARCHAR" property="phone"/>
-	</resultMap>
+    <resultMap id="checkUserVoList" type="com.inno72.check.vo.CheckUserVo">
+        <result column="checkUserId" jdbcType="VARCHAR" property="id"/>
+        <result column="checkUserName" jdbcType="VARCHAR" property="name"/>
+        <result column="checkUserPhone" jdbcType="VARCHAR" property="phone"/>
+    </resultMap>
 
-	<resultMap id="faultVoList" type="com.inno72.check.vo.FaultVo">
-		<result column="faultId" jdbcType="VARCHAR" property="id"/>
-		<result column="faultCode" jdbcType="VARCHAR" property="code"/>
-		<result column="faultStatus" jdbcType="INTEGER" property="status"/>
-		<result column="faultType" jdbcType="VARCHAR" property="type"/>
-	</resultMap>
+    <resultMap id="faultVoList" type="com.inno72.check.vo.FaultVo">
+        <result column="faultId" jdbcType="VARCHAR" property="id"/>
+        <result column="faultCode" jdbcType="VARCHAR" property="code"/>
+        <result column="faultStatus" jdbcType="INTEGER" property="status"/>
+        <result column="faultType" jdbcType="VARCHAR" property="type"/>
+    </resultMap>
 
-	<resultMap id="signInList" type="com.inno72.check.model.Inno72CheckSignIn">
-		<result column="signInId" jdbcType="VARCHAR" property="id"/>
-		<result column="cTime" jdbcType="TIMESTAMP" property="createTime"/>
-	</resultMap>
+    <resultMap id="signInList" type="com.inno72.check.model.Inno72CheckSignIn">
+        <result column="signInId" jdbcType="VARCHAR" property="id"/>
+        <result column="cTime" jdbcType="TIMESTAMP" property="createTime"/>
+    </resultMap>
 
-	<select id="getMachine" resultMap="BaseResultMap">
+    <select id="getMachine" resultMap="BaseResultMap">
 
 		select t1.*,
 		t3.code channelCode,
@@ -66,7 +67,7 @@
             t5.province,
             t5.city,
             t5.district,
-            if(t5.circle='其他','',t5.circle),IFNULL(t4.mall,""),IFNULL( t4.name,'')
+            if(t5.circle='其他' or t5.circle is null,'',t5.circle),IFNULL(t4.mall,""),IFNULL( t4.name,'')
             ) AS localeStr,
             t6.goods_id goodsId
 		from inno72_machine t1
@@ -81,7 +82,7 @@
 
 
 
-	<select id="getMachineByLackGoods" resultMap="BaseResultMap">
+    <select id="getMachineByLackGoods" resultMap="BaseResultMap">
 		select t1.*,
 		t3.code channelCode,
 		t3.name channelName,
@@ -94,7 +95,7 @@
             t5.province,
             t5.city,
             t5.district,
-            if(t5.circle='其他','',t5.circle),IFNULL(t4.mall,""),IFNULL( t4.name,'')
+            if(t5.circle='其他' or t5.circle is null,'',t5.circle),IFNULL(t4.mall,""),IFNULL( t4.name,'')
             ) AS localeStr
 		from inno72_machine t1
 		left join inno72_check_user_machine t2 on t1.id=t2.machine_id
@@ -106,7 +107,7 @@
 		and t3.status=0 and t3.is_delete=0 and t6.goods_id=#{goodsId}
 	</select>
 
-	<select id="machineList" resultMap="BaseResultMap">
+    <select id="machineList" resultMap="BaseResultMap">
 		select t1.*,
 		t3.code faultCode,
 		t3.id faultId,
@@ -116,7 +117,7 @@
 		t5.province,
 		t5.city,
 		t5.district,
-		if(t5.circle='其他','',t5.circle),IFNULL(t4.mall,""),IFNULL( t4.name,'')
+		if(t5.circle='其他' or t5.circle is null,'',t5.circle),IFNULL(t4.mall,""),IFNULL( t4.name,'')
 		) AS localeStr,
 		t6.id signInId,
 		t6.create_time cTime
@@ -131,43 +132,58 @@
 		where t1.machine_status=4 and t2.check_user_id=#{checkUserId,jdbcType=VARCHAR}
 	</select>
 
-	<select id="selectByParam" resultMap="BaseResultMap">
-		select t1.*,
-		t3.id checkUserId,
-		t3.name checkUserName,
-		t3.phone checkUserPhone,
-		CONCAT(
-		t5.province,
-		t5.city,
-		t5.district,
-		if(t5.circle='其他','',t5.circle),IFNULL(t4.mall,""),IFNULL( t4.name,'')
-		) AS localeStr
-		from inno72_machine t1
-		left join inno72_check_user_machine t2 on t1.id=t2.machine_id
-		left join inno72_check_user t3 on t2.check_user_id=t3.id
-		LEFT JOIN inno72_locale t4 ON t4.id = t1.locale_id
-		LEFT JOIN inno72_admin_area t5 ON t5.CODE = t4.area_code
-		where t1.machine_status=4 and t2.check_user_id=#{checkUserId,jdbcType=VARCHAR}
-		<if test="machineIds != null">
-			AND
-			<foreach collection="machineIds" open="(" close=")" separator="or" item="item" index="index">
-				t1.id = #{item,jdbcType=VARCHAR}
-			</foreach>
+    <select id="selectByParam" resultMap="BaseResultMap">
+        select t1.*,
+        t3.id checkUserId,
+        t3.name checkUserName,
+        t3.phone checkUserPhone,
+        CONCAT(
+        t5.province,
+        t5.city,
+        t5.district,
+        if(t5.circle='其他' or t5.circle is null,'',t5.circle),IFNULL(t4.mall,""),IFNULL( t4.name,'')
+        ) AS localeStr
+        from inno72_machine t1
+        left join inno72_check_user_machine t2 on t1.id=t2.machine_id
+        left join inno72_check_user t3 on t2.check_user_id=t3.id
+        LEFT JOIN inno72_locale t4 ON t4.id = t1.locale_id
+        LEFT JOIN inno72_admin_area t5 ON t5.CODE = t4.area_code
+        where t1.machine_status=4 and t2.check_user_id=#{checkUserId,jdbcType=VARCHAR}
+        <if test="machineIds != null">
+            AND
+            <foreach collection="machineIds" open="(" close=")" separator="or" item="item" index="index">
+                t1.id = #{item,jdbcType=VARCHAR}
+            </foreach>
 
-		</if>
-	</select>
-	<select id="getMachineByCode" resultMap="BaseResultMap">
+        </if>
+    </select>
+    <select id="getMachineByCode" resultMap="BaseResultMap">
 		select t1.*,
 		 CONCAT(
 		t5.province,
 		t5.city,
 		t5.district,
-		if(t5.circle='其他','',t5.circle),IFNULL(t4.mall,""),IFNULL( t4.name,'')
+		if(t5.circle='其他' or t5.circle is null,'',t5.circle),IFNULL(t4.mall,""),IFNULL( t4.name,'')
 		) AS localeStr
 		from inno72_machine t1
 		LEFT JOIN inno72_locale t4 ON t4.id = t1.locale_id
 		LEFT JOIN inno72_admin_area t5 ON t5.CODE = t4.area_code
 		where t1.machine_code=#{machineCode}
+		limit 1
+	</select>
+
+    <select id="getMachineById" resultMap="BaseResultMap">
+		select t1.*,
+		 CONCAT(
+		t5.province,
+		t5.city,
+		t5.district,
+		if(t5.circle='其他' or t5.circle is null,'',t5.circle),IFNULL(t4.mall,""),IFNULL( t4.name,'')
+		) AS localeStr
+		from inno72_machine t1
+		LEFT JOIN inno72_locale t4 ON t4.id = t1.locale_id
+		LEFT JOIN inno72_admin_area t5 ON t5.CODE = t4.area_code
+		where t1.id=#{machineId}
 		limit 1
 	</select>
 </mapper>

@@ -27,7 +27,7 @@ public class CommonConstants {
 
 	/** 用户登录对象 **/
 	public static SessionData SESSION_DATA = new SessionData();
-	
+
 	/** OSS基础路径 **/
 	public static final String OSS_PATH = "backend";
 	/** OSS基础路径 **/
@@ -40,5 +40,23 @@ public class CommonConstants {
 	 *APP下载地址前缀
 	 */
 	public static final String DOWNLOAD_APP_PREF = "http://inno72.oss.72solo.com";
+
+	/**日志：入厂*/
+	public static final String LOG_TYPE_IN_FACTORY = "41";
+
+	/**日志：机器打卡*/
+	public static final String LOG_TYPE_MACHINE_SIGN = "42";
+
+	/**日志：机器补货*/
+	public static final String LOG_TYPE_MACHINE_SUPPLY = "43";
+
+	/**日志：处理工单*/
+	public static final String LOG_TYPE_SET_WORK = "44";
+
+	/**日志：拆分货道*/
+	public static final String LOG_TYPE_SPLIT_CHANNEL = "45";
+
+	/**日志：合并货道*/
+	public static final String LOG_TYPE_MERGE_CHANNEL = "46";
 
 }

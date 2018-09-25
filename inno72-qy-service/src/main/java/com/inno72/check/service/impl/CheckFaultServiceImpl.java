@@ -1,29 +1,46 @@
 package com.inno72.check.service.impl;
 
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import javax.annotation.Resource;
+
+import org.apache.commons.lang.StringUtils;
+import org.springframework.data.mongodb.core.MongoOperations;
+import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
+
 import com.inno72.alarmMsg.mapper.Inno72AlarmMsgMapper;
 import com.inno72.alarmMsg.model.Inno72AlarmMsg;
 import com.inno72.check.mapper.Inno72CheckFaultImageMapper;
 import com.inno72.check.mapper.Inno72CheckFaultMapper;
 import com.inno72.check.mapper.Inno72CheckFaultRemarkMapper;
 import com.inno72.check.mapper.Inno72CheckFaultTypeMapper;
-import com.inno72.check.model.*;
+import com.inno72.check.model.Inno72CheckFault;
+import com.inno72.check.model.Inno72CheckFaultImage;
+import com.inno72.check.model.Inno72CheckFaultRemark;
+import com.inno72.check.model.Inno72CheckFaultType;
+import com.inno72.check.model.Inno72CheckUser;
 import com.inno72.check.service.CheckFaultService;
 import com.inno72.check.vo.CheckUserVo;
-import com.inno72.common.*;
+import com.inno72.common.AbstractService;
+import com.inno72.common.CommonConstants;
+import com.inno72.common.DateUtil;
+import com.inno72.common.ImageUtil;
+import com.inno72.common.Result;
+import com.inno72.common.ResultGenerator;
+import com.inno72.common.Results;
+import com.inno72.common.StringUtil;
+import com.inno72.common.UploadUtil;
+import com.inno72.common.UserUtil;
 import com.inno72.machine.mapper.Inno72MachineMapper;
 import com.inno72.machine.model.Inno72Machine;
 import com.inno72.msg.MsgUtil;
-import org.apache.commons.lang.StringUtils;
-import org.springframework.stereotype.Service;
-import org.springframework.web.multipart.MultipartFile;
-import tk.mybatis.mapper.entity.Condition;
 
-import javax.annotation.Resource;
-import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import tk.mybatis.mapper.entity.Condition;
 
 @Service("checkFaultService")
 public class CheckFaultServiceImpl extends AbstractService<Inno72CheckFault> implements CheckFaultService {
@@ -49,8 +66,12 @@ public class CheckFaultServiceImpl extends AbstractService<Inno72CheckFault> imp
 	@Resource
 	private MsgUtil msgUtil;
 
+	@Resource
+	private MongoOperations mongoTpl;
+
 	@Override
 	public Result<String> addCheckFault(Inno72CheckFault checkFault) {
+		Inno72CheckUser checkUser = UserUtil.getUser();
 		String remark = checkFault.getRemark();
 		if (StringUtil.isEmpty(remark)) {
 			Results.failure("故障描述不能为空");
@@ -63,16 +84,16 @@ public class CheckFaultServiceImpl extends AbstractService<Inno72CheckFault> imp
 				String time = DateUtil.toTimeStr(LocalDateTime.now(), DateUtil.DF_FULL_S2);
 				checkFault.setCode("F" + StringUtil.createRandomCode(6) + time);
 				checkFault.setSubmitTime(LocalDateTime.now());
-				checkFault.setSubmitUser(UserUtil.getUser().getName());
+				checkFault.setSubmitUser(checkUser.getName());
 				checkFault.setMachineId(machineId);
 				checkFault.setWorkType(1);//
 				checkFault.setSource(1);// 巡检
 				checkFault.setUrgentStatus(1);// 日常
-				checkFault.setSubmitId(UserUtil.getUser().getId());
+				checkFault.setSubmitId(checkUser.getId());
 				checkFault.setSubmitUserType(1);// 巡检人员
 				checkFault.setStatus(2);// 处理中
-				checkFault.setReceiveUser(UserUtil.getUser().getName());
-				checkFault.setReceiveId(UserUtil.getUser().getId());
+				checkFault.setReceiveUser(checkUser.getName());
+				checkFault.setReceiveId(checkUser.getId());
 				checkFault.setUpdateTime(LocalDateTime.now());
 				String type = checkFault.getType();
 				Inno72CheckFaultType inno72CheckFaultType = inno72CheckFaultTypeMapper.selectByPrimaryKey(type);
@@ -86,8 +107,8 @@ public class CheckFaultServiceImpl extends AbstractService<Inno72CheckFault> imp
 				inno72CheckFaultMapper.insertSelective(checkFault);
 				Inno72CheckFaultRemark faultRemark = new Inno72CheckFaultRemark();
 				faultRemark.setRemark(remark);
-				faultRemark.setUserId(UserUtil.getUser().getId());
-				faultRemark.setName(UserUtil.getUser().getName());
+				faultRemark.setUserId(checkUser.getId());
+				faultRemark.setName(checkUser.getName());
 				faultRemark.setType(1);
 				faultRemark.setCreateTime(LocalDateTime.now());
 				faultRemark.setFaultId(id);
@@ -110,7 +131,7 @@ public class CheckFaultServiceImpl extends AbstractService<Inno72CheckFault> imp
 
 			}
 			Map<String, Object> queryMap = new HashMap<>();
-			queryMap.put("checkUserId", UserUtil.getUser().getId());
+			queryMap.put("checkUserId", checkUser.getId());
 			queryMap.put("machineIds", machineIds);
 			List<Inno72Machine> machines = inno72MachineMapper.selectByParam(queryMap);
 			Inno72CheckFaultType checkFaultType = inno72CheckFaultTypeMapper.selectByPrimaryKey(checkFault.getType());
@@ -139,10 +160,10 @@ public class CheckFaultServiceImpl extends AbstractService<Inno72CheckFault> imp
 					List<CheckUserVo> checkUserList = machine.getCheckUserVoList();
 					List<String> userIdList = new ArrayList<>();
 					if (checkUserList != null && checkUserList.size() > 0) {
-						for (CheckUserVo checkUser : checkUserList) {
-							String phone = checkUser.getPhone();
+						for (CheckUserVo user : checkUserList) {
+							String phone = user.getPhone();
 							if (StringUtil.isNotEmpty(phone)) {
-								userIdList.add(checkUser.getId());
+								userIdList.add(user.getId());
 								msgUtil.sendPush(pushCode, params, phone, appName, title, messgeInfo);
 								msgUtil.sendSMS(smsCode, params, phone, appName);
 							}
@@ -168,6 +189,7 @@ public class CheckFaultServiceImpl extends AbstractService<Inno72CheckFault> imp
 					m.put("touser", userIdString);
 					m.put("agentid", "1000002");
 					msgUtil.sendQyWechatMsg("qywechat_msg", params, m, userIdString, appName);
+					StringUtil.logger(CommonConstants.LOG_TYPE_SET_WORK,machineCode,"操作工单：巡检人员"+checkUser.getName()+"对"+localeStr+"点位处的机器提交了故障单");
 				}
 
 			}
@@ -211,6 +233,12 @@ public class CheckFaultServiceImpl extends AbstractService<Inno72CheckFault> imp
 				inno72CheckFaultImageMapper.insertSelective(faultImage);
 			}
 		}
+		Inno72CheckFault fault = inno72CheckFaultMapper.selectDetail(checkFault.getId());
+		if(fault != null){
+			Inno72Machine machine = inno72MachineMapper.getMachineById(fault.getMachineId());
+			StringUtil.logger(CommonConstants.LOG_TYPE_SET_WORK,machine.getMachineCode(),"解决工单:巡检人员解决了"+machine.getLocaleStr()+"点位所在机器的工单");
+		}
+
 		return ResultGenerator.genSuccessResult();
 	}
 
@@ -263,6 +291,11 @@ public class CheckFaultServiceImpl extends AbstractService<Inno72CheckFault> imp
 				image.setCreateTime(LocalDateTime.now());
 				inno72CheckFaultImageMapper.insertSelective(image);
 			}
+		}
+		Inno72CheckFault fault = inno72CheckFaultMapper.selectDetail(faultId);
+		if(fault != null){
+			Inno72Machine machine = inno72MachineMapper.getMachineById(fault.getMachineId());
+			StringUtil.logger(CommonConstants.LOG_TYPE_SET_WORK,machine.getMachineCode(),"操作工单:巡检人员"+UserUtil.getUser().getName()+"对"+machine.getLocaleStr()+"点位处机器的工单进行了回复");
 		}
 		return ResultGenerator.genSuccessResult();
 	}
@@ -328,6 +361,11 @@ public class CheckFaultServiceImpl extends AbstractService<Inno72CheckFault> imp
 		inno72CheckFault.setUpdateTime(LocalDateTime.now());
 		inno72CheckFault.setStatus(2);// 处理中
 		inno72CheckFaultMapper.updateByPrimaryKeySelective(inno72CheckFault);
+		inno72CheckFault = inno72CheckFaultMapper.selectDetail(inno72CheckFault.getId());
+		if(inno72CheckFault != null){
+			Inno72Machine machine = inno72MachineMapper.getMachineById(inno72CheckFault.getMachineId());
+			StringUtil.logger(CommonConstants.LOG_TYPE_SET_WORK,machine.getMachineCode(),"操作工单：巡检人员"+checkUser.getName()+"对"+machine.getLocaleStr()+"点位处的机器接收了工单");
+		}
 		return ResultGenerator.genSuccessResult();
 	}
 
