@@ -7,12 +7,11 @@ import java.time.format.DateTimeFormatter;
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletResponse;
 
+import com.alibaba.fastjson.JSON;
 import com.inno72.common.Inno72GameServiceProperties;
-import com.inno72.common.json.JsonUtil;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.web.bind.annotation.*;
 
 import com.inno72.common.Result;
@@ -20,15 +19,12 @@ import com.inno72.common.Results;
 import com.inno72.common.StandardLoginTypeEnum;
 import com.inno72.common.datetime.LocalDateTimeUtil;
 import com.inno72.common.util.GameSessionRedisUtil;
-import com.inno72.log.LogAllContext;
-import com.inno72.log.LogContext;
 import com.inno72.log.PointLogContext;
 import com.inno72.log.vo.LogType;
 import com.inno72.service.Inno72AuthInfoService;
 import com.inno72.service.Inno72GameApiService;
 import com.inno72.service.Inno72MachineService;
 import com.inno72.vo.MachineApiVo;
-import com.inno72.vo.StandardOrderReqVo;
 import com.inno72.vo.StandardPrepareLoginReqVo;
 import com.inno72.vo.StandardShipmentReqVo;
 import com.inno72.vo.UserSessionVo;
@@ -210,10 +206,10 @@ public class Inno72StandardController {
 			UserSessionVo sessionVo = gameSessionRedisUtil.getSessionKey(sessionUuid);
 			if (sessionVo != null) {
 				if (sessionVo.getIsScanned()) {
-					response.sendRedirect("");
+					response.sendRedirect("http://www.baidu.com");
 				}
 				sessionVo.setIsScanned(true);
-				gameSessionRedisUtil.setSession(sessionUuid, JsonUtil.toJson(JsonUtil.toJson(sessionVo)));
+				gameSessionRedisUtil.setSession(sessionUuid, JSON.toJSONString(sessionVo));
 			}
 			String redirectUrl = String.format("%s%s/%s", inno72GameServiceProperties.get("tmallUrl"), sessionUuid, env);
 			LOGGER.info("redirectUrl is {} ", redirectUrl);
