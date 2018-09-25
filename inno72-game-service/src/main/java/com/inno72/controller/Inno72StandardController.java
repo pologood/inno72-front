@@ -209,8 +209,11 @@ public class Inno72StandardController {
 			// todo 判断是否已经有人扫过了，如果扫过 直接跳转
 			UserSessionVo sessionVo = gameSessionRedisUtil.getSessionKey(sessionUuid);
 			if (sessionVo != null) {
-				JsonUtil.toJson(sessionVo);
+				if (sessionVo.getIsScanned()) {
+					response.sendRedirect("");
+				}
 				sessionVo.setIsScanned(true);
+				gameSessionRedisUtil.setSession(sessionUuid, JsonUtil.toJson(JsonUtil.toJson(sessionVo)));
 			}
 			String redirectUrl = String.format("%s%s/%s", inno72GameServiceProperties.get("tmallUrl"), sessionUuid, env);
 			LOGGER.info("redirectUrl is {} ", redirectUrl);
