@@ -2587,7 +2587,7 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 		alarmDetailBean.setPageInfo(page);
 		alarmDetailBean.setRemark(JsonUtil.toJson(remarkMap));
 
-		LOGGER.info("setHeartbeat alarmDetailBean is {}", JsonUtil.toJson(alarmDetailBean));
+		LOGGER.debug("setHeartbeat alarmDetailBean is {}", JsonUtil.toJson(alarmDetailBean));
 
 		try {
 			alarmUtil.saveAlarmDetail(alarmDetailBean);
