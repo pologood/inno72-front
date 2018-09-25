@@ -5,6 +5,7 @@ import com.inno72.common.Service;
 import com.inno72.machine.model.Inno72Goods;
 import com.inno72.machine.model.Inno72Machine;
 import com.inno72.machine.model.Inno72SupplyChannel;
+import com.inno72.machine.vo.SupplyRequestVo;
 import com.inno72.machine.vo.WorkOrderVo;
 
 import java.util.List;
@@ -26,7 +27,7 @@ public interface SupplyChannelService extends Service<Inno72SupplyChannel> {
 
 	Result<List<Inno72SupplyChannel>> getList(String machineId);
 
-    Result<List<Inno72Machine>> getMachineLackGoods();
+	Result<List<Inno72Machine>> getMachineLackGoods();
 
 	Result<List<Inno72Goods>> getGoodsLack();
 
@@ -34,15 +35,19 @@ public interface SupplyChannelService extends Service<Inno72SupplyChannel> {
 
 	Result<List<Inno72Goods>> getGoodsByMachineId(String machineId);
 
-    Result<String> clearAll(String machineId);
+	Result<String> clearAll(String machineId);
 
 	Result<String> supplyAll(String machineId);
 
-	Result<String> submit(List<Map<String, Object>> mapList);
+	Result<String> submit(List<Map<String,Object>> mapList);
 
-	List<WorkOrderVo> findByPage(String keyword, String findTime);
+	List<WorkOrderVo> findByPage(String keyword,String findTime);
 
-    Result<WorkOrderVo> workOrderDetail(String machineId, String batchNo);
+	Result<WorkOrderVo> workOrderDetail(String machineId, String batchNo);
 
+	void findAndPushByTaskParam();
 
+	void findLockGoodsPush(SupplyRequestVo vo);
+
+	void setDropGoods(SupplyRequestVo vo);
 }

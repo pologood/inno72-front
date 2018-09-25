@@ -2,6 +2,8 @@ package com.inno72.machine.mapper;
 
 import com.inno72.common.Mapper;
 import com.inno72.machine.model.Inno72SupplyChannel;
+import com.inno72.model.GoodsBean;
+
 import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
@@ -19,5 +21,9 @@ public interface Inno72SupplyChannelMapper extends Mapper<Inno72SupplyChannel> {
 
 	int updateListByParam(Inno72SupplyChannel supplyChannel);
 
-    List<Inno72SupplyChannel> selectTaskParam(@Param("lackGoodsType") int lackGoodsType);
+	List<Inno72SupplyChannel> selectTask();
+
+	Inno72SupplyChannel selectLockGoods(Map<String,Object> map);
+
+	List<GoodsBean> selectLockGoodsList(String machineId);
 }

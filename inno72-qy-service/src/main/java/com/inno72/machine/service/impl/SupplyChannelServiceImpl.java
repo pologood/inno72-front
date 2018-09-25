@@ -1,17 +1,16 @@
 package com.inno72.machine.service.impl;
 
-import com.alibaba.fastjson.JSON;
-import com.alibaba.fastjson.JSONObject;
-import com.inno72.check.model.Inno72CheckUser;
-import com.inno72.common.*;
-import com.inno72.machine.mapper.*;
-import com.inno72.machine.model.*;
-import com.inno72.machine.service.SupplyChannelService;
-import com.inno72.machine.vo.SupplyChannelVo;
-import com.inno72.machine.vo.WorkOrderVo;
-import com.inno72.redis.IRedisUtil;
-import com.inno72.utils.page.Pagination;
-import com.mongodb.DBCollection;
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+
+import javax.annotation.Resource;
+
+import com.inno72.machine.vo.SupplyRequestVo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Sort;
@@ -20,11 +19,42 @@ import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import tk.mybatis.mapper.entity.Condition;
 
-import javax.annotation.Resource;
-import java.time.LocalDateTime;
-import java.util.*;
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONObject;
+import com.inno72.check.model.Inno72CheckUser;
+import com.inno72.common.AbstractService;
+import com.inno72.common.CommonConstants;
+import com.inno72.common.ImageUtil;
+import com.inno72.common.Result;
+import com.inno72.common.ResultGenerator;
+import com.inno72.common.Results;
+import com.inno72.common.StringUtil;
+import com.inno72.common.UserUtil;
+import com.inno72.machine.mapper.Inno72GoodsMapper;
+import com.inno72.machine.mapper.Inno72MachineMapper;
+import com.inno72.machine.mapper.Inno72SupplyChannelGoodsMapper;
+import com.inno72.machine.mapper.Inno72SupplyChannelHistoryMapper;
+import com.inno72.machine.mapper.Inno72SupplyChannelMapper;
+import com.inno72.machine.mapper.Inno72SupplyChannelOrderMapper;
+import com.inno72.machine.model.Inno72Goods;
+import com.inno72.machine.model.Inno72Machine;
+import com.inno72.machine.model.Inno72SupplyChannel;
+import com.inno72.machine.model.Inno72SupplyChannelGoods;
+import com.inno72.machine.model.Inno72SupplyChannelHistory;
+import com.inno72.machine.model.Inno72SupplyChannelOrder;
+import com.inno72.machine.service.SupplyChannelService;
+import com.inno72.machine.vo.SupplyChannelVo;
+import com.inno72.machine.vo.WorkOrderVo;
+import com.inno72.model.AlarmMessageBean;
+import com.inno72.model.ChannelGoodsAlarmBean;
+import com.inno72.model.GoodsBean;
+import com.inno72.model.MachineDropGoodsBean;
+import com.inno72.redis.IRedisUtil;
+import com.inno72.utils.page.Pagination;
+import com.mongodb.DBCollection;
+
+import tk.mybatis.mapper.entity.Condition;
 
 /**
  * Created by CodeGenerator on 2018/07/04.
@@ -65,7 +95,7 @@ public class SupplyChannelServiceImpl extends AbstractService<Inno72SupplyChanne
 		if (StringUtil.isEmpty(code) || StringUtil.isEmpty(machineId)) {
 			return ResultGenerator.genFailResult("参数有误");
 		}
-		Inno72Machine machine = inno72MachineMapper.selectByPrimaryKey(machineId);
+		Inno72Machine machine = inno72MachineMapper.getMachineById(machineId);
 		String machineCode = machine.getMachineCode();
 		Integer codeInt = Integer.parseInt(code);
 		String subString = machineCode.substring(0,2);
@@ -107,6 +137,8 @@ public class SupplyChannelServiceImpl extends AbstractService<Inno72SupplyChanne
 				condition.createCriteria().andEqualTo("supplyChannelId", supply.getId());
 				inno72SupplyChannelGoodsMapper.deleteByCondition(condition);// 删除货道关联商品
 			}
+			String detail = "合并货道:在"+machine.getLocaleStr()+"点位处的机器对"+parentCode+"货道和"+childCode+"货道进行了合并，合并后为"+parentCode+"货道，"+childCode+"货道已被清除";
+			StringUtil.logger(CommonConstants.LOG_TYPE_MERGE_CHANNEL,machineCode,detail);
 			return ResultGenerator.genSuccessResult();
 		} else {
 			return ResultGenerator.genFailResult("该货道已合并");
@@ -133,7 +165,7 @@ public class SupplyChannelServiceImpl extends AbstractService<Inno72SupplyChanne
 			map.put("code", newCode.toString());
 			Inno72SupplyChannel childChannel = inno72SupplyChannelMapper.selectByParam(map);
 			if (childChannel != null) {
-				return Results.failure("货道未合并不能拆分");
+				return Results.failure("该货道已拆分");
 			}
 			supplyChannel.setGoodsCount(0);
 			supplyChannel.setUpdateTime(LocalDateTime.now());
@@ -161,6 +193,9 @@ public class SupplyChannelServiceImpl extends AbstractService<Inno72SupplyChanne
 			childChannel.setWorkStatus(0);
 			childChannel.setMachineId(supplyChannel.getMachineId());
 			inno72SupplyChannelMapper.insertSelective(childChannel);
+			Inno72Machine machine = inno72MachineMapper.getMachineById(machineId);
+			String detail = "拆分货道：在"+machine.getLocaleStr()+"点位处的机器对"+code+"货道进行了拆分，拆分后变为"+code+"货道和"+newCode+"货道";
+			StringUtil.logger(CommonConstants.LOG_TYPE_SPLIT_CHANNEL,machine.getMachineCode(),detail);
 			return ResultGenerator.genSuccessResult();
 		} else {
 			return ResultGenerator.genFailResult("操作货道有误");
@@ -393,6 +428,7 @@ public class SupplyChannelServiceImpl extends AbstractService<Inno72SupplyChanne
 					history.setMachineId(supplyChannel.getMachineId());
 					history.setUserId("");
 					history.setCreateTime(now);
+					history.setGoodsId(goodsId);
 					historyList.add(history);
 					supplyChannel.setGoodsCount(supplyChannel.getVolumeCount());
 					supplyChannel.setUpdateTime(LocalDateTime.now());
@@ -410,6 +446,7 @@ public class SupplyChannelServiceImpl extends AbstractService<Inno72SupplyChanne
 		if (mapList == null || mapList.size() == 0) {
 			return Results.failure("参数不能为空");
 		}
+		Inno72CheckUser checkUser = UserUtil.getUser();
 		StringBuffer ids = new StringBuffer();
 		mapList.forEach(map -> {
 			String id = map.get("id").toString();
@@ -421,14 +458,16 @@ public class SupplyChannelServiceImpl extends AbstractService<Inno72SupplyChanne
 		String supplyChannelIds = ids.substring(0, ids.length() - 1);
 		List<Inno72SupplyChannel> supplyChannelList = inno72SupplyChannelMapper.selectByIds(supplyChannelIds);
 		if (supplyChannelList != null && supplyChannelList.size() > 0) {
+			String machineId = supplyChannelList.get(0).getMachineId();
+			Inno72Machine machine = inno72MachineMapper.getMachineById(machineId);
 			String batchNo = StringUtil.getUUID();
 			LocalDateTime now = LocalDateTime.now();
 			Inno72SupplyChannelOrder order = new Inno72SupplyChannelOrder();
 			order.setId(batchNo);
 			order.setCreateTime(now);
-			order.setMachineId(supplyChannelList.get(0).getMachineId());
+			order.setMachineId(machineId);
 			order.setType(1);
-			order.setUserId(UserUtil.getUser().getId());
+			order.setUserId(checkUser.getId());
 			inno72SupplyChannelOrderMapper.insertSelective(order);
 			supplyChannelList.forEach(supplyChannel -> {
 				String supplyChannelId = supplyChannel.getId();
@@ -449,6 +488,7 @@ public class SupplyChannelServiceImpl extends AbstractService<Inno72SupplyChanne
 						}
 						supplyChannel.setGoodsId(goodsIdStr);
 						supplyChannel.setGoodsCount(afterGoodsCount);
+						supplyChannel.setIsDelete(0);
 						inno72SupplyChannelMapper.updateByPrimaryKeySelective(supplyChannel);
 						Condition condition = new Condition(Inno72SupplyChannelGoods.class);
 						condition.createCriteria().andEqualTo("supplyChannelId", supplyChannel.getId());
@@ -469,11 +509,15 @@ public class SupplyChannelServiceImpl extends AbstractService<Inno72SupplyChanne
 						history.setMachineId(supplyChannel.getMachineId());
 						history.setUserId(UserUtil.getUser().getId());
 						history.setCreateTime(now);
+						history.setGoodsId(goodsIdStr);
 						inno72SupplyChannelHistoryMapper.insertSelective(history);
 					}
 				});
 
 			});
+			String detail = "机器补货："+checkUser.getName()+"对"+machine.getLocaleStr()+"的机器进行了补货";
+			StringUtil.logger(CommonConstants.LOG_TYPE_MACHINE_SUPPLY,machine.getMachineCode(),detail);
+
 		}
 		return ResultGenerator.genSuccessResult();
 	}
@@ -536,6 +580,72 @@ public class SupplyChannelServiceImpl extends AbstractService<Inno72SupplyChanne
 		return ResultGenerator.genSuccessResult(workOrderVo);
 	}
 
+	@Override
+	public void findAndPushByTaskParam() {
+		List<Inno72SupplyChannel> list = inno72SupplyChannelMapper.selectTask();
+		if (list != null && list.size() > 0) {
+			AlarmMessageBean alarmMessageBean = new AlarmMessageBean();
+			alarmMessageBean.setSystem("machineLackGoods");
+			alarmMessageBean.setType("machineLackGoodsException");
+			for (Inno72SupplyChannel supplyChannel : list) {
+				int totalCount = supplyChannel.getGoodsCount();
+				if(totalCount<5){
+					ChannelGoodsAlarmBean alarmBean = new ChannelGoodsAlarmBean();
+					alarmBean.setGoodsName(supplyChannel.getGoodsName());
+					alarmBean.setMachineCode(supplyChannel.getMachineCode());
+					alarmBean.setSurPlusNum(supplyChannel.getGoodsCount());
+					alarmBean.setLocaleStr(supplyChannel.getLocaleStr());
+					alarmMessageBean.setData(alarmBean);
+					logger.info("货道缺货发送push{}", JSONObject.toJSONString(alarmMessageBean));
+					redisUtil.publish("moniterAlarm", JSONObject.toJSONString(alarmMessageBean));
+				}
+			}
+		}
+	}
+
+	@Override
+	public void findLockGoodsPush(SupplyRequestVo vo) {
+		String goodsId = vo.getGoodsId();
+		String machineId = vo.getMachineId();
+		Map<String,Object> map = new HashMap<>();
+		map.put("goodsId",goodsId);
+		map.put("machineId",machineId);
+		Inno72SupplyChannel supplyChannel = inno72SupplyChannelMapper.selectLockGoods(map);
+		if(supplyChannel != null){
+			int totalCount = supplyChannel.getGoodsCount();
+			logger.info("查询出商品货道信息{}",JSON.toJSON(supplyChannel));
+			if(totalCount == 20 || totalCount == 10 || totalCount == 5){
+				ChannelGoodsAlarmBean alarmBean = new ChannelGoodsAlarmBean();
+				alarmBean.setGoodsName(supplyChannel.getGoodsName());
+				alarmBean.setMachineCode(supplyChannel.getMachineCode());
+				alarmBean.setSurPlusNum(totalCount);
+				alarmBean.setLocaleStr(supplyChannel.getLocaleStr());
+				List<GoodsBean> goodsBeanList = inno72SupplyChannelMapper.selectLockGoodsList(machineId);
+				alarmBean.setGoodsBeanList(goodsBeanList);
+				AlarmMessageBean alarmMessageBean = new AlarmMessageBean();
+				alarmMessageBean.setSystem("machineLackGoods");
+				alarmMessageBean.setType("machineLackGoodsException");
+				alarmMessageBean.setData(alarmBean);
+				logger.info("货道缺货发送push{}", JSONObject.toJSONString(alarmMessageBean));
+				redisUtil.publish("moniterAlarm", JSONObject.toJSONString(alarmMessageBean));
+			}
+		}
+
+	}
+
+	@Override
+	public void setDropGoods(SupplyRequestVo vo) {
+		String machineCode = vo.getMachineCode();
+		String code = vo.getSupplyCode();
+		MachineDropGoodsBean machineDropGoodsBean = new MachineDropGoodsBean();
+		machineDropGoodsBean.setChannelNum(code);
+		machineDropGoodsBean.setMachineCode(machineCode);
+		AlarmMessageBean<MachineDropGoodsBean> alarmMessageBean = new AlarmMessageBean();
+		alarmMessageBean.setSystem("machineDropGoods");
+		alarmMessageBean.setType("machineDropGoodsException");
+		alarmMessageBean.setData(machineDropGoodsBean);
+		redisUtil.publish("moniterAlarm",JSONObject.toJSONString(alarmMessageBean));
+	}
 
 	public void addSupplyChannelToMongo(Inno72SupplyChannel supplyChannel) {
 		DBCollection dbCollection = mongoTpl.getCollection("supplyChannel");

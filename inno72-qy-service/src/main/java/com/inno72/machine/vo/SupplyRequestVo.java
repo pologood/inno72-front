@@ -18,6 +18,8 @@ public class SupplyRequestVo {
 
     private String machineCode;
 
+    private String supplyCode;
+
     public String getMachineId() {
         return machineId;
     }
@@ -81,4 +83,12 @@ public class SupplyRequestVo {
     public void setMachineCode(String machineCode) {
         this.machineCode = machineCode;
     }
+
+	public String getSupplyCode() {
+		return supplyCode;
+	}
+
+	public void setSupplyCode(String supplyCode) {
+		this.supplyCode = supplyCode;
+	}
 }
