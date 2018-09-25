@@ -204,8 +204,9 @@ public class Inno72StandardController {
 	@ResponseBody
 	@RequestMapping(value = "/loginRedirect", method = {RequestMethod.GET})
 	public void loginRedirect(HttpServletResponse response, String sessionUuid, String env) {
-		LOGGER.info("loginRedirect sessionUuid is {}, env is {}");
+		LOGGER.info("loginRedirect sessionUuid is {}, env is {}", sessionUuid, env);
 		try {
+			// todo 判断是否已经有人扫过了，如果扫过 直接跳转
 			UserSessionVo sessionVo = gameSessionRedisUtil.getSessionKey(sessionUuid);
 			if (sessionVo != null) {
 				JsonUtil.toJson(sessionVo);
