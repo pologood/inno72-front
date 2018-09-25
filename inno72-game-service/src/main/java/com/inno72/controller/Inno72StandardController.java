@@ -7,6 +7,8 @@ import java.time.format.DateTimeFormatter;
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletResponse;
 
+import com.inno72.common.Inno72GameServiceProperties;
+import com.inno72.common.json.JsonUtil;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -52,6 +54,9 @@ public class Inno72StandardController {
 
 	@Resource
 	private GameSessionRedisUtil gameSessionRedisUtil;
+
+	@Resource
+	private Inno72GameServiceProperties inno72GameServiceProperties;
 
 	/**
 	 * 登录（包括需要登录和非登录的场景）
@@ -197,14 +202,21 @@ public class Inno72StandardController {
 	 * 登录跳转
 	 */
 	@ResponseBody
-	@RequestMapping(value = "/loginRedirect", method = {RequestMethod.GET})
-	public void loginRedirect(HttpServletResponse response) {
+	@RequestMapping(value = "/loginRedirect/{sessionUuid}/{env}", method = {RequestMethod.GET})
+	public void loginRedirect(HttpServletResponse response, @PathVariable("sessionUuid") String sessionUuid, @PathVariable("env") String env) {
+		LOGGER.info("loginRedirect sessionUuid is {}, env is {}");
 		try {
-			response.sendRedirect("https://oauth.taobao.com/authorize?response_type=code&client_id=24952452&redirect_uri=http://inno72test.ews.m.jaeapp.com/api/top/b428b0c34dee4d0dbf11f4639885ded1/18342471/test?bluetoothAddAes=8ead3411955a596557cb385380f9c3c5f541bd9373b0d1da63889552e72ab3ab&machineCode=f33316a03cb2c9d8c3c50f2f1e59d3c8");
+			UserSessionVo sessionVo = gameSessionRedisUtil.getSessionKey(sessionUuid);
+			if (sessionVo != null) {
+				JsonUtil.toJson(sessionVo);
+				sessionVo.setIsScanned(true);
+			}
+			String redirectUrl = String.format("%s%s/%s", inno72GameServiceProperties.get("tmallUrl"), sessionUuid, env);
+			LOGGER.info("redirectUrl is {} ", redirectUrl);
+			response.sendRedirect(redirectUrl);
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
 	}
-
 
 }

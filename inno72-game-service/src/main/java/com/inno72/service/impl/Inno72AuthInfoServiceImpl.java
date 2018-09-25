@@ -302,12 +302,12 @@ public class Inno72AuthInfoServiceImpl implements Inno72AuthInfoService {
 
 		UserSessionVo sessionVo = gameSessionRedisUtil.getSessionKey(sessionUuid);
 
-		// 判断是否有用户已经登录
-		if (!StringUtil.isEmpty(redisUtil.get(sessionUuid + "exist"))) {
-			qrStatus = QRSTATUS_EXIST_USER;
-		} else {
-			redisUtil.setex(sessionUuid + "exist", 1600, sessionUuid);
-		}
+//		// 判断是否有用户已经登录
+//		if (!StringUtil.isEmpty(redisUtil.get(sessionUuid + "exist"))) {
+//			qrStatus = QRSTATUS_EXIST_USER;
+//		} else {
+//			redisUtil.setex(sessionUuid + "exist", 1600, sessionUuid);
+//		}
 
 		String mid = sessionVo.getMachineId();
 
