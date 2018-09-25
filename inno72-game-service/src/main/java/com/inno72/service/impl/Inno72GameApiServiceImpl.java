@@ -1634,7 +1634,7 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 //				inno72GameServiceProperties.get("tmallUrl"), sessionUuid, env, bluetoothAddAes, machineCode);
 
 		String url = String.format(
-				"%s/%s/%s?bluetoothAddAes=%s&machineCode=%s",
+				"%s/?sessionUuid=%s&env=%s&bluetoothAddAes=%s&machineCode=%s",
 				inno72GameServiceProperties.get("loginRedirect"), sessionUuid, env, bluetoothAddAes, machineCode);
 
 		LOGGER.info("二维码访问 url is {} ", url);

@@ -202,8 +202,8 @@ public class Inno72StandardController {
 	 * 登录跳转
 	 */
 	@ResponseBody
-	@RequestMapping(value = "/loginRedirect/{sessionUuid}/{env}", method = {RequestMethod.GET})
-	public void loginRedirect(HttpServletResponse response, @PathVariable("sessionUuid") String sessionUuid, @PathVariable("env") String env) {
+	@RequestMapping(value = "/loginRedirect", method = {RequestMethod.GET})
+	public void loginRedirect(HttpServletResponse response, String sessionUuid, String env) {
 		LOGGER.info("loginRedirect sessionUuid is {}, env is {}");
 		try {
 			UserSessionVo sessionVo = gameSessionRedisUtil.getSessionKey(sessionUuid);
