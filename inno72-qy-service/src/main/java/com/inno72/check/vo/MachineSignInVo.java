@@ -1,10 +1,11 @@
 package com.inno72.check.vo;
 
-import com.inno72.check.model.Inno72CheckSignIn;
+import java.util.List;
 
 import javax.persistence.Column;
 import javax.persistence.Transient;
-import java.util.List;
+
+import com.inno72.check.model.Inno72CheckSignIn;
 
 public class MachineSignInVo {
 
