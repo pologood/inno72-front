@@ -199,7 +199,7 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 			return Results.failure("登录过期啦 !");
 		}
 		userSessionVo.setGameReport(report);
-		gameSessionRedisUtil.setSessionEx(sessionUuid, JSON.toJSONString(userSessionVo));
+		gameSessionRedisUtil.setSession(sessionUuid, JSON.toJSONString(userSessionVo));
 
 		Map<String, String> params = new HashMap<>();
 		params.put("activityPlanId", activityPlanId);
@@ -1286,7 +1286,7 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 		userSessionVo.setInno72OrderId(inno72OrderId);
 		userSessionVo.setNeedPay(needPay);
 
-		gameSessionRedisUtil.setSessionEx(sessionUuid, JSON.toJSONString(userSessionVo));
+		gameSessionRedisUtil.setSession(sessionUuid, JSON.toJSONString(userSessionVo));
 
 		// 更新第三方订单号进inno72 order
 		Result<String> stringResult = inno72GameService
@@ -1831,7 +1831,7 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 		sessionVo.setGoodsList(list);
 		// sessionVo.setRefOrderId(life.getId());
 
-		gameSessionRedisUtil.setSessionEx(sessionUuid, JSON.toJSONString(sessionVo));
+		gameSessionRedisUtil.setSession(sessionUuid, JSON.toJSONString(sessionVo));
 
 
 		LOGGER.info("prepareLoginNologin output {} {}", sessionUuid, inno72Merchant.getMerchantCode());
@@ -2054,7 +2054,7 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 		LOGGER.info("loadGameInfo is {} ", JsonUtil.toJson(list));
 		sessionVo.setGoodsList(list);
 
-		gameSessionRedisUtil.setSessionEx(sessionUuid, JSON.toJSONString(sessionVo));
+		gameSessionRedisUtil.setSession(sessionUuid, JSON.toJSONString(sessionVo));
 
 		this.startGameLife(userChannel, inno72Activity, inno72ActivityPlan, inno72Game, inno72Machine, userId);
 
@@ -2478,7 +2478,7 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 
 				userSessionVo.setRefOrderId(refOrderId);
 				userSessionVo.setInno72OrderId(inno72OrderId);
-				gameSessionRedisUtil.setSessionEx(sessionUuid, JSON.toJSONString(userSessionVo));
+				gameSessionRedisUtil.setSession(sessionUuid, JSON.toJSONString(userSessionVo));
 
 			} catch (Exception e) {
 

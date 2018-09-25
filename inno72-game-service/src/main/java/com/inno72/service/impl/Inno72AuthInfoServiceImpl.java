@@ -147,7 +147,7 @@ public class Inno72AuthInfoServiceImpl implements Inno72AuthInfoService {
 				this.dealLocalQrCodeImg(localUrl, objectName);
 
 				// 设置二维码过期时间
-				gameSessionRedisUtil.setSessionEx(sessionUuid, "");
+				gameSessionRedisUtil.setSession(sessionUuid, "");
 
 				map.put("qrCodeUrl", returnUrl);
 				map.put("sessionUuid", sessionUuid);
@@ -270,7 +270,7 @@ public class Inno72AuthInfoServiceImpl implements Inno72AuthInfoService {
 				}
 
 				// 设置二维码过期时间
-				gameSessionRedisUtil.setSessionEx(sessionUuid, "");
+				gameSessionRedisUtil.setSession(sessionUuid, "");
 
 				map.put("qrCodeUrl", returnUrl);
 				map.put("sessionUuid", sessionUuid);
@@ -441,7 +441,7 @@ public class Inno72AuthInfoServiceImpl implements Inno72AuthInfoService {
 
 		LOGGER.info("processBeforeLogged返回聚石塔结果 is {}", resultMap);
 
-		gameSessionRedisUtil.setSessionEx(sessionUuid, JSON.toJSONString(sessionVo));
+		gameSessionRedisUtil.setSession(sessionUuid, JSON.toJSONString(sessionVo));
 
 		CommonBean.logger(CommonBean.POINT_TYPE_LOGIN, inno72Machine.getMachineCode(),
 				"用户" + nickName + "登录机器 ["+inno72Machine.getMachineCode()+"], 当前活动 ["+ inno72Activity.getName() +"]");
@@ -604,7 +604,7 @@ public class Inno72AuthInfoServiceImpl implements Inno72AuthInfoService {
 			if (hasKey) {
 				UserSessionVo userSessionVo = gameSessionRedisUtil.getSessionKey(sessionUuid);
 				userSessionVo.setLogged(true);
-				gameSessionRedisUtil.setSessionEx(userSessionVo.getSessionUuid(), JSON.toJSONString(userSessionVo));
+				gameSessionRedisUtil.setSession(userSessionVo.getSessionUuid(), JSON.toJSONString(userSessionVo));
 				logged = true;
 			}
 		} catch (Exception e) {
