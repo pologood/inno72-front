@@ -1,12 +1,13 @@
 package com.inno72.machine.model;
 
-import com.inno72.machine.vo.CityVo;
+import java.util.List;
 
 import javax.persistence.Column;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import java.util.List;
+
+import com.inno72.machine.vo.CityVo;
 
 public class Inno72AdminArea {
     /**

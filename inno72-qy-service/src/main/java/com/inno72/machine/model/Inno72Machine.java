@@ -1,17 +1,25 @@
 package com.inno72.machine.model;
 
+import java.time.LocalDateTime;
+import java.util.List;
+
+import javax.persistence.Column;
+import javax.persistence.Convert;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.Table;
+import javax.persistence.Transient;
+
+import org.springframework.data.jpa.convert.threeten.Jsr310JpaConverters;
+import org.springframework.format.annotation.DateTimeFormat;
+
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.inno72.check.model.Inno72CheckSignIn;
 import com.inno72.check.vo.CheckUserVo;
 import com.inno72.check.vo.FaultVo;
 import com.inno72.common.datetime.CustomLocalDateTimeSerializer;
 import com.inno72.machine.vo.SupplyChannelVo;
-import org.springframework.data.jpa.convert.threeten.Jsr310JpaConverters;
-import org.springframework.format.annotation.DateTimeFormat;
-
-import javax.persistence.*;
-import java.time.LocalDateTime;
-import java.util.List;
 
 @Table(name = "inno72_machine")
 public class Inno72Machine {
@@ -90,6 +98,16 @@ public class Inno72Machine {
 	 */
 	@Column(name = "device_id")
 	private String deviceId;
+
+	/**
+	 * 入厂时间
+	 */
+	@JsonSerialize(using = CustomLocalDateTimeSerializer.class)
+	@DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+	@Convert(converter = Jsr310JpaConverters.LocalDateTimeConverter.class)
+	@Column(name = "inside_time")
+	private LocalDateTime insideTime;
+
 
 	@Transient
 	private String address;
@@ -353,6 +371,15 @@ public class Inno72Machine {
 	 */
 	public void setDeviceId(String deviceId) {
 		this.deviceId = deviceId;
+	}
+
+
+	public LocalDateTime getInsideTime() {
+		return insideTime;
+	}
+
+	public void setInsideTime(LocalDateTime insideTime) {
+		this.insideTime = insideTime;
 	}
 
 	public String getAddress() {

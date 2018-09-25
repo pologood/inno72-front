@@ -1,14 +1,21 @@
 package com.inno72.machine.model;
 
-import com.fasterxml.jackson.databind.annotation.JsonSerialize;
-import com.inno72.common.datetime.CustomLocalDateTimeSerializer;
-import com.inno72.machine.vo.SupplyChannelVo;
-import org.hibernate.validator.constraints.NotBlank;
-
-import javax.persistence.*;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
+
+import javax.persistence.Column;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.Table;
+import javax.persistence.Transient;
+
+import org.hibernate.validator.constraints.NotBlank;
+
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.inno72.common.datetime.CustomLocalDateTimeSerializer;
+import com.inno72.machine.vo.SupplyChannelVo;
 
 @Table(name = "inno72_goods")
 public class Inno72Goods {

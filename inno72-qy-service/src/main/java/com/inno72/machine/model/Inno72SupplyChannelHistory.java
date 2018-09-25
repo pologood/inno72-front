@@ -1,12 +1,19 @@
 package com.inno72.machine.model;
 
-import com.fasterxml.jackson.databind.annotation.JsonSerialize;
-import com.inno72.common.datetime.CustomLocalDateTimeSerializer;
+import java.time.LocalDateTime;
+
+import javax.persistence.Column;
+import javax.persistence.Convert;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.Transient;
+
 import org.springframework.data.jpa.convert.threeten.Jsr310JpaConverters;
 import org.springframework.format.annotation.DateTimeFormat;
 
-import javax.persistence.*;
-import java.time.LocalDateTime;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.inno72.common.datetime.CustomLocalDateTimeSerializer;
 
 public class Inno72SupplyChannelHistory {
 
@@ -40,6 +47,9 @@ public class Inno72SupplyChannelHistory {
     @Convert(converter = Jsr310JpaConverters.LocalDateTimeConverter.class)
     @Column(name = "create_time")
     private LocalDateTime createTime;
+
+    @Column(name = "goods_id")
+    private String goodsId;
     @Transient
     private String machineCode;
 
@@ -120,7 +130,15 @@ public class Inno72SupplyChannelHistory {
         return createTime;
     }
 
-    public void setCreateTime(LocalDateTime createTime) {
+	public String getGoodsId() {
+		return goodsId;
+	}
+
+	public void setGoodsId(String goodsId) {
+		this.goodsId = goodsId;
+	}
+
+	public void setCreateTime(LocalDateTime createTime) {
         this.createTime = createTime;
     }
 

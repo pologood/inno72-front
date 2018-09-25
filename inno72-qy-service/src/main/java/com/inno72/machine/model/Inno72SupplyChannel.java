@@ -1,14 +1,22 @@
 package com.inno72.machine.model;
 
-import com.fasterxml.jackson.databind.annotation.JsonSerialize;
-import com.inno72.check.model.Inno72CheckUser;
-import com.inno72.common.datetime.CustomLocalDateTimeSerializer;
+import java.time.LocalDateTime;
+import java.util.List;
+
+import javax.persistence.Column;
+import javax.persistence.Convert;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.Table;
+import javax.persistence.Transient;
+
 import org.springframework.data.jpa.convert.threeten.Jsr310JpaConverters;
 import org.springframework.format.annotation.DateTimeFormat;
 
-import javax.persistence.*;
-import java.time.LocalDateTime;
-import java.util.List;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.inno72.check.model.Inno72CheckUser;
+import com.inno72.common.datetime.CustomLocalDateTimeSerializer;
 
 @Table(name = "inno72_supply_channel")
 public class Inno72SupplyChannel {
@@ -120,6 +128,9 @@ public class Inno72SupplyChannel {
 
 	@Transient
 	private String machineCode;
+
+	@Transient
+	private String localeStr;
 
 	@Transient
 	private List<Inno72CheckUser> checkUserList;
@@ -425,6 +436,14 @@ public class Inno72SupplyChannel {
 
 	public void setMachineCode(String machineCode) {
 		this.machineCode = machineCode;
+	}
+
+	public String getLocaleStr() {
+		return localeStr;
+	}
+
+	public void setLocaleStr(String localeStr) {
+		this.localeStr = localeStr;
 	}
 
 	public List<Inno72CheckUser> getCheckUserList() {

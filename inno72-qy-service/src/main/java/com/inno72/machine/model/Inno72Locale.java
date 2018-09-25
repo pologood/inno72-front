@@ -1,15 +1,21 @@
 package com.inno72.machine.model;
 
 
+import java.time.LocalDateTime;
+import java.util.List;
+
+import javax.persistence.Column;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.Transient;
+import javax.validation.constraints.Pattern;
+
+import org.hibernate.validator.constraints.NotBlank;
+
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.inno72.common.datetime.CustomLocalDateTimeSerializer;
 import com.inno72.machine.vo.LocaleVo;
-import org.hibernate.validator.constraints.NotBlank;
-
-import javax.persistence.*;
-import javax.validation.constraints.Pattern;
-import java.time.LocalDateTime;
-import java.util.List;
 
 public class Inno72Locale {
     /**
