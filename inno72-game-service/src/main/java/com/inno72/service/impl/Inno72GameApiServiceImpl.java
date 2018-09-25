@@ -1617,7 +1617,8 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 		LOGGER.info("Mac蓝牙地址 {} ", bluetoothAddAes);
 
 		// 生成sessionUuid
-		String sessionUuid = UuidUtil.getUUID32();
+//		String sessionUuid = UuidUtil.getUUID32();
+		String sessionUuid = machineId;
 		// 获取运行环境
 		String env = getActive();
 
@@ -1631,7 +1632,7 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 
 		String url = String.format(
 				"%s/%s/%s?bluetoothAddAes=%s&machineCode=%s",
-				inno72GameServiceProperties.get("loginRedirect"), machineId, env, bluetoothAddAes, machineCode);
+				inno72GameServiceProperties.get("loginRedirect"), sessionUuid, env, bluetoothAddAes, machineCode);
 
 		LOGGER.info("二维码访问 url is {} ", url);
 
