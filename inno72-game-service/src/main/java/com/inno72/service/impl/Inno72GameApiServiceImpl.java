@@ -1668,7 +1668,7 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 			// 解析 ext
 			this.analysisExt(userSessionVo, ext);
 
-			gameSessionRedisUtil.setSessionEx(sessionUuid, JsonUtil.toJson(userSessionVo));
+			gameSessionRedisUtil.setSession(sessionUuid, JsonUtil.toJson(userSessionVo));
 
 			map.put("qrCodeUrl", returnUrl);
 			map.put("sessionUuid", sessionUuid);
