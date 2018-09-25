@@ -2557,22 +2557,22 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 
 	@Override
 	public Result<String> setHeartbeat(String machineCode, String page, String planCode, String activity, String desc) {
-		LOGGER.info("setHeartbeat machineCode is {}, page is {}, planCode is {}, activity is {}, desc is {}",
+		LOGGER.debug("setHeartbeat machineCode is {}, page is {}, planCode is {}, activity is {}, desc is {}",
 				machineCode, page, planCode, activity, desc);
 		Inno72Machine inno72Machine = inno72MachineMapper.findMachineByCode(machineCode);
 		if (inno72Machine == null) {
 			return Results.failure("此机器编码没有查到相对应的机器！");
 		} else {
-			LOGGER.info("setHeartbeat inno72Machine is {}", JsonUtil.toJson(inno72Machine));
+			LOGGER.debug("setHeartbeat inno72Machine is {}", JsonUtil.toJson(inno72Machine));
 		}
 
 		if (!(inno72Machine.getMachineStatus() == 4)) { // 4 表示机器状态正常
-			LOGGER.info("setHeartbeat 机器状态不正常 machineCode is {}", machineCode);
+			LOGGER.debug("setHeartbeat 机器状态不正常 machineCode is {}", machineCode);
 			return Results.failure("机器状态不正常");
 		}
 
 		if (inno72Machine.getOpenStatus() == null || !(inno72Machine.getOpenStatus() == 0)) { // 0 表示接受报警
-			LOGGER.info("setHeartbeat 当前机器不接收报警 machineCode is {}", machineCode);
+			LOGGER.debug("setHeartbeat 当前机器不接收报警 machineCode is {}", machineCode);
 			return Results.failure("当前机器不接收报警");
 		}
 
