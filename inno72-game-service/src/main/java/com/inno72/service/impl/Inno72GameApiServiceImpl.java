@@ -1628,7 +1628,7 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 
 		gameSessionRedisUtil.setSession(sessionUuid, JsonUtil.toJson(userSessionVo));
 
-		redisUtil.setex(sessionUuid + "qrCode", 15, sessionUuid); //  设置15秒内二维码不能被扫
+		redisUtil.expire(sessionUuid + "qrCode", 10); //  设置15秒内二维码不能被扫
 	}
 
 	/**
@@ -1658,6 +1658,9 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 		// 生成sessionUuid
 		//		String sessionUuid = UuidUtil.getUUID32();
 		String sessionUuid = machineCode;
+
+
+		String loginRedirect = "";
 
 		String url = String.format(
 				"%s/?sessionUuid=%s&env=%s&bluetoothAddAes=%s&machineCode=%s",
