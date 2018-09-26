@@ -210,32 +210,33 @@ public class Inno72StandardController {
 	public void loginRedirect(HttpServletResponse response, String sessionUuid, String env) {
 		LOGGER.info("loginRedirect sessionUuid is {}, env is {}", sessionUuid, env);
 		try {
+			synchronized (this) {
+				String redirectUrl = "";
+				// 判断是否已经有人扫过了，如果扫过 直接跳转
+				UserSessionVo sessionVo = gameSessionRedisUtil.getSessionKey(sessionUuid);
 
-			String redirectUrl = "";
-			// 判断是否已经有人扫过了，如果扫过 直接跳转
-			UserSessionVo sessionVo = gameSessionRedisUtil.getSessionKey(sessionUuid);
+				if (sessionVo != null) {
+					LOGGER.info("loginRedirect isScanned is {}", sessionVo.getIsScanned());
 
-			if (sessionVo != null) {
-				LOGGER.info("loginRedirect isScanned is {}", sessionVo.getIsScanned());
+					// 判断二维码是否已经超时, 恢复isScanned 状态 为false，允许二维码继续被扫
+					boolean qrCode = gameSessionRedisUtil.exists(sessionUuid + "qrCode");
+					LOGGER.info("loginRedirect qrCode is {}", qrCode);
+					if (!qrCode) {
+						sessionVo.setIsScanned(false);
+					}
 
-				// 判断二维码是否已经超时, 恢复isScanned 状态 为false，允许二维码继续被扫
-				boolean qrCode = gameSessionRedisUtil.exists(sessionUuid + "qrCode");
-				LOGGER.info("loginRedirect qrCode is {}", qrCode);
-				if (!qrCode) {
-					sessionVo.setIsScanned(false);
+					if (sessionVo.getIsScanned()) {
+						LOGGER.info("二维码已经被扫描");
+						redirectUrl = String.format(topH5ErrUrl, env) + "/?status="+ TopH5ErrorTypeEnum.IS_SCANNED.getValue();
+					} else {
+						sessionVo.setIsScanned(true);
+						gameSessionRedisUtil.setSession(sessionUuid, JSON.toJSONString(sessionVo));
+						redirectUrl = String.format("%s%s/%s", inno72GameServiceProperties.get("tmallUrl"), sessionUuid, env);
+					}
 				}
-
-				if (sessionVo.getIsScanned()) {
-					LOGGER.info("二维码已经被扫描");
-					redirectUrl = String.format(topH5ErrUrl, env) + "/?status="+ TopH5ErrorTypeEnum.IS_SCANNED.getValue();
-				} else {
-					sessionVo.setIsScanned(true);
-					gameSessionRedisUtil.setSession(sessionUuid, JSON.toJSONString(sessionVo));
-					redirectUrl = String.format("%s%s/%s", inno72GameServiceProperties.get("tmallUrl"), sessionUuid, env);
-				}
+				LOGGER.info("redirectUrl is {} ", redirectUrl);
+				response.sendRedirect(redirectUrl);
 			}
-			LOGGER.info("redirectUrl is {} ", redirectUrl);
-			response.sendRedirect(redirectUrl);
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
