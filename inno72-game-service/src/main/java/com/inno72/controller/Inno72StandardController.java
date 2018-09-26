@@ -248,7 +248,7 @@ public class Inno72StandardController {
 	@ResponseBody
 	@RequestMapping(value = "/test", method = {RequestMethod.POST})
 	public String test() {
-		boolean exists = redisUtil.exists("18881339qrCode");
+		boolean exists = gameSessionRedisUtil.exists("18881339qrCode");
 		LOGGER.info("exists is {}", exists);
 		return "";
 	}
