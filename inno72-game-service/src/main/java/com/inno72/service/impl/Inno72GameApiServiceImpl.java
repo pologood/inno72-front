@@ -1629,7 +1629,7 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 		gameSessionRedisUtil.setSession(sessionUuid, JsonUtil.toJson(userSessionVo));
 
 		// 设置15秒内二维码不能被扫
-		gameSessionRedisUtil.setSessionEx(sessionUuid + "qrCode", sessionUuid, 10);
+		gameSessionRedisUtil.setSessionEx(sessionUuid + "qrCode", sessionUuid, 15);
 	}
 
 	/**
