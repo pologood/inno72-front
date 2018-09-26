@@ -1506,6 +1506,8 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 		} else {
 			LOGGER.info("调用出货无orderId 请求参数=>{}", JSON.toJSONString(vo));
 		}
+
+		Inno72Goods inno72Goods = inno72GoodsMapper.selectByChannelId(inno72SupplyChannel.getId());
 		/* 埋点 */
 		CommonBean.logger(
 				CommonBean.POINT_TYPE_FINISH,
@@ -1514,7 +1516,7 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 						+ "出货完成."
 						+ "货道容量 ["+inno72SupplyChannel.getVolumeCount()+"]. "
 						+ "原数量 ["+inno72SupplyChannel.getGoodsCount()+"], 当前数量 ["+updateChannel.getGoodsCount()+"]",
-				userSessionVo.getActivityId());
+				userSessionVo.getActivityId() + "|" + inno72Goods.getCode() + "|" + inno72Goods.getName());
 
 		return Results.success();
 	}
