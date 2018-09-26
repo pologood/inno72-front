@@ -16,6 +16,7 @@ public class UserSessionVo {
 	private String mixnick;
 	private String source;
 	private String refOrderId;
+	private Inno72MachineVo inno72MachineVo;
 
 
 	/**
@@ -31,6 +32,7 @@ public class UserSessionVo {
 
 	private Long playTimes;
 	private boolean canOrder;
+	private boolean canGame;
 	private String channelId;
 	private String machineId;
 	private String activityId;
@@ -155,4 +157,6 @@ public class UserSessionVo {
 	public void setNeedPay(boolean needPay) {
 		this.needPay = needPay;
 	}
+
+
 }

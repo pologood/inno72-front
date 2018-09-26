@@ -14,4 +14,19 @@ public interface Inno72InteractMachineTimeService  extends Service<Inno72Interac
      * @return
      */
     Inno72InteractMachine findActiveInteractMachine(String machineCode);
+
+    /**
+     * 根据活动id和机器code查询
+     * @param activityId
+     * @param machineCode
+     * @return
+     */
+    Inno72InteractMachine findInteractMachine(String activityId, String machineCode);
+
+    /**
+     * 根据interactMachineId 查找机器配置的时间
+     * @param interactMachineId
+     * @return
+     */
+    Inno72InteractMachineTime findActiveTimeByInteractMachineId(String interactMachineId);
 }

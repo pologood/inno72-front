@@ -48,6 +48,9 @@ public class Inno72PaiYangServiceImpl implements Inno72PaiYangService {
 
     @Resource
     private Inno72InteractShopsMapper inno72InteractShopsMapper;
+
+    @Resource
+    private Inno72MachineService inno72MachineService;
 //    @Autowired
 //    private Inno72InteractGoodsMapper inno72InteractGoodsMapper;
 
@@ -101,7 +104,7 @@ public class Inno72PaiYangServiceImpl implements Inno72PaiYangService {
 
             String goodsId = inno72InteractMachineGoods.getGoodsId();
             Inno72SamplingGoods sampLingGoods = inno72GoodsMapper.findSamplingGoodsById(goodsId);
-            Integer goodsCount = getMachineGoodsCount(sampLingGoods.getId(),interactMachine.getMachineId());
+            Integer goodsCount = inno72MachineService.getMachineGoodsCount(sampLingGoods.getId(),interactMachine.getMachineId());
             //机器里面的所有货到的此商品数量
             sampLingGoods.setNum(goodsCount);
 
@@ -153,22 +156,4 @@ public class Inno72PaiYangServiceImpl implements Inno72PaiYangService {
         return Results.success(retList);
     }
 
-    private Integer getMachineGoodsCount(String goodId, String machineId) {
-
-        // 根据商品id查询货道
-        Map<String, String> channelParam = new HashMap<String, String>();
-        channelParam.put("goodId", goodId);
-        channelParam.put("machineId", machineId);
-        List<Inno72SupplyChannel> inno72SupplyChannels = inno72SupplyChannelMapper
-                .selectByGoodsId(channelParam);
-
-        Integer goodsCount = 0;
-        if (inno72SupplyChannels != null && inno72SupplyChannels.size() > 0) {
-            // 所有具有相同商品id的货道中中道商品数量相加
-            for (Inno72SupplyChannel channel : inno72SupplyChannels) {
-                goodsCount += channel.getGoodsCount();
-            }
-        }
-        return goodsCount;
-    }
 }

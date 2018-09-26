@@ -25,8 +25,8 @@ public class Inno72InteractMachine implements Serializable {
     @Column(name = "machine_id")
     private String machineId;
 
-    @Column(name = "interact_machine_code")
-    private String interactMachineCode;
+    @Column(name = "machine_code")
+    private String machineCode;
 
     /**
      * 获取ID
@@ -82,17 +82,11 @@ public class Inno72InteractMachine implements Serializable {
         this.machineId = machineId;
     }
 
-    /**
-     * @return interact_machine_code
-     */
-    public String getInteractMachineCode() {
-        return interactMachineCode;
+    public String getMachineCode() {
+        return machineCode;
     }
 
-    /**
-     * @param interactMachineCode
-     */
-    public void setInteractMachineCode(String interactMachineCode) {
-        this.interactMachineCode = interactMachineCode;
+    public void setMachineCode(String machineCode) {
+        this.machineCode = machineCode;
     }
 }

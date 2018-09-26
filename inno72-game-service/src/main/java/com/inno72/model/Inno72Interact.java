@@ -53,6 +53,12 @@ public class Inno72Interact implements Serializable {
     private Integer dayTimes;
 
     /**
+     * 游戏编码
+     */
+    @Column(name = "plan_code")
+    private String planCode;
+
+    /**
      * 同一用户获得商品次数
      */
     private Integer number;
@@ -350,5 +356,13 @@ public class Inno72Interact implements Serializable {
      */
     public void setUpdateTime(Date updateTime) {
         this.updateTime = updateTime;
+    }
+
+    public String getPlanCode() {
+        return planCode;
+    }
+
+    public void setPlanCode(String planCode) {
+        this.planCode = planCode;
     }
 }

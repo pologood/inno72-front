@@ -7,6 +7,8 @@ import java.time.format.DateTimeFormatter;
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletResponse;
 
+import com.inno72.service.Inno72PaiYangService;
+import com.inno72.vo.*;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -25,11 +27,6 @@ import com.inno72.log.vo.LogType;
 import com.inno72.service.Inno72AuthInfoService;
 import com.inno72.service.Inno72GameApiService;
 import com.inno72.service.Inno72MachineService;
-import com.inno72.vo.MachineApiVo;
-import com.inno72.vo.StandardOrderReqVo;
-import com.inno72.vo.StandardPrepareLoginReqVo;
-import com.inno72.vo.StandardShipmentReqVo;
-import com.inno72.vo.UserSessionVo;
 
 /**
  * 标准接口
@@ -52,6 +49,9 @@ public class Inno72StandardController {
 
 	@Resource
 	private GameSessionRedisUtil gameSessionRedisUtil;
+
+	@Resource
+	private Inno72PaiYangService inno72PaiYangService;
 
 	/**
 	 * 登录（包括需要登录和非登录的场景）

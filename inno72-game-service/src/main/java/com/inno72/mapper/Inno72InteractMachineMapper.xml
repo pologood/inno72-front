@@ -8,7 +8,7 @@
     <id column="id" jdbcType="VARCHAR" property="id" />
     <result column="interact_id" jdbcType="VARCHAR" property="interactId" />
     <result column="machine_id" jdbcType="VARCHAR" property="machineId" />
-    <result column="interact_machine_code" jdbcType="VARCHAR" property="interactMachineCode" />
+    <result column="machine_code" jdbcType="VARCHAR" property="machineCode" />
   </resultMap>
 
   <select id="findActiveInteractMachine" resultMap="BaseResultMap">

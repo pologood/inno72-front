@@ -16,6 +16,7 @@ import java.util.Optional;
 
 import javax.annotation.Resource;
 
+import com.inno72.vo.*;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -91,13 +92,6 @@ import com.inno72.service.Inno72GameApiService;
 import com.inno72.service.Inno72GameService;
 import com.inno72.service.Inno72TopService;
 import com.inno72.util.AlarmUtil;
-import com.inno72.vo.AlarmMessageBean;
-import com.inno72.vo.GoodsVo;
-import com.inno72.vo.Inno72SamplingGoods;
-import com.inno72.vo.LogReqrest;
-import com.inno72.vo.MachineApiVo;
-import com.inno72.vo.StandardRedirectLoginReqVo;
-import com.inno72.vo.UserSessionVo;
 
 import net.coobird.thumbnailator.Thumbnails;
 
@@ -1659,6 +1653,16 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 			userSessionVo.setMachineCode(inno72Machine.getMachineCode());
 			userSessionVo.setMachineId(inno72Machine.getId());
 			userSessionVo.setLogged(false);
+
+			String rVoJson = redisUtil.get(CommonBean.REDIS_ACTIVITY_PLAN_CACHE_KEY + inno72Machine.getMachineCode());
+			LOGGER.debug("redis cache machine data =====> {}", rVoJson);
+			if (StringUtil.isNotEmpty(rVoJson)) {
+				Inno72MachineVo inno72MachineVo = JSON.parseObject(rVoJson, Inno72MachineVo.class);
+				userSessionVo.setInno72MachineVo(inno72MachineVo);
+				LOGGER.debug("parse rVoJson string finish --> {}", inno72MachineVo);
+			}else{
+				LOGGER.error("从redis读取机器信息错误key={}",CommonBean.REDIS_ACTIVITY_PLAN_CACHE_KEY + inno72Machine.getMachineCode());
+			}
 
 			// 解析 ext
 			this.analysisExt(userSessionVo, ext);

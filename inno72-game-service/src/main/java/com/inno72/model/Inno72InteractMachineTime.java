@@ -2,7 +2,7 @@ package com.inno72.model;
 
 import javax.persistence.*;
 import java.io.Serializable;
-import java.util.Date;
+import java.time.LocalDateTime;
 
 @Table(name = "inno72_interact_machine_time")
 public class Inno72InteractMachineTime implements Serializable {
@@ -24,13 +24,13 @@ public class Inno72InteractMachineTime implements Serializable {
      * 开始时间
      */
     @Column(name = "start_time")
-    private Date startTime;
+    private LocalDateTime startTime;
 
     /**
      * 结束时间
      */
     @Column(name = "end_time")
-    private Date endTime;
+    private LocalDateTime endTime;
 
 
     /**
@@ -74,7 +74,7 @@ public class Inno72InteractMachineTime implements Serializable {
      *
      * @return start_time - 开始时间
      */
-    public Date getStartTime() {
+    public LocalDateTime getStartTime() {
         return startTime;
     }
 
@@ -83,7 +83,7 @@ public class Inno72InteractMachineTime implements Serializable {
      *
      * @param startTime 开始时间
      */
-    public void setStartTime(Date startTime) {
+    public void setStartTime(LocalDateTime startTime) {
         this.startTime = startTime;
     }
 
@@ -92,7 +92,7 @@ public class Inno72InteractMachineTime implements Serializable {
      *
      * @return end_time - 结束时间
      */
-    public Date getEndTime() {
+    public LocalDateTime getEndTime() {
         return endTime;
     }
 
@@ -101,7 +101,7 @@ public class Inno72InteractMachineTime implements Serializable {
      *
      * @param endTime 结束时间
      */
-    public void setEndTime(Date endTime) {
+    public void setEndTime(LocalDateTime endTime) {
         this.endTime = endTime;
     }
 
