@@ -1594,13 +1594,14 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 		Inno72Machine inno72Machine = inno72MachineMapper.findMachineByCode(machineCode);
 
 		String returnUrl = "";
+
+		gameSessionRedisUtil.delSession(machineCode);
+
 		if (StandardPrepareLoginReqVo.OperTypeEnum.CREATE_QRCODE.getKey() == operType) {
 			// 生成二维码流程
 			returnUrl = this.createQrCode(inno72Machine, machineCode);
 		} else if (StandardPrepareLoginReqVo.OperTypeEnum.START_SESSION.getKey() == operType) {
 			// 开始会话流程
-			gameSessionRedisUtil.delSession(machineCode);
-
 			UserSessionVo userSessionVo = new UserSessionVo();
 			userSessionVo.setMachineCode(inno72Machine.getMachineCode());
 			userSessionVo.setMachineId(inno72Machine.getId());
