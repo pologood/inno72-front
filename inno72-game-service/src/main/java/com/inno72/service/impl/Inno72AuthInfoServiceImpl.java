@@ -430,7 +430,7 @@ public class Inno72AuthInfoServiceImpl implements Inno72AuthInfoService {
 		Map<String, Object> resultMap = new HashMap<>();
 		resultMap.put("machineCode", inno72Machine.getMachineCode());
 		resultMap.put("playCode", playCode);
-		// resultMap.put("qrStatus", qrStatus);
+		resultMap.put("qrStatus", QRSTATUS_NORMAL);
 		resultMap.put("sellerId", inno72Merchant.getMerchantCode());
 
 		this.dealIsVip(resultMap, sessionVo);
