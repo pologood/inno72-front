@@ -220,6 +220,7 @@ public class Inno72StandardController {
 
 				// 判断二维码是否已经超时, 恢复isScanned 状态 为false，允许二维码继续被扫
 				boolean qrCode = redisUtil.exists(sessionUuid + "qrCode");
+				LOGGER.info("loginRedirect qrCode is {}", qrCode);
 				if (!qrCode) {
 					sessionVo.setIsScanned(false);
 				}
