@@ -241,4 +241,16 @@ public class Inno72StandardController {
 		}
 	}
 
+
+	/**
+	 * 登录前的操作（目前聚石塔回调）
+	 */
+	@ResponseBody
+	@RequestMapping(value = "/test", method = {RequestMethod.POST})
+	public String test() {
+		boolean exists = redisUtil.exists("18881339qrCode");
+		LOGGER.info("exists is {}", exists);
+		return "";
+	}
+
 }
