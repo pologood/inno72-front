@@ -292,13 +292,13 @@ public class Inno72AuthInfoServiceImpl implements Inno72AuthInfoService {
 	public Result<Object> processBeforeLogged(String sessionUuid, String authInfo) {
 		LOGGER.info("processBeforeLogged params sessionUuid is {}, authInfo is {} ", sessionUuid, authInfo);
 
-		// 检查二维码是否可以重复扫
-		String qrStatus = this.checkQrCode(sessionUuid);
-
-		// 判断二维码是否已经过期
-		if (qrStatus == QRSTATUS_INVALID) {
-			return Results.failure("二维码已经过期");
-		}
+//		// 检查二维码是否可以重复扫
+//		String qrStatus = this.checkQrCode(sessionUuid);
+//
+//		// 判断二维码是否已经过期
+//		if (qrStatus == QRSTATUS_INVALID) {
+//			return Results.failure("二维码已经过期");
+//		}
 
 		UserSessionVo sessionVo = gameSessionRedisUtil.getSessionKey(sessionUuid);
 
@@ -430,7 +430,7 @@ public class Inno72AuthInfoServiceImpl implements Inno72AuthInfoService {
 		Map<String, Object> resultMap = new HashMap<>();
 		resultMap.put("machineCode", inno72Machine.getMachineCode());
 		resultMap.put("playCode", playCode);
-		resultMap.put("qrStatus", qrStatus);
+		// resultMap.put("qrStatus", qrStatus);
 		resultMap.put("sellerId", inno72Merchant.getMerchantCode());
 
 		this.dealIsVip(resultMap, sessionVo);
