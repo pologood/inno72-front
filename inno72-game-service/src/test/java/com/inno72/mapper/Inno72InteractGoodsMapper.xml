@@ -9,6 +9,5 @@
     <result column="interact_id" jdbcType="VARCHAR" property="interactId" />
     <result column="goods_id" jdbcType="VARCHAR" property="goodsId" />
     <result column="user_day_number" jdbcType="INTEGER" property="userDayNumber" />
-    <result column="type" jdbcType="INTEGER" property="type" />
   </resultMap>
 </mapper>

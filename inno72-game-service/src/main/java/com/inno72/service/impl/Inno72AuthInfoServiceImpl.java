@@ -16,6 +16,7 @@ import com.google.gson.Gson;
 import com.inno72.common.*;
 import com.inno72.common.datetime.LocalDateTimeUtil;
 import com.inno72.common.util.*;
+import com.inno72.common.util.DateUtil;
 import com.inno72.log.LogAllContext;
 import com.inno72.log.PointLogContext;
 import com.inno72.log.vo.LogType;
@@ -28,6 +29,8 @@ import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -91,6 +94,8 @@ public class Inno72AuthInfoServiceImpl implements Inno72AuthInfoService {
 	private Inno72InteractGoodsService inno72InteractGoodsService;
 	@Resource
 	private Inno72MachineService inno72MachineService;
+	@Resource
+	private StringRedisTemplate redisTemplate;
 
 	// todo gxg 使用枚举
 	private static final String QRSTATUS_NORMAL = "0"; // 二维码正常
@@ -192,16 +197,36 @@ public class Inno72AuthInfoServiceImpl implements Inno72AuthInfoService {
 			return Results.failure("参数缺失！");
 		}
 
-		UserSessionVo sessionStr = gameSessionRedisUtil.getSessionKey(sessionUuid);
+		UserSessionVo userSessionVo = gameSessionRedisUtil.getSessionKey(sessionUuid);
 
-		if (sessionStr == null) {
+		if (userSessionVo == null) {
 			return Results.failure("未登录！");
 		}
 
-		Long scard = redisUtil.scard(CommonBean.REDIS_ACTIVITY_PLAN_LOGIN_TIMES_KEY + sessionStr.getActivityPlanId());
-		sessionStr.setPlayTimes(scard);
-
-		return Results.success(sessionStr);
+		Long scard = redisUtil.scard(CommonBean.REDIS_ACTIVITY_PLAN_LOGIN_TIMES_KEY + userSessionVo.getActivityPlanId());
+		userSessionVo.setPlayTimes(scard);
+		//判断是否是派样数据
+		Inno72MachineVo inno72MachineVo = userSessionVo.getInno72MachineVo();
+		if(inno72MachineVo != null && inno72MachineVo.getActivityType() == Inno72MachineVo.ACTIVITYTYPE_PAIYANG && userSessionVo.getCanGame()){
+			String userid = userSessionVo.getUserId();
+			String activityid = userSessionVo.getActivityId();
+			String date = DateUtil.getDateStringByYYYYMMDD();
+			//同一用户每天参与次数加一
+			String key = String.format(RedisConstants.PAIYANG_DAY_GAME_TIMES,activityid,date,userid);
+			if(!redisTemplate.hasKey(key)){
+				redisTemplate.opsForValue().set(key,"1");
+			}else{
+				redisTemplate.opsForValue().increment(key,1);
+			}
+			//同一用户参与次数加一
+			key = String.format(RedisConstants.PAIYANG_GAME_TIMES,activityid,userid);
+			if(!redisTemplate.hasKey(key)){
+				redisTemplate.opsForValue().set(key,"1");
+			}else{
+				redisTemplate.opsForValue().increment(key,1);
+			}
+		}
+		return Results.success(userSessionVo);
 	}
 
 	private String getActive() {
@@ -298,7 +323,23 @@ public class Inno72AuthInfoServiceImpl implements Inno72AuthInfoService {
 			return Results.failure("authInfo 不能为空！");
 		}
 
+		// 检查二维码是否可以重复扫
+		String qrStatus = this.checkQrCode(sessionUuid);
+
+		// 判断二维码是否已经过期
+		if (qrStatus == QRSTATUS_INVALID) {
+			return Results.failure("二维码已经过期");
+		}
+
 		UserSessionVo sessionVo = gameSessionRedisUtil.getSessionKey(sessionUuid);
+
+		// 判断是否有用户已经登录
+		if (!StringUtil.isEmpty(redisUtil.get(sessionUuid + "exist"))) {
+			qrStatus = QRSTATUS_EXIST_USER;
+		} else {
+			redisUtil.setex(sessionUuid + "exist", 1600, sessionUuid);
+		}
+
 		String mid = sessionVo.getMachineId();
 		Inno72MachineVo inno72MachineVo = sessionVo.getInno72MachineVo();
 
@@ -355,9 +396,6 @@ public class Inno72AuthInfoServiceImpl implements Inno72AuthInfoService {
 			return Results.failure("配置中心无聚石塔配置路径!");
 		}
 
-		// 检查二维码是否可以重复扫
-		String qrStatus = this.checkQrCode(sessionUuid);
-
 		Inno72Activity inno72Activity = inno72ActivityMapper.selectByPrimaryKey(inno72ActivityPlan.getActivityId());
 		String sellerId = inno72Activity.getSellerId();
 		playCode = inno72Activity.getCode();
@@ -402,7 +440,7 @@ public class Inno72AuthInfoServiceImpl implements Inno72AuthInfoService {
 		}
 
 		// canOrder = inno72GameService.countSuccOrder(channelId, userId, inno72ActivityPlan.getId());
-
+		sessionVo.setActivityType(inno72Activity.getType());
 		sessionVo.setUserNick(nickName);
 		sessionVo.setUserId(userId);
 		sessionVo.setAccessToken(accessToken);
@@ -432,6 +470,7 @@ public class Inno72AuthInfoServiceImpl implements Inno72AuthInfoService {
 		resultMap.put("sellerId", inno72Merchant.getMerchantCode());
 
 		this.dealIsVip(resultMap, sessionVo);
+		this.checkGoodsId(sessionVo);
 
 		resultMap.put("activityType", activityType);
 		resultMap.put("goodsCode", sessionVo.getGoodsCode() != null ? sessionVo.getGoodsCode() : "");
@@ -532,9 +571,7 @@ public class Inno72AuthInfoServiceImpl implements Inno72AuthInfoService {
 				}
 			}
 		}
-
-		Calendar c = Calendar.getInstance();
-		String date = c.get(Calendar.YEAR)+"-"+c.get(Calendar.MONTH)+"-"+c.get(Calendar.DAY_OF_MONTH);
+		String date = DateUtil.getDateStringByYYYYMMDD();
 		if(dayTimes!=null){
 			if(redisUtil.exists(String.format(RedisConstants.PAIYANG_DAY_GAME_TIMES,interact.getId(),date,userId))){
 				Integer mydayTimes = Integer.parseInt(redisUtil.get(String.format(RedisConstants.PAIYANG_DAY_GAME_TIMES,interact.getId(),date,userId)));
@@ -629,6 +666,17 @@ public class Inno72AuthInfoServiceImpl implements Inno72AuthInfoService {
 	}
 
 	/**
+	 * 检查goodsid
+	 */
+	private void checkGoodsId(UserSessionVo sessionVo) {
+		if (StringUtil.isEmpty(sessionVo.getGoodsId()) && StringUtil.isNotEmpty(sessionVo.getGoodsCode())) {
+			Inno72Goods inno72Goods = inno72GoodsMapper.selectByCode(sessionVo.getGoodsCode());
+			sessionVo.setGoodsId(inno72Goods.getId());
+		}
+	}
+
+
+	/**
 	 * 处理是否入会
 	 */
 	void dealIsVip(Map<String, Object> resultMap, UserSessionVo sessionVo) {
@@ -703,7 +751,7 @@ public class Inno72AuthInfoServiceImpl implements Inno72AuthInfoService {
 	 * @param sessionUuid
 	 * @return
 	 */
-	private String checkQrCode(String sessionUuid) {
+	private synchronized String checkQrCode(String sessionUuid) {
 		// 判断是否有他人登录以及二维码是否过期
 		String qrStatus = QRSTATUS_NORMAL;
 		LOGGER.info("sessionUuid is {}", sessionUuid);
@@ -713,13 +761,6 @@ public class Inno72AuthInfoServiceImpl implements Inno72AuthInfoService {
 		if (!result) {
 			qrStatus = QRSTATUS_INVALID;
 			LOGGER.info("二维码已经过期");
-		} else {
-			// 判断已经有用户操作
-			UserSessionVo userSessionVo = gameSessionRedisUtil.getSessionKey(sessionUuid);
-			if (userSessionVo.isLogged()) {
-				qrStatus = QRSTATUS_EXIST_USER;
-				LOGGER.info("已经有用户正在操作");
-			}
 		}
 		return qrStatus;
 	}
@@ -774,10 +815,14 @@ public class Inno72AuthInfoServiceImpl implements Inno72AuthInfoService {
 	public boolean setLogged(String sessionUuid) {
 		boolean logged = false;
 		try {
-			UserSessionVo userSessionVo = gameSessionRedisUtil.getSessionKey(sessionUuid);
-			userSessionVo.setLogged(true);
-			gameSessionRedisUtil.setSessionEx(userSessionVo.getSessionUuid(), JSON.toJSONString(userSessionVo));
-			logged = true;
+			boolean hasKey = gameSessionRedisUtil.hasKey(sessionUuid);
+			LOGGER.info("setLogged hasKey is {}, sessionUuid is {}", hasKey, sessionUuid);
+			if (hasKey) {
+				UserSessionVo userSessionVo = gameSessionRedisUtil.getSessionKey(sessionUuid);
+				userSessionVo.setLogged(true);
+				gameSessionRedisUtil.setSessionEx(userSessionVo.getSessionUuid(), JSON.toJSONString(userSessionVo));
+				logged = true;
+			}
 		} catch (Exception e) {
 			LOGGER.error(e.getMessage(), e);
 		}

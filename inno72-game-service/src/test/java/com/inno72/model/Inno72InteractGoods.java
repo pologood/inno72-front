@@ -1,11 +1,9 @@
 package com.inno72.model;
 
 import javax.persistence.*;
-import java.io.Serializable;
 
 @Table(name = "inno72_interact_goods")
-public class Inno72InteractGoods implements Serializable {
-    private static final long serialVersionUID = 576201848845534238L;
+public class Inno72InteractGoods {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private String id;
@@ -27,13 +25,6 @@ public class Inno72InteractGoods implements Serializable {
      */
     @Column(name = "user_day_number")
     private Integer userDayNumber;
-    /**
-     * 类型:0商品，1优惠券
-     */
-    private Integer type;
-
-    public final static Integer TYPE_GOODS = 0;
-    public final static Integer TYPE_COUPON = 1;
 
     /**
      * @return id
@@ -101,13 +92,5 @@ public class Inno72InteractGoods implements Serializable {
      */
     public void setUserDayNumber(Integer userDayNumber) {
         this.userDayNumber = userDayNumber;
-    }
-
-    public Integer getType() {
-        return type;
-    }
-
-    public void setType(Integer type) {
-        this.type = type;
     }
 }

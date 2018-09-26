@@ -16,6 +16,8 @@ import java.util.Optional;
 
 import javax.annotation.Resource;
 
+import com.inno72.model.*;
+import com.inno72.service.Inno72InteractGoodsService;
 import com.inno72.vo.*;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
@@ -65,26 +67,6 @@ import com.inno72.mapper.Inno72OrderHistoryMapper;
 import com.inno72.mapper.Inno72OrderMapper;
 import com.inno72.mapper.Inno72ShopsMapper;
 import com.inno72.mapper.Inno72SupplyChannelMapper;
-import com.inno72.model.AlarmDetailBean;
-import com.inno72.model.Inno72Activity;
-import com.inno72.model.Inno72ActivityPlan;
-import com.inno72.model.Inno72ActivityPlanGameResult;
-import com.inno72.model.Inno72Channel;
-import com.inno72.model.Inno72Coupon;
-import com.inno72.model.Inno72Game;
-import com.inno72.model.Inno72GameUser;
-import com.inno72.model.Inno72GameUserChannel;
-import com.inno72.model.Inno72GameUserLife;
-import com.inno72.model.Inno72Goods;
-import com.inno72.model.Inno72Locale;
-import com.inno72.model.Inno72Machine;
-import com.inno72.model.Inno72Merchant;
-import com.inno72.model.Inno72Order;
-import com.inno72.model.Inno72OrderGoods;
-import com.inno72.model.Inno72OrderHistory;
-import com.inno72.model.Inno72Shops;
-import com.inno72.model.Inno72SupplyChannel;
-import com.inno72.model.MachineDropGoodsBean;
 import com.inno72.oss.OSSUtil;
 import com.inno72.plugin.http.HttpClient;
 import com.inno72.redis.IRedisUtil;
@@ -151,6 +133,8 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 	private MachineCheckBackendFeignClient machineCheckBackendFeignClient;
 	@Resource
 	private AlarmUtil alarmUtil;
+    @Resource
+	private Inno72InteractGoodsService inno72InteractGoodsService;
 
 	@Value("${machinecheckappbackend.uri}")
 	private String machinecheckappbackendUri;
@@ -394,7 +378,7 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 
 			// 如果需要支付 polling时 需要返回货道信息
 			boolean needPay = userSessionVo.getNeedPay();
-			if (!needPay) {
+			if (needPay) {
 				String goodsId = userSessionVo.getGoodsId();
 				List<String> goodsIds = new ArrayList<>();
 				goodsIds.add(goodsId);
@@ -663,6 +647,12 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 			return Results.failure("登录失效!");
 		}
 
+		boolean paiyangFlag = userSessionVo.findPaiyangFlag();
+
+		if(paiyangFlag){
+			return paiyangOrder(userSessionVo,vo);
+		}
+
 		List<Inno72ActivityPlanGameResult> planGameResults = this.getGameResults(vo, userSessionVo);
 		LOGGER.info("获取游戏结果 {}", planGameResults);
 
@@ -720,6 +710,63 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 		Map<String, Object> result = new HashMap<>();
 
 		this.setChannelInfo(userSessionVo, result, resultGoodsId);
+
+		result.put("time", new Date().getTime());
+		result.put("lotteryResult", lotteryCode);
+		result.put("orderResult", orderCode);
+
+		result.put("needPay", needPay);
+		result.put("payQrcodeImage", payQrcodeImage);
+
+		LOGGER.info("standardOrder is {}", JsonUtil.toJson(result));
+		return Results.success(result);
+	}
+
+	private Result<Object> paiyangOrder(UserSessionVo userSessionVo, MachineApiVo vo) {
+
+		LOGGER.debug("下单 userSessionVo ==> {}", JSON.toJSONString(userSessionVo));
+
+		String goodsId = userSessionVo.getGoodsId();
+		String interactId = userSessionVo.getActivityId();
+        LOGGER.info("paiyangOrder goodsId={},interactId={}",goodsId,interactId);
+        //查询商品类型
+		Inno72InteractGoods inno72InteractGoods = inno72InteractGoodsService.findByInteractIdAndGoodsId(interactId,goodsId);
+		int lotteryCode = 1;
+		boolean needPay = false;
+		String payQrcodeImage = "";
+		int orderCode = 1;
+		List<String> resultGoodsId = null;
+		Integer prizeType = inno72InteractGoods.getType();
+		if(Inno72InteractGoods.TYPE_GOODS == prizeType){
+			resultGoodsId = new ArrayList<>();
+			// 下商品订单
+			Inno72Goods inno72Goods = inno72GoodsMapper.selectByPrimaryKey(goodsId);
+			if (inno72Goods == null) {
+				LOGGER.debug("讲真的。配置商品..它不见了。。。! goodsId={}", goodsId);
+				return Results.failure("讲真的。配置商品..它不见了。。。!");
+			}
+			String code = inno72Goods.getCode();
+			Result<Object> orderResult = this.sendOrder(userSessionVo, code);
+			orderCode = orderResult.getCode();
+			if (orderResult.getCode() == Result.SUCCESS) {
+				Map map = (Map)orderResult.getData();
+				needPay = (Boolean)map.get("needPay");
+				payQrcodeImage = (String)map.get("payQrcodeImage");
+			}
+			resultGoodsId.add(goodsId);
+		}else if(Inno72InteractGoods.TYPE_COUPON == prizeType){
+			// 下优惠券订单
+			Result<Object> lottery = this.lottery(userSessionVo, vo.getUa(), vo.getUmid(), goodsId);
+			LOGGER.debug("抽取奖券 结果 ==> {}", JSON.toJSONString(lottery));
+			lotteryCode = lottery.getCode();
+		}else{
+			return Results.failure("无商品类型");
+		}
+
+		Map<String, Object> result = new HashMap<>();
+		if(resultGoodsId!=null&&resultGoodsId.size()>0){
+			this.setChannelInfo(userSessionVo, result, resultGoodsId);
+		}
 
 		result.put("time", new Date().getTime());
 		result.put("lotteryResult", lotteryCode);
@@ -839,10 +886,11 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 		String report = vo.getReport();
 		String activityPlanId = userSessionVo.getActivityPlanId();
 		String goodsId = userSessionVo.getGoodsId();
+		Integer activityType = userSessionVo.getActivityType();
 
 		List<Inno72ActivityPlanGameResult> planGameResults = null;
 
-		if (StringUtil.isNotEmpty(goodsId)) {
+		if (activityType == Inno72Activity.ActivityType.PAIYANG.getType()) {
 			Inno72Goods inno72GoodsCheck = inno72GoodsMapper.selectByPrimaryKey(goodsId);
 			String shopId = inno72GoodsCheck.getShopId();
 
@@ -1213,11 +1261,17 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 		if (inno72Machine == null) {
 			return Results.failure("下商品订单机器信息错误!");
 		}
-
-		// 下单 inno72_Order TODO 商品下单 itemId 对应的类型？
-		String inno72OrderId = genInno72Order(channelId, activityPlanId, machineId, itemId, userSessionVo.getUserId(),
-				Inno72Order.INNO72ORDER_GOODSTYPE.PRODUCT);
-
+		boolean paiyangflag = userSessionVo.findPaiyangFlag();
+		String inno72OrderId = null;
+		if(paiyangflag){
+			// 下单 inno72_Order TODO 商品下单 itemId 对应的类型？
+			inno72OrderId = genPaiyangInno72Order(userSessionVo.getCanOrder(),channelId, activityPlanId, machineId, itemId, userSessionVo.getUserId(),
+					Inno72Order.INNO72ORDER_GOODSTYPE.PRODUCT);
+		}else{
+			// 下单 inno72_Order TODO 商品下单 itemId 对应的类型？
+			inno72OrderId = genInno72Order(channelId, activityPlanId, machineId, itemId, userSessionVo.getUserId(),
+					Inno72Order.INNO72ORDER_GOODSTYPE.PRODUCT);
+		}
 
 		String accessToken = userSessionVo.getAccessToken();
 		LOGGER.info("更新的session =====> {}", JSON.toJSONString(userSessionVo));
@@ -1294,6 +1348,102 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 		return Results.success(map);
 	}
 
+	private String genPaiyangInno72Order(boolean canOrder ,String channelId, String activityPlanId, String machineId, String goodsCode, String channelUserKey, Inno72Order.INNO72ORDER_GOODSTYPE product) {
+		Map<String, String> paramsChannel = new HashMap<>();
+		paramsChannel.put("channelId", channelId);
+		paramsChannel.put("channelUserKey", channelUserKey);
+		Inno72GameUserChannel userChannel = inno72GameUserChannelMapper.selectByChannelUserKey(paramsChannel);
+		String gameUserId = userChannel.getGameUserId();
+
+//		// 活动计划
+//		Inno72ActivityPlan inno72ActivityPlan = inno72ActivityPlanMapper.selectByPrimaryKey(activityPlanId);
+//		// 活动
+//		Inno72Activity inno72Activity = inno72ActivityMapper.selectByPrimaryKey(inno72ActivityPlan.getActivityId());
+
+		Inno72Machine inno72Machine = inno72MachineMapper.selectByPrimaryKey(machineId);
+
+		Inno72Channel inno72Channel = inno72ChannelMapper.selectByPrimaryKey(channelId);
+
+
+		String orderNum = Inno72OrderNumGenUtil.genOrderNum(inno72Channel.getChannelCode(),
+				inno72Machine.getMachineCode());
+		LocalDateTime now = LocalDateTime.now();
+
+		Integer rep = null;
+		if (product.getKey().equals(Inno72Order.INNO72ORDER_GOODSTYPE.PRODUCT.getKey())) {
+			rep = Inno72Order.INNO72ORDER_REPETITION.NOT.getKey();
+		} else {
+			rep = canOrder ? Inno72Order.INNO72ORDER_REPETITION.NOT.getKey()
+					: Inno72Order.INNO72ORDER_REPETITION.REPETITION.getKey();
+		}
+
+		Inno72Order inno72Order = new Inno72Order();
+		inno72Order.setChannelId(channelId);
+		inno72Order.setGoodsStatus(Inno72Order.INNO72ORDER_GOODSSTATUS.WAIT.getKey());
+		inno72Order.setInno72ActivityId(activityPlanId);
+		inno72Order.setInno72ActivityPlanId(activityPlanId);
+		inno72Order.setMachineId(machineId);
+		inno72Order.setOrderNum(orderNum);
+		inno72Order.setOrderPrice(BigDecimal.ZERO);
+		inno72Order.setOrderTime(now);
+		inno72Order.setOrderType(Inno72Order.INNO72ORDER_ORDERTYPE.DEFAULT.getKey());
+		inno72Order.setPayPrice(BigDecimal.ZERO);
+		inno72Order.setPayStatus(Inno72Order.INNO72ORDER_PAYSTATUS.WAIT.getKey());
+		inno72Order.setPayTime(null);
+		inno72Order.setRefOrderId(null);
+		inno72Order.setRefOrderStatus(null);
+		inno72Order.setGoodsType(product.getKey());
+		inno72Order.setRepetition(rep);
+
+		inno72Order.setUserId(gameUserId);
+
+
+		Inno72OrderGoods orderGoods = new Inno72OrderGoods();
+
+		String goodsName = "";
+		if (product.getKey().equals(Inno72Order.INNO72ORDER_GOODSTYPE.PRODUCT.getKey())) {
+			Inno72Goods inno72Goods = inno72GoodsMapper.selectByCode(goodsCode);
+			goodsName = inno72Goods.getName();
+			orderGoods.setGoodsCode(inno72Goods.getCode());
+			orderGoods.setGoodsId(inno72Goods.getId());
+			orderGoods.setGoodsName(goodsName);
+			orderGoods.setGoodsPrice(inno72Goods.getPrice());
+
+			Inno72Shops inno72Shops = inno72ShopsMapper.selectByPrimaryKey(inno72Goods.getShopId());
+			inno72Order.setShopsId(inno72Shops.getId());
+			inno72Order.setShopsName(inno72Shops.getShopName());
+
+			inno72Order.setMerchantId(inno72Goods.getSellerId());
+
+		} else {
+			Inno72Coupon inno72Coupon = inno72CouponMapper.selectByPrimaryKey(goodsCode);
+			goodsName = inno72Coupon.getName();
+			orderGoods.setGoodsCode(inno72Coupon.getCode());
+			orderGoods.setGoodsId(inno72Coupon.getId());
+			orderGoods.setGoodsName(goodsName);
+			orderGoods.setGoodsPrice(BigDecimal.ZERO);
+			Inno72Shops inno72Shops = inno72ShopsMapper.selectByPrimaryKey(inno72Coupon.getShopsId());
+			inno72Order.setShopsId(inno72Shops.getId());
+			inno72Order.setShopsName(inno72Shops.getShopName());
+
+			inno72Order.setMerchantId(inno72Shops.getSellerId());
+		}
+		/* 埋点 */
+		CommonBean.logger(CommonBean.POINT_TYPE_ORDER, inno72Machine.getMachineCode(),
+				"用户[" + userChannel.getUserNick() + "]生成["+ goodsName + "]订单，订单号[" + orderNum +"].");
+
+		orderGoods.setOrderNum(inno72Order.getOrderNum());
+		orderGoods.setStatus(Inno72Order.INNO72ORDER_GOODSSTATUS.WAIT.getKey());
+		inno72OrderMapper.insert(inno72Order);
+		orderGoods.setOrderId(inno72Order.getId());
+		inno72OrderGoodsMapper.insert(orderGoods);
+
+		inno72OrderHistoryMapper.insert(new Inno72OrderHistory(inno72Order.getId(), inno72Order.getOrderNum(),
+				JSON.toJSONString(inno72Order), "初始化插入订单!"));
+
+		return rep == 0 ? rep + "" : inno72Order.getId();
+	}
+
 	/**
 	 * 重构合并抽奖和下单接口为一个接口。这是抽奖接口
 	 * @param vo
@@ -1365,7 +1515,7 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 		// TODO 奖券下单
 		String orderId = "";
 		try {
-			orderId = this.genInno72Order(channelId, activityPlanId, _machineId, inno72Coupon.getId(), vo.getUserId(),
+			orderId = this.genPaiyangInno72Order(vo.getCanOrder(),channelId, activityPlanId, _machineId, inno72Coupon.getId(), vo.getUserId(),
 					Inno72Order.INNO72ORDER_GOODSTYPE.COUPON);
 		} catch (Exception e) {
 			LOGGER.info("获取优惠券下单失败 ==> {}", e.getMessage(), e);

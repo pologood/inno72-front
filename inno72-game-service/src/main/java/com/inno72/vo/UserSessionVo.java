@@ -77,6 +77,12 @@ public class UserSessionVo {
 	 */
 	private String sessionKey;
 
+	/**
+	 * 活动类型
+	 * @see com.inno72.model.Inno72Activity.ActivityType
+	 */
+	private Integer activityType = 0;
+
 	public UserSessionVo(String mid, String userNick, String userId, String access_token, String gameId,
 			String sessionUuid, String planId) {
 		super();
@@ -158,5 +164,21 @@ public class UserSessionVo {
 		this.needPay = needPay;
 	}
 
+	public boolean getCanGame() {
+		return canGame;
+	}
 
+	public void setCanGame(boolean canGame) {
+		this.canGame = canGame;
+	}
+
+    public boolean findPaiyangFlag() {
+		boolean flag = false;
+
+		if(inno72MachineVo!=null && inno72MachineVo.getActivityType() == Inno72MachineVo.ACTIVITYTYPE_PAIYANG){
+			flag = true;
+		}
+
+		return flag;
+    }
 }

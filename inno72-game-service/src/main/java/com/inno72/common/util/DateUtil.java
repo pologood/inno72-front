@@ -603,4 +603,10 @@ public class DateUtil extends DateUtils {
 	public static LocalDate getTomorrowLocalDate() {
 		return getTodayLocalDate().plusDays(1);
 	}
+
+    public static String getDateStringByYYYYMMDD() {
+		Calendar c = Calendar.getInstance();
+		String date = c.get(Calendar.YEAR)+"-"+c.get(Calendar.MONTH)+"-"+c.get(Calendar.DAY_OF_MONTH);
+		return date;
+    }
 }

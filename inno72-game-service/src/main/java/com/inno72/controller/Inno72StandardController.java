@@ -172,12 +172,15 @@ public class Inno72StandardController {
 	 */
 	@ResponseBody
 	@RequestMapping(value = "/setLogged", method = {RequestMethod.POST})
-	public Result<Boolean> setLogged(String sessionUuid) {
-		boolean b = inno72AuthInfoService.setLogged(sessionUuid);
-		if (!b) {
-			Results.failure("登录失败");
+	public Result<Object> setLogged(String sessionUuid) {
+		LOGGER.info("setLogged sessionUuid is {}", sessionUuid);
+		boolean result = inno72AuthInfoService.setLogged(sessionUuid);
+		LOGGER.info("setLogged result is {}", result);
+		if (result) {
+			return Results.success();
+		} else {
+			return Results.failure("登录失败");
 		}
-		return Results.success();
 	}
 
 	/**
