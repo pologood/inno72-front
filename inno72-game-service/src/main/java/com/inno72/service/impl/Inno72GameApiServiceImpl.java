@@ -1515,7 +1515,8 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 				"机器 ["+machineCode+"] 货道 ["+inno72SupplyChannel.getName()+"(code:"+inno72SupplyChannel.getCode()+")] "
 						+ "出货完成."
 						+ "货道容量 ["+inno72SupplyChannel.getVolumeCount()+"]. "
-						+ "原数量 ["+inno72SupplyChannel.getGoodsCount()+"], 当前数量 ["+updateChannel.getGoodsCount()+"]",
+						+ "原数量 ["+inno72SupplyChannel.getGoodsCount()+"], 当前数量 ["+updateChannel.getGoodsCount()+"]"
+						+ "当前用户 [" + userSessionVo.getUserNick() + "]",
 				userSessionVo.getActivityId() + "|" + inno72Goods.getCode() + "|" + inno72Goods.getName());
 
 		return Results.success();
