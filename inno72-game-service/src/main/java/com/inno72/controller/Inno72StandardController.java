@@ -210,6 +210,8 @@ public class Inno72StandardController {
 	public void loginRedirect(HttpServletResponse response, String sessionUuid, String env) {
 		LOGGER.info("loginRedirect sessionUuid is {}, env is {}", sessionUuid, env);
 		try {
+
+			String redirectUrl = "";
 			// 判断是否已经有人扫过了，如果扫过 直接跳转
 			UserSessionVo sessionVo = gameSessionRedisUtil.getSessionKey(sessionUuid);
 
@@ -223,15 +225,14 @@ public class Inno72StandardController {
 				}
 
 				if (sessionVo.getIsScanned()) {
-					String h5ErrUrl = String.format(topH5ErrUrl, env) + "/?status="+ TopH5ErrorTypeEnum.IS_SCANNED.getName();
-					LOGGER.info("loginRedirect h5ErrUrl is {}", h5ErrUrl);
-					response.sendRedirect(h5ErrUrl);
+					LOGGER.info("二维码已经被扫描");
+					redirectUrl = String.format(topH5ErrUrl, env) + "/?status="+ TopH5ErrorTypeEnum.IS_SCANNED.getValue();
 				} else {
 					sessionVo.setIsScanned(true);
 					gameSessionRedisUtil.setSession(sessionUuid, JSON.toJSONString(sessionVo));
+					redirectUrl = String.format("%s%s/%s", inno72GameServiceProperties.get("tmallUrl"), sessionUuid, env);
 				}
 			}
-			String redirectUrl = String.format("%s%s/%s", inno72GameServiceProperties.get("tmallUrl"), sessionUuid, env);
 			LOGGER.info("redirectUrl is {} ", redirectUrl);
 			response.sendRedirect(redirectUrl);
 		} catch (IOException e) {
