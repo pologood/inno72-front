@@ -9,9 +9,11 @@ import javax.servlet.http.HttpServletResponse;
 
 import com.alibaba.fastjson.JSON;
 import com.inno72.common.Inno72GameServiceProperties;
+import com.inno72.redis.IRedisUtil;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.*;
 
 import com.inno72.common.Result;
@@ -54,6 +56,15 @@ public class Inno72StandardController {
 	@Resource
 	private Inno72GameServiceProperties inno72GameServiceProperties;
 
+	@Resource
+	private IRedisUtil redisUtil;
+
+	@Value("${top_h5_err_url}")
+	private String topH5ErrUrl;
+
+	@Value("${env}")
+	private String env;
+
 	/**
 	 * 登录（包括需要登录和非登录的场景）
 	 * @param req
@@ -74,7 +85,7 @@ public class Inno72StandardController {
 
 		if (StandardLoginTypeEnum.ALIBABA.getValue().equals(req.getLoginType())) {
 
-			return inno72GameApiService.prepareLoginQrCode(req.getMachineCode(), req.getLoginType(), req.getExt());
+			return inno72GameApiService.prepareLoginQrCode(req);
 
 		} else {
 
@@ -202,14 +213,26 @@ public class Inno72StandardController {
 	public void loginRedirect(HttpServletResponse response, String sessionUuid, String env) {
 		LOGGER.info("loginRedirect sessionUuid is {}, env is {}", sessionUuid, env);
 		try {
-			// todo 判断是否已经有人扫过了，如果扫过 直接跳转
+			// 判断是否已经有人扫过了，如果扫过 直接跳转
 			UserSessionVo sessionVo = gameSessionRedisUtil.getSessionKey(sessionUuid);
+
 			if (sessionVo != null) {
-				if (sessionVo.getIsScanned()) {
-					response.sendRedirect("http://www.baidu.com");
+				LOGGER.info("loginRedirect isScanned is {}", sessionVo.getIsScanned());
+
+				// 判断二维码是否已经超时, 恢复isScanned 状态 为false，允许二维码继续被扫
+				boolean qrCode = redisUtil.exists(sessionUuid + "qrCode");
+				if (!qrCode) {
+					sessionVo.setIsScanned(false);
 				}
-				sessionVo.setIsScanned(true);
-				gameSessionRedisUtil.setSession(sessionUuid, JSON.toJSONString(sessionVo));
+
+				if (sessionVo.getIsScanned()) {
+					String h5ErrUrl = String.format(topH5ErrUrl, env);
+					LOGGER.info("loginRedirect h5ErrUrl is {}", h5ErrUrl);
+					response.sendRedirect(h5ErrUrl);
+				} else {
+					sessionVo.setIsScanned(true);
+					gameSessionRedisUtil.setSession(sessionUuid, JSON.toJSONString(sessionVo));
+				}
 			}
 			String redirectUrl = String.format("%s%s/%s", inno72GameServiceProperties.get("tmallUrl"), sessionUuid, env);
 			LOGGER.info("redirectUrl is {} ", redirectUrl);

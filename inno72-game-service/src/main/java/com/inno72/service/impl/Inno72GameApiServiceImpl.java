@@ -3,7 +3,6 @@ package com.inno72.service.impl;
 import java.io.File;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -16,6 +15,7 @@ import java.util.Optional;
 
 import javax.annotation.Resource;
 
+import com.inno72.vo.*;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -32,7 +32,6 @@ import com.inno72.common.Inno72GameServiceProperties;
 import com.inno72.common.Result;
 import com.inno72.common.Results;
 import com.inno72.common.StandardLoginTypeEnum;
-import com.inno72.common.datetime.LocalDateTimeUtil;
 import com.inno72.common.json.JsonUtil;
 import com.inno72.common.util.AesUtils;
 import com.inno72.common.util.FastJsonUtils;
@@ -42,9 +41,6 @@ import com.inno72.common.util.QrCodeUtil;
 import com.inno72.common.util.UuidUtil;
 import com.inno72.common.utils.StringUtil;
 import com.inno72.feign.MachineCheckBackendFeignClient;
-import com.inno72.log.LogAllContext;
-import com.inno72.log.PointLogContext;
-import com.inno72.log.vo.LogType;
 import com.inno72.machine.vo.SupplyRequestVo;
 import com.inno72.mapper.Inno72ActivityMapper;
 import com.inno72.mapper.Inno72ActivityPlanGameResultMapper;
@@ -91,13 +87,6 @@ import com.inno72.service.Inno72GameApiService;
 import com.inno72.service.Inno72GameService;
 import com.inno72.service.Inno72TopService;
 import com.inno72.util.AlarmUtil;
-import com.inno72.vo.AlarmMessageBean;
-import com.inno72.vo.GoodsVo;
-import com.inno72.vo.Inno72SamplingGoods;
-import com.inno72.vo.LogReqrest;
-import com.inno72.vo.MachineApiVo;
-import com.inno72.vo.StandardRedirectLoginReqVo;
-import com.inno72.vo.UserSessionVo;
 
 import net.coobird.thumbnailator.Thumbnails;
 
@@ -163,6 +152,9 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 
 	@Value("${machinealarm.uri}")
 	private String machinealarmUri;
+
+	@Value("${env}")
+	private String env;
 
 	private static String FINDLOCKGOODSPUSH_URL = "/machine/channel/findLockGoodsPush";
 	private static final String QRSTATUS_NORMAL = "0"; // 二维码正常
@@ -1593,12 +1585,47 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 	}
 
 	@Override
-	public Result<Object> prepareLoginQrCode(String machineId, int loginType , String ext) {
+	public Result<Object> prepareLoginQrCode(StandardPrepareLoginReqVo req) {
+		String machineCode = req.getMachineCode();
+		String ext = req.getExt();
+		Integer operType = req.getOperType();
+		String sessionUuid = machineCode;
 
-		gameSessionRedisUtil.delSession(machineId);
+		Inno72Machine inno72Machine = inno72MachineMapper.findMachineByCode(machineCode);
 
-		Inno72Machine inno72Machine = inno72MachineMapper.findMachineByCode(machineId);
+		String returnUrl = "";
+		if (StandardPrepareLoginReqVo.OperTypeEnum.CREATE_QRCODE.getKey() == operType) {
+			// 生成二维码流程
+			returnUrl = this.createQrCode(inno72Machine, machineCode);
+		} else if (StandardPrepareLoginReqVo.OperTypeEnum.START_SESSION.getKey() == operType) {
+			// 开始会话流程
+			gameSessionRedisUtil.delSession(machineCode);
+
+			UserSessionVo userSessionVo = new UserSessionVo();
+			userSessionVo.setMachineCode(inno72Machine.getMachineCode());
+			userSessionVo.setMachineId(inno72Machine.getId());
+			userSessionVo.setLogged(false);
+
+			// 解析 ext
+			this.analysisExt(userSessionVo, ext);
+
+			gameSessionRedisUtil.setSession(sessionUuid, JsonUtil.toJson(userSessionVo));
+
+			redisUtil.setex(sessionUuid + "qrCode", 15, sessionUuid); //  设置15秒内二维码不能被扫
+		}
 		Map<String, Object> map = new HashMap<String, Object>();
+		map.put("qrCodeUrl", returnUrl);
+		map.put("sessionUuid", sessionUuid);
+
+		return Results.success(map);
+	}
+
+	/**
+	 * 生成二维码
+	 * @return
+	 */
+	private String createQrCode(Inno72Machine inno72Machine, String machineCode) {
+
 		// 在machine库查询bluetooth地址 "6893a2ada9dd4f7eb8dc33adfc6eda73"
 		String bluetoothAdd = "";
 		String bluetoothAddAes = "";
@@ -1609,29 +1636,17 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 				bluetoothAddAes = AesUtils.encrypt(bluetoothAdd);
 			}
 			_machineId = inno72Machine.getId();
-		} else {
-			return Results.failure(machineId + "对应的 inno72Machine 不存在");
 		}
-		String machineCode = "";
-		if (!StringUtil.isEmpty(machineId)) {
-			machineCode = AesUtils.encrypt(machineId);
+		String _machineCode = "";
+		if (!StringUtil.isEmpty(machineCode)) {
+			_machineCode = AesUtils.encrypt(machineCode);
 		}
 
 		LOGGER.info("Mac蓝牙地址 {} ", bluetoothAddAes);
 
 		// 生成sessionUuid
-//		String sessionUuid = UuidUtil.getUUID32();
-		String sessionUuid = machineId;
-		// 获取运行环境
-		String env = getActive();
-
-//		String url = String.format(
-//				"%s?sessionUuid=%s&bluetoothAddAes=%s&machineCode=%s",
-//				inno72GameServiceProperties.get("returnUrl"), sessionUuid, _machineId, sessionUuid, env, bluetoothAddAes, machineCode);
-
-//		String url = String.format(
-//				"%s%s/%s?bluetoothAddAes=%s&machineCode=%s",
-//				inno72GameServiceProperties.get("tmallUrl"), sessionUuid, env, bluetoothAddAes, machineCode);
+		//		String sessionUuid = UuidUtil.getUUID32();
+		String sessionUuid = machineCode;
 
 		String url = String.format(
 				"%s/?sessionUuid=%s&env=%s&bluetoothAddAes=%s&machineCode=%s",
@@ -1658,31 +1673,9 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 
 		if (result) {
 			this.qrCodeImgDeal(localUrl, objectName);
-
-			// taobao认证auth url
-			String taobaoAuthUrl = inno72GameServiceProperties.get("tmallUrl") + sessionUuid + "/" + env;
-			LOGGER.info("taobaoAuthUrl is {}", taobaoAuthUrl);
-
-			UserSessionVo userSessionVo = new UserSessionVo();
-			// userSessionVo.setAuthUrl(taobaoAuthUrl);
-			userSessionVo.setMachineCode(inno72Machine.getMachineCode());
-			userSessionVo.setMachineId(inno72Machine.getId());
-			userSessionVo.setLogged(false);
-
-			// 解析 ext
-			this.analysisExt(userSessionVo, ext);
-
-			gameSessionRedisUtil.setSession(sessionUuid, JsonUtil.toJson(userSessionVo));
-
-			map.put("qrCodeUrl", returnUrl);
-			map.put("sessionUuid", sessionUuid);
-
-			LOGGER.info("二维码生成成功 - result -> {}", JsonUtil.toJson(map));
-		} else {
-			LOGGER.info("二维码生成失败");
 		}
 
-		return Results.success(map);
+		return returnUrl;
 	}
 
 	/**

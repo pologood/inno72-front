@@ -5,7 +5,7 @@ import java.util.List;
 import com.inno72.common.Result;
 import com.inno72.vo.Inno72SamplingGoods;
 import com.inno72.vo.MachineApiVo;
-import com.inno72.vo.StandardRedirectLoginReqVo;
+import com.inno72.vo.StandardPrepareLoginReqVo;
 
 public interface Inno72GameApiService {
 
@@ -34,7 +34,7 @@ public interface Inno72GameApiService {
 
 	Result<Object> prepareLoginNologin(String machineCode);
 
-	Result<Object> prepareLoginQrCode(String machineId, int LoginType, String ext);
+	Result<Object> prepareLoginQrCode(StandardPrepareLoginReqVo req);
 
 	String redirectLogin(String sessionUuid);
 
