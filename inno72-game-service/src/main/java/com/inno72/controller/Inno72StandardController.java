@@ -8,7 +8,7 @@ import javax.annotation.Resource;
 import javax.servlet.http.HttpServletResponse;
 
 import com.alibaba.fastjson.JSON;
-import com.inno72.common.Inno72GameServiceProperties;
+import com.inno72.common.*;
 import com.inno72.redis.IRedisUtil;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -16,9 +16,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.*;
 
-import com.inno72.common.Result;
-import com.inno72.common.Results;
-import com.inno72.common.StandardLoginTypeEnum;
 import com.inno72.common.datetime.LocalDateTimeUtil;
 import com.inno72.common.util.GameSessionRedisUtil;
 import com.inno72.log.PointLogContext;
@@ -226,7 +223,7 @@ public class Inno72StandardController {
 				}
 
 				if (sessionVo.getIsScanned()) {
-					String h5ErrUrl = String.format(topH5ErrUrl, env);
+					String h5ErrUrl = String.format(topH5ErrUrl, env) + "/?status="+ TopH5ErrorTypeEnum.IS_SCANNED.getName();
 					LOGGER.info("loginRedirect h5ErrUrl is {}", h5ErrUrl);
 					response.sendRedirect(h5ErrUrl);
 				} else {
