@@ -226,7 +226,7 @@ public class Inno72StandardController {
 					}
 
 					if (sessionVo.getIsScanned()) {
-						LOGGER.info("二维码已经被扫描");
+						LOGGER.info("loginRedirect 二维码已经被扫描");
 						redirectUrl = String.format(topH5ErrUrl, env) + "/?status="+ TopH5ErrorTypeEnum.IS_SCANNED.getValue();
 					} else {
 						sessionVo.setIsScanned(true);
@@ -236,7 +236,7 @@ public class Inno72StandardController {
 						redirectUrl = String.format("%s%s/%s", inno72GameServiceProperties.get("tmallUrl"), sessionUuid, env);
 					}
 				}
-				LOGGER.info("redirectUrl is {} ", redirectUrl);
+				LOGGER.info("loginRedirect redirectUrl is {} ", redirectUrl);
 				response.sendRedirect(redirectUrl);
 			}
 		} catch (IOException e) {
