@@ -1600,25 +1600,35 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 		if (StandardPrepareLoginReqVo.OperTypeEnum.CREATE_QRCODE.getKey() == operType) {
 			// 生成二维码流程
 			returnUrl = this.createQrCode(inno72Machine, machineCode);
+			this.startSession(inno72Machine, ext, sessionUuid);
 		} else if (StandardPrepareLoginReqVo.OperTypeEnum.START_SESSION.getKey() == operType) {
 			// 开始会话流程
-			UserSessionVo userSessionVo = new UserSessionVo();
-			userSessionVo.setMachineCode(inno72Machine.getMachineCode());
-			userSessionVo.setMachineId(inno72Machine.getId());
-			userSessionVo.setLogged(false);
-
-			// 解析 ext
-			this.analysisExt(userSessionVo, ext);
-
-			gameSessionRedisUtil.setSession(sessionUuid, JsonUtil.toJson(userSessionVo));
-
-			redisUtil.setex(sessionUuid + "qrCode", 15, sessionUuid); //  设置15秒内二维码不能被扫
+			this.startSession(inno72Machine, ext, sessionUuid);
 		}
 		Map<String, Object> map = new HashMap<String, Object>();
 		map.put("qrCodeUrl", returnUrl);
 		map.put("sessionUuid", sessionUuid);
-
 		return Results.success(map);
+	}
+
+	/**
+	 * 开始会话
+	 * @param inno72Machine
+	 * @param ext
+	 * @param sessionUuid
+	 */
+	private void startSession(Inno72Machine inno72Machine, String ext, String sessionUuid) {
+		UserSessionVo userSessionVo = new UserSessionVo();
+		userSessionVo.setMachineCode(inno72Machine.getMachineCode());
+		userSessionVo.setMachineId(inno72Machine.getId());
+		userSessionVo.setLogged(false);
+
+		// 解析 ext
+		this.analysisExt(userSessionVo, ext);
+
+		gameSessionRedisUtil.setSession(sessionUuid, JsonUtil.toJson(userSessionVo));
+
+		redisUtil.setex(sessionUuid + "qrCode", 15, sessionUuid); //  设置15秒内二维码不能被扫
 	}
 
 	/**
