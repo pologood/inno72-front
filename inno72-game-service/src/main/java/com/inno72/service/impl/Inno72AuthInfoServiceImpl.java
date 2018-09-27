@@ -436,7 +436,7 @@ public class Inno72AuthInfoServiceImpl implements Inno72AuthInfoService {
 		CommonBean.logger(CommonBean.POINT_TYPE_LOGIN, inno72Machine.getMachineCode(),
 				"用户" + nickName + "登录机器 ["+inno72Machine.getMachineCode()+"], 当前活动 ["+ inno72Activity.getName() +"]");
 
-		return Results.success(JSONObject.toJSONString(resultMap));
+		return Results.success(resultMap);
 	}
 
 	/**
