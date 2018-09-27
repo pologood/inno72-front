@@ -245,7 +245,8 @@ public class Inno72StandardController {
 						gameSessionRedisUtil.setSession(sessionUuid, JSON.toJSONString(sessionVo));
 						// 设置15秒内二维码不能被扫
 						gameSessionRedisUtil.setSessionEx(sessionUuid + "qrCode", sessionUuid, 15);
-						redirectUrl = String.format("%s%s/%s", inno72GameServiceProperties.get("tmallUrl"), sessionUuid, env);
+						String traceId = UuidUtil.getUUID32();
+						redirectUrl = String.format("%s%s/%s/%s", inno72GameServiceProperties.get("tmallUrl"), sessionUuid, env, traceId);
 					}
 				}
 				LOGGER.info("loginRedirect redirectUrl is {} ", redirectUrl);
