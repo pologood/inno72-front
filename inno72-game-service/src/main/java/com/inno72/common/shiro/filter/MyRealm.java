@@ -16,8 +16,6 @@ import org.springframework.stereotype.Service;
 
 import com.inno72.common.util.GameSessionRedisUtil;
 import com.inno72.common.utils.StringUtil;
-import com.inno72.model.Inno72Authentication;
-import com.inno72.service.Inno72AuthenticationService;
 import com.inno72.vo.UserSessionVo;
 
 @Service

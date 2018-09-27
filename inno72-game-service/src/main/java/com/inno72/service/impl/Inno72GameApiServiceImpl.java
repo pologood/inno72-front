@@ -1373,6 +1373,11 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 		try {
 			orderId = this.genInno72Order(channelId, activityPlanId, _machineId, inno72Coupon.getId(), vo.getUserId(),
 					Inno72Order.INNO72ORDER_GOODSTYPE.COUPON);
+
+
+			Result<String> insertOrderToLife = inno72GameService.updateRefOrderId(orderId, "", vo.getUserId());
+			LOGGER.debug("inno72Life 插入 orderId [{}] {}！", orderId, JSON.toJSONString(insertOrderToLife));
+
 		} catch (Exception e) {
 			LOGGER.info("获取优惠券下单失败 ==> {}", e.getMessage(), e);
 			return Results.failure("下单失败!");
@@ -2303,7 +2308,7 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 
 		boolean b = inno72GameService.countSuccOrder(channelId, channelUserKey, activityPlanId);
 		Integer rep = null;
-		if (product.getKey().equals(Inno72Order.INNO72ORDER_GOODSTYPE.PRODUCT.getKey())) {
+		if (product.getKey().equals(Inno72Order.INNO72ORDER_GOODSTYPE.COUPON.getKey())) {
 			rep = Inno72Order.INNO72ORDER_REPETITION.NOT.getKey();
 		} else {
 			rep = b ? Inno72Order.INNO72ORDER_REPETITION.NOT.getKey()
@@ -2381,7 +2386,7 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 		inno72OrderHistoryMapper.insert(new Inno72OrderHistory(inno72Order.getId(), inno72Order.getOrderNum(),
 				JSON.toJSONString(inno72Order), "初始化插入订单!"));
 
-		return rep == 0 ? rep + "" : inno72Order.getId();
+		return rep.equals(Inno72Order.INNO72ORDER_REPETITION.REPETITION.getKey()) ? rep + "" : inno72Order.getId();
 	}
 
 	/**

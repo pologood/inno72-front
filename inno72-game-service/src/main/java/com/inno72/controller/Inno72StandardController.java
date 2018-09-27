@@ -31,6 +31,7 @@ import com.inno72.redis.IRedisUtil;
 import com.inno72.service.Inno72AuthInfoService;
 import com.inno72.service.Inno72GameApiService;
 import com.inno72.service.Inno72MachineService;
+import com.inno72.vo.Inno72MachineVo;
 import com.inno72.vo.MachineApiVo;
 import com.inno72.vo.StandardPrepareLoginReqVo;
 import com.inno72.vo.StandardShipmentReqVo;
@@ -100,6 +101,7 @@ public class Inno72StandardController {
 	}
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(Inno72StandardController.class);
+
 	/**
 	 * 测试埋点接口
 	 * @param req
@@ -108,12 +110,10 @@ public class Inno72StandardController {
 	@ResponseBody
 	@RequestMapping(value = "/logger", method = {RequestMethod.POST})
 	public void logger(StandardPrepareLoginReqVo req) {
-		new PointLogContext(LogType.POINT)
-				.machineCode("ceshimachinecode123")
-				.pointTime(LocalDateTimeUtil.transfer(LocalDateTime.now(), DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")))
-				.type("31")
-				.detail("测试")
-				.tag("测试tag").bulid();
+		new PointLogContext(LogType.POINT).machineCode("ceshimachinecode123")
+				.pointTime(LocalDateTimeUtil.transfer(LocalDateTime.now(),
+						DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")))
+				.type("31").detail("测试").tag("测试tag").bulid();
 		LOGGER.info("记录埋点数据 [测试]");
 	}
 
@@ -157,8 +157,8 @@ public class Inno72StandardController {
 	 */
 	@ResponseBody
 	@RequestMapping(value = "/findActivity", method = {RequestMethod.POST})
-	public Result findActivity(@RequestParam(name = "machineId") String mid, String planId, String version,
-			String versionInno72) {
+	public Result<Inno72MachineVo> findActivity(@RequestParam(name = "machineId") String mid, String planId,
+			String version, String versionInno72) {
 		return inno72MachineService.findGame(mid, planId, version, versionInno72);
 	}
 
@@ -235,13 +235,15 @@ public class Inno72StandardController {
 
 					if (sessionVo.getIsScanned()) {
 						LOGGER.info("loginRedirect 二维码已经被扫描");
-						redirectUrl = String.format(topH5ErrUrl, env) + "/?status="+ TopH5ErrorTypeEnum.IS_SCANNED.getValue();
+						redirectUrl = String.format(topH5ErrUrl, env) + "/?status="
+								+ TopH5ErrorTypeEnum.IS_SCANNED.getValue();
 					} else {
 						sessionVo.setIsScanned(true);
 						gameSessionRedisUtil.setSession(sessionUuid, JSON.toJSONString(sessionVo));
 						// 设置15秒内二维码不能被扫
 						gameSessionRedisUtil.setSessionEx(sessionUuid + "qrCode", sessionUuid, 15);
-						redirectUrl = String.format("%s%s/%s", inno72GameServiceProperties.get("tmallUrl"), sessionUuid, env);
+						redirectUrl = String.format("%s%s/%s", inno72GameServiceProperties.get("tmallUrl"), sessionUuid,
+								env);
 					}
 				}
 				LOGGER.info("loginRedirect redirectUrl is {} ", redirectUrl);
