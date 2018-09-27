@@ -289,25 +289,13 @@ public class Inno72AuthInfoServiceImpl implements Inno72AuthInfoService {
 	}
 
 	@Override
-	public Result<Object> processBeforeLogged(String sessionUuid, String authInfo) {
-		LOGGER.info("processBeforeLogged params sessionUuid is {}, authInfo is {} ", sessionUuid, authInfo);
-
-//		// 检查二维码是否可以重复扫
-//		String qrStatus = this.checkQrCode(sessionUuid);
-//
-//		// 判断二维码是否已经过期
-//		if (qrStatus == QRSTATUS_INVALID) {
-//			return Results.failure("二维码已经过期");
-//		}
+	public Result<Object> processBeforeLogged(String sessionUuid, String authInfo, String traceId) {
+		LOGGER.info("processBeforeLogged params sessionUuid is {}, authInfo is {}, traceId is {} ", sessionUuid, authInfo, traceId);
 
 		UserSessionVo sessionVo = gameSessionRedisUtil.getSessionKey(sessionUuid);
-
-//		// 判断是否有用户已经登录
-//		if (!StringUtil.isEmpty(redisUtil.get(sessionUuid + "exist"))) {
-//			qrStatus = QRSTATUS_EXIST_USER;
-//		} else {
-//			redisUtil.setex(sessionUuid + "exist", 1600, sessionUuid);
-//		}
+		if (sessionVo == null) {
+			return Results.failure("sessionUuid 不存在!");
+		}
 
 		String mid = sessionVo.getMachineId();
 
@@ -439,6 +427,8 @@ public class Inno72AuthInfoServiceImpl implements Inno72AuthInfoService {
 		resultMap.put("activityType", activityType);
 		resultMap.put("goodsCode", sessionVo.getGoodsCode() != null ? sessionVo.getGoodsCode() : "");
 
+		resultMap.put("traceId", traceId);
+
 		LOGGER.info("processBeforeLogged返回聚石塔结果 is {}", resultMap);
 
 		gameSessionRedisUtil.setSession(sessionUuid, JSON.toJSONString(sessionVo));
@@ -530,24 +520,6 @@ public class Inno72AuthInfoServiceImpl implements Inno72AuthInfoService {
 		return hasGoods;
 	}
 
-	/**
-	 * 检查二维码是否可以重复扫
-	 * @param sessionUuid
-	 * @return
-	 */
-	private synchronized String checkQrCode(String sessionUuid) {
-		// 判断是否有他人登录以及二维码是否过期
-		String qrStatus = QRSTATUS_NORMAL;
-		LOGGER.info("sessionUuid is {}", sessionUuid);
-		// 判断二维码是否过期
-		boolean result = gameSessionRedisUtil.hasKey(sessionUuid);
-		LOGGER.info("qrCode hasKey result {} ", result);
-		if (!result) {
-			qrStatus = QRSTATUS_INVALID;
-			LOGGER.info("二维码已经过期");
-		}
-		return qrStatus;
-	}
 
 	/**
 	 *
