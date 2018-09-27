@@ -343,11 +343,11 @@ public class TopController {
 		String result;
 		try {
 			String gameserverUrl = propertiesBean.getValue(env + "HostGame");
-			LOGGER.info("processBeforeLogged gameserverUrl is {}", gameserverUrl);
+			LOGGER.info("processBeforeLogged2 gameserverUrl is {}", gameserverUrl);
 
 			HttpEntity<MultiValueMap<String, Object>> requestEntity = new HttpEntity<>(postParameters, headers);
 			result = client.postForObject(gameserverUrl + "/api/standard/processBeforeLogged/", requestEntity, String.class);
-			LOGGER.info("setUserInfo result is {} ", result);
+			LOGGER.info("processBeforeLogged2 result is {} ", result);
 			return result;
 		} catch (Exception e) {
 			LOGGER.error(e.getMessage(), e);
@@ -395,7 +395,7 @@ public class TopController {
 	 * processBeforeLogged
 	 */
 	private String setLogged2(String sessionUuid, String env, String traceId) {
-		LOGGER.info("setLogged sessionUuid is " + sessionUuid);
+		LOGGER.info("setLogged2 sessionUuid is " + sessionUuid);
 		RestTemplate client = new RestTemplate();
 		MultiValueMap<String, Object> postParameters = new LinkedMultiValueMap<>();
 		postParameters.add("sessionUuid", sessionUuid);
