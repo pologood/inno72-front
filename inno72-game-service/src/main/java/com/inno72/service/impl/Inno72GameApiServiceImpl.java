@@ -16,6 +16,9 @@ import java.util.Optional;
 
 import javax.annotation.Resource;
 
+import com.inno72.common.*;
+import com.inno72.common.util.*;
+import com.inno72.common.util.DateUtil;
 import com.inno72.model.*;
 import com.inno72.service.Inno72InteractGoodsService;
 import com.inno72.vo.*;
@@ -30,19 +33,8 @@ import org.springframework.transaction.annotation.Transactional;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.google.gson.Gson;
-import com.inno72.common.CommonBean;
-import com.inno72.common.Inno72GameServiceProperties;
-import com.inno72.common.Result;
-import com.inno72.common.Results;
-import com.inno72.common.StandardLoginTypeEnum;
 import com.inno72.common.datetime.LocalDateTimeUtil;
 import com.inno72.common.json.JsonUtil;
-import com.inno72.common.util.AesUtils;
-import com.inno72.common.util.FastJsonUtils;
-import com.inno72.common.util.GameSessionRedisUtil;
-import com.inno72.common.util.Inno72OrderNumGenUtil;
-import com.inno72.common.util.QrCodeUtil;
-import com.inno72.common.util.UuidUtil;
 import com.inno72.common.utils.StringUtil;
 import com.inno72.feign.MachineCheckBackendFeignClient;
 import com.inno72.log.LogAllContext;
@@ -1570,6 +1562,37 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 		if (StringUtil.isNotEmpty(vo.getChannelId())) {
 			Result<String> succChannelResult = shipmentReport(vo);
 			LOGGER.info("succChannelResult code is {} ", succChannelResult.getCode());
+		}
+
+		//掉货成功修改redis值
+		UserSessionVo userSessionVo = gameSessionRedisUtil.getSessionKey(vo.getSessionUuid());
+		if (userSessionVo == null) {
+			return Results.failure("登录失效!");
+		}
+		boolean paiyangflag = userSessionVo.findPaiyangFlag();
+		if(paiyangflag){
+			String date = DateUtil.getDateStringByYYYYMMDD();
+			//每个商品每个用户每天可派发数
+			String key = String.format(RedisConstants.PAIYANG_GOODS_ORDER_TIMES,userSessionVo.getActivityId(),userSessionVo.getGoodsId(),date,userSessionVo.getUserId());
+			if(redisUtil.exists(key)){
+				redisUtil.incr(key);
+			}else{
+				redisUtil.set(key,"1");
+			}
+			//用户获得商品次数
+			key = String.format(RedisConstants.PAIYANG_ORDER_TIMES,userSessionVo.getActivityId(),userSessionVo.getUserId());
+			if(redisUtil.exists(key)){
+				redisUtil.incr(key);
+			}else{
+				redisUtil.set(key,"1");
+			}
+			//此商品总掉货数量
+			key = String.format(RedisConstants.PAIYANG_MACHINE_GOODS,userSessionVo.getActivityId(),userSessionVo.getMachineId(),userSessionVo.getGoodsId());
+			if(redisUtil.exists(key)){
+				redisUtil.incr(key);
+			}else{
+				redisUtil.set(key,"1");
+			}
 		}
 
 		String failChannelIds = vo.getFailChannelIds();

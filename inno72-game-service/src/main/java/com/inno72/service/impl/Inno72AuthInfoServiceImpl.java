@@ -557,7 +557,7 @@ public class Inno72AuthInfoServiceImpl implements Inno72AuthInfoService {
 		Integer times = interact.getTimes(); //同一用户参与活动次数
 		Integer dayTimes = interact.getDayTimes();//同一用户每天参与活动次数
 		Integer number = interact.getNumber();//同一用户获得商品次数
-		Integer dayNumber = interact.getDayNumber();//同一用户每天获得商品次数
+//		Integer dayNumber = interact.getDayNumber();//同一用户每天获得商品次数
 		//获取这个商品的限制个数
 		Integer userDayNumber = inno72InteractGoodsService.findByInteractIdAndGoodsId(interact.getId(),goods.getId()).getUserDayNumber();
 		//设置canOrder
@@ -592,14 +592,14 @@ public class Inno72AuthInfoServiceImpl implements Inno72AuthInfoService {
 			}
 		}
 
-		if(dayNumber!=null){
-			if(redisUtil.exists(String.format(RedisConstants.PAIYANG_DAY_ORDER_TIMES,interact.getId(),date,userId))){
-				Integer mydayTimes = Integer.parseInt(redisUtil.get(String.format(RedisConstants.PAIYANG_DAY_ORDER_TIMES,interact.getId(),date,userId)));
-				if(mydayTimes >= dayNumber){
-					canOrder = false;
-				}
-			}
-		}
+//		if(dayNumber!=null){
+//			if(redisUtil.exists(String.format(RedisConstants.PAIYANG_DAY_ORDER_TIMES,interact.getId(),date,userId))){
+//				Integer mydayTimes = Integer.parseInt(redisUtil.get(String.format(RedisConstants.PAIYANG_DAY_ORDER_TIMES,interact.getId(),date,userId)));
+//				if(mydayTimes >= dayNumber){
+//					canOrder = false;
+//				}
+//			}
+//		}
 
 		if(userDayNumber!=null){
 			if(redisUtil.exists(String.format(RedisConstants.PAIYANG_GOODS_ORDER_TIMES,interact.getId(),goods.getId(),date,userId))){
