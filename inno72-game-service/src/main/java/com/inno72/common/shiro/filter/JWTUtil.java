@@ -24,10 +24,10 @@ public class JWTUtil {
 	 * @return 是否正确
 	 */
 	@SuppressWarnings("unused")
-	public static boolean verify(String token, String username, String secret) {
+	public static boolean verify(String token, String sessionId, String secret) {
 		try {
 			Algorithm algorithm = Algorithm.HMAC256(secret);
-			JWTVerifier verifier = JWT.require(algorithm).withClaim("username", username).build();
+			JWTVerifier verifier = JWT.require(algorithm).withClaim("session", sessionId).build();
 			DecodedJWT jwt = verifier.verify(token);
 			return true;
 		} catch (Exception exception) {
@@ -40,10 +40,10 @@ public class JWTUtil {
 	 *
 	 * @return token中包含的用户名
 	 */
-	public static String getUsername(String token) {
+	public static String getSession(String token) {
 		try {
 			DecodedJWT jwt = JWT.decode(token);
-			return jwt.getClaim("username").asString();
+			return jwt.getClaim("session").asString();
 		} catch (JWTDecodeException e) {
 			return null;
 		}
@@ -52,18 +52,18 @@ public class JWTUtil {
 	/**
 	 * 生成签名,5min后过期
 	 *
-	 * @param username
-	 *            用户名
+	 * @param sessionId
+	 *            sessionId
 	 * @param secret
 	 *            用户的密码
 	 * @return 加密的token
 	 */
-	public static String sign(String username, String secret) {
+	public static String sign(String sessionId, String secret) {
 		try {
 			Date date = new Date(System.currentTimeMillis() + EXPIRE_TIME);
 			Algorithm algorithm = Algorithm.HMAC256(secret);
 			// 附带username信息
-			return JWT.create().withClaim("username", username).withExpiresAt(date).sign(algorithm);
+			return JWT.create().withClaim("session", sessionId).withExpiresAt(date).sign(algorithm);
 		} catch (UnsupportedEncodingException e) {
 			return null;
 		}

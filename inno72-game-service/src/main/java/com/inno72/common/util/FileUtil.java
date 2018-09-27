@@ -6,6 +6,7 @@ import java.io.InputStream;
 
 import sun.misc.BASE64Encoder;
 
+@SuppressWarnings("restriction")
 public class FileUtil {
 
 	public static String toBase64(InputStream in, String startWith) {
@@ -41,7 +42,7 @@ public class FileUtil {
 				file.mkdir();
 			}
 		}
-		File file = new File(fullPath.toString());//目录全路径
+		File file = new File(fullPath.toString());// 目录全路径
 		return !file.exists();
 	}
 }

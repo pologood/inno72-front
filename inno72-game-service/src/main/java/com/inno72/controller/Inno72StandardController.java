@@ -15,15 +15,27 @@ import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.RestController;
 
+import com.alibaba.fastjson.JSON;
+import com.inno72.common.Inno72GameServiceProperties;
+import com.inno72.common.Result;
+import com.inno72.common.Results;
+import com.inno72.common.StandardLoginTypeEnum;
+import com.inno72.common.TopH5ErrorTypeEnum;
 import com.inno72.common.datetime.LocalDateTimeUtil;
 import com.inno72.common.util.GameSessionRedisUtil;
 import com.inno72.log.PointLogContext;
 import com.inno72.log.vo.LogType;
+import com.inno72.redis.IRedisUtil;
 import com.inno72.service.Inno72AuthInfoService;
 import com.inno72.service.Inno72GameApiService;
 import com.inno72.service.Inno72MachineService;
+import com.inno72.vo.Inno72MachineVo;
 import com.inno72.vo.MachineApiVo;
 import com.inno72.vo.StandardPrepareLoginReqVo;
 import com.inno72.vo.StandardShipmentReqVo;
@@ -93,20 +105,19 @@ public class Inno72StandardController {
 	}
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(Inno72StandardController.class);
+
 	/**
-	 * 登录（包括需要登录和非登录的场景）
+	 * 测试埋点接口
 	 * @param req
 	 * @return
 	 */
 	@ResponseBody
 	@RequestMapping(value = "/logger", method = {RequestMethod.POST})
 	public void logger(StandardPrepareLoginReqVo req) {
-		new PointLogContext(LogType.POINT)
-				.machineCode("ceshimachinecode123")
-				.pointTime(LocalDateTimeUtil.transfer(LocalDateTime.now(), DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")))
-				.type("31")
-				.detail("测试")
-				.tag("测试tag").bulid();
+		new PointLogContext(LogType.POINT).machineCode("ceshimachinecode123")
+				.pointTime(LocalDateTimeUtil.transfer(LocalDateTime.now(),
+						DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")))
+				.type("31").detail("测试").tag("测试tag").bulid();
 		LOGGER.info("记录埋点数据 [测试]");
 	}
 
@@ -182,8 +193,8 @@ public class Inno72StandardController {
 	 */
 	@ResponseBody
 	@RequestMapping(value = "/setLogged", method = {RequestMethod.POST})
-	public Result<Object> setLogged(String sessionUuid, String traceId) {
-		LOGGER.info("setLogged sessionUuid is {}, traceId is {}", sessionUuid, traceId);
+	public Result<Object> setLogged(String sessionUuid) {
+		LOGGER.info("setLogged sessionUuid is {}", sessionUuid);
 		boolean result = inno72AuthInfoService.setLogged(sessionUuid);
 		LOGGER.info("setLogged result is {}", result);
 		if (result) {
@@ -198,9 +209,9 @@ public class Inno72StandardController {
 	 */
 	@ResponseBody
 	@RequestMapping(value = "/processBeforeLogged", method = {RequestMethod.POST})
-	public Result<Object> processBeforeLogged(String sessionUuid, String authInfo, String traceId) {
-		Result<Object> result = inno72AuthInfoService.processBeforeLogged(sessionUuid, authInfo, traceId);
-		return result;
+	public Result<Object> processBeforeLogged(String sessionUuid, String authInfo) {
+		Result<Object> result = inno72AuthInfoService.processBeforeLogged(sessionUuid, authInfo);
+		return Results.success(result);
 	}
 
 	/**
@@ -234,8 +245,7 @@ public class Inno72StandardController {
 						gameSessionRedisUtil.setSession(sessionUuid, JSON.toJSONString(sessionVo));
 						// 设置15秒内二维码不能被扫
 						gameSessionRedisUtil.setSessionEx(sessionUuid + "qrCode", sessionUuid, 15);
-						String traceId = UuidUtil.getUUID32();
-						redirectUrl = String.format("%s%s/%s/%s", inno72GameServiceProperties.get("tmallUrl"), sessionUuid, env, traceId);
+						redirectUrl = String.format("%s%s/%s", inno72GameServiceProperties.get("tmallUrl"), sessionUuid, env);
 					}
 				}
 				LOGGER.info("loginRedirect redirectUrl is {} ", redirectUrl);
