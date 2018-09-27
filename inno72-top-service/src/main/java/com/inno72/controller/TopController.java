@@ -130,17 +130,19 @@ public class TopController {
 				String resultCode = FastJsonUtils.getString(result, "code");
 				String resultData = FastJsonUtils.getString(result, "data");
 
-				if (!StringUtils.isEmpty(resultCode) && resultCode.equals(RESULT_SUCCESS) && !StringUtils.isEmpty(resultData)) {
-					playCode = FastJsonUtils.getString(resultData, "playCode");
-					qrStatus = FastJsonUtils.getString(resultData, "qrStatus");
-					String sId = FastJsonUtils.getString(resultData, "sellerId");
-					machineCode = FastJsonUtils.getString(resultData, "machineCode");
+				LOGGER.info("resultCode is {}, resultData is {}", resultCode, resultData);
 
-					goodsCode = FastJsonUtils.getString(resultData, "goodsCode");
-					isVip = FastJsonUtils.getString(resultData, "isVip");
-					sessionKey = FastJsonUtils.getString(resultData, "sessionKey");
+				if (!StringUtils.isEmpty(resultCode) && resultCode.equals(RESULT_SUCCESS)) {
+					playCode = FastJsonUtils.getString(result, "playCode");
+					qrStatus = FastJsonUtils.getString(result, "qrStatus");
+					String sId = FastJsonUtils.getString(result, "sellerId");
+					machineCode = FastJsonUtils.getString(result, "machineCode");
 
-					traceId = FastJsonUtils.getString(resultData, "traceId");
+					goodsCode = FastJsonUtils.getString(result, "goodsCode");
+					isVip = FastJsonUtils.getString(result, "isVip");
+					sessionKey = FastJsonUtils.getString(result, "sessionKey");
+
+					traceId = FastJsonUtils.getString(result, "traceId");
 					LOGGER.info("traceId is {}", traceId);
 
 					if (!StringUtils.isEmpty(sId)) {
@@ -151,14 +153,14 @@ public class TopController {
 					String status = "0"; // todo 输入具体的值
 					// String hrErrUrl = this.getH5ErrUrl(env, status);
 					String hrErrUrl = "http://www.baidu.com";
-					LOGGER.info("hrErrUrl is {}" , hrErrUrl);
+					LOGGER.info("topIndex2 hrErrUrl is {}" , hrErrUrl);
 					response.sendRedirect(hrErrUrl);
 				}
 			} else {
 				String status = "0"; // todo 输入具体的值
 //				String hrErrUrl = this.getH5ErrUrl(env, status);
 				String hrErrUrl = "http://www.baidu.com";
-				LOGGER.info("hrErrUrl is {}" , hrErrUrl);
+				LOGGER.info("topIndex2 hrErrUrl is {}" , hrErrUrl);
 				response.sendRedirect(hrErrUrl);
 			}
 
@@ -179,20 +181,20 @@ public class TopController {
 
 					String meberJoinCallBackUrl = jstUrl + "/api/meberJoinCallBack/" + sessionUuid + "/" + env + "/" + playCode + "/"
 							+ qrStatus + "/" + sellerId;
-					LOGGER.info("meberJoinCallBackUrl is {}", meberJoinCallBackUrl);
+					LOGGER.info("topIndex2 meberJoinCallBackUrl is {}", meberJoinCallBackUrl);
 
 					// 如果不是会员做入会操作
 					String memberJoinResBody = memberJoin(machineCode, code, sessionUuid, env, goodsCode, isVip, sessionKey,
 							meberJoinCallBackUrl);
-					LOGGER.info("memberJoinResBody is {}", memberJoinResBody);
+					LOGGER.info("topIndex2 memberJoinResBody is {}", memberJoinResBody);
 					String resultUrl = FastJsonUtils.getString(memberJoinResBody, "result");
-					LOGGER.info("resultUrl is {}", resultUrl);
+					LOGGER.info("topIndex2 resultUrl is {}", resultUrl);
 					response.sendRedirect("http:" + resultUrl);
 
 				} else {
 					// 设置用户已登录
 					boolean logged = this.setUserLogged(sessionUuid, env);
-					LOGGER.info("logged is {}", logged);
+					LOGGER.info("topIndex2 logged is {}", logged);
 					// 是会员直接跳转h5页面
 					response.sendRedirect(formatUrl);
 				}
@@ -200,16 +202,16 @@ public class TopController {
 			} else {
 				// 正常逻辑
 				String logged = this.setLogged2(sessionUuid, env, traceId);
-				LOGGER.info("logged is {}", logged);
+				LOGGER.info("topIndex2 logged is {}", logged);
 			}
 
 		}
 		try {
 			// 跳转到游戏页面 手机端redirect
-			LOGGER.info("h5MobileUrl is {} , playCode is {}, env is {}", h5MobileUrl, playCode, env);
+			LOGGER.info("topIndex2 h5MobileUrl is {} , playCode is {}, env is {}", h5MobileUrl, playCode, env);
 			String formatUrl = String.format(h5MobileUrl, env, playCode) + "?qrStatus=" + qrStatus + "&sellerId="
 					+ sellerId;
-			LOGGER.info("formatUrl is {}", formatUrl);
+			LOGGER.info("topIndex2 formatUrl is {}", formatUrl);
 			response.sendRedirect(formatUrl);
 		} catch (IOException e) {
 			LOGGER.error(e.getMessage(), e);
