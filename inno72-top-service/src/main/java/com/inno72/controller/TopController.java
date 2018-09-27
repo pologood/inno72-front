@@ -150,16 +150,14 @@ public class TopController {
 					}
 				} else if (!StringUtils.isEmpty(resultCode) && resultCode.equals(RESULT_FAIL)) {
 					// 跳转到错误页面
-					String status = "0"; // todo 输入具体的值
-					// String hrErrUrl = this.getH5ErrUrl(env, status);
-					String hrErrUrl = "http://www.baidu.com";
+					String status = "0";
+					String hrErrUrl = this.getH5ErrUrl(env, status);
 					LOGGER.info("topIndex2 hrErrUrl is {}" , hrErrUrl);
 					response.sendRedirect(hrErrUrl);
 				}
 			} else {
-				String status = "0"; // todo 输入具体的值
-//				String hrErrUrl = this.getH5ErrUrl(env, status);
-				String hrErrUrl = "http://www.baidu.com";
+				String status = "0";
+				String hrErrUrl = this.getH5ErrUrl(env, status);
 				LOGGER.info("topIndex2 hrErrUrl is {}" , hrErrUrl);
 				response.sendRedirect(hrErrUrl);
 			}
