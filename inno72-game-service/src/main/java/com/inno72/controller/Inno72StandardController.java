@@ -182,8 +182,8 @@ public class Inno72StandardController {
 	 */
 	@ResponseBody
 	@RequestMapping(value = "/setLogged", method = {RequestMethod.POST})
-	public Result<Object> setLogged(String sessionUuid) {
-		LOGGER.info("setLogged sessionUuid is {}", sessionUuid);
+	public Result<Object> setLogged(String sessionUuid, String traceId) {
+		LOGGER.info("setLogged sessionUuid is {}, traceId is {}", sessionUuid, traceId);
 		boolean result = inno72AuthInfoService.setLogged(sessionUuid);
 		LOGGER.info("setLogged result is {}", result);
 		if (result) {

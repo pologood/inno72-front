@@ -199,7 +199,7 @@ public class TopController {
 
 			} else {
 				// 正常逻辑
-				String logged = this.setLogged(sessionUuid, env);
+				String logged = this.setLogged2(sessionUuid, env, traceId);
 				LOGGER.info("logged is {}", logged);
 			}
 
@@ -384,6 +384,34 @@ public class TopController {
 				LOGGER.info("setUserInfo gameId is {} ", data);
 				return data;
 			}
+		} catch (Exception e) {
+			LOGGER.error(e.getMessage(), e);
+		}
+		return "";
+	}
+
+	/**
+	 * 登录前处理 v2
+	 * processBeforeLogged
+	 */
+	private String setLogged2(String sessionUuid, String env, String traceId) {
+		LOGGER.info("setLogged sessionUuid is " + sessionUuid);
+		RestTemplate client = new RestTemplate();
+		MultiValueMap<String, Object> postParameters = new LinkedMultiValueMap<>();
+		postParameters.add("sessionUuid", sessionUuid);
+		postParameters.add("traceId", traceId);
+		HttpHeaders headers = new HttpHeaders();
+		headers.add("Content-Type", "application/x-www-form-urlencoded");
+		String result;
+		try {
+
+			String gameserverUrl = propertiesBean.getValue(env + "HostGame");
+			LOGGER.info("gameserverUrl ", gameserverUrl);
+
+			HttpEntity<MultiValueMap<String, Object>> requestEntity = new HttpEntity<>(postParameters, headers);
+			result = client.postForObject(gameserverUrl + "/api/standard/setLogged/", requestEntity, String.class);
+			LOGGER.info("setLogged result is {} ", result);
+
 		} catch (Exception e) {
 			LOGGER.error(e.getMessage(), e);
 		}
