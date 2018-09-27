@@ -1517,8 +1517,8 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 		CommonBean.logger(
 				CommonBean.POINT_TYPE_FINISH,
 				machineCode,
-				"机器 ["+machineCode+"] 货道 ["+inno72SupplyChannel.getName()+"(code:"+inno72SupplyChannel.getCode()+")] "
-						+ "出货完成."
+				"机器 ["+machineCode+"], 货道 [" + inno72SupplyChannel.getName() + "(code:"+inno72SupplyChannel.getCode()+")] "
+						+ "出货完成. 商品名称[" + inno72Goods.getName() + "]."
 						+ "货道容量 ["+inno72SupplyChannel.getVolumeCount()+"]. "
 						+ "原数量 ["+inno72SupplyChannel.getGoodsCount()+"], 当前数量 ["+updateChannel.getGoodsCount()+"]"
 						+ "当前用户 [" + userSessionVo.getUserNick() + "]",
@@ -2350,7 +2350,7 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 			CommonBean.logger(
 					CommonBean.POINT_TYPE_GOODS_ORDER,
 					inno72Machine.getMachineCode(),
-					"用户[" + userChannel.getUserNick() + "]生成商品["+ goodsName + "]订单，订单号[" + orderNum +"].",
+					"用户[" + userChannel.getUserNick() + "], 生成["+ goodsName + "]订单，订单号[" + orderNum +"].",
 					inno72ActivityPlan.getActivityId()+"|"+inno72Goods.getCode());
 
 		} else {
@@ -2367,7 +2367,7 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 			CommonBean.logger(
 					CommonBean.POINT_TYPE_COUPON_ORDER,
 					inno72Machine.getMachineCode(),
-					"用户[" + userChannel.getUserNick() + "]生成优惠券["+ goodsName + "]订单，订单号[" + orderNum +"].",
+					"用户[" + userChannel.getUserNick() + "]生成["+ goodsName + "]订单，订单号[" + orderNum +"].",
 					inno72ActivityPlan.getActivityId()+"|"+inno72Coupon.getCode());
 		}
 
