@@ -150,7 +150,7 @@ public class Inno72GameApiController {
 		try {
 			UserSessionVo userSessionVo = gameSessionRedisUtil.getSessionKey(sessionUuid);
 			userSessionVo.setLogged(true);
-			gameSessionRedisUtil.setSessionEx(sessionUuid, JsonUtil.toJson(userSessionVo));
+			gameSessionRedisUtil.setSession(sessionUuid, JsonUtil.toJson(userSessionVo));
 		} catch (Exception e) {
 			LOGGER.error(e.getMessage(), e);
 		}

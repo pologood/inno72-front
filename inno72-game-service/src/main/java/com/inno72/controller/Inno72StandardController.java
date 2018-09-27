@@ -8,19 +8,24 @@ import javax.annotation.Resource;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.alibaba.fastjson.JSON;
+import com.inno72.common.Inno72GameServiceProperties;
 import com.inno72.common.Result;
 import com.inno72.common.Results;
 import com.inno72.common.StandardLoginTypeEnum;
+import com.inno72.common.TopH5ErrorTypeEnum;
 import com.inno72.common.datetime.LocalDateTimeUtil;
 import com.inno72.common.util.GameSessionRedisUtil;
 import com.inno72.log.PointLogContext;
 import com.inno72.log.vo.LogType;
+import com.inno72.redis.IRedisUtil;
 import com.inno72.service.Inno72AuthInfoService;
 import com.inno72.service.Inno72GameApiService;
 import com.inno72.service.Inno72MachineService;
@@ -51,6 +56,18 @@ public class Inno72StandardController {
 	@Resource
 	private GameSessionRedisUtil gameSessionRedisUtil;
 
+	@Resource
+	private Inno72GameServiceProperties inno72GameServiceProperties;
+
+	@Resource
+	private IRedisUtil redisUtil;
+
+	@Value("${top_h5_err_url}")
+	private String topH5ErrUrl;
+
+	@Value("${env}")
+	private String env;
+
 	/**
 	 * 登录（包括需要登录和非登录的场景）
 	 * @param req
@@ -71,7 +88,7 @@ public class Inno72StandardController {
 
 		if (StandardLoginTypeEnum.ALIBABA.getValue().equals(req.getLoginType())) {
 
-			return inno72GameApiService.prepareLoginQrCode(req.getMachineCode(), req.getLoginType(), req.getExt());
+			return inno72GameApiService.prepareLoginQrCode(req);
 
 		} else {
 
@@ -170,12 +187,15 @@ public class Inno72StandardController {
 	 */
 	@ResponseBody
 	@RequestMapping(value = "/setLogged", method = {RequestMethod.POST})
-	public Result<Boolean> setLogged(String sessionUuid) {
-		boolean b = inno72AuthInfoService.setLogged(sessionUuid);
-		if (!b) {
-			Results.failure("登录失败");
+	public Result<Object> setLogged(String sessionUuid) {
+		LOGGER.info("setLogged sessionUuid is {}", sessionUuid);
+		boolean result = inno72AuthInfoService.setLogged(sessionUuid);
+		LOGGER.info("setLogged result is {}", result);
+		if (result) {
+			return Results.success();
+		} else {
+			return Results.failure("登录失败");
 		}
-		return Results.success();
 	}
 
 	/**
@@ -188,5 +208,58 @@ public class Inno72StandardController {
 		return Results.success(result);
 	}
 
+	/**
+	 * 登录跳转
+	 */
+	@ResponseBody
+	@RequestMapping(value = "/loginRedirect", method = {RequestMethod.GET})
+	public void loginRedirect(HttpServletResponse response, String sessionUuid, String env) {
+		LOGGER.info("loginRedirect sessionUuid is {}, env is {}", sessionUuid, env);
+		try {
+			synchronized (this) {
+				String redirectUrl = "";
+				// 判断是否已经有人扫过了，如果扫过 直接跳转
+				UserSessionVo sessionVo = gameSessionRedisUtil.getSessionKey(sessionUuid);
+
+				if (sessionVo != null) {
+					LOGGER.info("loginRedirect isScanned is {}", sessionVo.getIsScanned());
+
+					// 判断二维码是否已经超时, 恢复isScanned 状态 为false，允许二维码继续被扫
+					boolean qrCode = gameSessionRedisUtil.exists(sessionUuid + "qrCode");
+					LOGGER.info("loginRedirect qrCode is {}", qrCode);
+					if (!qrCode) {
+						sessionVo.setIsScanned(false);
+					}
+
+					if (sessionVo.getIsScanned()) {
+						LOGGER.info("loginRedirect 二维码已经被扫描");
+						redirectUrl = String.format(topH5ErrUrl, env) + "/?status="+ TopH5ErrorTypeEnum.IS_SCANNED.getValue();
+					} else {
+						sessionVo.setIsScanned(true);
+						gameSessionRedisUtil.setSession(sessionUuid, JSON.toJSONString(sessionVo));
+						// 设置15秒内二维码不能被扫
+						gameSessionRedisUtil.setSessionEx(sessionUuid + "qrCode", sessionUuid, 15);
+						redirectUrl = String.format("%s%s/%s", inno72GameServiceProperties.get("tmallUrl"), sessionUuid, env);
+					}
+				}
+				LOGGER.info("loginRedirect redirectUrl is {} ", redirectUrl);
+				response.sendRedirect(redirectUrl);
+			}
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
+
+
+	/**
+	 * 登录前的操作（目前聚石塔回调）
+	 */
+	@ResponseBody
+	@RequestMapping(value = "/test", method = {RequestMethod.POST})
+	public String test() {
+		boolean exists = gameSessionRedisUtil.exists("18881339qrCode");
+		LOGGER.info("exists is {}", exists);
+		return "";
+	}
 
 }

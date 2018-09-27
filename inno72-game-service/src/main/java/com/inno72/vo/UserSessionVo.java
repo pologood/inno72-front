@@ -75,6 +75,17 @@ public class UserSessionVo {
 	 */
 	private String sessionKey;
 
+	/**
+	 * 是否扫描过的
+	 */
+	private boolean isScanned;
+
+	/**
+	 * 活动类型
+	 * @see com.inno72.model.Inno72Activity.ActivityType
+	 */
+	private Integer activityType = 0;
+
 	public UserSessionVo(String mid, String userNick, String userId, String access_token, String gameId,
 			String sessionUuid, String planId) {
 		super();
@@ -154,5 +165,13 @@ public class UserSessionVo {
 
 	public void setNeedPay(boolean needPay) {
 		this.needPay = needPay;
+	}
+
+	public boolean getIsScanned() {
+		return isScanned;
+	}
+
+	public void setIsScanned(boolean isScanned) {
+		this.isScanned = isScanned;
 	}
 }

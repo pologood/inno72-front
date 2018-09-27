@@ -15,6 +15,7 @@ import java.util.Optional;
 
 import javax.annotation.Resource;
 
+import com.inno72.vo.*;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -159,6 +160,9 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 	@Value("${machinealarm.uri}")
 	private String machinealarmUri;
 
+	@Value("${env}")
+	private String env;
+
 	private static String FINDLOCKGOODSPUSH_URL = "/machine/channel/findLockGoodsPush";
 	private static final String QRSTATUS_NORMAL = "0"; // 二维码正常
 	private static final String QRSTATUS_INVALID = "-1"; // 二维码失效
@@ -194,7 +198,7 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 			return Results.failure("登录过期啦 !");
 		}
 		userSessionVo.setGameReport(report);
-		gameSessionRedisUtil.setSessionEx(sessionUuid, JSON.toJSONString(userSessionVo));
+		gameSessionRedisUtil.setSession(sessionUuid, JSON.toJSONString(userSessionVo));
 
 		Map<String, String> params = new HashMap<>();
 		params.put("activityPlanId", activityPlanId);
@@ -395,7 +399,7 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 
 			// 如果需要支付 polling时 需要返回货道信息
 			boolean needPay = userSessionVo.getNeedPay();
-			if (!needPay) {
+			if (needPay) {
 				String goodsId = userSessionVo.getGoodsId();
 				List<String> goodsIds = new ArrayList<>();
 				goodsIds.add(goodsId);
@@ -840,10 +844,11 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 		String report = vo.getReport();
 		String activityPlanId = userSessionVo.getActivityPlanId();
 		String goodsId = userSessionVo.getGoodsId();
+		Integer activityType = userSessionVo.getActivityType();
 
 		List<Inno72ActivityPlanGameResult> planGameResults = null;
 
-		if (StringUtil.isNotEmpty(goodsId)) {
+		if (activityType == Inno72Activity.ActivityType.PAIYANG.getType()) {
 			Inno72Goods inno72GoodsCheck = inno72GoodsMapper.selectByPrimaryKey(goodsId);
 			String shopId = inno72GoodsCheck.getShopId();
 
@@ -1280,7 +1285,7 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 		userSessionVo.setInno72OrderId(inno72OrderId);
 		userSessionVo.setNeedPay(needPay);
 
-		gameSessionRedisUtil.setSessionEx(sessionUuid, JSON.toJSONString(userSessionVo));
+		gameSessionRedisUtil.setSession(sessionUuid, JSON.toJSONString(userSessionVo));
 
 		// 更新第三方订单号进inno72 order
 		Result<String> stringResult = inno72GameService
@@ -1593,9 +1598,59 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 	}
 
 	@Override
-	public Result<Object> prepareLoginQrCode(String machineId, int loginType , String ext) {
-		Inno72Machine inno72Machine = inno72MachineMapper.findMachineByCode(machineId);
+	public Result<Object> prepareLoginQrCode(StandardPrepareLoginReqVo req) {
+		String machineCode = req.getMachineCode();
+		String ext = req.getExt();
+		Integer operType = req.getOperType();
+		String sessionUuid = machineCode;
+
+		Inno72Machine inno72Machine = inno72MachineMapper.findMachineByCode(machineCode);
+
+		String returnUrl = "";
+
+		gameSessionRedisUtil.delSession(machineCode);
+
+		if (StandardPrepareLoginReqVo.OperTypeEnum.CREATE_QRCODE.getKey() == operType) {
+			// 生成二维码流程
+			returnUrl = this.createQrCode(inno72Machine, machineCode);
+			this.startSession(inno72Machine, ext, sessionUuid);
+		} else if (StandardPrepareLoginReqVo.OperTypeEnum.START_SESSION.getKey() == operType) {
+			// 开始会话流程
+			this.startSession(inno72Machine, ext, sessionUuid);
+		}
 		Map<String, Object> map = new HashMap<String, Object>();
+		map.put("qrCodeUrl", returnUrl);
+		map.put("sessionUuid", sessionUuid);
+		return Results.success(map);
+	}
+
+	/**
+	 * 开始会话
+	 * @param inno72Machine
+	 * @param ext
+	 * @param sessionUuid
+	 */
+	private void startSession(Inno72Machine inno72Machine, String ext, String sessionUuid) {
+		UserSessionVo userSessionVo = new UserSessionVo();
+		userSessionVo.setMachineCode(inno72Machine.getMachineCode());
+		userSessionVo.setMachineId(inno72Machine.getId());
+		userSessionVo.setLogged(false);
+
+		// 解析 ext
+		this.analysisExt(userSessionVo, ext);
+
+		gameSessionRedisUtil.setSession(sessionUuid, JsonUtil.toJson(userSessionVo));
+
+		// 设置15秒内二维码不能被扫
+		gameSessionRedisUtil.setSessionEx(sessionUuid + "qrCode", sessionUuid, 15);
+	}
+
+	/**
+	 * 生成二维码
+	 * @return
+	 */
+	private String createQrCode(Inno72Machine inno72Machine, String machineCode) {
+
 		// 在machine库查询bluetooth地址 "6893a2ada9dd4f7eb8dc33adfc6eda73"
 		String bluetoothAdd = "";
 		String bluetoothAddAes = "";
@@ -1606,28 +1661,24 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 				bluetoothAddAes = AesUtils.encrypt(bluetoothAdd);
 			}
 			_machineId = inno72Machine.getId();
-		} else {
-			return Results.failure(machineId + "对应的 inno72Machine 不存在");
 		}
-		String machineCode = "";
-		if (!StringUtil.isEmpty(machineId)) {
-			machineCode = AesUtils.encrypt(machineId);
+		String _machineCode = "";
+		if (!StringUtil.isEmpty(machineCode)) {
+			_machineCode = AesUtils.encrypt(machineCode);
 		}
 
 		LOGGER.info("Mac蓝牙地址 {} ", bluetoothAddAes);
 
 		// 生成sessionUuid
-		String sessionUuid = UuidUtil.getUUID32();
-		// 获取运行环境
-		String env = getActive();
+		//		String sessionUuid = UuidUtil.getUUID32();
+		String sessionUuid = machineCode;
 
-//		String url = String.format(
-//				"%s?sessionUuid=%s&bluetoothAddAes=%s&machineCode=%s",
-//				inno72GameServiceProperties.get("returnUrl"), sessionUuid, _machineId, sessionUuid, env, bluetoothAddAes, machineCode);
+
+		String loginRedirect = "";
 
 		String url = String.format(
-				"%s%s/%s?bluetoothAddAes=%s&machineCode=%s",
-				inno72GameServiceProperties.get("tmallUrl"), sessionUuid, env, bluetoothAddAes, machineCode);
+				"%s/?sessionUuid=%s&env=%s&bluetoothAddAes=%s&machineCode=%s",
+				inno72GameServiceProperties.get("loginRedirect"), sessionUuid, env, bluetoothAddAes, machineCode);
 
 		LOGGER.info("二维码访问 url is {} ", url);
 
@@ -1650,31 +1701,9 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 
 		if (result) {
 			this.qrCodeImgDeal(localUrl, objectName);
-
-			// taobao认证auth url
-			String taobaoAuthUrl = inno72GameServiceProperties.get("tmallUrl") + sessionUuid + "/" + env;
-			LOGGER.info("taobaoAuthUrl is {}", taobaoAuthUrl);
-
-			UserSessionVo userSessionVo = new UserSessionVo();
-			// userSessionVo.setAuthUrl(taobaoAuthUrl);
-			userSessionVo.setMachineCode(inno72Machine.getMachineCode());
-			userSessionVo.setMachineId(inno72Machine.getId());
-			userSessionVo.setLogged(false);
-
-			// 解析 ext
-			this.analysisExt(userSessionVo, ext);
-
-			gameSessionRedisUtil.setSessionEx(sessionUuid, JsonUtil.toJson(userSessionVo));
-
-			map.put("qrCodeUrl", returnUrl);
-			map.put("sessionUuid", sessionUuid);
-
-			LOGGER.info("二维码生成成功 - result -> {}", JsonUtil.toJson(map));
-		} else {
-			LOGGER.info("二维码生成失败");
 		}
 
-		return Results.success(map);
+		return returnUrl;
 	}
 
 	/**
@@ -1823,7 +1852,7 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 		sessionVo.setGoodsList(list);
 		// sessionVo.setRefOrderId(life.getId());
 
-		gameSessionRedisUtil.setSessionEx(sessionUuid, JSON.toJSONString(sessionVo));
+		gameSessionRedisUtil.setSession(sessionUuid, JSON.toJSONString(sessionVo));
 
 
 		LOGGER.info("prepareLoginNologin output {} {}", sessionUuid, inno72Merchant.getMerchantCode());
@@ -2046,7 +2075,7 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 		LOGGER.info("loadGameInfo is {} ", JsonUtil.toJson(list));
 		sessionVo.setGoodsList(list);
 
-		gameSessionRedisUtil.setSessionEx(sessionUuid, JSON.toJSONString(sessionVo));
+		gameSessionRedisUtil.setSession(sessionUuid, JSON.toJSONString(sessionVo));
 
 		this.startGameLife(userChannel, inno72Activity, inno72ActivityPlan, inno72Game, inno72Machine, userId);
 
@@ -2482,7 +2511,7 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 
 				userSessionVo.setRefOrderId(refOrderId);
 				userSessionVo.setInno72OrderId(inno72OrderId);
-				gameSessionRedisUtil.setSessionEx(sessionUuid, JSON.toJSONString(userSessionVo));
+				gameSessionRedisUtil.setSession(sessionUuid, JSON.toJSONString(userSessionVo));
 
 			} catch (Exception e) {
 
@@ -2565,22 +2594,22 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 
 	@Override
 	public Result<String> setHeartbeat(String machineCode, String page, String planCode, String activity, String desc) {
-		LOGGER.info("setHeartbeat machineCode is {}, page is {}, planCode is {}, activity is {}, desc is {}",
+		LOGGER.debug("setHeartbeat machineCode is {}, page is {}, planCode is {}, activity is {}, desc is {}",
 				machineCode, page, planCode, activity, desc);
 		Inno72Machine inno72Machine = inno72MachineMapper.findMachineByCode(machineCode);
 		if (inno72Machine == null) {
 			return Results.failure("此机器编码没有查到相对应的机器！");
 		} else {
-			LOGGER.info("setHeartbeat inno72Machine is {}", JsonUtil.toJson(inno72Machine));
+			LOGGER.debug("setHeartbeat inno72Machine is {}", JsonUtil.toJson(inno72Machine));
 		}
 
 		if (!(inno72Machine.getMachineStatus() == 4)) { // 4 表示机器状态正常
-			LOGGER.info("setHeartbeat 机器状态不正常 machineCode is {}", machineCode);
+			LOGGER.debug("setHeartbeat 机器状态不正常 machineCode is {}", machineCode);
 			return Results.failure("机器状态不正常");
 		}
 
 		if (inno72Machine.getOpenStatus() == null || !(inno72Machine.getOpenStatus() == 0)) { // 0 表示接受报警
-			LOGGER.info("setHeartbeat 当前机器不接收报警 machineCode is {}", machineCode);
+			LOGGER.debug("setHeartbeat 当前机器不接收报警 machineCode is {}", machineCode);
 			return Results.failure("当前机器不接收报警");
 		}
 
@@ -2595,7 +2624,7 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 		alarmDetailBean.setPageInfo(page);
 		alarmDetailBean.setRemark(JsonUtil.toJson(remarkMap));
 
-		LOGGER.info("setHeartbeat alarmDetailBean is {}", JsonUtil.toJson(alarmDetailBean));
+		LOGGER.debug("setHeartbeat alarmDetailBean is {}", JsonUtil.toJson(alarmDetailBean));
 
 		try {
 			alarmUtil.saveAlarmDetail(alarmDetailBean);
