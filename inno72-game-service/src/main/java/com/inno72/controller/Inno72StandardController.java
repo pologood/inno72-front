@@ -209,8 +209,8 @@ public class Inno72StandardController {
 	 */
 	@ResponseBody
 	@RequestMapping(value = "/processBeforeLogged", method = {RequestMethod.POST})
-	public Result<Object> processBeforeLogged(String sessionUuid, String authInfo) {
-		Result<Object> result = inno72AuthInfoService.processBeforeLogged(sessionUuid, authInfo);
+	public Result<Object> processBeforeLogged(String sessionUuid, String authInfo, String traceId) {
+		Result<Object> result = inno72AuthInfoService.processBeforeLogged(sessionUuid, authInfo, traceId);
 		return Results.success(result);
 	}
 
