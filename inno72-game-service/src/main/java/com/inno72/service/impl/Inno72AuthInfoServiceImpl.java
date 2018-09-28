@@ -352,7 +352,7 @@ public class Inno72AuthInfoServiceImpl implements Inno72AuthInfoService {
             return Results.failure("inno72MachineVo 为空！");
         }
         if(inno72MachineVo.getActivityType() == Inno72MachineVo.ACTIVITYTYPE_PAIYANG){
-            return paiYangProcessBeforeLogged(sessionUuid,sessionVo,authInfo);
+            return paiYangProcessBeforeLogged(sessionUuid,sessionVo,authInfo,traceId);
         }
 
 		if (StringUtil.isEmpty(authInfo)) {
@@ -498,7 +498,7 @@ public class Inno72AuthInfoServiceImpl implements Inno72AuthInfoService {
 		return Results.success(resultMap);
 	}
 
-	private Result<Object> paiYangProcessBeforeLogged(String sessionUuid, UserSessionVo sessionVo, String authInfo) {
+	private Result<Object> paiYangProcessBeforeLogged(String sessionUuid, UserSessionVo sessionVo, String authInfo,String traceId) {
 
 		String accessToken = FastJsonUtils.getString(authInfo, "access_token");
 		String userId = FastJsonUtils.getString(authInfo, "taobao_user_nick");
@@ -647,6 +647,7 @@ public class Inno72AuthInfoServiceImpl implements Inno72AuthInfoService {
 		LOGGER.info("loadGameInfo is {} ", JsonUtil.toJson(list));
 		sessionVo.setGoodsList(list);
 
+
 		//插入gameLife表
 		Inno72Locale inno72Locale = inno72LocaleMapper.selectByPrimaryKey(inno72Machine.getLocaleId());
 		Inno72GameUserLife life = new Inno72GameUserLife(userChannel == null ? null : userChannel.getGameUserId(),
@@ -667,7 +668,7 @@ public class Inno72AuthInfoServiceImpl implements Inno72AuthInfoService {
 		resultMap.put("playCode", playCode);
 		resultMap.put("qrStatus", qrStatus);
 		resultMap.put("sellerId", inno72Merchant.getMerchantCode());
-
+		resultMap.put("traceId", traceId);
 		this.dealIsVip(resultMap, sessionVo);
 
 		resultMap.put("activityType", activityType);
@@ -677,8 +678,11 @@ public class Inno72AuthInfoServiceImpl implements Inno72AuthInfoService {
 
 		gameSessionRedisUtil.setSessionEx(sessionUuid, JSON.toJSONString(sessionVo));
 
-		CommonBean.logger(CommonBean.POINT_TYPE_LOGIN, inno72Machine.getMachineCode(),
-				"用户" + nickName + "登录机器 ["+inno72Machine.getMachineCode()+"], 当前活动 ["+ interact.getName() +"]");
+		CommonBean.logger(
+				CommonBean.POINT_TYPE_LOGIN,
+				inno72Machine.getMachineCode(),
+				"用户" + nickName + "，登录机器 ["+inno72Machine.getMachineCode()+"], 当前活动 ["+ interact.getName() +"]",
+				interact.getId()+"|"+userId);
 
 		return Results.success(JSONObject.toJSONString(resultMap));
 	}
@@ -853,6 +857,7 @@ public class Inno72AuthInfoServiceImpl implements Inno72AuthInfoService {
 				}
 			}
 		} catch (Exception e) {
+			e.printStackTrace();
 			LOGGER.error(e.getMessage(), e);
 		}
 		return logged;
