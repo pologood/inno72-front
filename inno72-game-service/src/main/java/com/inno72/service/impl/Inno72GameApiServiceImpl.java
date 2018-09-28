@@ -1227,10 +1227,10 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 
 		String accessToken = userSessionVo.getAccessToken();
 		LOGGER.info("更新的session =====> {}", JSON.toJSONString(userSessionVo));
-//		if (inno72OrderId.equals("0")) {
-//			LOGGER.info("已经超过最大游戏数量啦 QAQ!");
-//			return Results.failure("已经超过最大游戏数量啦 QAQ!");
-//		}
+		if (inno72OrderId.equals("0")) {
+			LOGGER.info("已经超过最大游戏数量啦 QAQ!");
+			return Results.failure("已经超过最大游戏数量啦 QAQ!");
+		}
 
 		// todo gxg 非登录下单不需要调用聚石塔接口
 		int loginType = userSessionVo.getLoginType();
@@ -2308,7 +2308,7 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 
 		boolean b = inno72GameService.countSuccOrder(channelId, channelUserKey, activityPlanId);
 		Integer rep = null;
-		if (product.getKey().equals(Inno72Order.INNO72ORDER_GOODSTYPE.COUPON.getKey())) {
+		if (product.getKey().equals(Inno72Order.INNO72ORDER_GOODSTYPE.PRODUCT.getKey())) {
 			rep = Inno72Order.INNO72ORDER_REPETITION.NOT.getKey();
 		} else {
 			rep = b ? Inno72Order.INNO72ORDER_REPETITION.NOT.getKey()
