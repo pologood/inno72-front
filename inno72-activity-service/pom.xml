@@ -13,7 +13,7 @@
         <version>0.0.1-SNAPSHOT</version>
     </parent>
     <artifactId>inno72-activity-service</artifactId>
-    <packaging>jar</packaging>
+    <packaging>war</packaging>
     <name>inno72-activity-service</name>
     <description>game-front</description>
 

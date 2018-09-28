@@ -38,8 +38,10 @@ public class CommonBean {
 	/************************************************* -> 埋点 <- ******************************************************/
 
 	public static final String POINT_TYPE_LOGIN = "31";
-	public static final String POINT_TYPE_ORDER = "32";
+	public static final String POINT_TYPE_GOODS_ORDER = "32";
+	public static final String POINT_TYPE_COUPON_ORDER = "35";
 	public static final String POINT_TYPE_FINISH = "33";
+	public static final String POINT_TYPE_FANS = "34";
 
 	/**
 	 * @param msg 消息体
@@ -53,7 +55,7 @@ public class CommonBean {
 				.pointTime(LocalDateTimeUtil.transfer(LocalDateTime.now(), DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")))
 				.type(msg[0])
 				.detail(msg[2])
-				.tag("").bulid();
+				.tag(msg[3]).bulid();
 		LOGGER.info("记录埋点数据 [{}]", JSON.toJSONString(msg));
 	}
 	/************************************************* -> 埋点 <- ******************************************************/

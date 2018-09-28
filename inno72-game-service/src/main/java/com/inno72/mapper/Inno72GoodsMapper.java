@@ -21,4 +21,6 @@ public interface Inno72GoodsMapper extends Mapper<Inno72Goods> {
 	 * @return
 	 */
     Inno72SamplingGoods findSamplingGoodsById(String goodsId);
+
+	Inno72Goods selectByChannelId(String channelId);
 }

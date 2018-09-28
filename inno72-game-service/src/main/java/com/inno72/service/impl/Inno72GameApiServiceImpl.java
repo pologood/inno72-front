@@ -40,6 +40,13 @@ import com.inno72.common.Result;
 import com.inno72.common.Results;
 import com.inno72.common.StandardLoginTypeEnum;
 import com.inno72.common.json.JsonUtil;
+import com.inno72.common.shiro.filter.JWTUtil;
+import com.inno72.common.util.AesUtils;
+import com.inno72.common.util.FastJsonUtils;
+import com.inno72.common.util.GameSessionRedisUtil;
+import com.inno72.common.util.Inno72OrderNumGenUtil;
+import com.inno72.common.util.QrCodeUtil;
+import com.inno72.common.util.UuidUtil;
 import com.inno72.common.utils.StringUtil;
 import com.inno72.feign.MachineCheckBackendFeignClient;
 import com.inno72.machine.vo.SupplyRequestVo;
@@ -68,6 +75,12 @@ import com.inno72.service.Inno72GameApiService;
 import com.inno72.service.Inno72GameService;
 import com.inno72.service.Inno72TopService;
 import com.inno72.util.AlarmUtil;
+import com.inno72.vo.AlarmMessageBean;
+import com.inno72.vo.GoodsVo;
+import com.inno72.vo.Inno72SamplingGoods;
+import com.inno72.vo.LogReqrest;
+import com.inno72.vo.MachineApiVo;
+import com.inno72.vo.UserSessionVo;
 
 import net.coobird.thumbnailator.Thumbnails;
 
@@ -1512,8 +1525,19 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 		// TODO 奖券下单
 		String orderId = "";
 		try {
-			orderId = this.genPaiyangInno72Order(vo.getCanOrder(),channelId, activityPlanId, _machineId, inno72Coupon.getId(), vo.getUserId(),
-					Inno72Order.INNO72ORDER_GOODSTYPE.COUPON);
+		    if(vo.findPaiyangFlag()){
+
+                orderId = this.genPaiyangInno72Order(vo.getCanOrder(),channelId, activityPlanId, _machineId, inno72Coupon.getId(), vo.getUserId(),
+                        Inno72Order.INNO72ORDER_GOODSTYPE.COUPON);
+            }else{
+                orderId = this.genInno72Order(channelId, activityPlanId, _machineId, inno72Coupon.getId(), vo.getUserId(),
+                        Inno72Order.INNO72ORDER_GOODSTYPE.COUPON);
+            }
+
+
+			Result<String> insertOrderToLife = inno72GameService.updateRefOrderId(orderId, "", vo.getUserId());
+			LOGGER.debug("inno72Life 插入 orderId [{}] {}！", orderId, JSON.toJSONString(insertOrderToLife));
+
 		} catch (Exception e) {
 			LOGGER.info("获取优惠券下单失败 ==> {}", e.getMessage(), e);
 			return Results.failure("下单失败!");
@@ -1671,12 +1695,18 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 		} else {
 			LOGGER.info("调用出货无orderId 请求参数=>{}", JSON.toJSONString(vo));
 		}
+
+		Inno72Goods inno72Goods = inno72GoodsMapper.selectByChannelId(inno72SupplyChannel.getId());
 		/* 埋点 */
-		CommonBean.logger(CommonBean.POINT_TYPE_FINISH, machineCode,
-				"机器 ["+machineCode+"] 货道 ["+inno72SupplyChannel.getName()+"(code:"+inno72SupplyChannel.getCode()+")] "
-						+ "出货完成."
+		CommonBean.logger(
+				CommonBean.POINT_TYPE_FINISH,
+				machineCode,
+				"机器 ["+machineCode+"], 货道 [" + inno72SupplyChannel.getName() + "(code:"+inno72SupplyChannel.getCode()+")] "
+						+ "出货完成. 商品名称[" + inno72Goods.getName() + "]."
 						+ "货道容量 ["+inno72SupplyChannel.getVolumeCount()+"]. "
-						+ "原数量 ["+inno72SupplyChannel.getGoodsCount()+"], 当前数量 ["+updateChannel.getGoodsCount()+"]");
+						+ "原数量 ["+inno72SupplyChannel.getGoodsCount()+"], 当前数量 ["+updateChannel.getGoodsCount()+"]"
+						+ "当前用户 [" + userSessionVo.getUserNick() + "]",
+				userSessionVo.getActivityId() + "|" + inno72Goods.getCode() + "|" + inno72Goods.getName());
 
 		return Results.success();
 	}
@@ -2250,6 +2280,8 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 		resultMap.put("qrStatus", qrStatus);
 		resultMap.put("sellerId", inno72Merchant.getMerchantCode());
 
+		resultMap.put("Authorization", JWTUtil.sign(sessionUuid, mid));
+
 		return Results.success(JSONObject.toJSONString(resultMap));
 	}
 
@@ -2465,7 +2497,7 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 
 		boolean b = inno72GameService.countSuccOrder(channelId, channelUserKey, activityPlanId);
 		Integer rep = null;
-		if (product.getKey().equals(Inno72Order.INNO72ORDER_GOODSTYPE.PRODUCT.getKey())) {
+		if (product.getKey().equals(Inno72Order.INNO72ORDER_GOODSTYPE.COUPON.getKey())) {
 			rep = Inno72Order.INNO72ORDER_REPETITION.NOT.getKey();
 		} else {
 			rep = b ? Inno72Order.INNO72ORDER_REPETITION.NOT.getKey()
@@ -2508,6 +2540,12 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 			Inno72Shops inno72Shops = inno72ShopsMapper.selectByPrimaryKey(inno72Goods.getShopId());
 			inno72Order.setShopsId(inno72Shops.getId());
 			inno72Order.setShopsName(inno72Shops.getShopName());
+			/* 埋点 */
+			CommonBean.logger(
+					CommonBean.POINT_TYPE_GOODS_ORDER,
+					inno72Machine.getMachineCode(),
+					"用户[" + userChannel.getUserNick() + "], 生成["+ goodsName + "]订单，订单号[" + orderNum +"].",
+					inno72ActivityPlan.getActivityId()+"|"+inno72Goods.getCode());
 
 		} else {
 			Inno72Coupon inno72Coupon = inno72CouponMapper.selectByPrimaryKey(goodsId);
@@ -2519,10 +2557,14 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 			Inno72Shops inno72Shops = inno72ShopsMapper.selectByPrimaryKey(inno72Coupon.getShopsId());
 			inno72Order.setShopsId(inno72Shops.getId());
 			inno72Order.setShopsName(inno72Shops.getShopName());
+			/* 埋点 */
+			CommonBean.logger(
+					CommonBean.POINT_TYPE_COUPON_ORDER,
+					inno72Machine.getMachineCode(),
+					"用户[" + userChannel.getUserNick() + "]生成["+ goodsName + "]订单，订单号[" + orderNum +"].",
+					inno72ActivityPlan.getActivityId()+"|"+inno72Coupon.getCode());
 		}
-		/* 埋点 */
-		CommonBean.logger(CommonBean.POINT_TYPE_ORDER, inno72Machine.getMachineCode(),
-				"用户[" + userChannel.getUserNick() + "]生成["+ goodsName + "]订单，订单号[" + orderNum +"].");
+
 
 		orderGoods.setOrderNum(inno72Order.getOrderNum());
 		orderGoods.setStatus(Inno72Order.INNO72ORDER_GOODSSTATUS.WAIT.getKey());
@@ -2533,7 +2575,7 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 		inno72OrderHistoryMapper.insert(new Inno72OrderHistory(inno72Order.getId(), inno72Order.getOrderNum(),
 				JSON.toJSONString(inno72Order), "初始化插入订单!"));
 
-		return rep == 0 ? rep + "" : inno72Order.getId();
+		return rep.equals(Inno72Order.INNO72ORDER_REPETITION.REPETITION.getKey()) ? rep + "" : inno72Order.getId();
 	}
 
 	/**

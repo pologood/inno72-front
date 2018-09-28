@@ -34,10 +34,51 @@ import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONObject;
+import com.google.gson.Gson;
+import com.inno72.common.CommonBean;
+import com.inno72.common.Inno72GameServiceProperties;
+import com.inno72.common.Result;
+import com.inno72.common.Results;
 import com.inno72.common.json.JsonUtil;
+import com.inno72.common.util.AesUtils;
+import com.inno72.common.util.FastJsonUtils;
+import com.inno72.common.util.GameSessionRedisUtil;
+import com.inno72.common.util.QrCodeUtil;
+import com.inno72.common.util.UuidUtil;
 import com.inno72.common.utils.StringUtil;
+import com.inno72.mapper.Inno72ActivityMapper;
+import com.inno72.mapper.Inno72ActivityPlanGameResultMapper;
+import com.inno72.mapper.Inno72ActivityPlanMapper;
+import com.inno72.mapper.Inno72ActivityShopsMapper;
+import com.inno72.mapper.Inno72ChannelMapper;
+import com.inno72.mapper.Inno72GameMapper;
+import com.inno72.mapper.Inno72GameUserChannelMapper;
+import com.inno72.mapper.Inno72GameUserLifeMapper;
+import com.inno72.mapper.Inno72GameUserMapper;
+import com.inno72.mapper.Inno72GoodsMapper;
+import com.inno72.mapper.Inno72LocaleMapper;
+import com.inno72.mapper.Inno72MachineMapper;
+import com.inno72.mapper.Inno72MerchantMapper;
+import com.inno72.model.Inno72Activity;
+import com.inno72.model.Inno72ActivityPlan;
+import com.inno72.model.Inno72ActivityShops;
+import com.inno72.model.Inno72Channel;
+import com.inno72.model.Inno72Game;
+import com.inno72.model.Inno72GameUser;
+import com.inno72.model.Inno72GameUserChannel;
+import com.inno72.model.Inno72GameUserLife;
+import com.inno72.model.Inno72Goods;
+import com.inno72.model.Inno72Locale;
+import com.inno72.model.Inno72Machine;
+import com.inno72.model.Inno72Merchant;
 import com.inno72.oss.OSSUtil;
 import com.inno72.redis.IRedisUtil;
+import com.inno72.service.Inno72AuthInfoService;
+import com.inno72.service.Inno72GameService;
+import com.inno72.service.Inno72TopService;
+import com.inno72.vo.GoodsVo;
 import com.inno72.vo.UserSessionVo;
 
 import net.coobird.thumbnailator.Thumbnails;
@@ -195,16 +236,17 @@ public class Inno72AuthInfoServiceImpl implements Inno72AuthInfoService {
 			return Results.failure("参数缺失！");
 		}
 
-		UserSessionVo userSessionVo = gameSessionRedisUtil.getSessionKey(sessionUuid);
+		UserSessionVo sessionStr = gameSessionRedisUtil.getSessionKey(sessionUuid);
 
-		if (userSessionVo == null) {
+		if (sessionStr == null) {
 			return Results.failure("未登录！");
 		}
 
-		Long scard = redisUtil.scard(CommonBean.REDIS_ACTIVITY_PLAN_LOGIN_TIMES_KEY + userSessionVo.getActivityPlanId());
-		userSessionVo.setPlayTimes(scard);
-		userSessionVo.setInno72MachineVo(null);
-		return Results.success(userSessionVo);
+		Long scard = redisUtil.scard(CommonBean.REDIS_ACTIVITY_PLAN_LOGIN_TIMES_KEY + sessionStr.getActivityPlanId());
+		sessionStr.setPlayTimes(scard);
+        sessionStr.setInno72MachineVo(null);
+
+		return Results.success(sessionStr);
 	}
 
 	private String getActive() {
@@ -295,38 +337,26 @@ public class Inno72AuthInfoServiceImpl implements Inno72AuthInfoService {
 	}
 
 	@Override
-	public Result<Object> processBeforeLogged(String sessionUuid, String authInfo) {
-		LOGGER.info("processBeforeLogged params sessionUuid is {}, authInfo is {} ", sessionUuid, authInfo);
-		if (StringUtil.isEmpty(authInfo)) {
-			return Results.failure("authInfo 不能为空！");
-		}
-
-//		// 检查二维码是否可以重复扫
-//		String qrStatus = this.checkQrCode(sessionUuid);
-//
-//		// 判断二维码是否已经过期
-//		if (qrStatus == QRSTATUS_INVALID) {
-//			return Results.failure("二维码已经过期");
-//		}
+	public Result<Object> processBeforeLogged(String sessionUuid, String authInfo, String traceId) {
+		LOGGER.info("processBeforeLogged params sessionUuid is {}, authInfo is {}, traceId is {} ", sessionUuid, authInfo, traceId);
 
 		UserSessionVo sessionVo = gameSessionRedisUtil.getSessionKey(sessionUuid);
-
-//		// 判断是否有用户已经登录
-//		if (!StringUtil.isEmpty(redisUtil.get(sessionUuid + "exist"))) {
-//			qrStatus = QRSTATUS_EXIST_USER;
-//		} else {
-//			redisUtil.setex(sessionUuid + "exist", 1600, sessionUuid);
-//		}
+		if (sessionVo == null) {
+			return Results.failure("sessionUuid 不存在!");
+		}
 
 		String mid = sessionVo.getMachineId();
 		Inno72MachineVo inno72MachineVo = sessionVo.getInno72MachineVo();
+        if(inno72MachineVo == null){
+            LOGGER.error("inno72MachineVo 为空！sessionUuid={}",sessionUuid);
+            return Results.failure("inno72MachineVo 为空！");
+        }
+        if(inno72MachineVo.getActivityType() == Inno72MachineVo.ACTIVITYTYPE_PAIYANG){
+            return paiYangProcessBeforeLogged(sessionUuid,sessionVo,authInfo);
+        }
 
-		if(inno72MachineVo == null){
-			LOGGER.error("inno72MachineVo 为空！sessionUuid={}",sessionUuid);
-			return Results.failure("inno72MachineVo 为空！");
-		}
-		if(inno72MachineVo.getActivityType() == Inno72MachineVo.ACTIVITYTYPE_PAIYANG){
-			return paiYangProcessBeforeLogged(sessionUuid,sessionVo,authInfo);
+		if (StringUtil.isEmpty(authInfo)) {
+			return Results.failure("authInfo 不能为空！");
 		}
 
 		String accessToken = FastJsonUtils.getString(authInfo, "access_token");
@@ -453,14 +483,19 @@ public class Inno72AuthInfoServiceImpl implements Inno72AuthInfoService {
 		resultMap.put("activityType", activityType);
 		resultMap.put("goodsCode", sessionVo.getGoodsCode() != null ? sessionVo.getGoodsCode() : "");
 
+		resultMap.put("traceId", traceId);
+
 		LOGGER.info("processBeforeLogged返回聚石塔结果 is {}", resultMap);
 
 		gameSessionRedisUtil.setSession(sessionUuid, JSON.toJSONString(sessionVo));
 
-		CommonBean.logger(CommonBean.POINT_TYPE_LOGIN, inno72Machine.getMachineCode(),
-				"用户" + nickName + "登录机器 ["+inno72Machine.getMachineCode()+"], 当前活动 ["+ inno72Activity.getName() +"]");
+		CommonBean.logger(
+				CommonBean.POINT_TYPE_LOGIN,
+				inno72Machine.getMachineCode(),
+				"用户" + nickName + "，登录机器 ["+inno72Machine.getMachineCode()+"], 当前活动 ["+ inno72Activity.getName() +"]",
+				inno72Activity.getId()+"|"+userId);
 
-		return Results.success(JSONObject.toJSONString(resultMap));
+		return Results.success(resultMap);
 	}
 
 	private Result<Object> paiYangProcessBeforeLogged(String sessionUuid, UserSessionVo sessionVo, String authInfo) {
