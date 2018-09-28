@@ -78,6 +78,11 @@ public class UserSessionVo {
 	private String sessionKey;
 
 	/**
+	 * 是否扫描过的
+	 */
+	private boolean isScanned;
+
+	/**
 	 * 活动类型
 	 * @see com.inno72.model.Inno72Activity.ActivityType
 	 */
@@ -181,4 +186,11 @@ public class UserSessionVo {
 
 		return flag;
     }
+	public boolean getIsScanned() {
+		return isScanned;
+	}
+
+	public void setIsScanned(boolean isScanned) {
+		this.isScanned = isScanned;
+	}
 }

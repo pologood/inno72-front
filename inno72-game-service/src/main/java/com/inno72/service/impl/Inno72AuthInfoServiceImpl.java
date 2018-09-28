@@ -155,7 +155,7 @@ public class Inno72AuthInfoServiceImpl implements Inno72AuthInfoService {
 				this.dealLocalQrCodeImg(localUrl, objectName);
 
 				// 设置二维码过期时间
-				gameSessionRedisUtil.setSessionEx(sessionUuid, "");
+				gameSessionRedisUtil.setSession(sessionUuid, "");
 
 				map.put("qrCodeUrl", returnUrl);
 				map.put("sessionUuid", sessionUuid);
@@ -298,7 +298,7 @@ public class Inno72AuthInfoServiceImpl implements Inno72AuthInfoService {
 				}
 
 				// 设置二维码过期时间
-				gameSessionRedisUtil.setSessionEx(sessionUuid, "");
+				gameSessionRedisUtil.setSession(sessionUuid, "");
 
 				map.put("qrCodeUrl", returnUrl);
 				map.put("sessionUuid", sessionUuid);
@@ -323,22 +323,22 @@ public class Inno72AuthInfoServiceImpl implements Inno72AuthInfoService {
 			return Results.failure("authInfo 不能为空！");
 		}
 
-		// 检查二维码是否可以重复扫
-		String qrStatus = this.checkQrCode(sessionUuid);
-
-		// 判断二维码是否已经过期
-		if (qrStatus == QRSTATUS_INVALID) {
-			return Results.failure("二维码已经过期");
-		}
+//		// 检查二维码是否可以重复扫
+//		String qrStatus = this.checkQrCode(sessionUuid);
+//
+//		// 判断二维码是否已经过期
+//		if (qrStatus == QRSTATUS_INVALID) {
+//			return Results.failure("二维码已经过期");
+//		}
 
 		UserSessionVo sessionVo = gameSessionRedisUtil.getSessionKey(sessionUuid);
 
-		// 判断是否有用户已经登录
-		if (!StringUtil.isEmpty(redisUtil.get(sessionUuid + "exist"))) {
-			qrStatus = QRSTATUS_EXIST_USER;
-		} else {
-			redisUtil.setex(sessionUuid + "exist", 1600, sessionUuid);
-		}
+//		// 判断是否有用户已经登录
+//		if (!StringUtil.isEmpty(redisUtil.get(sessionUuid + "exist"))) {
+//			qrStatus = QRSTATUS_EXIST_USER;
+//		} else {
+//			redisUtil.setex(sessionUuid + "exist", 1600, sessionUuid);
+//		}
 
 		String mid = sessionVo.getMachineId();
 		Inno72MachineVo inno72MachineVo = sessionVo.getInno72MachineVo();
@@ -466,7 +466,7 @@ public class Inno72AuthInfoServiceImpl implements Inno72AuthInfoService {
 		Map<String, Object> resultMap = new HashMap<>();
 		resultMap.put("machineCode", inno72Machine.getMachineCode());
 		resultMap.put("playCode", playCode);
-		resultMap.put("qrStatus", qrStatus);
+		resultMap.put("qrStatus", QRSTATUS_NORMAL);
 		resultMap.put("sellerId", inno72Merchant.getMerchantCode());
 
 		this.dealIsVip(resultMap, sessionVo);
@@ -477,7 +477,7 @@ public class Inno72AuthInfoServiceImpl implements Inno72AuthInfoService {
 
 		LOGGER.info("processBeforeLogged返回聚石塔结果 is {}", resultMap);
 
-		gameSessionRedisUtil.setSessionEx(sessionUuid, JSON.toJSONString(sessionVo));
+		gameSessionRedisUtil.setSession(sessionUuid, JSON.toJSONString(sessionVo));
 
 		CommonBean.logger(CommonBean.POINT_TYPE_LOGIN, inno72Machine.getMachineCode(),
 				"用户" + nickName + "登录机器 ["+inno72Machine.getMachineCode()+"], 当前活动 ["+ inno72Activity.getName() +"]");
@@ -820,7 +820,7 @@ public class Inno72AuthInfoServiceImpl implements Inno72AuthInfoService {
 			if (hasKey) {
 				UserSessionVo userSessionVo = gameSessionRedisUtil.getSessionKey(sessionUuid);
 				userSessionVo.setLogged(true);
-				gameSessionRedisUtil.setSessionEx(userSessionVo.getSessionUuid(), JSON.toJSONString(userSessionVo));
+				gameSessionRedisUtil.setSession(userSessionVo.getSessionUuid(), JSON.toJSONString(userSessionVo));
 				logged = true;
 			}
 		} catch (Exception e) {

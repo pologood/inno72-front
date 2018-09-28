@@ -65,7 +65,7 @@ public class Inno72MachineServiceImpl extends AbstractService<Inno72Machine> imp
 
 	@Override
 	public Result<Inno72MachineVo> findGame(String machineId, String planId, String version, String versionInno72) {
-		LOGGER.info("查询售卖机游戏详情 - machineCode -> {}", machineId);
+		LOGGER.debug("查询售卖机游戏详情 - machineCode -> {}", machineId);
 
 		Result<Inno72MachineVo> inno72MachineVoResult = this.initVoFromRedis(planId, machineId);
 		if (inno72MachineVoResult.getCode() == Result.FAILURE) {

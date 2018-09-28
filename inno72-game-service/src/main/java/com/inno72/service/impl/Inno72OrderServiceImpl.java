@@ -338,7 +338,7 @@ public class Inno72OrderServiceImpl implements Inno72OrderService {
 			String ref_order_id = FastJsonUtils.getString(respJson, "order_id");
 			userSessionVo.setInno72OrderId(inno72OrderId);
 			userSessionVo.setRefOrderId(ref_order_id);
-			gameSessionRedisUtil.setSessionEx(sessionUuid, JSON.toJSONString(userSessionVo));
+			gameSessionRedisUtil.setSession(sessionUuid, JSON.toJSONString(userSessionVo));
 
 			// 更新第三方订单号进inno72 order
 			Result<String> stringResult = inno72GameService
