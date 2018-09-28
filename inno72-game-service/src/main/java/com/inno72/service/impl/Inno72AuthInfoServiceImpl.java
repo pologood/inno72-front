@@ -94,8 +94,6 @@ public class Inno72AuthInfoServiceImpl implements Inno72AuthInfoService {
 	private Inno72InteractGoodsService inno72InteractGoodsService;
 	@Resource
 	private Inno72MachineService inno72MachineService;
-	@Resource
-	private StringRedisTemplate redisTemplate;
 
 	// todo gxg 使用枚举
 	private static final String QRSTATUS_NORMAL = "0"; // 二维码正常
@@ -205,27 +203,7 @@ public class Inno72AuthInfoServiceImpl implements Inno72AuthInfoService {
 
 		Long scard = redisUtil.scard(CommonBean.REDIS_ACTIVITY_PLAN_LOGIN_TIMES_KEY + userSessionVo.getActivityPlanId());
 		userSessionVo.setPlayTimes(scard);
-		//判断是否是派样数据
-		Inno72MachineVo inno72MachineVo = userSessionVo.getInno72MachineVo();
-		if(inno72MachineVo != null && inno72MachineVo.getActivityType() == Inno72MachineVo.ACTIVITYTYPE_PAIYANG && userSessionVo.getCanGame()){
-			String userid = userSessionVo.getUserId();
-			String activityid = userSessionVo.getActivityId();
-			String date = DateUtil.getDateStringByYYYYMMDD();
-			//同一用户每天参与次数加一
-			String key = String.format(RedisConstants.PAIYANG_DAY_GAME_TIMES,activityid,date,userid);
-			if(!redisTemplate.hasKey(key)){
-				redisTemplate.opsForValue().set(key,"1");
-			}else{
-				redisTemplate.opsForValue().increment(key,1);
-			}
-			//同一用户参与次数加一
-			key = String.format(RedisConstants.PAIYANG_GAME_TIMES,activityid,userid);
-			if(!redisTemplate.hasKey(key)){
-				redisTemplate.opsForValue().set(key,"1");
-			}else{
-				redisTemplate.opsForValue().increment(key,1);
-			}
-		}
+		userSessionVo.setInno72MachineVo(null);
 		return Results.success(userSessionVo);
 	}
 
@@ -521,7 +499,7 @@ public class Inno72AuthInfoServiceImpl implements Inno72AuthInfoService {
 		String qrStatus = this.checkQrCode(sessionUuid);
 		Inno72Goods goods = inno72GoodsMapper.selectByCode(sessionVo.getGoodsCode());
 		String sellerId = goods.getSellerId();
-		Inno72Interact interact = inno72InteractService.findById(sessionVo.getActivityId());
+		Inno72Interact interact = inno72InteractService.findById(sessionVo.getInno72MachineVo().getActivityId());
 		playCode = interact.getPlanCode();
 		LOGGER.info("sessionRedirect layCode is {}", playCode);
 
@@ -563,9 +541,11 @@ public class Inno72AuthInfoServiceImpl implements Inno72AuthInfoService {
 		//设置canOrder
 		interact.getDayNumber();
 		//设置canGame
+		String key = null;
 		if(times!=null){
-			if(redisUtil.exists(String.format(RedisConstants.PAIYANG_GAME_TIMES,interact.getId(),userId))){
-				Integer mytimes = Integer.parseInt(redisUtil.get(String.format(RedisConstants.PAIYANG_GAME_TIMES,interact.getId(),userId)));
+			key = String.format(RedisConstants.PAIYANG_GAME_TIMES,interact.getId(),userId);
+			if(gameSessionRedisUtil.exists(key)){
+				Integer mytimes = Integer.parseInt(redisUtil.get(key));
 				if(mytimes >= times){
 					canGame = false;
 				}
@@ -573,8 +553,9 @@ public class Inno72AuthInfoServiceImpl implements Inno72AuthInfoService {
 		}
 		String date = DateUtil.getDateStringByYYYYMMDD();
 		if(dayTimes!=null){
-			if(redisUtil.exists(String.format(RedisConstants.PAIYANG_DAY_GAME_TIMES,interact.getId(),date,userId))){
-				Integer mydayTimes = Integer.parseInt(redisUtil.get(String.format(RedisConstants.PAIYANG_DAY_GAME_TIMES,interact.getId(),date,userId)));
+			key = String.format(RedisConstants.PAIYANG_DAY_GAME_TIMES,interact.getId(),date,userId);
+			if(gameSessionRedisUtil.exists(key)){
+				Integer mydayTimes = Integer.parseInt(redisUtil.get(key));
 				if(mydayTimes >= dayTimes){
 					canGame = false;
 				}
@@ -584,8 +565,9 @@ public class Inno72AuthInfoServiceImpl implements Inno72AuthInfoService {
 
 
 		if(number!=null){
-			if(redisUtil.exists(String.format(RedisConstants.PAIYANG_ORDER_TIMES,interact.getId(),userId))){
-				Integer mytimes = Integer.parseInt(redisUtil.get(String.format(RedisConstants.PAIYANG_ORDER_TIMES,interact.getId(),userId)));
+			key = String.format(RedisConstants.PAIYANG_ORDER_TIMES,interact.getId(),userId);
+			if(gameSessionRedisUtil.exists(key)){
+				Integer mytimes = Integer.parseInt(redisUtil.get(key));
 				if(mytimes >= number){
 					canOrder = false;
 				}
@@ -593,7 +575,7 @@ public class Inno72AuthInfoServiceImpl implements Inno72AuthInfoService {
 		}
 
 //		if(dayNumber!=null){
-//			if(redisUtil.exists(String.format(RedisConstants.PAIYANG_DAY_ORDER_TIMES,interact.getId(),date,userId))){
+//			if(gameSessionRedisUtil.exists(String.format(RedisConstants.PAIYANG_DAY_ORDER_TIMES,interact.getId(),date,userId))){
 //				Integer mydayTimes = Integer.parseInt(redisUtil.get(String.format(RedisConstants.PAIYANG_DAY_ORDER_TIMES,interact.getId(),date,userId)));
 //				if(mydayTimes >= dayNumber){
 //					canOrder = false;
@@ -602,8 +584,9 @@ public class Inno72AuthInfoServiceImpl implements Inno72AuthInfoService {
 //		}
 
 		if(userDayNumber!=null){
-			if(redisUtil.exists(String.format(RedisConstants.PAIYANG_GOODS_ORDER_TIMES,interact.getId(),goods.getId(),date,userId))){
-				Integer mydayTimes = Integer.parseInt(redisUtil.get(String.format(RedisConstants.PAIYANG_GOODS_ORDER_TIMES,interact.getId(),goods.getId(),date,userId)));
+			key = String.format(RedisConstants.PAIYANG_GOODS_ORDER_TIMES,interact.getId(),goods.getId(),date,userId);
+			if(gameSessionRedisUtil.exists(key)){
+				Integer mydayTimes = Integer.parseInt(redisUtil.get(key));
 				if(mydayTimes >= userDayNumber){
 					canOrder = false;
 				}
@@ -822,6 +805,17 @@ public class Inno72AuthInfoServiceImpl implements Inno72AuthInfoService {
 				userSessionVo.setLogged(true);
 				gameSessionRedisUtil.setSession(userSessionVo.getSessionUuid(), JSON.toJSONString(userSessionVo));
 				logged = true;
+
+				boolean paiyangflag = userSessionVo.findPaiyangFlag();
+				if(paiyangflag && userSessionVo.getCanGame()){
+					//玩游戏次数加一
+					String key = null;
+					key = String.format(RedisConstants.PAIYANG_GAME_TIMES,userSessionVo.getActivityId(),userSessionVo.getUserId());
+					redisUtil.incr(key);
+					String date = DateUtil.getDateStringByYYYYMMDD();
+					key = String.format(RedisConstants.PAIYANG_DAY_GAME_TIMES,userSessionVo.getActivityId(),date,userSessionVo.getUserId());
+					redisUtil.incr(key);
+				}
 			}
 		} catch (Exception e) {
 			LOGGER.error(e.getMessage(), e);

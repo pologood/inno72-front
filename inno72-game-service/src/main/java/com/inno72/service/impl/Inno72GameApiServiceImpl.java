@@ -1579,25 +1579,13 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 			String date = DateUtil.getDateStringByYYYYMMDD();
 			//每个商品每个用户每天可派发数
 			String key = String.format(RedisConstants.PAIYANG_GOODS_ORDER_TIMES,userSessionVo.getActivityId(),userSessionVo.getGoodsId(),date,userSessionVo.getUserId());
-			if(redisUtil.exists(key)){
-				redisUtil.incr(key);
-			}else{
-				redisUtil.set(key,"1");
-			}
+			redisUtil.incr(key);
 			//用户获得商品次数
 			key = String.format(RedisConstants.PAIYANG_ORDER_TIMES,userSessionVo.getActivityId(),userSessionVo.getUserId());
-			if(redisUtil.exists(key)){
-				redisUtil.incr(key);
-			}else{
-				redisUtil.set(key,"1");
-			}
+			redisUtil.incr(key);
 			//此商品总掉货数量
 			key = String.format(RedisConstants.PAIYANG_MACHINE_GOODS,userSessionVo.getActivityId(),userSessionVo.getMachineId(),userSessionVo.getGoodsId());
-			if(redisUtil.exists(key)){
-				redisUtil.incr(key);
-			}else{
-				redisUtil.set(key,"1");
-			}
+			redisUtil.incr(key);
 		}
 
 		String failChannelIds = vo.getFailChannelIds();
@@ -1802,7 +1790,17 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 		userSessionVo.setMachineId(inno72Machine.getId());
 		userSessionVo.setLogged(false);
 
-		// 解析 ext
+        String rVoJson = redisUtil.get(CommonBean.REDIS_ACTIVITY_PLAN_CACHE_KEY + inno72Machine.getMachineCode());
+        LOGGER.debug("redis cache machine data =====> {}", rVoJson);
+        if (StringUtil.isNotEmpty(rVoJson)) {
+            Inno72MachineVo inno72MachineVo = JSON.parseObject(rVoJson, Inno72MachineVo.class);
+            userSessionVo.setInno72MachineVo(inno72MachineVo);
+            LOGGER.debug("parse rVoJson string finish --> {}", inno72MachineVo);
+        }else{
+            LOGGER.error("从redis读取机器信息错误key={}",CommonBean.REDIS_ACTIVITY_PLAN_CACHE_KEY + inno72Machine.getMachineCode());
+        }
+
+        // 解析 ext
 		this.analysisExt(userSessionVo, ext);
 
 		gameSessionRedisUtil.setSession(sessionUuid, JsonUtil.toJson(userSessionVo));
