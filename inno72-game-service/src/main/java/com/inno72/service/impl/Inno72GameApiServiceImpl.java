@@ -1425,6 +1425,13 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 
 			inno72Order.setMerchantId(inno72Goods.getSellerId());
 
+			/* 埋点 */
+			CommonBean.logger(
+					CommonBean.POINT_TYPE_GOODS_ORDER,
+					inno72Machine.getMachineCode(),
+					"用户[" + userChannel.getUserNick() + "], 生成["+ goodsName + "]订单，订单号[" + orderNum +"].",
+					activityPlanId+"|"+inno72Goods.getCode());
+
 		} else {
 			Inno72Coupon inno72Coupon = inno72CouponMapper.selectByPrimaryKey(goodsCode);
 			goodsName = inno72Coupon.getName();
@@ -1437,11 +1444,14 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 			inno72Order.setShopsName(inno72Shops.getShopName());
 
 			inno72Order.setMerchantId(inno72Shops.getSellerId());
-		}
-		/* 埋点 */
-		CommonBean.logger(CommonBean.POINT_TYPE_ORDER, inno72Machine.getMachineCode(),
-				"用户[" + userChannel.getUserNick() + "]生成["+ goodsName + "]订单，订单号[" + orderNum +"].");
 
+			/* 埋点 */
+			CommonBean.logger(
+					CommonBean.POINT_TYPE_COUPON_ORDER,
+					inno72Machine.getMachineCode(),
+					"用户[" + userChannel.getUserNick() + "]生成["+ goodsName + "]订单，订单号[" + orderNum +"].",
+					activityPlanId+"|"+inno72Coupon.getCode());
+		}
 		orderGoods.setOrderNum(inno72Order.getOrderNum());
 		orderGoods.setStatus(Inno72Order.INNO72ORDER_GOODSSTATUS.WAIT.getKey());
 		inno72OrderMapper.insert(inno72Order);
