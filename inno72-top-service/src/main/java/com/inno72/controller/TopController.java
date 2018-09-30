@@ -230,6 +230,14 @@ public class TopController {
 			@PathVariable("sessionUuid") String sessionUuid, String code, @PathVariable("env") String env)
 			throws Exception {
 		LOGGER.info("code is {}, sessionUuid is {}, env is {}", code, sessionUuid, env);
+
+		// 解决老接口继续被调用，报404问题
+		if (!StringUtils.isEmpty(sessionUuid) && sessionUuid.length() == 32) {
+			String hrErrUrl = this.getH5ErrUrl(env, "0");
+			LOGGER.info("topIndex hrErrUrl is {}" , hrErrUrl);
+			response.sendRedirect(hrErrUrl);
+		}
+
 		String playCode = "";
 		String data;
 		String qrStatus = "";
