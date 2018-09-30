@@ -532,7 +532,8 @@ public class Inno72AuthInfoServiceImpl implements Inno72AuthInfoService {
 
 		// 检查二维码是否可以重复扫
 		String qrStatus = this.checkQrCode(sessionUuid);
-		Inno72Goods goods = inno72GoodsMapper.selectByCode(sessionVo.getGoodsCode());
+		Inno72Goods goods = inno72GoodsMapper.selectByPrimaryKey(sessionVo.getGoodsId());
+//		Inno72Goods goods = inno72GoodsMapper.selectByCode(sessionVo.getGoodsCode());
 		String sellerId = goods.getSellerId();
 		Inno72Interact interact = inno72InteractService.findById(sessionVo.getInno72MachineVo().getActivityId());
 		playCode = interact.getPlanCode();
