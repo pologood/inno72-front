@@ -643,10 +643,12 @@ public class Inno72AuthInfoServiceImpl implements Inno72AuthInfoService {
 		sessionVo.setCountGoods(goodsCount>0);
 		sessionVo.setChannelId(channelId);
 		sessionVo.setActivityId(interact.getId());
-
-		List<GoodsVo> list = loadGameInfo(mid);
-		LOGGER.info("loadGameInfo is {} ", JsonUtil.toJson(list));
-		sessionVo.setGoodsList(list);
+		/**
+		 * 派样 goodsList没用
+		 */
+//		List<GoodsVo> list = loadGameInfo(mid);
+//		LOGGER.info("loadGameInfo is {} ", JsonUtil.toJson(list));
+//		sessionVo.setGoodsList(list);
 
 
 		//插入gameLife表
