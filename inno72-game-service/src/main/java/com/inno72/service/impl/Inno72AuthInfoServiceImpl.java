@@ -403,6 +403,7 @@ public class Inno72AuthInfoServiceImpl implements Inno72AuthInfoService {
 
 		// 检查当前机器下当前排期是否有商品
 		boolean hasGoods = this.checkhasGoodsInMachine(inno72ActivityPlan.getId(), inno72Machine.getId(), inno72Activity.getType(), sessionVo);
+		LOGGER.info("hasGoods is {}", hasGoods);
 
 //		UserSessionVo sessionVo = new UserSessionVo(mid, nickName, userId, accessToken, gameId, sessionUuid,
 //				inno72ActivityPlan.getId());
