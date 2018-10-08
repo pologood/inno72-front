@@ -685,7 +685,7 @@ public class Inno72AuthInfoServiceImpl implements Inno72AuthInfoService {
 				"用户" + nickName + "，登录机器 ["+inno72Machine.getMachineCode()+"], 当前活动 ["+ interact.getName() +"]",
 				interact.getId()+"|"+userId);
 
-		return Results.success(JSONObject.toJSONString(resultMap));
+		return Results.success(resultMap);
 	}
 
 	/**
