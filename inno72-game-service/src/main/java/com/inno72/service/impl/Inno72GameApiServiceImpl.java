@@ -696,7 +696,7 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 						return Results.failure("讲真的。配置商品..它不见了。。。!");
 					}
 					String code = inno72Goods.getCode();
-					Result<Object> orderResult = this.sendOrder(userSessionVo, code);
+					Result<Object> orderResult = this.sendOrder(userSessionVo, code,prizeId);
 					orderCode = orderResult.getCode();
 					if (orderResult.getCode() == Result.SUCCESS) {
 						Map map = (Map)orderResult.getData();
@@ -756,7 +756,7 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 				return Results.failure("讲真的。配置商品..它不见了。。。!");
 			}
 			String code = inno72Goods.getCode();
-			Result<Object> orderResult = this.sendOrder(userSessionVo, code);
+			Result<Object> orderResult = this.sendOrder(userSessionVo, code,goodsId);
 			orderCode = orderResult.getCode();
 			if (orderResult.getCode() == Result.SUCCESS) {
 				Map map = (Map)orderResult.getData();
@@ -965,7 +965,7 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 						return Results.failure("讲真的。配置商品..它不见了。。。!");
 					}
 					String code = inno72Goods.getCode();
-					Result<Object> orderResult = this.sendOrder(userSessionVo, code);
+					Result<Object> orderResult = this.sendOrder(userSessionVo, code,prizeId);
 
 					resultGoodsId.add(result.getPrizeId());
 
@@ -1148,7 +1148,7 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 						return Results.failure("讲真的。配置商品..它不见了。。。!");
 					}
 					String code = inno72Goods.getCode();
-					Result<Object> orderResult = this.sendOrder(userSessionVo, code);
+					Result<Object> orderResult = this.sendOrder(userSessionVo, code,prizeId);
 
 					resultGoodsId.add(result.getPrizeId());
 
@@ -1255,7 +1255,7 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 	 * @param itemId
 	 * @return
 	 */
-	private Result<Object> sendOrder(UserSessionVo userSessionVo, String itemId) {
+	private Result<Object> sendOrder(UserSessionVo userSessionVo, String itemId,String goodsId) {
 
 		String channelId = userSessionVo.getChannelId();
 		String machineCode = userSessionVo.getMachineCode();
@@ -1275,7 +1275,7 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 		String inno72OrderId = null;
 		if(paiyangflag){
 			// 下单 inno72_Order TODO 商品下单 itemId 对应的类型？
-			inno72OrderId = genPaiyangInno72Order(userSessionVo.getCanOrder(),channelId, activityPlanId, machineId, itemId, userSessionVo.getUserId(),
+			inno72OrderId = genPaiyangInno72Order(userSessionVo.getCanOrder(),channelId, activityPlanId, machineId, goodsId, userSessionVo.getUserId(),
 					Inno72Order.INNO72ORDER_GOODSTYPE.PRODUCT);
 		}else{
 			// 下单 inno72_Order TODO 商品下单 itemId 对应的类型？
@@ -1358,7 +1358,7 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 		return Results.success(map);
 	}
 
-	private String genPaiyangInno72Order(boolean canOrder ,String channelId, String activityPlanId, String machineId, String goodsCode, String channelUserKey, Inno72Order.INNO72ORDER_GOODSTYPE product) {
+	private String genPaiyangInno72Order(boolean canOrder ,String channelId, String activityPlanId, String machineId, String goodsId, String channelUserKey, Inno72Order.INNO72ORDER_GOODSTYPE product) {
 		Map<String, String> paramsChannel = new HashMap<>();
 		paramsChannel.put("channelId", channelId);
 		paramsChannel.put("channelUserKey", channelUserKey);
@@ -1412,7 +1412,7 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 
 		String goodsName = "";
 		if (product.getKey().equals(Inno72Order.INNO72ORDER_GOODSTYPE.PRODUCT.getKey())) {
-			Inno72Goods inno72Goods = inno72GoodsMapper.selectByCode(goodsCode);
+			Inno72Goods inno72Goods = inno72GoodsMapper.selectByPrimaryKey(goodsId);
 			goodsName = inno72Goods.getName();
 			orderGoods.setGoodsCode(inno72Goods.getCode());
 			orderGoods.setGoodsId(inno72Goods.getId());
@@ -1433,7 +1433,7 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 					activityPlanId+"|"+inno72Goods.getCode());
 
 		} else {
-			Inno72Coupon inno72Coupon = inno72CouponMapper.selectByPrimaryKey(goodsCode);
+			Inno72Coupon inno72Coupon = inno72CouponMapper.selectByPrimaryKey(goodsId);
 			goodsName = inno72Coupon.getName();
 			orderGoods.setGoodsCode(inno72Coupon.getCode());
 			orderGoods.setGoodsId(inno72Coupon.getId());
