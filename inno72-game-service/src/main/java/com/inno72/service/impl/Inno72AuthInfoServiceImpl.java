@@ -536,7 +536,7 @@ public class Inno72AuthInfoServiceImpl implements Inno72AuthInfoService {
 		params.put("platId", platId);
 		params.put("machineId", machineId);
 		if (type == Inno72Activity.ActivityType.PAIYANG.getType()) {
-			params.put("goodsId", sessionVo.getSessionUuid() != null ? sessionVo.getSessionUuid() : "");
+			params.put("goodsId", sessionVo.getGoodsId() != null ? sessionVo.getGoodsId() : "");
 			countGoods = inno72ActivityPlanGameResultMapper.selectCountGoodsPy(params);
 		} else if (type == Inno72Activity.ActivityType.COMMON.getType()) {
 			countGoods = inno72ActivityPlanGameResultMapper.selectCountGoods(params);
