@@ -529,7 +529,7 @@ public class Inno72AuthInfoServiceImpl implements Inno72AuthInfoService {
 	 * @return
 	 */
 	private boolean checkhasGoodsInMachine(String platId, String machineId, int type, UserSessionVo sessionVo) {
-
+		LOGGER.info("checkhasGoodsInMachine type is {}", type);
 		List<Integer> countGoods = new ArrayList<>();
 
 		// 判断机器是否有商品
