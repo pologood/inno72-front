@@ -2641,10 +2641,4 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 		return Results.success();
 	}
 
-	public static void main(String[] args) {
-
-		String decrypt = AesUtils.decrypt("30d65d2701842075f573298a6e51df12");
-		System.out.println(decrypt);
-
-	}
 }
