@@ -1,5 +1,6 @@
 package com.inno72.controller;
 
+import com.inno72.util.FastJsonUtils;
 import com.taobao.api.ApiException;
 import com.taobao.api.DefaultTaobaoClient;
 import com.taobao.api.TaobaoClient;
@@ -17,37 +18,8 @@ public class TestController {
 
 	public static void main(String[] args) throws ApiException {
 
-		final String URL = "https://eco.taobao.com/router/rest";
-		final String APPKEY = "24952134";
-		final String SECRET = "67ee063609d7a0a11997168d70b370c0";
-
-		String sessionKey = "6102a29189bea6294fc5ef76a70842f709cdd154828dd64217101303";
-
-		TaobaoClient client = new DefaultTaobaoClient(URL, APPKEY, SECRET);
-
-
-		CrmMemberJoinurlGetRequest req = new CrmMemberJoinurlGetRequest();
-		req.setCallbackUrl("http://inno72top.ews.m.jaeapp.com/test");
-		req.setExtraInfo("{\"source\":\"paiyangji\",\"deviceId\":\"testId\",\"itemId\":576069787121}");
-		CrmMemberJoinurlGetResponse rsp = client.execute(req, sessionKey);
-		System.out.println(rsp.getBody());
-
-//		CrmMemberIdentityGetRequest req = new CrmMemberIdentityGetRequest();
-//		req.setExtraInfo("{\"source\":\"paiyangji\",\"deviceId\":\"testId\",\"itemId\":565058963761}");
-//		req.setMixNick(Escape.unescape("d01UrP%2BdYSsphXW%2BcTqLpwRmP%2FrLfMf5rcnjO9hg9D8BB8%3D"));
-//		CrmMemberIdentityGetResponse rsp = client.execute(req, sessionKey);
-//		System.out.println(rsp.getBody());
-
-		//		TaobaoClient client = new DefaultTaobaoClient(URL, APPKEY, SECRET);
-//		TopAuthTokenCreateRequest req = new TopAuthTokenCreateRequest();
-//		req.setCode("dzZ6GSpiKYkP41dD9F73Vqoi1418779");
-//		TopAuthTokenCreateResponse rsp;
-//		try {
-//			rsp = client.execute(req);
-//			String result = rsp.getBody();
-//			System.out.println(result);
-//		} catch (ApiException e) {
-//			e.printStackTrace();
-//		}
+		String test = "{\"code\":0,\"data\":\"{\\\"traceId\\\":\\\"6145709cb9e449f7bfe1d38d1c559dba\\\",\\\"playCode\\\":\\\"p1\\\",\\\"machineCode\\\":\\\"18199586\\\",\\\"sellerId\\\":\\\"1589666223\\\",\\\"sessionKey\\\":\\\"6102622e6fb5de17af88c7be97eb0b10b488a33bbf793431589666223\\\",\\\"goodsCode\\\":\\\"576283105389\\\",\\\"activityType\\\":1,\\\"qrStatus\\\":\\\"0\\\",\\\"isVip\\\":\\\"1\\\"}\",\"msg\":\"成功\"}";
+		String traceId = FastJsonUtils.getString(test, "traceId");
+		System.out.println(traceId);
 	}
 }

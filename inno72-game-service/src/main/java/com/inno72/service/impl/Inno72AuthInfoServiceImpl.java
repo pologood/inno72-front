@@ -4,6 +4,7 @@ import java.io.File;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Calendar;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -433,8 +434,11 @@ public class Inno72AuthInfoServiceImpl implements Inno72AuthInfoService {
 
 		}
 
+		this.checkGoodsId(sessionVo);
+
 		// 检查当前机器下当前排期是否有商品
-		boolean hasGoods = this.checkhasGoodsInMachine(inno72ActivityPlan.getId(), inno72Machine.getId());
+		boolean hasGoods = this.checkhasGoodsInMachine(inno72ActivityPlan.getId(), inno72Machine.getId(), inno72Activity.getType(), sessionVo);
+		LOGGER.info("hasGoods is {}", hasGoods);
 
 //		UserSessionVo sessionVo = new UserSessionVo(mid, nickName, userId, accessToken, gameId, sessionUuid,
 //				inno72ActivityPlan.getId());
@@ -478,7 +482,6 @@ public class Inno72AuthInfoServiceImpl implements Inno72AuthInfoService {
 		resultMap.put("sellerId", inno72Merchant.getMerchantCode());
 
 		this.dealIsVip(resultMap, sessionVo);
-		this.checkGoodsId(sessionVo);
 
 		resultMap.put("activityType", activityType);
 		resultMap.put("goodsCode", sessionVo.getGoodsCode() != null ? sessionVo.getGoodsCode() : "");
@@ -752,12 +755,21 @@ public class Inno72AuthInfoServiceImpl implements Inno72AuthInfoService {
 	 * 检查当前机器下当前排期是否有商品
 	 * @return
 	 */
-	private boolean checkhasGoodsInMachine(String platId, String machineId) {
+	private boolean checkhasGoodsInMachine(String platId, String machineId, int type, UserSessionVo sessionVo) {
+		LOGGER.info("checkhasGoodsInMachine type is {}", type);
+		List<Integer> countGoods = new ArrayList<>();
+
 		// 判断机器是否有商品
 		Map<String, String> params = new HashMap<>(2);
 		params.put("platId", platId);
 		params.put("machineId", machineId);
-		List<Integer> countGoods = inno72ActivityPlanGameResultMapper.selectCountGoods(params);
+		if (type == Inno72Activity.ActivityType.PAIYANG.getType()) {
+			params.put("goodsId", sessionVo.getGoodsId() != null ? sessionVo.getGoodsId() : "");
+			countGoods = inno72ActivityPlanGameResultMapper.selectCountGoodsPy(params);
+		} else if (type == Inno72Activity.ActivityType.COMMON.getType()) {
+			countGoods = inno72ActivityPlanGameResultMapper.selectCountGoods(params);
+		}
+
 		boolean hasGoods = true;
 		if (countGoods.size() == 0) {
 			hasGoods = false;
