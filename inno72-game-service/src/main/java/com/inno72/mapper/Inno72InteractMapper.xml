@@ -8,7 +8,7 @@
     <id column="id" jdbcType="VARCHAR" property="id" />
     <result column="name" jdbcType="VARCHAR" property="name" />
     <result column="game_id" jdbcType="VARCHAR" property="gameId" />
-    <result column="day" jdbcType="INTEGER" property="day" />
+    <result column="day" jdbcType="VARCHAR" property="day" />
     <result column="manager" jdbcType="VARCHAR" property="manager" />
     <result column="status" jdbcType="INTEGER" property="status" />
     <result column="times" jdbcType="INTEGER" property="times" />
