@@ -13,7 +13,12 @@
     <description>game-front</description>
 
     <dependencies>
-
+        <!--淘宝派样-->
+        <dependency>
+            <groupId>taobao</groupId>
+            <artifactId>taobao-sdk-paiyang</artifactId>
+            <version>1.0.0</version>
+        </dependency>
         <!-- frame -->
         <dependency>
             <groupId>com.inno72</groupId>
