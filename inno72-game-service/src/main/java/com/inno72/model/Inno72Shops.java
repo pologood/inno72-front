@@ -77,6 +77,12 @@ public class Inno72Shops {
 	private Date updateTime;
 
 	/**
+	 * 新零售sessionkey
+	 */
+	@Column(name = "sell_session_key")
+	private String sellSessionKey;
+
+	/**
 	 * 获取店铺ID
 	 *
 	 * @return id - 店铺ID
@@ -262,5 +268,13 @@ public class Inno72Shops {
 
 	public void setSessionKey(String sessionKey) {
 		this.sessionKey = sessionKey;
+	}
+
+	public String getSellerSessionKey() {
+		return sellSessionKey;
+	}
+
+	public void setSellSessionKey(String sellSessionKey) {
+		this.sellSessionKey = sellSessionKey;
 	}
 }

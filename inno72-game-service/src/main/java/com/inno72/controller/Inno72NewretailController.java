@@ -3,13 +3,20 @@ package com.inno72.controller;
 import com.inno72.common.Inno72BizException;
 import com.inno72.common.Result;
 import com.inno72.common.Results;
+import com.inno72.common.json.JsonUtil;
 import com.inno72.service.Inno72NewretailService;
+import com.inno72.vo.DeviceParamVo;
+import com.inno72.vo.MachineVo;
+import com.taobao.api.ApiException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
+
+import java.util.List;
 
 @RestController
 public class Inno72NewretailController {
@@ -33,6 +40,39 @@ public class Inno72NewretailController {
         }
     }
 
+    @RequestMapping(value = "/saveMachine",method = RequestMethod.POST)
+    public Result<Object> saveMachine(@RequestBody DeviceParamVo vo) {
+        try{
+            service.saveMachine(vo);
+            return Results.success();
+        }catch(Inno72BizException e){
+            return Results.failure(e.getMessage());
+        }catch(Exception e){
+            LOGGER.error("saveMachine",e);
+            return Results.failure("系统异常");
+        }
+    }
+    /**
+     * 新增机器
+     * @param sessionKey
+     * @param deviceName 设备名称
+     * @param storeId 门店id
+     * @param osType 操作系统类型：
+     *               WINDOWS("WINDOWS", "WINDOWS"),
+     *               ANDROID("ANDROID", "ANDROID"),
+     *               IOS("IOS", "IOS"), LINUX("LINUX", "LINUX"), OTHER("OTHER", "OTHER");
+     * @param deviceType 设备类型：
+     *                   CAMERA("CAMERA", "客流摄像头"), SHELF("SHELF", "云货架"),
+     *                   MAKEUP_MIRROR("MAKEUP_MIRROR", "试妆镜"), FITTING_MIRROR("FITTING_MIRROR", "试衣镜"),
+     *                   VENDOR("VENDOR", "售货机"), WIFI("WIFI","WIFI探针"), SAMPLE_MACHINE("SAMPLE_MACHINE","派样机"),
+     *                   DOLL_MACHINE("DOLL_MACHINE", "娃娃机"), INTERACTIVE_PHOTO("INTERACTIVE_PHOTO", "互动拍照"),
+     *                   INTERACTIVE_GAME("INTERACTIVE_GAME", "互动游戏"), USHER_SCREEN("USHER_SCREEN", "智慧迎宾屏"),
+     *                   DRESSING("DRESSING", "闪电换装"), MAGIC_MIRROR("MAGIC_MIRROR", "百搭魔镜"),
+     *                   SHOES_FITTING_MIRROR("SHOES_FITTING_MIRROR", "试鞋镜"), SKIN_DETECTION("SKIN_DETECTION", "肌肤测试仪"),
+     *                   FOOT_DETECTION("FOOT_DETECTION", "测脚仪"),
+     *                   RFID_SENSOR("RFID_SENSOR", "RFID"),touch_machine("touch_machine","导购一体屏")
+     * @param outerCode  商家自定义设备编码
+     */
     @RequestMapping(value = "/saveDevice",method = RequestMethod.POST)
     public Result<Object> saveDevice(String sessionKey, String deviceName, Long storeId, String osType, String deviceType, String outerCode) {
         try{

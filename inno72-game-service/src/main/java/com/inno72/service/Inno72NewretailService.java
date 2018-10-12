@@ -1,5 +1,6 @@
 package com.inno72.service;
 
+import com.inno72.vo.DeviceParamVo;
 import com.taobao.api.ApiException;
 
 /**
@@ -16,4 +17,10 @@ public interface Inno72NewretailService {
 
     void deviceVendorFeedback(String sessionKey, String tradeNo, String tradeType, String deviceCode, String action
             , String itemId, String couponId, String userNick, String outerBizId, String opTime, String outerUser) throws ApiException;
+
+    /**
+     * 新增机器
+     * @param vo
+     */
+    void saveMachine(DeviceParamVo vo) throws Exception;
 }

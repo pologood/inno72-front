@@ -95,4 +95,5 @@ public class Inno72InteractShops implements Serializable {
     public void setIsVip(Integer isVip) {
         this.isVip = isVip;
     }
+
 }

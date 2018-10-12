@@ -1,8 +1,13 @@
 package com.inno72.service.impl;
 
 import com.inno72.common.Inno72BizException;
+import com.inno72.common.json.JsonUtil;
 import com.inno72.common.util.FastJsonUtils;
+import com.inno72.model.Inno72MachineDevice;
+import com.inno72.service.Inno72MachineDeviceService;
 import com.inno72.service.Inno72NewretailService;
+import com.inno72.vo.DeviceParamVo;
+import com.inno72.vo.DeviceVo;
 import com.taobao.api.ApiException;
 import com.taobao.api.DefaultTaobaoClient;
 import com.taobao.api.TaobaoClient;
@@ -17,6 +22,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
+import java.util.Date;
 import java.util.List;
 
 @Service
@@ -24,6 +30,10 @@ import java.util.List;
 public class Inno72NewretailServiceImpl implements Inno72NewretailService {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(Inno72NewretailServiceImpl.class);
+
+    @Autowired
+    private Inno72MachineDeviceService inno72MachineDeviceService;
+
     @Autowired
     private TaobaoClient client;
 //    public static void main(String[] args) throws Exception {
@@ -89,9 +99,9 @@ public class Inno72NewretailServiceImpl implements Inno72NewretailService {
         req.setOuterCode(outerCode);
         SmartstoreDeviceAddResponse rsp = client.execute(req, sessionKey);
         LOGGER.debug("saveDevice deviceName ={},storeId = {},osType = {},deviceType = {},outerCode = {},response = {}",deviceName,storeId,osType,deviceType,outerCode,rsp.getBody());
-        if(rsp.getErrorCode()!=null){
+        if(!StringUtils.isEmpty(rsp.getErrorCode())){
             LOGGER.error("saveDevice error deviceName ={},storeId = {},osType = {},deviceType = {},outerCode = {},response = {}",deviceName,storeId,osType,deviceType,outerCode,rsp.getBody());
-            throw new Inno72BizException("保存设备天猫返回错误："+rsp.getSubMessage());
+            throw new Inno72BizException("保存设备天猫返回错误："+rsp.getSubMsg());
         }else{
             return rsp.getDeviceCode();
         }
@@ -182,6 +192,38 @@ public class Inno72NewretailServiceImpl implements Inno72NewretailService {
         LOGGER.debug("deviceVendorFeedback tradeNo={},tradeType={},deviceCode={},action={}," +
                 "itemId={},couponId={},userNick={},outerBizId={},opTime={},outerUser={},response={}",
                 tradeNo,tradeType,deviceCode,action,itemId,couponId,userNick,outerBizId,opTime,outerUser,rsp.getBody());
+    }
+
+    @Override
+    public void saveMachine(DeviceParamVo vo) throws Exception {
+        LOGGER.debug("saveMachine param = {}",JsonUtil.toJson(vo));
+        //参数检查
+        checkDeviceParamVo(vo);
+        List<DeviceVo> list = vo.getList();
+        for(DeviceVo device:list){
+            //检查数据库是否添加过
+            Inno72MachineDevice inno72MachineDevice = inno72MachineDeviceService.findByMachineCode(device.getOuterCode());
+            //没有添加过
+            if(inno72MachineDevice == null){
+                //根据机器code查询storeId
+                Long storeId = findStores(vo.getSessionKey(),device.getStoreName());
+                //调用淘宝接口
+                String deviceCode = saveDevice(vo.getSessionKey(),device.getDeviceName(),storeId,"ANDROID","SAMPLE_MACHINE",device.getOuterCode());
+                //保存结果信息
+                inno72MachineDevice = new Inno72MachineDevice();
+                inno72MachineDevice.setCreateTime(new Date());
+                inno72MachineDevice.setDeviceCode(deviceCode);
+                inno72MachineDevice.setMachineCode(device.getOuterCode());
+                inno72MachineDevice.setStoreId(storeId);
+                inno72MachineDeviceService.save(inno72MachineDevice);
+            }
+        }
+    }
+
+    private void checkDeviceParamVo(DeviceParamVo vo) {
+        if(vo == null) throw new Inno72BizException("参数不能为空");
+        if(StringUtils.isEmpty(vo.getSessionKey())) throw new Inno72BizException("sessionKey不能为空");
+        if(vo.getList()==null || vo.getList().size()==0) throw new Inno72BizException("机器信息不能为空");
     }
 
     private static String unescape(String escapeStr) {
