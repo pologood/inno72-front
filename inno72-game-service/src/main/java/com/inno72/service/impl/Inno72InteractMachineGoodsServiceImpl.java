@@ -21,4 +21,12 @@ public class Inno72InteractMachineGoodsServiceImpl  extends AbstractService<Inno
         List<Inno72InteractMachineGoods> list = mapper.findMachineGoods(interactMachineId);
         return list;
     }
+
+    @Override
+    public List<Inno72InteractMachineGoods> findMachineGoodsByMachineAndGoodsId(String interactMachineId, String couponId) {
+        Inno72InteractMachineGoods param = new Inno72InteractMachineGoods();
+        param.setInteractMachineId(interactMachineId);
+        param.setGoodsId(couponId);
+        return mapper.select(param);
+    }
 }

@@ -19,12 +19,13 @@ import com.inno72.common.*;
 import com.inno72.common.util.*;
 import com.inno72.common.util.DateUtil;
 import com.inno72.model.*;
-import com.inno72.service.Inno72InteractGoodsService;
+import com.inno72.service.*;
 import com.inno72.vo.*;
 import com.inno72.vo.*;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
@@ -71,9 +72,6 @@ import com.inno72.mapper.Inno72SupplyChannelMapper;
 import com.inno72.oss.OSSUtil;
 import com.inno72.plugin.http.HttpClient;
 import com.inno72.redis.IRedisUtil;
-import com.inno72.service.Inno72GameApiService;
-import com.inno72.service.Inno72GameService;
-import com.inno72.service.Inno72TopService;
 import com.inno72.util.AlarmUtil;
 import com.inno72.vo.AlarmMessageBean;
 import com.inno72.vo.GoodsVo;
@@ -142,6 +140,12 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 	private AlarmUtil alarmUtil;
     @Resource
 	private Inno72InteractGoodsService inno72InteractGoodsService;
+
+	@Resource
+	private Inno72InteractMachineTimeService inno72InteractMachineTimeService;
+
+	@Resource
+	private Inno72InteractMachineGoodsService inno72InteractMachineGoodsService;
 
 	@Value("${machinecheckappbackend.uri}")
 	private String machinecheckappbackendUri;
@@ -770,11 +774,15 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
             List<Inno72Coupon> list = inno72CouponMapper.select(param);
             if(list!=null&&list.size()>0){
                 for(Inno72Coupon coupon:list){
-                    //下单优惠卷
-                    LOGGER.debug("下单优惠卷 id={}",coupon.getId());
-                    Result<Object> lottery = this.lottery(userSessionVo, vo.getUa(), vo.getUmid(), coupon.getId());
-                    LOGGER.debug("抽取奖券 结果 ==> {}", JSON.toJSONString(lottery));
-                    lotteryCode = lottery.getCode();
+                	//查看有没有配置
+					boolean settingFlag = findPaiyangCouponSettingFlag(userSessionVo.getInno72MachineVo().getMachineCode(),coupon.getId());
+					if(settingFlag){
+						//下单优惠卷
+						LOGGER.debug("下单优惠卷 id={}",coupon.getId());
+						Result<Object> lottery = this.lottery(userSessionVo, vo.getUa(), vo.getUmid(), coupon.getId());
+						LOGGER.debug("抽取奖券 结果 ==> {}", JSON.toJSONString(lottery));
+						lotteryCode = lottery.getCode();
+					}
                 }
             }
 		}else if(Inno72InteractGoods.TYPE_COUPON == prizeType){
@@ -800,6 +808,23 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 
 		LOGGER.info("standardOrder is {}", JsonUtil.toJson(result));
 		return Results.success(result);
+	}
+
+	/**
+	 * 查找派样优惠卷有没有配置
+	 * @param machineCode
+	 * @param couponId
+	 * @return
+	 */
+	private boolean findPaiyangCouponSettingFlag(String machineCode, String couponId) {
+		//查询该机器配置的商品信息（当前时间在起止时间内的）
+		Inno72InteractMachine interactMachine = inno72InteractMachineTimeService.findActiveInteractMachine(machineCode);
+		if(interactMachine == null){
+			LOGGER.info("getSampling,此机器无活动配置machineCode={}",machineCode);
+			return false;
+		}
+		List<Inno72InteractMachineGoods> goodsList = inno72InteractMachineGoodsService.findMachineGoodsByMachineAndGoodsId(interactMachine.getId(),couponId);
+		return goodsList!=null&&goodsList.size()>0;
 	}
 
 	/**
