@@ -15,4 +15,6 @@ public interface Inno72InteractMachineGoodsService extends Service<Inno72Interac
      * @return
      */
     List<Inno72InteractMachineGoods> findMachineGoods(String interactMachineId);
+
+    List<Inno72InteractMachineGoods> findMachineGoodsByMachineAndGoodsId(String interactMachineId, String couponId);
 }
