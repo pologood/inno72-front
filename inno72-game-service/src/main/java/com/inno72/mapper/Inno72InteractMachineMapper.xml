@@ -13,9 +13,10 @@
 
   <select id="findActiveInteractMachine" resultMap="BaseResultMap">
     select im.* from inno72_interact_machine im
+      join inno72_interact interact on im.interact_id = interact.id
       join inno72_interact_machine_time imt
       on im.id=imt.interact_machine_id
-      where im.machine_code= #{machineCode}  and
+      where interact.`status` = 1 and im.machine_code= #{machineCode}  and
       CURRENT_TIMESTAMP() BETWEEN imt.start_time and imt.end_time
   </select>
 </mapper>

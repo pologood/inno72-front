@@ -137,7 +137,7 @@ public class Inno72PaiYangServiceImpl implements Inno72PaiYangService {
             }
             list.add(sampLingGoods);
         }
-        if(list.size() <= goodsSize) return Results.success(list);
+        if(list.size() > goodsSize) return Results.success(list);
         List<Inno72SamplingGoods> retList = new ArrayList<Inno72SamplingGoods>(goodsSize);
         for(Inno72SamplingGoods inno72SamplingGoods:list){
             if(inno72SamplingGoods.getMachineSurplusGoodsNum()> 0){
