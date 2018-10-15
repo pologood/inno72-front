@@ -6,6 +6,7 @@ import com.inno72.common.Results;
 import com.inno72.common.json.JsonUtil;
 import com.inno72.service.Inno72NewretailService;
 import com.inno72.vo.DeviceParamVo;
+import com.inno72.vo.DeviceVo;
 import com.inno72.vo.MachineVo;
 import com.taobao.api.ApiException;
 import org.slf4j.Logger;
@@ -41,7 +42,7 @@ public class Inno72NewretailController {
     }
 
     @RequestMapping(value = "/saveMachine",method = RequestMethod.POST)
-    public Result<Object> saveMachine(@RequestBody DeviceParamVo vo) {
+    public Result<Object> saveMachine(@RequestBody List<DeviceVo> vo) {
         try{
             service.saveMachine(vo);
             return Results.success();

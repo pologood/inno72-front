@@ -10,5 +10,7 @@
     <result column="device_code" jdbcType="VARCHAR" property="deviceCode" />
     <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
     <result column="store_id" jdbcType="BIGINT" property="storeId" />
+    <result column="seller_id" jdbcType="VARCHAR" property="sellerId" />
+
   </resultMap>
 </mapper>

@@ -15,6 +15,10 @@ public class DeviceVo implements Serializable {
      * 设备编码
      */
     private String outerCode;
+    /**
+     * 商品id
+     */
+    private String goodsId;
 
     private String storeName;
 
@@ -40,5 +44,13 @@ public class DeviceVo implements Serializable {
 
     public void setStoreName(String storeName) {
         this.storeName = storeName;
+    }
+
+    public String getGoodsId() {
+        return goodsId;
+    }
+
+    public void setGoodsId(String goodsId) {
+        this.goodsId = goodsId;
     }
 }

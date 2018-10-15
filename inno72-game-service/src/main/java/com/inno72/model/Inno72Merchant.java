@@ -75,6 +75,12 @@ public class Inno72Merchant {
 	private LocalDateTime updateTime;
 
 	/**
+	 * 新零售sessionkey
+	 */
+	@Column(name = "sell_session_key")
+	private String sellSessionKey;
+
+	/**
 	 * @return id
 	 */
 	public String getId() {
@@ -266,5 +272,13 @@ public class Inno72Merchant {
 	 */
 	public void setUpdateTime(LocalDateTime updateTime) {
 		this.updateTime = updateTime;
+	}
+
+	public String getSellerSessionKey() {
+		return sellSessionKey;
+	}
+
+	public void setSellSessionKey(String sellSessionKey) {
+		this.sellSessionKey = sellSessionKey;
 	}
 }

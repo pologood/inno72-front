@@ -19,4 +19,12 @@ public class Inno72MachineDeviceServiceImpl extends AbstractService<Inno72Machin
         param.setMachineCode(machineCode);
         return mapper.selectOne(param);
     }
+
+    @Override
+    public Inno72MachineDevice findByMachineCodeAndSellerId(String machineCode, String sellerId) {
+        Inno72MachineDevice param = new Inno72MachineDevice();
+        param.setMachineCode(machineCode);
+        param.setSellerId(sellerId);
+        return mapper.selectOne(param);
+    }
 }

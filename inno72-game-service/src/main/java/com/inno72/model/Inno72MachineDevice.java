@@ -27,6 +27,11 @@ public class Inno72MachineDevice {
      */
     @Column(name = "store_id")
     private Long storeId;
+    /**
+     * 商户id
+     */
+    @Column(name = "seller_id")
+    private String sellerId;
 
     /**
      * @return id
@@ -104,5 +109,13 @@ public class Inno72MachineDevice {
      */
     public void setStoreId(Long storeId) {
         this.storeId = storeId;
+    }
+
+    public String getSellerId() {
+        return sellerId;
+    }
+
+    public void setSellerId(String sellerId) {
+        this.sellerId = sellerId;
     }
 }

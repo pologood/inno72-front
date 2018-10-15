@@ -3,7 +3,11 @@ package com.inno72.service.impl;
 import com.inno72.common.Inno72BizException;
 import com.inno72.common.json.JsonUtil;
 import com.inno72.common.util.FastJsonUtils;
+import com.inno72.mapper.Inno72GoodsMapper;
+import com.inno72.mapper.Inno72MerchantMapper;
+import com.inno72.model.Inno72Goods;
 import com.inno72.model.Inno72MachineDevice;
+import com.inno72.model.Inno72Merchant;
 import com.inno72.service.Inno72MachineDeviceService;
 import com.inno72.service.Inno72NewretailService;
 import com.inno72.vo.DeviceParamVo;
@@ -33,6 +37,12 @@ public class Inno72NewretailServiceImpl implements Inno72NewretailService {
 
     @Autowired
     private Inno72MachineDeviceService inno72MachineDeviceService;
+
+    @Autowired
+    private Inno72GoodsMapper inno72GoodsMapper;
+
+    @Autowired
+    private Inno72MerchantMapper inno72MerchantMapper;
 
     @Autowired
     private TaobaoClient client;
@@ -195,35 +205,46 @@ public class Inno72NewretailServiceImpl implements Inno72NewretailService {
     }
 
     @Override
-    public void saveMachine(DeviceParamVo vo) throws Exception {
-        LOGGER.debug("saveMachine param = {}",JsonUtil.toJson(vo));
-        //参数检查
-        checkDeviceParamVo(vo);
-        List<DeviceVo> list = vo.getList();
-        for(DeviceVo device:list){
-            //检查数据库是否添加过
-            Inno72MachineDevice inno72MachineDevice = inno72MachineDeviceService.findByMachineCode(device.getOuterCode());
-            //没有添加过
-            if(inno72MachineDevice == null){
-                //根据机器code查询storeId
-                Long storeId = findStores(vo.getSessionKey(),device.getStoreName());
-                //调用淘宝接口
-                String deviceCode = saveDevice(vo.getSessionKey(),device.getDeviceName(),storeId,"ANDROID","SAMPLE_MACHINE",device.getOuterCode());
-                //保存结果信息
-                inno72MachineDevice = new Inno72MachineDevice();
-                inno72MachineDevice.setCreateTime(new Date());
-                inno72MachineDevice.setDeviceCode(deviceCode);
-                inno72MachineDevice.setMachineCode(device.getOuterCode());
-                inno72MachineDevice.setStoreId(storeId);
-                inno72MachineDeviceService.save(inno72MachineDevice);
+    public void saveMachine(List<DeviceVo> list) throws Exception {
+        LOGGER.debug("saveMachine param = {}",JsonUtil.toJson(list));
+        if(list!= null && list.size()>0){
+            for(DeviceVo deviceVo:list){
+                checkDeviceParamVo(deviceVo);
+
+                //获取sessionKey
+                Inno72Goods goods = inno72GoodsMapper.selectByPrimaryKey(deviceVo.getGoodsId());
+                Inno72Merchant merchant = inno72MerchantMapper.selectByPrimaryKey(goods.getSellerId());
+                String sessionKey = merchant.getSellerSessionKey();
+                LOGGER.debug("saveMachine.SellerId = {},saveMachine.sessionKey = {}",goods.getSellerId(),sessionKey);
+
+                //检查数据库是否添加过
+                Inno72MachineDevice inno72MachineDevice = inno72MachineDeviceService.findByMachineCodeAndSellerId(deviceVo.getOuterCode(),goods.getSellerId());
+                if(StringUtils.isEmpty(deviceVo.getDeviceName())){
+                    deviceVo.setDeviceName(deviceVo.getOuterCode()+"_"+goods.getSellerId());
+                }
+                //没有添加过
+                if(inno72MachineDevice == null){
+                    //根据机器code查询storeId
+                    Long storeId = findStores(sessionKey,deviceVo.getStoreName());
+                    //调用淘宝接口
+                    String deviceCode = saveDevice(sessionKey,deviceVo.getDeviceName(),storeId,"ANDROID","SAMPLE_MACHINE",deviceVo.getOuterCode());
+                    //保存结果信息
+                    inno72MachineDevice = new Inno72MachineDevice();
+                    inno72MachineDevice.setCreateTime(new Date());
+                    inno72MachineDevice.setDeviceCode(deviceCode);
+                    inno72MachineDevice.setMachineCode(deviceVo.getOuterCode());
+                    inno72MachineDevice.setStoreId(storeId);
+                    inno72MachineDevice.setSellerId(goods.getSellerId());
+                    inno72MachineDeviceService.save(inno72MachineDevice);
+                }
             }
         }
     }
 
-    private void checkDeviceParamVo(DeviceParamVo vo) {
+    private void checkDeviceParamVo(DeviceVo vo) {
         if(vo == null) throw new Inno72BizException("参数不能为空");
-        if(StringUtils.isEmpty(vo.getSessionKey())) throw new Inno72BizException("sessionKey不能为空");
-        if(vo.getList()==null || vo.getList().size()==0) throw new Inno72BizException("机器信息不能为空");
+        if(StringUtils.isEmpty(vo.getGoodsId())) throw new Inno72BizException("goodsId不能为空");
+        if(StringUtils.isEmpty(vo.getOuterCode())) throw new Inno72BizException("机器编码不能为空");
     }
 
     private static String unescape(String escapeStr) {

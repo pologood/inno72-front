@@ -1,7 +1,10 @@
 package com.inno72.service;
 
 import com.inno72.vo.DeviceParamVo;
+import com.inno72.vo.DeviceVo;
 import com.taobao.api.ApiException;
+
+import java.util.List;
 
 /**
  * 新零售服务
@@ -20,7 +23,6 @@ public interface Inno72NewretailService {
 
     /**
      * 新增机器
-     * @param vo
      */
-    void saveMachine(DeviceParamVo vo) throws Exception;
+    void saveMachine(List<DeviceVo> list) throws Exception;
 }
