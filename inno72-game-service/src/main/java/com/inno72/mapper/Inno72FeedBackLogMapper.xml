@@ -9,5 +9,6 @@
     <result column="merchant_name" jdbcType="VARCHAR" property="merchantName" />
     <result column="goods_id" jdbcType="VARCHAR" property="goodsId" />
     <result column="order_id" jdbcType="VARCHAR" property="orderId" />
+    <result column="response_body" jdbcType="LONGVARCHAR" property="responseBody" />
   </resultMap>
 </mapper>

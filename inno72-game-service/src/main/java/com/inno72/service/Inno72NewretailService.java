@@ -18,8 +18,11 @@ public interface Inno72NewretailService {
 
     String getStoreMemberurl(String sessionKey, String deviceCode) throws ApiException;
 
-    void deviceVendorFeedback(String sessionKey, String tradeNo, String tradeType, String deviceCode, String action
+    String deviceVendorFeedback(String sessionKey, String tradeNo, String tradeType, String deviceCode, String action
             , String itemId, String couponId, String userNick, String outerBizId, String opTime, String outerUser) throws ApiException;
+
+    String deviceVendorFeedback(String sessionKey, String tradeNo, String tradeType, String deviceCode, String action
+            , String itemId, String opTime) throws ApiException;
 
     /**
      * 新增机器

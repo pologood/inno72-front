@@ -14,7 +14,7 @@ public class DeviceVo implements Serializable {
     /**
      * 设备编码
      */
-    private String outerCode;
+    private String machineCode;
     /**
      * 商品id
      */
@@ -30,12 +30,12 @@ public class DeviceVo implements Serializable {
         this.deviceName = deviceName;
     }
 
-    public String getOuterCode() {
-        return outerCode;
+    public String getMachineCode() {
+        return machineCode;
     }
 
-    public void setOuterCode(String outerCode) {
-        this.outerCode = outerCode;
+    public void setMachineCode(String machineCode) {
+        this.machineCode = machineCode;
     }
 
     public String getStoreName() {

@@ -17,6 +17,9 @@ public class Inno72FeedBackLog {
     @Column(name = "order_id")
     private String orderId;
 
+    @Column(name = "response_body")
+    private String responseBody;
+
     /**
      * @return id
      */
@@ -71,5 +74,13 @@ public class Inno72FeedBackLog {
      */
     public void setOrderId(String orderId) {
         this.orderId = orderId;
+    }
+
+    public String getResponseBody() {
+        return responseBody;
+    }
+
+    public void setResponseBody(String responseBody) {
+        this.responseBody = responseBody;
     }
 }

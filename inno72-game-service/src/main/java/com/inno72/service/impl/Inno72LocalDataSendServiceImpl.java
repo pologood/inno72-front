@@ -13,6 +13,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import tk.mybatis.mapper.entity.Condition;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -44,41 +45,47 @@ public class Inno72LocalDataSendServiceImpl implements Inno72LocalDataSendServic
         LOGGER.debug("datasend start...");
         for(String merchantName:merchantNames){
             //查找商户id
-            Inno72Merchant merchant = findMerchantByName(merchantName);
-            if(merchant == null){
+            int size = 0;
+            List<Inno72Merchant> merchantList = inno72MerchantMapper.findMerchantByName(merchantName);
+            if(merchantList == null || merchantList.size()==0){
                 LOGGER.error("merchantName = {},无法找到商户",merchantName);
                 continue;
             }
-            //查找商户下的商品
-            List<Inno72Goods> goodsList = findGoodsBySellerId(merchant.getId());
+            for(Inno72Merchant merchant:merchantList){
+                //查找商户下的商品
+                List<Inno72Goods> goodsList = findGoodsBySellerId(merchant.getId());
 
-            if(goodsList !=null && goodsList.size()>0){
-                for(Inno72Goods goods:goodsList){
-                    //查找商品对应的出货成功的订单
-                    List<OrderOrderGoodsVo> list = findSuccessOrderByGoodsId(goods.getId(),goods.getCode());
-                    if(list!=null&&list.size()>0){
-                        System.out.println(JsonUtil.toJson(list));
-//                        for(OrderOrderGoodsVo orderOrderGoodsVo:list){
-//                            Inno72FeedBackLog log = findLogByOrderId(orderOrderGoodsVo.getOrderId());
-//                            if(log== null){
-//                                //查找deviceCode
-//                                String deviceCode = findDeviceCode(orderOrderGoodsVo.getSellerId(),orderOrderGoodsVo.getMachineCode());
-//                                if(deviceCode == null){
-//                                    LOGGER.error("无法找到deviceCode, sellerId = {},machineCode = {}",orderOrderGoodsVo.getSellerId(),orderOrderGoodsVo.getMachineCode());
-//                                    throw new Inno72BizException("无法找到deviceCode");
-//                                }
-//                                //调用淘宝回流
-//                                inno72NewretailService.deviceVendorFeedback(merchant.getSellerSessionKey(),orderOrderGoodsVo.getTaobaoOrderNum(),"tmall_trade","","SHIP_CNT",orderOrderGoodsVo.getTaobaoGoodsId(),null,orderOrderGoodsVo.getUserNick(),orderOrderGoodsVo.getOrderId(),"","");
-//                                //插入日志
-//                                log.setGoodsId(orderOrderGoodsVo.getGoodsId());
-//                                log.setOrderId(orderOrderGoodsVo.getOrderId());
-//                                log.setMerchantName(merchantName);
-//                                inno72FeedBackLogMapper.insert(log);
-//                            }
-//                        }
+                if(goodsList !=null && goodsList.size()>0){
+                    for(Inno72Goods goods:goodsList){
+                        //查找商品对应的出货成功的订单
+                        List<OrderOrderGoodsVo> list = findSuccessOrderByGoodsId(goods.getId(),goods.getCode());
+                        if(list!=null&&list.size()>0){
+//                            System.out.println(JsonUtil.toJson(list));
+                            size += list.size();
+                            for(OrderOrderGoodsVo orderOrderGoodsVo:list){
+                                Inno72FeedBackLog log = findLogByOrderId(orderOrderGoodsVo.getOrderId());
+                                if(log== null){
+                                    //查找deviceCode
+                                    String deviceCode = findDeviceCode(merchant.getMerchantCode(),orderOrderGoodsVo.getMachineCode());
+                                    if(deviceCode == null){
+                                        LOGGER.error("无法找到deviceCode, sellerId = {},machineCode = {}",orderOrderGoodsVo.getSellerId(),orderOrderGoodsVo.getMachineCode());
+                                        throw new Inno72BizException("无法找到deviceCode");
+                                    }
+                                    //调用淘宝回流
+                                    String body = inno72NewretailService.deviceVendorFeedback("6100816bd6f85638abd2fdae18beee05e32809cebf39e224008390433",orderOrderGoodsVo.getTaobaoOrderNum(),"tmall_trade",deviceCode,"SHIP_CNT",orderOrderGoodsVo.getTaobaoGoodsId(),"2018-10-28 00:00:00");
+                                    //插入日志
+                                    log.setGoodsId(orderOrderGoodsVo.getGoodsId());
+                                    log.setOrderId(orderOrderGoodsVo.getOrderId());
+                                    log.setMerchantName(merchantName);
+                                    log.setResponseBody(body);
+                                    inno72FeedBackLogMapper.insert(log);
+                                }
+                            }
+                        }
                     }
                 }
             }
+            System.out.println(merchantName+":"+size);
         }
 
     }
@@ -135,18 +142,5 @@ public class Inno72LocalDataSendServiceImpl implements Inno72LocalDataSendServic
         Inno72Goods param = new Inno72Goods();
         param.setSellerId(sellerId);
         return inno72GoodsMapper.select(param);
-    }
-
-    /**
-     * 根据名称查找商户
-     * @param merchantName
-     * @return
-     */
-    private Inno72Merchant findMerchantByName(String merchantName) {
-        Inno72Merchant param = new Inno72Merchant();
-        param.setMerchantName(merchantName);
-        List<Inno72Merchant> list = inno72MerchantMapper.select(param);
-        if(list == null || list.size()== 0) return null;
-        return list.get(0);
     }
 }

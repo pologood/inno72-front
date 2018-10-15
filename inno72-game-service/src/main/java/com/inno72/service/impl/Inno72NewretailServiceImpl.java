@@ -185,7 +185,7 @@ public class Inno72NewretailServiceImpl implements Inno72NewretailService {
      * @throws ApiException
      */
     @Override
-    public void deviceVendorFeedback(String sessionKey, String tradeNo, String tradeType, String deviceCode, String action
+    public String deviceVendorFeedback(String sessionKey, String tradeNo, String tradeType, String deviceCode, String action
             , String itemId, String couponId, String userNick, String outerBizId, String opTime, String outerUser) throws ApiException {
         SmartstoreDeviceVendorFeedbackRequest req = new SmartstoreDeviceVendorFeedbackRequest();
         req.setTradeNo(tradeNo);
@@ -202,6 +202,24 @@ public class Inno72NewretailServiceImpl implements Inno72NewretailService {
         LOGGER.debug("deviceVendorFeedback tradeNo={},tradeType={},deviceCode={},action={}," +
                 "itemId={},couponId={},userNick={},outerBizId={},opTime={},outerUser={},response={}",
                 tradeNo,tradeType,deviceCode,action,itemId,couponId,userNick,outerBizId,opTime,outerUser,rsp.getBody());
+        return rsp.getBody();
+    }
+
+    @Override
+    public String deviceVendorFeedback(String sessionKey, String tradeNo, String tradeType, String deviceCode, String action
+            , String itemId, String opTime) throws ApiException {
+        SmartstoreDeviceVendorFeedbackRequest req = new SmartstoreDeviceVendorFeedbackRequest();
+        req.setTradeNo(tradeNo);
+        req.setTradeType(tradeType);
+        req.setDeviceCode(deviceCode);
+        req.setAction(action);
+        req.setItemId(itemId);
+        req.setOpTime(StringUtils.parseDateTime(opTime));
+        SmartstoreDeviceVendorFeedbackResponse rsp = client.execute(req, sessionKey);
+        LOGGER.debug("deviceVendorFeedback tradeNo={},tradeType={},deviceCode={},action={}," +
+                        "itemId={},opTime={},response={}",
+                tradeNo,tradeType,deviceCode,action,itemId,opTime,rsp.getBody());
+        return rsp.getBody();
     }
 
     @Override
@@ -218,21 +236,21 @@ public class Inno72NewretailServiceImpl implements Inno72NewretailService {
                 LOGGER.debug("saveMachine.SellerId = {},saveMachine.sessionKey = {}",goods.getSellerId(),sessionKey);
 
                 //检查数据库是否添加过
-                Inno72MachineDevice inno72MachineDevice = inno72MachineDeviceService.findByMachineCodeAndSellerId(deviceVo.getOuterCode(),goods.getSellerId());
+                Inno72MachineDevice inno72MachineDevice = inno72MachineDeviceService.findByMachineCodeAndSellerId(deviceVo.getMachineCode(),goods.getSellerId());
                 if(StringUtils.isEmpty(deviceVo.getDeviceName())){
-                    deviceVo.setDeviceName(deviceVo.getOuterCode()+"_"+goods.getSellerId());
+                    deviceVo.setDeviceName(deviceVo.getMachineCode()+"-"+goods.getSellerId());
                 }
                 //没有添加过
                 if(inno72MachineDevice == null){
                     //根据机器code查询storeId
                     Long storeId = findStores(sessionKey,deviceVo.getStoreName());
                     //调用淘宝接口
-                    String deviceCode = saveDevice(sessionKey,deviceVo.getDeviceName(),storeId,"ANDROID","SAMPLE_MACHINE",deviceVo.getOuterCode());
+                    String deviceCode = saveDevice(sessionKey,deviceVo.getDeviceName(),storeId,"ANDROID","SAMPLE_MACHINE",deviceVo.getMachineCode());
                     //保存结果信息
                     inno72MachineDevice = new Inno72MachineDevice();
                     inno72MachineDevice.setCreateTime(new Date());
                     inno72MachineDevice.setDeviceCode(deviceCode);
-                    inno72MachineDevice.setMachineCode(deviceVo.getOuterCode());
+                    inno72MachineDevice.setMachineCode(deviceVo.getMachineCode());
                     inno72MachineDevice.setStoreId(storeId);
                     inno72MachineDevice.setSellerId(goods.getSellerId());
                     inno72MachineDeviceService.save(inno72MachineDevice);
@@ -244,7 +262,7 @@ public class Inno72NewretailServiceImpl implements Inno72NewretailService {
     private void checkDeviceParamVo(DeviceVo vo) {
         if(vo == null) throw new Inno72BizException("参数不能为空");
         if(StringUtils.isEmpty(vo.getGoodsId())) throw new Inno72BizException("goodsId不能为空");
-        if(StringUtils.isEmpty(vo.getOuterCode())) throw new Inno72BizException("机器编码不能为空");
+        if(StringUtils.isEmpty(vo.getMachineCode())) throw new Inno72BizException("机器编码不能为空");
     }
 
     private static String unescape(String escapeStr) {
