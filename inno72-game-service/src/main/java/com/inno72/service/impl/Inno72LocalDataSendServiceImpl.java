@@ -1,5 +1,7 @@
 package com.inno72.service.impl;
 
+import com.inno72.common.Inno72BizException;
+import com.inno72.common.json.JsonUtil;
 import com.inno72.mapper.*;
 import com.inno72.model.*;
 import com.inno72.service.Inno72LocalDataSendService;
@@ -32,6 +34,11 @@ public class Inno72LocalDataSendServiceImpl implements Inno72LocalDataSendServic
     Inno72FeedBackLogMapper inno72FeedBackLogMapper;
     @Autowired
     Inno72NewretailService inno72NewretailService;
+    @Autowired
+    Inno72MachineMapper inno72MachineMapper;
+
+    @Autowired
+    Inno72MachineDeviceMapper inno72MachineDeviceMapper;
     @Override
     public void datasend(String[] merchantNames) throws ApiException {
         LOGGER.debug("datasend start...");
@@ -50,23 +57,40 @@ public class Inno72LocalDataSendServiceImpl implements Inno72LocalDataSendServic
                     //查找商品对应的出货成功的订单
                     List<OrderOrderGoodsVo> list = findSuccessOrderByGoodsId(goods.getId(),goods.getCode());
                     if(list!=null&&list.size()>0){
-                        for(OrderOrderGoodsVo orderOrderGoodsVo:list){
-                            Inno72FeedBackLog log = findLogByOrderId(orderOrderGoodsVo.getOrderId());
-                            if(log== null){
-                                //调用淘宝回流
-                                inno72NewretailService.deviceVendorFeedback(merchant.getSellerSessionKey(),orderOrderGoodsVo.getTaobaoOrderNum(),"tmall_trade","","SHIP_CNT",orderOrderGoodsVo.getTaobaoGoodsId(),null,orderOrderGoodsVo.getUserNick(),orderOrderGoodsVo.getOrderId(),"","");
-                                //插入日志
-                                log.setGoodsId(orderOrderGoodsVo.getGoodsId());
-                                log.setOrderId(orderOrderGoodsVo.getOrderId());
-                                log.setMerchantName(merchantName);
-                                inno72FeedBackLogMapper.insert(log);
-                            }
-                        }
+                        System.out.println(JsonUtil.toJson(list));
+//                        for(OrderOrderGoodsVo orderOrderGoodsVo:list){
+//                            Inno72FeedBackLog log = findLogByOrderId(orderOrderGoodsVo.getOrderId());
+//                            if(log== null){
+//                                //查找deviceCode
+//                                String deviceCode = findDeviceCode(orderOrderGoodsVo.getSellerId(),orderOrderGoodsVo.getMachineCode());
+//                                if(deviceCode == null){
+//                                    LOGGER.error("无法找到deviceCode, sellerId = {},machineCode = {}",orderOrderGoodsVo.getSellerId(),orderOrderGoodsVo.getMachineCode());
+//                                    throw new Inno72BizException("无法找到deviceCode");
+//                                }
+//                                //调用淘宝回流
+//                                inno72NewretailService.deviceVendorFeedback(merchant.getSellerSessionKey(),orderOrderGoodsVo.getTaobaoOrderNum(),"tmall_trade","","SHIP_CNT",orderOrderGoodsVo.getTaobaoGoodsId(),null,orderOrderGoodsVo.getUserNick(),orderOrderGoodsVo.getOrderId(),"","");
+//                                //插入日志
+//                                log.setGoodsId(orderOrderGoodsVo.getGoodsId());
+//                                log.setOrderId(orderOrderGoodsVo.getOrderId());
+//                                log.setMerchantName(merchantName);
+//                                inno72FeedBackLogMapper.insert(log);
+//                            }
+//                        }
                     }
                 }
             }
         }
 
+    }
+
+    private String findDeviceCode(String sellerId, String machineCode) {
+        LOGGER.debug("findDeviceCode sellerId = {},machineCode = {}",sellerId,machineCode);
+        Inno72MachineDevice device = new Inno72MachineDevice();
+        device.setSellerId(sellerId);
+        device.setMachineCode(machineCode);
+        device = inno72MachineDeviceMapper.selectOne(device);
+        if(device == null) return null;
+        return device.getDeviceCode();
     }
 
     private Inno72FeedBackLog findLogByOrderId(String orderId) {
@@ -86,6 +110,8 @@ public class Inno72LocalDataSendServiceImpl implements Inno72LocalDataSendServic
             for(Inno72OrderGoods inno72OrderGoods:list){
                 Inno72Order order = inno72OrderMapper.selectByPrimaryKey(inno72OrderGoods.getOrderId());
                 if(1 == order.getGoodsStatus()){
+                    String sellerId = inno72MerchantMapper.selectByPrimaryKey(order.getMerchantId()).getMerchantCode();
+                    Inno72Machine inno72Machine = inno72MachineMapper.selectByPrimaryKey(order.getMachineId());
                     //出货成功
                     OrderOrderGoodsVo vo = new OrderOrderGoodsVo();
                     vo.setChannelId(order.getChannelId());
@@ -95,6 +121,8 @@ public class Inno72LocalDataSendServiceImpl implements Inno72LocalDataSendServic
                     vo.setTaobaoGoodsId(taobaoGoodsCode);
                     vo.setTaobaoOrderNum(order.getRefOrderId());
                     vo.setUserId(order.getUserId());
+                    vo.setSellerId(sellerId);
+                    vo.setMachineCode(inno72Machine.getMachineCode());
 //                    vo.setUserNick(order.get);
                     returnList.add(vo);
                 }
