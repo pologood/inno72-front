@@ -13,6 +13,8 @@ public class OrderOrderGoodsVo implements Serializable {
     private String taobaoGoodsId;
     private Integer goodsType;
     private String userNick;
+    private String sellerId;
+    private String machineCode;
 
     public String getOrderNum() {
         return orderNum;
@@ -84,5 +86,21 @@ public class OrderOrderGoodsVo implements Serializable {
 
     public void setTaobaoGoodsId(String taobaoGoodsId) {
         this.taobaoGoodsId = taobaoGoodsId;
+    }
+
+    public String getSellerId() {
+        return sellerId;
+    }
+
+    public void setSellerId(String sellerId) {
+        this.sellerId = sellerId;
+    }
+
+    public String getMachineCode() {
+        return machineCode;
+    }
+
+    public void setMachineCode(String machineCode) {
+        this.machineCode = machineCode;
     }
 }
