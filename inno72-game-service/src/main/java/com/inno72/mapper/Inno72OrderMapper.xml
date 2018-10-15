@@ -53,7 +53,7 @@
     <select id="findGoodsStatusSuccPy" resultMap="BaseResultMap" parameterType="java.util.Map">
         select o.id from inno72_order o left join inno72_order_goods og
         on o.id = og.order_id
-        where o.inno72_activity_plan_id = #{activityPlanId}
+        where o.inno72_activity_id = #{activityId}
         and o.user_id = #{gameUserId}
         and o.goods_status = 1
         and og.goods_id = #{goodsId}

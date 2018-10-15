@@ -24,7 +24,7 @@ public interface Inno72GameService extends Service<Inno72Game> {
 	 * @param goodsId
 	 * @return
 	 */
-	public boolean countSuccOrderPy(String channelId, String channelUserKey, String activityPlanId, String goodsId);
+	public boolean countSuccOrderPy(String channelId, String channelUserKey, String activityPlanId, String goodsId, String activityId);
 
 	public boolean countSuccOrderNologin(String channelId, String activityPlanId);
 }
