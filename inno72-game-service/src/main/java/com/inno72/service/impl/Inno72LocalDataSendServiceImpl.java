@@ -52,35 +52,30 @@ public class Inno72LocalDataSendServiceImpl implements Inno72LocalDataSendServic
                 continue;
             }
             for(Inno72Merchant merchant:merchantList){
-                //查找商户下的商品
-                List<Inno72Goods> goodsList = findGoodsBySellerId(merchant.getId());
 
-                if(goodsList !=null && goodsList.size()>0){
-                    for(Inno72Goods goods:goodsList){
-                        //查找商品对应的出货成功的订单
-                        List<OrderOrderGoodsVo> list = findSuccessOrderByGoodsId(goods.getId(),goods.getCode());
-                        if(list!=null&&list.size()>0){
+                List<OrderOrderGoodsVo> list = findSuccessOrderByMerchantId(merchant.getId());
+                if(list!=null&&list.size()>0){
 //                            System.out.println(JsonUtil.toJson(list));
-                            size += list.size();
-                            for(OrderOrderGoodsVo orderOrderGoodsVo:list){
-                                Inno72FeedBackLog log = findLogByOrderId(orderOrderGoodsVo.getOrderId());
-                                if(log== null){
-                                    //查找deviceCode
-                                    String deviceCode = findDeviceCode(merchant.getMerchantCode(),orderOrderGoodsVo.getMachineCode());
-                                    if(deviceCode == null){
-                                        LOGGER.error("无法找到deviceCode, sellerId = {},machineCode = {}",orderOrderGoodsVo.getSellerId(),orderOrderGoodsVo.getMachineCode());
-                                        throw new Inno72BizException("无法找到deviceCode");
-                                    }
-                                    //调用淘宝回流
-                                    String body = inno72NewretailService.deviceVendorFeedback("6100816bd6f85638abd2fdae18beee05e32809cebf39e224008390433",orderOrderGoodsVo.getTaobaoOrderNum(),"tmall_trade",deviceCode,"SHIP_CNT",orderOrderGoodsVo.getTaobaoGoodsId(),"2018-10-28 00:00:00");
-                                    //插入日志
-                                    log.setGoodsId(orderOrderGoodsVo.getGoodsId());
-                                    log.setOrderId(orderOrderGoodsVo.getOrderId());
-                                    log.setMerchantName(merchantName);
-                                    log.setResponseBody(body);
-                                    inno72FeedBackLogMapper.insert(log);
-                                }
+                    size += list.size();
+                    for(OrderOrderGoodsVo orderOrderGoodsVo:list){
+                        Inno72FeedBackLog log = findLogByOrderId(orderOrderGoodsVo.getOrderId());
+                        if(log== null){
+                            //查找deviceCode
+                            String deviceCode = findDeviceCode(merchant.getMerchantCode(),orderOrderGoodsVo.getMachineCode());
+                            if(deviceCode == null){
+                                LOGGER.error("无法找到deviceCode, sellerId = {},machineCode = {}",merchant.getMerchantCode(),orderOrderGoodsVo.getMachineCode());
+                                throw new Inno72BizException("无法找到deviceCode");
                             }
+                            //调用淘宝回流
+                            String body = inno72NewretailService.deviceVendorFeedback("6100816bd6f85638abd2fdae18beee05e32809cebf39e224008390433",orderOrderGoodsVo.getTaobaoOrderNum(),"tmall_trade",deviceCode,"SHIP_CNT",orderOrderGoodsVo.getTaobaoGoodsId(),"2018-10-28 00:00:00");
+                            //插入日志
+                            log = new Inno72FeedBackLog();
+                            log.setGoodsId(orderOrderGoodsVo.getGoodsId());
+                            log.setOrderId(orderOrderGoodsVo.getOrderId());
+                            log.setMerchantName(merchantName);
+                            log.setResponseBody(body);
+                            inno72FeedBackLogMapper.insert(log);
+                            System.out.println(JsonUtil.toJson(log));
                         }
                     }
                 }
@@ -88,6 +83,10 @@ public class Inno72LocalDataSendServiceImpl implements Inno72LocalDataSendServic
             System.out.println(merchantName+":"+size);
         }
 
+    }
+
+    private List<OrderOrderGoodsVo> findSuccessOrderByMerchantId(String merchantId) {
+        return inno72OrderMapper.findSuccessOrderByMerchantId(merchantId);
     }
 
     private String findDeviceCode(String sellerId, String machineCode) {
@@ -108,35 +107,6 @@ public class Inno72LocalDataSendServiceImpl implements Inno72LocalDataSendServic
         return list.get(0);
     }
 
-    private List<OrderOrderGoodsVo> findSuccessOrderByGoodsId(String goodsId,String taobaoGoodsCode) {
-        Inno72OrderGoods param = new Inno72OrderGoods();
-        param.setGoodsId(goodsId);
-        List<Inno72OrderGoods> list = inno72OrderGoodsMapper.select(param);
-        List<OrderOrderGoodsVo> returnList = new ArrayList<OrderOrderGoodsVo>();
-        if(list != null && list.size()>0 ){
-            for(Inno72OrderGoods inno72OrderGoods:list){
-                Inno72Order order = inno72OrderMapper.selectByPrimaryKey(inno72OrderGoods.getOrderId());
-                if(1 == order.getGoodsStatus()){
-                    String sellerId = inno72MerchantMapper.selectByPrimaryKey(order.getMerchantId()).getMerchantCode();
-                    Inno72Machine inno72Machine = inno72MachineMapper.selectByPrimaryKey(order.getMachineId());
-                    //出货成功
-                    OrderOrderGoodsVo vo = new OrderOrderGoodsVo();
-                    vo.setChannelId(order.getChannelId());
-                    vo.setGoodsId(goodsId);
-                    vo.setOrderId(order.getId());
-                    vo.setOrderNum(order.getOrderNum());
-                    vo.setTaobaoGoodsId(taobaoGoodsCode);
-                    vo.setTaobaoOrderNum(order.getRefOrderId());
-                    vo.setUserId(order.getUserId());
-                    vo.setSellerId(sellerId);
-                    vo.setMachineCode(inno72Machine.getMachineCode());
-//                    vo.setUserNick(order.get);
-                    returnList.add(vo);
-                }
-            }
-        }
-        return returnList;
-    }
 
     private List<Inno72Goods> findGoodsBySellerId(String sellerId) {
         Inno72Goods param = new Inno72Goods();
