@@ -50,6 +50,11 @@ public class Inno72Goods {
 	private String img;
 
 	/**
+	 * 轮播图
+	 */
+	private String banner;
+
+	/**
 	 * 状态：0正常，1下架
 	 */
 	@Column(name = "is_delete")
@@ -306,5 +311,13 @@ public class Inno72Goods {
 
 	public void setShopId(String shopId) {
 		this.shopId = shopId;
+	}
+
+	public String getBanner() {
+		return banner;
+	}
+
+	public void setBanner(String banner) {
+		this.banner = banner;
 	}
 }
