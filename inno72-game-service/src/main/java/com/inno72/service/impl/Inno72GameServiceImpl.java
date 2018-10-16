@@ -144,7 +144,7 @@ public class Inno72GameServiceImpl extends AbstractService<Inno72Game> implement
 	}
 
 	@Override
-	public boolean countSuccOrderPy(String channelId, String channelUserKey, String activityPlanId, String goodsId) {
+	public boolean countSuccOrderPy(String channelId, String channelUserKey, String activityPlanId, String goodsId, String activityId) {
 		boolean canOrder = false;
 		Inno72ActivityPlanGoods activityPlanGoods = new Inno72ActivityPlanGoods();
 		activityPlanGoods.setActivityPlanId(activityPlanId);
@@ -158,7 +158,7 @@ public class Inno72GameServiceImpl extends AbstractService<Inno72Game> implement
 		String gameUserId = userChannel.getGameUserId();
 
 		Map<String, String> orderParams = new HashMap<>();
-		orderParams.put("activityPlanId", activityPlanId);
+		orderParams.put("activityId", activityId);
 		orderParams.put("gameUserId", gameUserId);
 		orderParams.put("goodsId", goodsId);
 		List<Inno72Order> inno72Orders = inno72OrderMapper.findGoodsStatusSuccPy(orderParams);
