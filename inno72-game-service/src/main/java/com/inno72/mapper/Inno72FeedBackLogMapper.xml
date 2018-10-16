@@ -10,5 +10,7 @@
     <result column="goods_id" jdbcType="VARCHAR" property="goodsId" />
     <result column="order_id" jdbcType="VARCHAR" property="orderId" />
     <result column="response_body" jdbcType="LONGVARCHAR" property="responseBody" />
+    <result column="order_time" jdbcType="TIMESTAMP" property="orderTime" javaType="java.time.LocalDateTime"
+            typeHandler="org.apache.ibatis.type.LocalDateTimeTypeHandler"/>
   </resultMap>
 </mapper>

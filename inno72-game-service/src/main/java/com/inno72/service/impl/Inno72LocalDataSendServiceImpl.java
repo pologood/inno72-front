@@ -16,8 +16,8 @@ import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 import tk.mybatis.mapper.entity.Condition;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.time.LocalDateTime;
+import java.util.*;
 
 @Transactional
 @Service
@@ -41,8 +41,11 @@ public class Inno72LocalDataSendServiceImpl implements Inno72LocalDataSendServic
 
     @Autowired
     Inno72MachineDeviceMapper inno72MachineDeviceMapper;
+
+    private static Map<String,String> deviceCodeMap = new HashMap<String,String>();
     @Override
     public void datasend(String[] merchantNames) throws ApiException {
+        Map<String,Integer> devicelist = new HashMap<String,Integer>();
         LOGGER.debug("datasend start...");
         for(String merchantName:merchantNames){
             //查找商户id
@@ -59,27 +62,30 @@ public class Inno72LocalDataSendServiceImpl implements Inno72LocalDataSendServic
 //                            System.out.println(JsonUtil.toJson(list));
                     size += list.size();
                     for(OrderOrderGoodsVo orderOrderGoodsVo:list){
-                        Inno72FeedBackLog log = findLogByOrderId(orderOrderGoodsVo.getOrderId());
+                        Inno72FeedBackLog log = null;//findLogByOrderId(orderOrderGoodsVo.getOrderId());
                         if(log== null){
                             //查找deviceCode
                             String deviceCode = findDeviceCode(merchant.getMerchantCode(),orderOrderGoodsVo.getMachineCode());
                             if(deviceCode == null){
                                 LOGGER.error("无法找到deviceCode, sellerId = {},machineCode = {}",merchant.getMerchantCode(),orderOrderGoodsVo.getMachineCode());
+                                devicelist.put(""+merchant.getMerchantCode()+"_"+orderOrderGoodsVo.getMachineCode(),1);
                                 throw new Inno72BizException("无法找到deviceCode");
                             }
                             //调用淘宝回流
-                            String body = inno72NewretailService.deviceVendorFeedback("6100816bd6f85638abd2fdae18beee05e32809cebf39e224008390433",orderOrderGoodsVo.getTaobaoOrderNum(),"tmall_trade",deviceCode,"SHIP_CNT",orderOrderGoodsVo.getTaobaoGoodsId(),"2018-10-28 00:00:00");
-                            //插入日志
+//                            String body = inno72NewretailService.deviceVendorFeedback("6100816bd6f85638abd2fdae18beee05e32809cebf39e224008390433",orderOrderGoodsVo.getTaobaoOrderNum(),"tmall_trade",deviceCode,"SHIP_CNT",orderOrderGoodsVo.getTaobaoGoodsId(),"2018-10-28 00:00:00");
+//                            //插入日志
                             log = new Inno72FeedBackLog();
                             log.setGoodsId(orderOrderGoodsVo.getGoodsId());
                             log.setOrderId(orderOrderGoodsVo.getOrderId());
                             log.setMerchantName(merchantName);
-                            log.setResponseBody(body);
+                            log.setResponseBody("");
+                            log.setOrderTime(LocalDateTime.now());
                             saveLog(log);
                         }
                     }
                 }
             }
+            System.out.println(JsonUtil.toJson(devicelist));
             System.out.println(merchantName+":"+size);
         }
 
@@ -96,12 +102,18 @@ public class Inno72LocalDataSendServiceImpl implements Inno72LocalDataSendServic
 
     private String findDeviceCode(String sellerId, String machineCode) {
         LOGGER.debug("findDeviceCode sellerId = {},machineCode = {}",sellerId,machineCode);
-        Inno72MachineDevice device = new Inno72MachineDevice();
-        device.setSellerId(sellerId);
-        device.setMachineCode(machineCode);
-        device = inno72MachineDeviceMapper.selectOne(device);
-        if(device == null) return null;
-        return device.getDeviceCode();
+        String key = sellerId+machineCode;
+        String deviceCode = deviceCodeMap.get(key);
+        if(deviceCode == null){
+            Inno72MachineDevice device = new Inno72MachineDevice();
+            device.setSellerId(sellerId);
+            device.setMachineCode(machineCode);
+            device = inno72MachineDeviceMapper.selectOne(device);
+            if(device == null) return null;
+            deviceCode = device.getDeviceCode();
+            deviceCodeMap.put(key,deviceCode);
+        }
+        return deviceCode;
     }
 
     private Inno72FeedBackLog findLogByOrderId(String orderId) {

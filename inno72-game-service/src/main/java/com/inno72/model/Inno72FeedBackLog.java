@@ -1,6 +1,11 @@
 package com.inno72.model;
 
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.inno72.common.CustomLocalDateTimeSerializer;
+import com.inno72.common.LocalDateConverter;
+
 import javax.persistence.*;
+import java.time.LocalDateTime;
 
 @Table(name = "inno72_feed_back_log")
 public class Inno72FeedBackLog {
@@ -19,6 +24,14 @@ public class Inno72FeedBackLog {
 
     @Column(name = "response_body")
     private String responseBody;
+
+    /**
+     * 下单时间
+     */
+    @Column(name = "order_time")
+    @JsonSerialize(using = CustomLocalDateTimeSerializer.class)
+    @Convert(converter = LocalDateConverter.class)
+    private LocalDateTime orderTime;
 
     /**
      * @return id
@@ -82,5 +95,13 @@ public class Inno72FeedBackLog {
 
     public void setResponseBody(String responseBody) {
         this.responseBody = responseBody;
+    }
+
+    public LocalDateTime getOrderTime() {
+        return orderTime;
+    }
+
+    public void setOrderTime(LocalDateTime orderTime) {
+        this.orderTime = orderTime;
     }
 }
