@@ -21,7 +21,7 @@ public class TestController {
 		final String APPKEY = "24952134";
 		final String SECRET = "67ee063609d7a0a11997168d70b370c0";
 
-		String sessionKey = "610012905721527fc8830005792b8fa53ec2b15b0e86f0b845001562";
+		String sessionKey = "6102a29189bea6294fc5ef76a70842f709cdd154828dd64217101303";
 
 		TaobaoClient client = new DefaultTaobaoClient(URL, APPKEY, SECRET);
 

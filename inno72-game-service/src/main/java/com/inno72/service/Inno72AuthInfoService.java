@@ -18,7 +18,7 @@ public interface Inno72AuthInfoService {
 	 * 登录前处理
 	 * @return
 	 */
-	Result<Object> processBeforeLogged(String sessionUuid, String authInfo);
+	Result<Object> processBeforeLogged(String sessionUuid, String authInfo, String traceId);
 
 	/**
 	 * 设置用户已经登录

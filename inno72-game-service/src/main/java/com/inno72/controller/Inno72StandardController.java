@@ -7,6 +7,10 @@ import java.time.format.DateTimeFormatter;
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletResponse;
 
+import com.alibaba.fastjson.JSON;
+import com.inno72.common.*;
+import com.inno72.common.util.UuidUtil;
+import com.inno72.redis.IRedisUtil;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -157,8 +161,8 @@ public class Inno72StandardController {
 	 */
 	@ResponseBody
 	@RequestMapping(value = "/findActivity", method = {RequestMethod.POST})
-	public Result<Inno72MachineVo> findActivity(@RequestParam(name = "machineId") String mid, String planId,
-			String version, String versionInno72) {
+	public Result findActivity(@RequestParam(name = "machineId") String mid, String planId, String version,
+			String versionInno72) {
 		return inno72MachineService.findGame(mid, planId, version, versionInno72);
 	}
 
@@ -189,8 +193,8 @@ public class Inno72StandardController {
 	 */
 	@ResponseBody
 	@RequestMapping(value = "/setLogged", method = {RequestMethod.POST})
-	public Result<Object> setLogged(String sessionUuid) {
-		LOGGER.info("setLogged sessionUuid is {}", sessionUuid);
+	public Result<Object> setLogged(String sessionUuid, String traceId) {
+		LOGGER.info("setLogged sessionUuid is {}, traceId is {}", sessionUuid, traceId);
 		boolean result = inno72AuthInfoService.setLogged(sessionUuid);
 		LOGGER.info("setLogged result is {}", result);
 		if (result) {
@@ -205,9 +209,9 @@ public class Inno72StandardController {
 	 */
 	@ResponseBody
 	@RequestMapping(value = "/processBeforeLogged", method = {RequestMethod.POST})
-	public Result<Object> processBeforeLogged(String sessionUuid, String authInfo) {
-		Result<Object> result = inno72AuthInfoService.processBeforeLogged(sessionUuid, authInfo);
-		return Results.success(result);
+	public Result<Object> processBeforeLogged(String sessionUuid, String authInfo, String traceId) {
+		Result<Object> result = inno72AuthInfoService.processBeforeLogged(sessionUuid, authInfo, traceId);
+		return result;
 	}
 
 	/**
@@ -235,15 +239,14 @@ public class Inno72StandardController {
 
 					if (sessionVo.getIsScanned()) {
 						LOGGER.info("loginRedirect 二维码已经被扫描");
-						redirectUrl = String.format(topH5ErrUrl, env) + "/?status="
-								+ TopH5ErrorTypeEnum.IS_SCANNED.getValue();
+						redirectUrl = String.format(topH5ErrUrl, env) + "/?status="+ TopH5ErrorTypeEnum.IS_SCANNED.getValue();
 					} else {
 						sessionVo.setIsScanned(true);
 						gameSessionRedisUtil.setSession(sessionUuid, JSON.toJSONString(sessionVo));
 						// 设置15秒内二维码不能被扫
 						gameSessionRedisUtil.setSessionEx(sessionUuid + "qrCode", sessionUuid, 15);
-						redirectUrl = String.format("%s%s/%s", inno72GameServiceProperties.get("tmallUrl"), sessionUuid,
-								env);
+						String traceId = UuidUtil.getUUID32();
+						redirectUrl = String.format("%s%s/%s/%s", inno72GameServiceProperties.get("tmallUrl"), sessionUuid, env, traceId);
 					}
 				}
 				LOGGER.info("loginRedirect redirectUrl is {} ", redirectUrl);
@@ -252,18 +255,6 @@ public class Inno72StandardController {
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-	}
-
-
-	/**
-	 * 登录前的操作（目前聚石塔回调）
-	 */
-	@ResponseBody
-	@RequestMapping(value = "/test", method = {RequestMethod.POST})
-	public String test() {
-		boolean exists = gameSessionRedisUtil.exists("18881339qrCode");
-		LOGGER.info("exists is {}", exists);
-		return "";
 	}
 
 }
