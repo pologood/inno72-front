@@ -577,25 +577,25 @@ public class Inno72AuthInfoServiceImpl implements Inno72AuthInfoService {
 //		Integer dayNumber = interact.getDayNumber();//同一用户每天获得商品次数
 		//获取这个商品的限制个数
 		Integer userDayNumber = inno72InteractGoodsService.findByInteractIdAndGoodsId(interact.getId(),goods.getId()).getUserDayNumber();
-		//设置canOrder
-		interact.getDayNumber();
 		//设置canGame
 		String key = null;
-		if(times!=null){
+		if(times!=null&&times!=-1){
 			key = String.format(RedisConstants.PAIYANG_GAME_TIMES,interact.getId(),userId);
 			if(gameSessionRedisUtil.exists(key)){
 				Integer mytimes = Integer.parseInt(redisUtil.get(key));
 				if(mytimes >= times){
+					LOGGER.info("限制：interact.getTimes={},mytimes={}",times,mytimes);
 					canGame = false;
 				}
 			}
 		}
 		String date = DateUtil.getDateStringByYYYYMMDD();
-		if(dayTimes!=null){
+		if(dayTimes!=null&&dayTimes!=-1){
 			key = String.format(RedisConstants.PAIYANG_DAY_GAME_TIMES,interact.getId(),date,userId);
 			if(gameSessionRedisUtil.exists(key)){
 				Integer mydayTimes = Integer.parseInt(redisUtil.get(key));
 				if(mydayTimes >= dayTimes){
+					LOGGER.info("限制：interact.getDayTimes={},mydayTimes={}",dayTimes,mydayTimes);
 					canGame = false;
 				}
 			}
@@ -603,11 +603,12 @@ public class Inno72AuthInfoServiceImpl implements Inno72AuthInfoService {
 
 
 
-		if(number!=null){
+		if(number!=null&&number!=-1){
 			key = String.format(RedisConstants.PAIYANG_ORDER_TIMES,interact.getId(),userId);
 			if(gameSessionRedisUtil.exists(key)){
 				Integer mytimes = Integer.parseInt(redisUtil.get(key));
 				if(mytimes >= number){
+					LOGGER.info("限制：interact.getNumber={},myNumber={}",number,mytimes);
 					canOrder = false;
 				}
 			}
@@ -622,11 +623,12 @@ public class Inno72AuthInfoServiceImpl implements Inno72AuthInfoService {
 //			}
 //		}
 
-		if(userDayNumber!=null){
+		if(userDayNumber!=null&&userDayNumber!=-1){
 			key = String.format(RedisConstants.PAIYANG_GOODS_ORDER_TIMES,interact.getId(),goods.getId(),date,userId);
 			if(gameSessionRedisUtil.exists(key)){
 				Integer mydayTimes = Integer.parseInt(redisUtil.get(key));
 				if(mydayTimes >= userDayNumber){
+					LOGGER.info("限制：userDayNumber={},myUserDayNumber={}",userDayNumber,mydayTimes);
 					canOrder = false;
 				}
 			}
