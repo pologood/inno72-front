@@ -12,6 +12,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 import tk.mybatis.mapper.entity.Condition;
 
@@ -74,8 +75,7 @@ public class Inno72LocalDataSendServiceImpl implements Inno72LocalDataSendServic
                             log.setOrderId(orderOrderGoodsVo.getOrderId());
                             log.setMerchantName(merchantName);
                             log.setResponseBody(body);
-                            inno72FeedBackLogMapper.insert(log);
-                            System.out.println(JsonUtil.toJson(log));
+                            saveLog(log);
                         }
                     }
                 }
@@ -83,6 +83,11 @@ public class Inno72LocalDataSendServiceImpl implements Inno72LocalDataSendServic
             System.out.println(merchantName+":"+size);
         }
 
+    }
+    @Transactional(propagation=Propagation.REQUIRES_NEW)
+    public void saveLog(Inno72FeedBackLog log) {
+        inno72FeedBackLogMapper.insert(log);
+        System.out.println(JsonUtil.toJson(log));
     }
 
     private List<OrderOrderGoodsVo> findSuccessOrderByMerchantId(String merchantId) {
