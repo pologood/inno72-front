@@ -681,6 +681,8 @@ public class Inno72AuthInfoServiceImpl implements Inno72AuthInfoService {
 		resultMap.put("qrStatus", qrStatus);
 		resultMap.put("sellerId", inno72Merchant.getMerchantCode());
 		resultMap.put("traceId", traceId);
+		//是否走新零售入会新零售入会
+		resultMap.put("paiyangType",interact.getPaiyangType());
 		this.dealIsVip(resultMap, sessionVo);
 
 		resultMap.put("activityType", activityType);

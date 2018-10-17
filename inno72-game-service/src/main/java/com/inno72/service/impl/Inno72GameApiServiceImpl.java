@@ -22,6 +22,7 @@ import com.inno72.model.*;
 import com.inno72.service.*;
 import com.inno72.vo.*;
 import com.inno72.vo.*;
+import com.taobao.api.ApiException;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -146,6 +147,10 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 
 	@Resource
 	private Inno72InteractMachineGoodsService inno72InteractMachineGoodsService;
+	@Resource
+	private Inno72MachineDeviceService inno72MachineDeviceService;
+	@Resource
+	private Inno72NewretailService inno72NewretailService;
 
 	@Value("${machinecheckappbackend.uri}")
 	private String machinecheckappbackendUri;
@@ -1848,11 +1853,9 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 		if (StandardPrepareLoginReqVo.OperTypeEnum.CREATE_QRCODE.getKey() == operType) {
 			// 生成二维码流程
 			returnUrl = this.createQrCode(inno72Machine, machineCode);
-			this.startSession(inno72Machine, ext, sessionUuid);
-		} else if (StandardPrepareLoginReqVo.OperTypeEnum.START_SESSION.getKey() == operType) {
-			// 开始会话流程
-			this.startSession(inno72Machine, ext, sessionUuid);
 		}
+		// 开始会话流程
+		this.startSession(inno72Machine, ext, sessionUuid);
 		Map<String, Object> map = new HashMap<String, Object>();
 		map.put("qrCodeUrl", returnUrl);
 		map.put("sessionUuid", sessionUuid);
@@ -1884,10 +1887,31 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
         // 解析 ext
 		this.analysisExt(userSessionVo, ext);
 
+        //设置新零售入会url
+		if(userSessionVo.findPaiyangFlag()&&userSessionVo.getInno72MachineVo().getPaiyangType()==Inno72Interact.PAIYANG_TYPE_NEWRETAIL){
+			initNewRetailMemberUrl(userSessionVo);
+		}
+
 		gameSessionRedisUtil.setSession(sessionUuid, JsonUtil.toJson(userSessionVo));
 
 		// 设置15秒内二维码不能被扫
 		gameSessionRedisUtil.setSessionEx(sessionUuid + "qrCode", sessionUuid, 15);
+	}
+
+	/**
+	 * 设置新零售入会url
+	 * @param userSessionVo
+	 */
+	private void initNewRetailMemberUrl(UserSessionVo userSessionVo) throws ApiException {
+		String machineCode = userSessionVo.getMachineCode();
+		String goodsId = userSessionVo.getGoodsId();
+		//查找新零售sessionKey
+		Inno72Merchant inno72Merchant = inno72MerchantMapper.findMerchantByByGoodsId(goodsId);
+		//查找deviceCode
+		Inno72MachineDevice device = inno72MachineDeviceService.findByMachineCodeAndSellerId(userSessionVo.getMachineCode(),inno72Merchant.getMerchantCode());
+		//调用淘宝获取入会二维码url
+		String url = inno72NewretailService.getStoreMemberurl(inno72Merchant.getSellerSessionKey(),device.getDeviceCode());
+
 	}
 
 	/**

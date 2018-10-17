@@ -237,6 +237,7 @@ public class Inno72MachineServiceImpl extends AbstractService<Inno72Machine> imp
 				inno72MachineVo.setActivityId(interact.getId());
 				inno72MachineVo.setActivityPlanId(interact.getId());
 				inno72MachineVo.setActivityType(Inno72MachineVo.ACTIVITYTYPE_PAIYANG);
+				inno72MachineVo.setPaiyangType(interact.getPaiyangType());
 			}else{
 				Inno72ActivityPlan inno72ActivityPlan = inno72ActivityPlans.get(0);
 				LOGGER.debug("活动计划详情 =====> {}", JSON.toJSONString(inno72ActivityPlan));
