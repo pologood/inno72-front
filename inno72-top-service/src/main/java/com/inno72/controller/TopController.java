@@ -9,6 +9,7 @@ import javax.annotation.PostConstruct;
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletResponse;
 
+import com.inno72.constants.TopConstant;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
@@ -125,6 +126,9 @@ public class TopController {
 			String goodsCode = "";
 			String isVip = "";
 			String sessionKey = "";
+			//0普通派样1新零售派样
+			Integer paiyangType=0;
+			String sellSessionKey = "";
 
 			if (!StringUtils.isEmpty(result)) {
 				String resultCode = FastJsonUtils.getString(result, "code");
@@ -137,7 +141,8 @@ public class TopController {
 					qrStatus = FastJsonUtils.getString(result, "qrStatus");
 					String sId = FastJsonUtils.getString(result, "sellerId");
 					machineCode = FastJsonUtils.getString(result, "machineCode");
-
+					paiyangType = FastJsonUtils.getInteger(result,"paiyangType");
+					sellSessionKey = FastJsonUtils.getString(result,"sellSessionKey");
 					goodsCode = FastJsonUtils.getString(result, "goodsCode");
 					isVip = FastJsonUtils.getString(result, "isVip");
 					sessionKey = FastJsonUtils.getString(result, "sessionKey");
@@ -164,39 +169,53 @@ public class TopController {
 
 			// 判断是否入会
 			if (!StringUtils.isEmpty(isVip) && Integer.valueOf(isVip) == IS_VIP) {
-				LOGGER.info("topIndex2 派样入会逻辑");
-				// 派样活动逻辑
-				String identityResBody = this.memberIdentity(machineCode, goodsCode, taobaoUserId, sessionKey);
-
-				LOGGER.info("topIndex2 identityResBody is {}", identityResBody);
-				String grade_name = FastJsonUtils.getString(identityResBody, "grade_name");
-				LOGGER.info("topIndex2 grade_name is {}", grade_name);
-
 				String formatUrl = String.format(h5MobileUrl, env, playCode) + "?qrStatus=" + qrStatus + "&sellerId=" + sellerId;
+				if(paiyangType== null || paiyangType == TopConstant.PAIYANG_TYPE_COMMON){
+					LOGGER.info("topIndex2 派样入会逻辑");
+					// 派样活动逻辑
+					String identityResBody = this.memberIdentity(machineCode, goodsCode, taobaoUserId, sessionKey);
 
-				LOGGER.info("topIndex2 formatUrl is {}", formatUrl);
-				if (grade_name == null || "".equals(grade_name)) {
+					LOGGER.info("topIndex2 identityResBody is {}", identityResBody);
+					String grade_name = FastJsonUtils.getString(identityResBody, "grade_name");
+					LOGGER.info("topIndex2 grade_name is {}", grade_name);
+					LOGGER.info("topIndex2 formatUrl is {}", formatUrl);
+					if (grade_name == null || "".equals(grade_name)) {
 
-					String meberJoinCallBackUrl = jstUrl + "/api/meberJoinCallBack/" + sessionUuid + "/" + env + "/" + playCode + "/"
-							+ qrStatus + "/" + sellerId;
-					LOGGER.info("topIndex2 meberJoinCallBackUrl is {}", meberJoinCallBackUrl);
+						String meberJoinCallBackUrl = jstUrl + "/api/meberJoinCallBack/" + sessionUuid + "/" + env + "/" + playCode + "/"
+								+ qrStatus + "/" + sellerId;
+						LOGGER.info("topIndex2 meberJoinCallBackUrl is {}", meberJoinCallBackUrl);
 
-					// 如果不是会员做入会操作
-					String memberJoinResBody = memberJoin(machineCode, code, sessionUuid, env, goodsCode, isVip, sessionKey,
-							meberJoinCallBackUrl);
-					LOGGER.info("topIndex2 memberJoinResBody is {}", memberJoinResBody);
-					String resultUrl = FastJsonUtils.getString(memberJoinResBody, "result");
-					LOGGER.info("topIndex2 resultUrl is {}", resultUrl);
-					response.sendRedirect("http:" + resultUrl);
+						// 如果不是会员做入会操作
+						String memberJoinResBody = memberJoin(machineCode, code, sessionUuid, env, goodsCode, isVip, sessionKey,
+								meberJoinCallBackUrl);
+						LOGGER.info("topIndex2 memberJoinResBody is {}", memberJoinResBody);
+						String resultUrl = FastJsonUtils.getString(memberJoinResBody, "result");
+						LOGGER.info("topIndex2 resultUrl is {}", resultUrl);
+						response.sendRedirect("http:" + resultUrl);
 
-				} else {
-					// 设置用户已登录
-					boolean logged = this.setUserLogged(sessionUuid, env);
-					LOGGER.info("topIndex2 logged is {}", logged);
-					// 是会员直接跳转h5页面
-					response.sendRedirect(formatUrl);
+					} else {
+						// 设置用户已登录
+						boolean logged = this.setUserLogged(sessionUuid, env);
+						LOGGER.info("topIndex2 logged is {}", logged);
+						// 是会员直接跳转h5页面
+						response.sendRedirect(formatUrl);
+					}
+				}else{
+					//新零售派样
+					//1.判断是否是会员
+					boolean vipFlag = newRetailmemberIdentity(sellSessionKey,taobaoUserId);
+					if(!vipFlag){
+						//入会
+						newRetailMemberJoin(sellSessionKey,);
+					}else{
+						//是会员
+						// 设置用户已登录
+						boolean logged = this.setUserLogged(sessionUuid, env);
+						LOGGER.info("topIndex2 logged is {}", logged);
+						// 是会员直接跳转h5页面
+						response.sendRedirect(formatUrl);
+					}
 				}
-
 			} else {
 				// 正常逻辑
 				String logged = this.setLogged2(sessionUuid, env, traceId);
