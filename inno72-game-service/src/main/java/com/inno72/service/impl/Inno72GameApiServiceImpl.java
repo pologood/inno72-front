@@ -161,8 +161,7 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 	private static final String QRSTATUS_INVALID = "-1"; // 二维码失效
 	private static final String QRSTATUS_EXIST_USER = "-2"; // 存在用户登录
 
-	private static final Integer SAMPLING_TYPE = 1; // 类型（派样）
-
+	public static final Integer PRODUCT_NO_EXIST = -1; // 商品不存在
 
 	/**
 	 * {
@@ -724,6 +723,10 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 		Map<String, Object> result = new HashMap<>();
 
 		this.setChannelInfo(userSessionVo, result, resultGoodsId);
+
+		if (resultGoodsId.isEmpty()) {
+			orderCode = PRODUCT_NO_EXIST;
+		}
 
 		result.put("time", new Date().getTime());
 		result.put("lotteryResult", lotteryCode);
