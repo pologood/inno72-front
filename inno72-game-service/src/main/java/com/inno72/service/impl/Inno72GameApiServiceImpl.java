@@ -669,10 +669,6 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 		List<Inno72ActivityPlanGameResult> planGameResults = this.getGameResults(vo, userSessionVo);
 		LOGGER.info("获取游戏结果 {}", planGameResults);
 
-		if (planGameResults.size() == 0) {
-			return Results.failure("无配置商品!");
-		}
-
 		LOGGER.debug("下单 userSessionVo ==> {}", JSON.toJSONString(userSessionVo));
 
 		List<String> resultGoodsId = new ArrayList<>();
