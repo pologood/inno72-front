@@ -1655,7 +1655,10 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 			//用户获得商品次数
 			key = String.format(RedisConstants.PAIYANG_ORDER_TIMES,userSessionVo.getActivityId(),userSessionVo.getUserId());
 			redisUtil.incr(key);
-			//此商品总掉货数量
+			//用户每天获得商品次数
+			key = String.format(RedisConstants.PAIYANG_DAY_ORDER_TIMES,userSessionVo.getActivityId(),date,userSessionVo.getUserId());
+			redisUtil.incr(key);
+			//此商品总掉货数量(获取展示商品时候剩余数量用)
 			key = String.format(RedisConstants.PAIYANG_MACHINE_GOODS,userSessionVo.getActivityId(),userSessionVo.getMachineId(),userSessionVo.getGoodsId());
 			redisUtil.incr(key);
 		}
