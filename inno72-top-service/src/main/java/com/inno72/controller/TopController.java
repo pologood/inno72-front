@@ -170,6 +170,8 @@ public class TopController {
 			// 判断是否入会
 			if (!StringUtils.isEmpty(isVip) && Integer.valueOf(isVip) == IS_VIP) {
 				String formatUrl = String.format(h5MobileUrl, env, playCode) + "?qrStatus=" + qrStatus + "&sellerId=" + sellerId;
+				String meberJoinCallBackUrl = jstUrl + "/api/meberJoinCallBack/" + sessionUuid + "/" + env + "/" + playCode + "/"
+						+ qrStatus + "/" + sellerId;
 				if(paiyangType== null || paiyangType == TopConstant.PAIYANG_TYPE_COMMON){
 					LOGGER.info("topIndex2 派样入会逻辑");
 					// 派样活动逻辑
@@ -181,8 +183,6 @@ public class TopController {
 					LOGGER.info("topIndex2 formatUrl is {}", formatUrl);
 					if (grade_name == null || "".equals(grade_name)) {
 
-						String meberJoinCallBackUrl = jstUrl + "/api/meberJoinCallBack/" + sessionUuid + "/" + env + "/" + playCode + "/"
-								+ qrStatus + "/" + sellerId;
 						LOGGER.info("topIndex2 meberJoinCallBackUrl is {}", meberJoinCallBackUrl);
 
 						// 如果不是会员做入会操作
@@ -203,11 +203,8 @@ public class TopController {
 				}else{
 					//新零售派样
 					//1.判断是否是会员
-					boolean vipFlag = newRetailmemberIdentity(sellSessionKey,taobaoUserId);
-					if(!vipFlag){
-						//入会
-						newRetailMemberJoin(sellSessionKey,);
-					}else{
+					boolean vipFlag = newRetailmemberJoin(sessionUuid,sellSessionKey,taobaoUserId,meberJoinCallBackUrl);
+					if(vipFlag){
 						//是会员
 						// 设置用户已登录
 						boolean logged = this.setUserLogged(sessionUuid, env);
