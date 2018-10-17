@@ -19,7 +19,6 @@ import tk.mybatis.mapper.entity.Condition;
 import java.time.LocalDateTime;
 import java.util.*;
 
-@Transactional
 @Service
 public class Inno72LocalDataSendServiceImpl implements Inno72LocalDataSendService {
 
@@ -43,13 +42,14 @@ public class Inno72LocalDataSendServiceImpl implements Inno72LocalDataSendServic
     Inno72MachineDeviceMapper inno72MachineDeviceMapper;
 
     private static Map<String,String> deviceCodeMap = new HashMap<String,String>();
+    @Transactional
     @Override
     public void datasend(String[] merchantNames) throws ApiException {
         Map<String,Integer> devicelist = new HashMap<String,Integer>();
         LOGGER.debug("datasend start...");
         for(String merchantName:merchantNames){
             //查找商户id
-            int size = 0;
+            int size = 16019;
             List<Inno72Merchant> merchantList = inno72MerchantMapper.findMerchantByName(merchantName);
             if(merchantList == null || merchantList.size()==0){
                 LOGGER.error("merchantName = {},无法找到商户",merchantName);
@@ -60,8 +60,11 @@ public class Inno72LocalDataSendServiceImpl implements Inno72LocalDataSendServic
                 List<OrderOrderGoodsVo> list = findSuccessOrderByMerchantId(merchant.getId());
                 if(list!=null&&list.size()>0){
 //                            System.out.println(JsonUtil.toJson(list));
-                    size += list.size();
-                    for(OrderOrderGoodsVo orderOrderGoodsVo:list){
+//                    size += list.size();
+                    for(int i=16020;i<list.size();i++){
+                        OrderOrderGoodsVo orderOrderGoodsVo = list.get(i);
+//                    for(OrderOrderGoodsVo orderOrderGoodsVo:list){
+                        size++;
                         Inno72FeedBackLog log = null;//findLogByOrderId(orderOrderGoodsVo.getOrderId());
                         if(log== null){
                             //查找deviceCode
@@ -72,15 +75,16 @@ public class Inno72LocalDataSendServiceImpl implements Inno72LocalDataSendServic
                                 throw new Inno72BizException("无法找到deviceCode");
                             }
                             //调用淘宝回流
-//                            String body = inno72NewretailService.deviceVendorFeedback("6100816bd6f85638abd2fdae18beee05e32809cebf39e224008390433",orderOrderGoodsVo.getTaobaoOrderNum(),"tmall_trade",deviceCode,"SHIP_CNT",orderOrderGoodsVo.getTaobaoGoodsId(),"2018-10-28 00:00:00");
-//                            //插入日志
+                            String body = inno72NewretailService.deviceVendorFeedback("6100816bd6f85638abd2fdae18beee05e32809cebf39e224008390433",orderOrderGoodsVo.getTaobaoOrderNum(),"tmall_trade",deviceCode,"SHIP_CNT",orderOrderGoodsVo.getTaobaoGoodsId(),"2018-10-28 00:00:00");
+                            //插入日志
                             log = new Inno72FeedBackLog();
                             log.setGoodsId(orderOrderGoodsVo.getGoodsId());
                             log.setOrderId(orderOrderGoodsVo.getOrderId());
                             log.setMerchantName(merchantName);
-                            log.setResponseBody("");
+                            log.setResponseBody(body);
                             log.setOrderTime(LocalDateTime.now());
                             saveLog(log);
+                            System.out.println(size);
                         }
                     }
                 }
@@ -95,12 +99,12 @@ public class Inno72LocalDataSendServiceImpl implements Inno72LocalDataSendServic
         inno72FeedBackLogMapper.insert(log);
         System.out.println(JsonUtil.toJson(log));
     }
-
-    private List<OrderOrderGoodsVo> findSuccessOrderByMerchantId(String merchantId) {
+    @Transactional
+    public List<OrderOrderGoodsVo> findSuccessOrderByMerchantId(String merchantId) {
         return inno72OrderMapper.findSuccessOrderByMerchantId(merchantId);
     }
-
-    private String findDeviceCode(String sellerId, String machineCode) {
+    @Transactional
+    public String findDeviceCode(String sellerId, String machineCode) {
         LOGGER.debug("findDeviceCode sellerId = {},machineCode = {}",sellerId,machineCode);
         String key = sellerId+machineCode;
         String deviceCode = deviceCodeMap.get(key);
@@ -115,8 +119,8 @@ public class Inno72LocalDataSendServiceImpl implements Inno72LocalDataSendServic
         }
         return deviceCode;
     }
-
-    private Inno72FeedBackLog findLogByOrderId(String orderId) {
+    @Transactional
+    public Inno72FeedBackLog findLogByOrderId(String orderId) {
         Inno72FeedBackLog log = new Inno72FeedBackLog();
         log.setOrderId(orderId);
         List<Inno72FeedBackLog> list = inno72FeedBackLogMapper.select(log);
@@ -124,8 +128,8 @@ public class Inno72LocalDataSendServiceImpl implements Inno72LocalDataSendServic
         return list.get(0);
     }
 
-
-    private List<Inno72Goods> findGoodsBySellerId(String sellerId) {
+    @Transactional
+    public List<Inno72Goods> findGoodsBySellerId(String sellerId) {
         Inno72Goods param = new Inno72Goods();
         param.setSellerId(sellerId);
         return inno72GoodsMapper.select(param);
