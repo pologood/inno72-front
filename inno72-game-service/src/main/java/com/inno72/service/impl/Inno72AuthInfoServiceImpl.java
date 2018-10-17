@@ -570,33 +570,37 @@ public class Inno72AuthInfoServiceImpl implements Inno72AuthInfoService {
 //				inno72ActivityPlan.getId());
 
 		boolean canOrder = true;
-		boolean canGame = true;
 		Integer times = interact.getTimes(); //同一用户参与活动次数
 		Integer dayTimes = interact.getDayTimes();//同一用户每天参与活动次数
 		Integer number = interact.getNumber();//同一用户获得商品次数
-//		Integer dayNumber = interact.getDayNumber();//同一用户每天获得商品次数
+		Integer dayNumber = interact.getDayNumber();//同一用户每天获得商品次数
 		//获取这个商品的限制个数
 		Integer userDayNumber = inno72InteractGoodsService.findByInteractIdAndGoodsId(interact.getId(),goods.getId()).getUserDayNumber();
-		//设置canGame
+		//获取展示商品的个数
+		Integer goodsSize = findIntentGoodsSize(interact.getGameId());
+		//设置canOrder
 		String key = null;
+		Integer timesTmp = 0;
 		if(times!=null&&times!=-1){
-			key = String.format(RedisConstants.PAIYANG_GAME_TIMES,interact.getId(),userId);
+			key = String.format(RedisConstants.PAIYANG_ORDER_TIMES,interact.getId(),userId);
 			if(gameSessionRedisUtil.exists(key)){
 				Integer mytimes = Integer.parseInt(redisUtil.get(key));
-				if(mytimes >= times){
-					LOGGER.info("限制：interact.getTimes={},mytimes={}",times,mytimes);
-					canGame = false;
+				timesTmp = times*goodsSize;
+				if(mytimes >= timesTmp){
+					LOGGER.info("限制：interact.getTimes={},goodsSize={},mytimes={}",times,goodsSize,mytimes);
+					canOrder = false;
 				}
 			}
 		}
 		String date = DateUtil.getDateStringByYYYYMMDD();
 		if(dayTimes!=null&&dayTimes!=-1){
-			key = String.format(RedisConstants.PAIYANG_DAY_GAME_TIMES,interact.getId(),date,userId);
+			key = String.format(RedisConstants.PAIYANG_DAY_ORDER_TIMES,interact.getId(),date,userId);
 			if(gameSessionRedisUtil.exists(key)){
+				timesTmp = dayTimes*goodsSize;
 				Integer mydayTimes = Integer.parseInt(redisUtil.get(key));
-				if(mydayTimes >= dayTimes){
-					LOGGER.info("限制：interact.getDayTimes={},mydayTimes={}",dayTimes,mydayTimes);
-					canGame = false;
+				if(mydayTimes >= timesTmp){
+					LOGGER.info("限制：interact.getDayTimes={},goodsSize={},mydayTimes={}",dayTimes,goodsSize,mydayTimes);
+					canOrder = false;
 				}
 			}
 		}
@@ -614,14 +618,15 @@ public class Inno72AuthInfoServiceImpl implements Inno72AuthInfoService {
 			}
 		}
 
-//		if(dayNumber!=null){
-//			if(gameSessionRedisUtil.exists(String.format(RedisConstants.PAIYANG_DAY_ORDER_TIMES,interact.getId(),date,userId))){
-//				Integer mydayTimes = Integer.parseInt(redisUtil.get(String.format(RedisConstants.PAIYANG_DAY_ORDER_TIMES,interact.getId(),date,userId)));
-//				if(mydayTimes >= dayNumber){
-//					canOrder = false;
-//				}
-//			}
-//		}
+		if(dayNumber!=null){
+			if(gameSessionRedisUtil.exists(String.format(RedisConstants.PAIYANG_DAY_ORDER_TIMES,interact.getId(),date,userId))){
+				Integer mydayTimes = Integer.parseInt(redisUtil.get(String.format(RedisConstants.PAIYANG_DAY_ORDER_TIMES,interact.getId(),date,userId)));
+				if(mydayTimes >= dayNumber){
+					LOGGER.info("限制：dayNumber={},myDayNumber={}",dayNumber,mydayTimes);
+					canOrder = false;
+				}
+			}
+		}
 
 		if(userDayNumber!=null&&userDayNumber!=-1){
 			key = String.format(RedisConstants.PAIYANG_GOODS_ORDER_TIMES,interact.getId(),goods.getId(),date,userId);
@@ -644,7 +649,6 @@ public class Inno72AuthInfoServiceImpl implements Inno72AuthInfoService {
 		sessionVo.setActivityPlanId(interact.getId());
 
 		sessionVo.setCanOrder(canOrder);
-		sessionVo.setCanGame(canGame);
 		sessionVo.setCountGoods(goodsCount>0);
 		sessionVo.setChannelId(channelId);
 		sessionVo.setActivityId(interact.getId());
@@ -693,6 +697,17 @@ public class Inno72AuthInfoServiceImpl implements Inno72AuthInfoService {
 				interact.getId()+"|"+userId);
 
 		return Results.success(resultMap);
+	}
+
+	/**
+	 * 获取活动商品展示个数
+	 * @param gameId
+	 * @return
+	 */
+	private Integer findIntentGoodsSize(String gameId) {
+		//查找对应的游戏里面的显示条数
+		Inno72Game game = inno72GameService.findById(gameId);
+		return game.getMaxGoodsNum();
 	}
 
 	/**
@@ -861,17 +876,6 @@ public class Inno72AuthInfoServiceImpl implements Inno72AuthInfoService {
 				userSessionVo.setLogged(true);
 				gameSessionRedisUtil.setSession(userSessionVo.getSessionUuid(), JSON.toJSONString(userSessionVo));
 				logged = true;
-
-				boolean paiyangflag = userSessionVo.findPaiyangFlag();
-				if(paiyangflag && userSessionVo.getCanGame()){
-					//玩游戏次数加一
-					String key = null;
-					key = String.format(RedisConstants.PAIYANG_GAME_TIMES,userSessionVo.getActivityId(),userSessionVo.getUserId());
-					redisUtil.incr(key);
-					String date = DateUtil.getDateStringByYYYYMMDD();
-					key = String.format(RedisConstants.PAIYANG_DAY_GAME_TIMES,userSessionVo.getActivityId(),date,userSessionVo.getUserId());
-					redisUtil.incr(key);
-				}
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
