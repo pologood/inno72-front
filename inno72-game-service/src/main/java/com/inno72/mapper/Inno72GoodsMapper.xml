@@ -12,6 +12,7 @@
     <result column="seller_id" jdbcType="VARCHAR" property="sellerId" />
     <result column="shop_id" jdbcType="VARCHAR" property="shopId"/>
     <result column="img" jdbcType="VARCHAR" property="img" />
+    <result column="banner" jdbcType="VARCHAR" property="banner" />
     <result column="is_delete" jdbcType="INTEGER" property="isDelete" />
     <result column="remark" jdbcType="VARCHAR" property="remark" />
     <result column="create_id" jdbcType="VARCHAR" property="createId" />

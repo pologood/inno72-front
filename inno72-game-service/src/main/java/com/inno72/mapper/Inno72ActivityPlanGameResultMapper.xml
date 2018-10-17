@@ -26,7 +26,12 @@
         select * from inno72_activity_plan_game_result
         where
         activity_plan_id = #{activityPlanId}
-       and result_code = #{report}
+        <if test="report != null and report != ''">
+            and result_code = #{report}
+        </if>
+        <if test="prizeType != null and prizeType != ''">
+            and prize_type = #{prizeType}
+        </if>
     </select>
 
     <select id="selectPrizeId" parameterType="java.util.Map" resultType="java.lang.String">
