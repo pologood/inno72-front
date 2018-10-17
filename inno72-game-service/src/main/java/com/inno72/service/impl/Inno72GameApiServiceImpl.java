@@ -3,15 +3,7 @@ package com.inno72.service.impl;
 import java.io.File;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 
 import javax.annotation.Resource;
 
@@ -73,6 +65,9 @@ import com.inno72.mapper.Inno72SupplyChannelMapper;
 import com.inno72.oss.OSSUtil;
 import com.inno72.plugin.http.HttpClient;
 import com.inno72.redis.IRedisUtil;
+import com.inno72.service.Inno72GameApiService;
+import com.inno72.service.Inno72GameService;
+import com.inno72.service.Inno72TopService;
 import com.inno72.util.AlarmUtil;
 import com.inno72.vo.AlarmMessageBean;
 import com.inno72.vo.GoodsVo;
@@ -168,6 +163,7 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 
 	private static final Integer SAMPLING_TYPE = 1; // 类型（派样）
 
+	public static final Integer PRODUCT_NO_EXIST = -1; // 商品不存在
 
 	/**
 	 * {
@@ -688,6 +684,8 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 		String payQrcodeImage = "";
 		int orderCode = 1;
 
+		// 判断是否有商品
+
 //		boolean hasGoods = checkHasGoods(planGameResults, userSessionVo.getMachineId());
 //		if (!hasGoods) {
 //			return Results.failure("货道可用商品数量为0！");
@@ -799,6 +797,10 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 			return Results.failure("无商品类型");
 		}
 
+		if (resultGoodsId.isEmpty()) {
+			orderCode = PRODUCT_NO_EXIST;
+		}
+
 		Map<String, Object> result = new HashMap<>();
 		if(resultGoodsId!=null&&resultGoodsId.size()>0){
 			this.setChannelInfo(userSessionVo, result, resultGoodsId);
@@ -814,6 +816,8 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 		LOGGER.info("standardOrder is {}", JsonUtil.toJson(result));
 		return Results.success(result);
 	}
+
+
 
 	/**
 	 * 查找派样优惠卷有没有配置
