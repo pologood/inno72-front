@@ -42,4 +42,16 @@
 
         select * from inno72_merchant where merchant_name like CONCAT('%',#{merchantName},'%') and is_delete = 0
     </select>
+    <select id="findMerchantByByGoodsId" parameterType="string" resultMap="BaseResultMap">
+        SELECT
+            *
+        FROM
+            inno72_merchant m
+        LEFT JOIN inno72_goods g
+        on m.id = g.seller_id
+        WHERE
+            g.id = #{goodsId}
+        AND m.is_delete = 0
+    </select>
+
 </mapper>

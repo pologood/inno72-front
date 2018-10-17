@@ -1,6 +1,5 @@
 package com.inno72.service;
 
-import com.inno72.vo.DeviceParamVo;
 import com.inno72.vo.DeviceVo;
 import com.taobao.api.ApiException;
 
@@ -16,7 +15,7 @@ public interface Inno72NewretailService {
 
     Boolean getMemberIdentity(String sessionKey, String mixNick) throws ApiException;
 
-    String getStoreMemberurl(String sessionKey, String deviceCode) throws ApiException;
+    String getStoreMemberurl(String sessionKey, String deviceCode, String callbackUrl) throws ApiException;
 
     String deviceVendorFeedback(String sessionKey, String tradeNo, String tradeType, String deviceCode, String action
             , String itemId, String couponId, String userNick, String outerBizId, String opTime, String outerUser) throws ApiException;

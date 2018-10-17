@@ -262,4 +262,13 @@ public class Inno72StandardController {
 		}
 	}
 
+	/**
+	 * 入会操作（目前聚石塔回调）
+	 */
+	@ResponseBody
+	@RequestMapping(value = "/newRetailmemberJoin", method = {RequestMethod.POST})
+	public Result<Object> newRetailmemberJoin(String sessionUuid,String sellSessionKey,String taobaoUserId,String meberJoinCallBackUrl) {
+		return inno72GameApiService.newRetailmemberJoin(sessionUuid,sellSessionKey,taobaoUserId,meberJoinCallBackUrl);
+	}
+
 }

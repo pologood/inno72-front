@@ -99,9 +99,9 @@ public class Inno72NewretailController {
     }
 
     @RequestMapping(value = "/getStoreMemberurl")
-    public Result<Object> getStoreMemberurl(String sessionKey, String deviceCode) {
+    public Result<Object> getStoreMemberurl(String sessionKey, String deviceCode,String callbackUrl) {
         try{
-            String url =  service.getStoreMemberurl(sessionKey,deviceCode);
+            String url =  service.getStoreMemberurl(sessionKey,deviceCode,callbackUrl);
             return Results.success(url);
         }catch(Exception e){
             LOGGER.error("getStoreMemberurl",e);

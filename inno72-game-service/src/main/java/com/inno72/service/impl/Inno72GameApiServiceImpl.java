@@ -1859,7 +1859,12 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 			returnUrl = this.createQrCode(inno72Machine, machineCode);
 		}
 		// 开始会话流程
-		this.startSession(inno72Machine, ext, sessionUuid);
+		try {
+			this.startSession(inno72Machine, ext, sessionUuid);
+		}catch(Exception e){
+			LOGGER.error("prepareLoginQrCode",e);
+			return Results.failure("系统异常");
+		}
 		Map<String, Object> map = new HashMap<String, Object>();
 		map.put("qrCodeUrl", returnUrl);
 		map.put("sessionUuid", sessionUuid);
@@ -1872,7 +1877,7 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 	 * @param ext
 	 * @param sessionUuid
 	 */
-	private void startSession(Inno72Machine inno72Machine, String ext, String sessionUuid) {
+	private void startSession(Inno72Machine inno72Machine, String ext, String sessionUuid){
 		UserSessionVo userSessionVo = new UserSessionVo();
 		userSessionVo.setMachineCode(inno72Machine.getMachineCode());
 		userSessionVo.setMachineId(inno72Machine.getId());
@@ -1892,9 +1897,9 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 		this.analysisExt(userSessionVo, ext);
 
         //设置新零售入会url
-		if(userSessionVo.findPaiyangFlag()&&userSessionVo.getInno72MachineVo().getPaiyangType()==Inno72Interact.PAIYANG_TYPE_NEWRETAIL){
-			initNewRetailMemberUrl(userSessionVo);
-		}
+//		if(userSessionVo.findPaiyangFlag()&&userSessionVo.getInno72MachineVo().getPaiyangType()==Inno72Interact.PAIYANG_TYPE_NEWRETAIL){
+//			initNewRetailMemberUrl(userSessionVo);
+//		}
 
 		gameSessionRedisUtil.setSession(sessionUuid, JsonUtil.toJson(userSessionVo));
 
@@ -1906,15 +1911,15 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 	 * 设置新零售入会url
 	 * @param userSessionVo
 	 */
-	private void initNewRetailMemberUrl(UserSessionVo userSessionVo) throws ApiException {
-		String machineCode = userSessionVo.getMachineCode();
+	private void initNewRetailMemberUrl(UserSessionVo userSessionVo,String callbackUrl) throws ApiException {
 		String goodsId = userSessionVo.getGoodsId();
 		//查找新零售sessionKey
 		Inno72Merchant inno72Merchant = inno72MerchantMapper.findMerchantByByGoodsId(goodsId);
 		//查找deviceCode
 		Inno72MachineDevice device = inno72MachineDeviceService.findByMachineCodeAndSellerId(userSessionVo.getMachineCode(),inno72Merchant.getMerchantCode());
 		//调用淘宝获取入会二维码url
-		String url = inno72NewretailService.getStoreMemberurl(inno72Merchant.getSellerSessionKey(),device.getDeviceCode());
+		String url = inno72NewretailService.getStoreMemberurl(inno72Merchant.getSellerSessionKey(),device.getDeviceCode(),callbackUrl);
+		userSessionVo.setNewRetailMemberUrl(url);
 
 	}
 

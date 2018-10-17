@@ -155,10 +155,11 @@ public class Inno72NewretailServiceImpl implements Inno72NewretailService {
      * @throws ApiException
      */
     @Override
-    public String getStoreMemberurl(String sessionKey, String deviceCode) throws ApiException {
+    public String getStoreMemberurl(String sessionKey, String deviceCode,String callbackUrl) throws ApiException {
         TmallDeviceBrandMemberurlGetRequest req = new TmallDeviceBrandMemberurlGetRequest();
         req.setDeviceCode(deviceCode);
         req.setLongterm(true);
+        req.setCallbackUrl(callbackUrl);
         TmallDeviceBrandMemberurlGetResponse rsp = client.execute(req, sessionKey);
         LOGGER.debug("getStoreMemberurl deviceCode = {},response = {}",deviceCode,rsp.getBody());
         return rsp.getShortImgUrl();

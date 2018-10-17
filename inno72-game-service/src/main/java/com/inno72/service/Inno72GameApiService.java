@@ -6,6 +6,7 @@ import com.inno72.common.Result;
 import com.inno72.vo.Inno72SamplingGoods;
 import com.inno72.vo.MachineApiVo;
 import com.inno72.vo.StandardPrepareLoginReqVo;
+import com.taobao.api.ApiException;
 
 public interface Inno72GameApiService {
 
