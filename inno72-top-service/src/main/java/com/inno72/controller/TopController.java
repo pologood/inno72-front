@@ -684,6 +684,8 @@ public class TopController {
 
 		// 设置用户已登录
 		boolean logged = this.setUserLogged(sessionUuid, env);
+		// 入会记录日志
+		this.log(sessionUuid,env);
 		LOGGER.info("meberJoinCallBack logged is {} ", logged);
 
 		String h5url = String.format(h5MobileUrl, env, playCode) + "?qrStatus=" + qrStatus + "&sellerId=" + sellerId;
@@ -692,6 +694,26 @@ public class TopController {
 			// 跳转 手机h5
 			response.sendRedirect(h5url);
 		} catch (IOException e) {
+			LOGGER.error(e.getMessage(), e);
+		}
+	}
+
+	private void log(String sessionUuid, String env) {
+		LOGGER.info("gameServerUrl is " + gameServerUrl);
+		RestTemplate client = new RestTemplate();
+		MultiValueMap<String, Object> postParameters = new LinkedMultiValueMap<>();
+		postParameters.add("sessionUuid", sessionUuid);
+		postParameters.add("type","34");
+		HttpHeaders headers = new HttpHeaders();
+		headers.add("Content-Type", "application/x-www-form-urlencoded");
+		String result;
+		try {
+			String h5Url = propertiesBean.getValue(env + "HostGame") + "/api/point";
+			LOGGER.info("url is {}", h5Url);
+			HttpEntity<MultiValueMap<String, Object>> requestEntity = new HttpEntity<>(postParameters, headers);
+			result = client.postForObject(h5Url, requestEntity, String.class);
+			LOGGER.info("log result = {}",result);
+		} catch (Exception e) {
 			LOGGER.error(e.getMessage(), e);
 		}
 	}

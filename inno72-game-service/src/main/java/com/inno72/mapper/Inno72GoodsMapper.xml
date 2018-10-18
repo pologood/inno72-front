@@ -49,7 +49,7 @@
   </resultMap>
   
   <select id="selectByCode" resultMap="BaseResultMap" parameterType="string">
-  	select * from inno72_goods where code = #{code} and is_delete = 0
+  	select * from inno72_goods where code = #{code} and is_delete = 0 and use_type != 1
   </select>
     <select id="selectByChannelId" resultMap="BaseResultMap" parameterType="string">
          select * from inno72_goods where id = (select goods_id from inno72_supply_channel_goods where supply_channel_id = #{channelId} and is_delete = 0)
