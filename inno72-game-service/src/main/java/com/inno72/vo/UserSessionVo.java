@@ -89,6 +89,8 @@ public class UserSessionVo {
 	 * 是否显示新零售入会码0不展示，1展示
 	 */
 	private Integer displayNewRetailMemberUrlFlag;
+	public static final Integer DISPLAYNEWRETAILMEMBERURLFLAG_YES = 1;
+	public static final Integer DISPLAYNEWRETAILMEMBERURLFLAG_NO = 0;
 
 	/**
 	 * 活动类型

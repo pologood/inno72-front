@@ -2888,11 +2888,14 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 				Inno72MachineDevice device = inno72MachineDeviceService.findByMachineCodeAndSellerId(userSessionVo.getMachineCode(),m.getMerchantCode());
 				String url = inno72NewretailService.getStoreMemberurl(sellSessionKey,device.getDeviceCode(),meberJoinCallBackUrl);
 				userSessionVo.setNewRetailMemberUrl(url);
+				userSessionVo.setDisplayNewRetailMemberUrlFlag(UserSessionVo.DISPLAYNEWRETAILMEMBERURLFLAG_YES);
+				return Results.success(0);
 			}
 		} catch (ApiException e) {
 			e.printStackTrace();
+			LOGGER.error("newRetailmemberJoin",e);
+			return Results.failure("调用淘宝失败");
 		}
-		return null;
 	}
 
 }
