@@ -93,7 +93,7 @@ public class Inno72ActivityController {
 			gameResultVo.setBanner(inno72Goods.getBanner());
 			gameResultVo.setGoodsCount(goodsCount);
 			gameResultVo.setSpecRemark(inno72Goods.getSpecRemark());
-			gameResultVo.setPrice(inno72Goods.getPrice() != null ? inno72Goods.getPrice().setScale(1).toString() : "");
+			gameResultVo.setPrice(inno72Goods.getPrice() != null ? inno72Goods.getPrice().setScale(2).toString() : "");
 			gameResultVoList.add(gameResultVo);
 		}
 		return Results.success(gameResultVoList);
