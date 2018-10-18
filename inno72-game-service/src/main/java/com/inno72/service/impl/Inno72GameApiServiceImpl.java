@@ -1,82 +1,39 @@
 package com.inno72.service.impl;
 
-import java.io.File;
-import java.math.BigDecimal;
-import java.time.LocalDateTime;
-import java.util.*;
-
-import javax.annotation.Resource;
-
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONObject;
+import com.google.gson.Gson;
 import com.inno72.common.*;
+import com.inno72.common.json.JsonUtil;
+import com.inno72.common.shiro.filter.JWTUtil;
 import com.inno72.common.util.*;
 import com.inno72.common.util.DateUtil;
+import com.inno72.common.utils.StringUtil;
+import com.inno72.feign.MachineCheckBackendFeignClient;
+import com.inno72.machine.vo.SupplyRequestVo;
+import com.inno72.mapper.*;
 import com.inno72.model.*;
+import com.inno72.oss.OSSUtil;
+import com.inno72.plugin.http.HttpClient;
+import com.inno72.redis.IRedisUtil;
 import com.inno72.service.*;
-import com.inno72.vo.*;
+import com.inno72.util.AlarmUtil;
 import com.inno72.vo.*;
 import com.taobao.api.ApiException;
+import net.coobird.thumbnailator.Thumbnails;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.alibaba.fastjson.JSON;
-import com.alibaba.fastjson.JSONObject;
-import com.google.gson.Gson;
-import com.inno72.common.datetime.LocalDateTimeUtil;
-import com.inno72.common.CommonBean;
-import com.inno72.common.Inno72GameServiceProperties;
-import com.inno72.common.Result;
-import com.inno72.common.Results;
-import com.inno72.common.StandardLoginTypeEnum;
-import com.inno72.common.json.JsonUtil;
-import com.inno72.common.shiro.filter.JWTUtil;
-import com.inno72.common.util.AesUtils;
-import com.inno72.common.util.FastJsonUtils;
-import com.inno72.common.util.GameSessionRedisUtil;
-import com.inno72.common.util.Inno72OrderNumGenUtil;
-import com.inno72.common.util.QrCodeUtil;
-import com.inno72.common.util.UuidUtil;
-import com.inno72.common.utils.StringUtil;
-import com.inno72.feign.MachineCheckBackendFeignClient;
-import com.inno72.machine.vo.SupplyRequestVo;
-import com.inno72.mapper.Inno72ActivityMapper;
-import com.inno72.mapper.Inno72ActivityPlanGameResultMapper;
-import com.inno72.mapper.Inno72ActivityPlanMapper;
-import com.inno72.mapper.Inno72ChannelMapper;
-import com.inno72.mapper.Inno72CouponMapper;
-import com.inno72.mapper.Inno72GameMapper;
-import com.inno72.mapper.Inno72GameUserChannelMapper;
-import com.inno72.mapper.Inno72GameUserLifeMapper;
-import com.inno72.mapper.Inno72GameUserMapper;
-import com.inno72.mapper.Inno72GoodsMapper;
-import com.inno72.mapper.Inno72LocaleMapper;
-import com.inno72.mapper.Inno72MachineMapper;
-import com.inno72.mapper.Inno72MerchantMapper;
-import com.inno72.mapper.Inno72OrderGoodsMapper;
-import com.inno72.mapper.Inno72OrderHistoryMapper;
-import com.inno72.mapper.Inno72OrderMapper;
-import com.inno72.mapper.Inno72ShopsMapper;
-import com.inno72.mapper.Inno72SupplyChannelMapper;
-import com.inno72.oss.OSSUtil;
-import com.inno72.plugin.http.HttpClient;
-import com.inno72.redis.IRedisUtil;
-import com.inno72.service.Inno72GameApiService;
-import com.inno72.service.Inno72GameService;
-import com.inno72.service.Inno72TopService;
-import com.inno72.util.AlarmUtil;
-import com.inno72.vo.AlarmMessageBean;
-import com.inno72.vo.GoodsVo;
-import com.inno72.vo.Inno72SamplingGoods;
-import com.inno72.vo.LogReqrest;
-import com.inno72.vo.MachineApiVo;
-import com.inno72.vo.UserSessionVo;
-
-import net.coobird.thumbnailator.Thumbnails;
+import javax.annotation.Resource;
+import java.io.File;
+import java.math.BigDecimal;
+import java.time.LocalDateTime;
+import java.util.*;
 
 @Service
 public class Inno72GameApiServiceImpl implements Inno72GameApiService {
@@ -2912,6 +2869,30 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 		}
 
 		return Results.success();
+	}
+
+	@Override
+	public Result<Object> newRetailmemberJoin(String sessionUuid, String sellSessionKey, String taobaoUserId, String meberJoinCallBackUrl){
+		//查看是否入会
+		try {
+			Boolean vipflag = inno72NewretailService.getMemberIdentity(sellSessionKey,taobaoUserId);
+			if(vipflag){
+				//如果是会员
+				return Results.success(1);
+			}else{
+				//如果不是会员获取入会的二维码url
+				UserSessionVo userSessionVo = gameSessionRedisUtil.getSessionKey(sessionUuid);
+				String goodsId = userSessionVo.getGoodsId();
+				Inno72Merchant m = inno72MerchantMapper.findMerchantByByGoodsId(goodsId);
+				//查询deviceCode
+				Inno72MachineDevice device = inno72MachineDeviceService.findByMachineCodeAndSellerId(userSessionVo.getMachineCode(),m.getMerchantCode());
+				String url = inno72NewretailService.getStoreMemberurl(sellSessionKey,device.getDeviceCode(),meberJoinCallBackUrl);
+				userSessionVo.setNewRetailMemberUrl(url);
+			}
+		} catch (ApiException e) {
+			e.printStackTrace();
+		}
+		return null;
 	}
 
 }

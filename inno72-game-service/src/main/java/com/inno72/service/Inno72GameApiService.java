@@ -49,4 +49,14 @@ public interface Inno72GameApiService {
 	Result<List<Inno72SamplingGoods>> getSampling(String machineCode);
 
 	Result<String> setHeartbeat(String machineCode, String page, String planCode, String activity, String desc);
+
+	/**
+	 * 入会
+	 * @param sessionUuid
+	 * @param sellSessionKey
+	 * @param taobaoUserId
+	 * @param meberJoinCallBackUrl
+	 * @return
+	 */
+    Result<Object> newRetailmemberJoin(String sessionUuid, String sellSessionKey, String taobaoUserId, String meberJoinCallBackUrl);
 }
