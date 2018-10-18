@@ -90,6 +90,11 @@ public class Inno72Goods {
 	private Date updateTime;
 
 	/**
+	 * 规格描述
+	 */
+	private String specRemark;
+
+	/**
 	 * 获取商品ID
 	 *
 	 * @return id - 商品ID
@@ -319,5 +324,13 @@ public class Inno72Goods {
 
 	public void setBanner(String banner) {
 		this.banner = banner;
+	}
+
+	public String getSpecRemark() {
+		return specRemark;
+	}
+
+	public void setSpecRemark(String specRemark) {
+		this.specRemark = specRemark;
 	}
 }

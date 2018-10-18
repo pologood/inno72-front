@@ -19,6 +19,7 @@
     <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
     <result column="update_id" jdbcType="VARCHAR" property="updateId" />
     <result column="update_time" jdbcType="TIMESTAMP" property="updateTime" />
+    <result column="spec_remark" jdbcType="VARCHAR" property="specRemark" />
   </resultMap>
   
   <resultMap id="SamplingGoodsMap" type="com.inno72.vo.Inno72SamplingGoods">
