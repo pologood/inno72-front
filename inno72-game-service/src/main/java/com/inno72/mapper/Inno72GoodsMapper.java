@@ -15,5 +15,12 @@ public interface Inno72GoodsMapper extends Mapper<Inno72Goods> {
 
 	Inno72SamplingGoods selectShopInfo(Map<String, String> param);
 
+	/**
+	 * 根据id超着派样商品
+	 * @param goodsId
+	 * @return
+	 */
+    Inno72SamplingGoods findSamplingGoodsById(String goodsId);
+
 	Inno72Goods selectByChannelId(String channelId);
 }

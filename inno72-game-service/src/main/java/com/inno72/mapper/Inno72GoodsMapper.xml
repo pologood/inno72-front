@@ -12,12 +12,14 @@
     <result column="seller_id" jdbcType="VARCHAR" property="sellerId" />
     <result column="shop_id" jdbcType="VARCHAR" property="shopId"/>
     <result column="img" jdbcType="VARCHAR" property="img" />
+    <result column="banner" jdbcType="VARCHAR" property="banner" />
     <result column="is_delete" jdbcType="INTEGER" property="isDelete" />
     <result column="remark" jdbcType="VARCHAR" property="remark" />
     <result column="create_id" jdbcType="VARCHAR" property="createId" />
     <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
     <result column="update_id" jdbcType="VARCHAR" property="updateId" />
     <result column="update_time" jdbcType="TIMESTAMP" property="updateTime" />
+    <result column="spec_remark" jdbcType="VARCHAR" property="specRemark" />
   </resultMap>
   
   <resultMap id="SamplingGoodsMap" type="com.inno72.vo.Inno72SamplingGoods">
@@ -52,7 +54,7 @@
     <select id="selectByChannelId" resultMap="BaseResultMap" parameterType="string">
          select * from inno72_goods where id = (select goods_id from inno72_supply_channel_goods where supply_channel_id = #{channelId} and is_delete = 0)
     </select>
-  
+
   <!-- <select id="selectSamplingGoods" resultMap="SamplingGoodsMap" parameterType="String">
     
     select 
@@ -93,4 +95,11 @@
 	    shops.id =#{shopId}  and activity_shops.activity_id=#{activityId}
   </select>
 
+    <select id="findSamplingGoodsById" resultMap="SamplingGoodsMap" parameterType="String">
+    SELECT
+	    *
+	FROM inno72_goods
+	WHERE
+	    id=#{goodsId}
+  </select>
 </mapper>

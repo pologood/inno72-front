@@ -51,6 +51,17 @@ public class Inno72Game {
 	 */
 	@Column(name = "create_id")
 	private String createId;
+	/**
+	 * 商品最小数量
+	 */
+	@Column(name = "min_goods_num")
+	private Integer minGoodsNum;
+
+	/**
+	 * 商品最大数量
+	 */
+	@Column(name = "max_goods_num")
+	private Integer maxGoodsNum;
 
 	/**
 	 * 创建时间
@@ -248,5 +259,21 @@ public class Inno72Game {
 	 */
 	public void setUpdateTime(LocalDateTime updateTime) {
 		this.updateTime = updateTime;
+	}
+
+	public Integer getMinGoodsNum() {
+		return minGoodsNum;
+	}
+
+	public void setMinGoodsNum(Integer minGoodsNum) {
+		this.minGoodsNum = minGoodsNum;
+	}
+
+	public Integer getMaxGoodsNum() {
+		return maxGoodsNum;
+	}
+
+	public void setMaxGoodsNum(Integer maxGoodsNum) {
+		this.maxGoodsNum = maxGoodsNum;
 	}
 }

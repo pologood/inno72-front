@@ -5,6 +5,10 @@ public class StandardPrepareLoginReqVo {
 	private String machineCode;
 
 	private Integer loginType;
+	/**
+	 * 活动类型 1派样 0 非派样
+	 */
+	private Integer activityType;
 
 	/**
 	 * 操作类型 1 生成二维码 2 开始新会话
@@ -70,6 +74,14 @@ public class StandardPrepareLoginReqVo {
 
 	public void setExt(String ext) {
 		this.ext = ext;
+	}
+
+	public Integer getActivityType() {
+		return activityType;
+	}
+
+	public void setActivityType(Integer activityType) {
+		this.activityType = activityType;
 	}
 
 	public Integer getOperType() {

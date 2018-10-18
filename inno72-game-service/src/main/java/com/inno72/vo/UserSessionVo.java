@@ -16,6 +16,7 @@ public class UserSessionVo {
 	private String mixnick;
 	private String source;
 	private String refOrderId;
+	private Inno72MachineVo inno72MachineVo;
 
 
 	/**
@@ -31,6 +32,7 @@ public class UserSessionVo {
 
 	private Long playTimes;
 	private boolean canOrder;
+	private boolean canGame;
 	private String channelId;
 	private String machineId;
 	private String activityId;
@@ -167,6 +169,23 @@ public class UserSessionVo {
 		this.needPay = needPay;
 	}
 
+	public boolean getCanGame() {
+		return canGame;
+	}
+
+	public void setCanGame(boolean canGame) {
+		this.canGame = canGame;
+	}
+
+    public boolean findPaiyangFlag() {
+		boolean flag = false;
+
+		if(inno72MachineVo!=null && inno72MachineVo.getActivityType() == Inno72MachineVo.ACTIVITYTYPE_PAIYANG){
+			flag = true;
+		}
+
+		return flag;
+    }
 	public boolean getIsScanned() {
 		return isScanned;
 	}

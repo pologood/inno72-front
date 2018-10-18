@@ -1,5 +1,6 @@
 package com;
 
+import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.cloud.client.circuitbreaker.EnableCircuitBreaker;
@@ -20,6 +21,7 @@ import com.inno72.springboot.web.SpringBootServletInitializer;
 @EnableConfigurationProperties({Inno72GameServiceProperties.class})
 public class Inno72Application extends SpringBootServletInitializer {
 
+	public static SpringApplication application;
 	/**
 	 * 内嵌Tomcat入口
 	 *
@@ -28,7 +30,8 @@ public class Inno72Application extends SpringBootServletInitializer {
 	 * @Author gaoxingang
 	 */
 	public static void main(String[] args) {
-		new SpringApplicationBuilder(Inno72Application.class, "inno72-game-service", args);
+		SpringApplicationBuilder sb = new SpringApplicationBuilder(Inno72Application.class, "inno72-game-service", args);
+		application = sb.application();
 	}
 
 	@Override

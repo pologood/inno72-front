@@ -92,9 +92,14 @@ public class SuperOpenServiceImpl implements SuperOpenService {
 		SHIPMENT_REPORTV2("016", "shipmentReportV2", "/api/goods/shipmentReportV2", "出货", "1.0.0"),
 		/** 设置心跳 */
 		SET_HEARTBEAT("017", "setHeartbeat", "/api/setHeartbeat", "设置心跳", "1.0.0"),
+		/* 获取派样商品 */
+		GET_SAMPLINGNEW("018", "getSamplingNew", "/api/getSamplingNew", "获取派样商品", "1.0.0"),
 
-		
-		
+
+
+		/** 查找活动商品 */
+		ACTIVITY_GOODS("020", "findGoods", "/api/activity/findGoods", "查找活动商品接口", "1.0.0"),
+
 		STANDARD_PREPARELOGIN("100", "standardPrepareLogin", "/api/standard/prepareLogin", "预登陆", "1.0.0"),
 		
 		STANDARD_REDIRECTLOGIN("101", "standardRedirectLogin", "/api/standard/redirectLogin", "跳转登陆", "1.0.0"),

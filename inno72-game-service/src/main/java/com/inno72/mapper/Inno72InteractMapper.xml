@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.inno72.mapper.Inno72InteractMapper">
+  <resultMap id="BaseResultMap" type="com.inno72.model.Inno72Interact">
+    <!--
+      WARNING - @mbg.generated
+    -->
+    <id column="id" jdbcType="VARCHAR" property="id" />
+    <result column="name" jdbcType="VARCHAR" property="name" />
+    <result column="game_id" jdbcType="VARCHAR" property="gameId" />
+    <result column="day" jdbcType="VARCHAR" property="day" />
+    <result column="manager" jdbcType="VARCHAR" property="manager" />
+    <result column="status" jdbcType="INTEGER" property="status" />
+    <result column="times" jdbcType="INTEGER" property="times" />
+    <result column="day_times" jdbcType="INTEGER" property="dayTimes" />
+    <result column="number" jdbcType="INTEGER" property="number" />
+    <result column="day_number" jdbcType="INTEGER" property="dayNumber" />
+    <result column="is_delete" jdbcType="INTEGER" property="isDelete" />
+    <result column="create_id" jdbcType="VARCHAR" property="createId" />
+    <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
+    <result column="update_id" jdbcType="VARCHAR" property="updateId" />
+    <result column="update_time" jdbcType="TIMESTAMP" property="updateTime" />
+    <result column="plan_code" jdbcType="VARCHAR" property="planCode" />
+  </resultMap>
+</mapper>

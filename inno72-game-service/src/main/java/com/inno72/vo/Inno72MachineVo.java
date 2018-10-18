@@ -5,7 +5,13 @@ import com.inno72.model.Inno72Game;
 import com.inno72.model.Inno72Machine;
 
 public class Inno72MachineVo extends Inno72Machine {
+	/**
+	 * 活动类型，1派样，0普通
+	 */
+	private Integer activityType;
 
+	public final static Integer ACTIVITYTYPE_PAIYANG=1;
+	public final static Integer ACTIVITYTYPE_NOTPAIYANG=0;
 	/**
 	 * 为true时，客户端重新加载游戏
 	 */
@@ -118,5 +124,13 @@ public class Inno72MachineVo extends Inno72Machine {
 
 	public void setPlanCode(String planCode) {
 		this.planCode = planCode;
+	}
+
+	public Integer getActivityType() {
+		return activityType;
+	}
+
+	public void setActivityType(Integer activityType) {
+		this.activityType = activityType;
 	}
 }

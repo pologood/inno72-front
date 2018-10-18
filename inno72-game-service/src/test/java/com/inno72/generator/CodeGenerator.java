@@ -42,13 +42,12 @@ import freemarker.template.TemplateExceptionHandler;
  */
 public class CodeGenerator {
 	// JDBC配置，请修改为你项目的实际配置
-	private static final String JDBC_URL = "jdbc:mysql://pre_test.72solo.com:3306/inno72";
+	private static final String JDBC_URL = "jdbc:mysql://192.168.33.243:3306/inno72";
 	private static final String JDBC_USERNAME = "inno72";
-	private static final String JDBC_PASSWORD = "n985chyM5eFY34xUwaqb";
+	private static final String JDBC_PASSWORD = "inno72NB@2018";
 	private static final String JDBC_DIVER_CLASS_NAME = "com.mysql.jdbc.Driver";
 
-//	private static final String PROJECT_PATH = System.getProperty("user.dir");// 项目在硬盘上的基础路径
-	private static final String PROJECT_PATH = "/Users/72cy-0101-01-0009/Documents/idea_workspace/inno72-front/inno72-game-service";// 项目在硬盘上的基础路径
+	private static final String PROJECT_PATH = System.getProperty("user.dir")+"/inno72-game-service";// 项目在硬盘上的基础路径
 	private static final String TEMPLATE_FILE_PATH = PROJECT_PATH + "/src/test/resources/generator/template";// 模板位置
 
 	private static final String JAVA_PATH = "/src/test/java"; // java文件路径
@@ -61,7 +60,15 @@ public class CodeGenerator {
 	private static final String DATE = new SimpleDateFormat("yyyy/MM/dd").format(new Date());// @date
 
 	public static void main(String[] args) {
-		genCode("inno72_coupon");
+		genCode("inno72_interact_goods"
+				,"inno72_interact_machine"
+				,"inno72_interact_machine_goods"
+				,"inno72_interact_machine_time"
+				,"inno72_interact_merchant",
+				"inno72_interact_shops",
+				"inno72_interact");
+
+
 	}
 
 	/**
@@ -83,8 +90,8 @@ public class CodeGenerator {
 	 */
 	public static void genCodeByCustomModelName(String tableName, String modelName) {
 		genModelAndMapper(tableName, modelName);
-		genService(tableName, modelName);
-		genController(tableName, modelName);
+		// genService(tableName, modelName);
+		// genController(tableName, modelName);
 	}
 
 

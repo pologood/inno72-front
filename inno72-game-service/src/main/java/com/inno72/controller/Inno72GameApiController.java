@@ -4,12 +4,17 @@ import java.util.List;
 
 import javax.annotation.Resource;
 
+import com.inno72.common.RedisConstants;
 import com.inno72.common.Results;
 import com.inno72.common.json.JsonUtil;
+import com.inno72.common.util.DateUtil;
 import com.inno72.common.util.GameSessionRedisUtil;
+import com.inno72.service.Inno72PaiYangService;
 import com.inno72.vo.UserSessionVo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
@@ -30,6 +35,8 @@ public class Inno72GameApiController {
 
 	@Resource
 	private GameSessionRedisUtil gameSessionRedisUtil;
+	@Resource
+	private Inno72PaiYangService paiYangService;
 
 	/**
 	 *
@@ -206,6 +213,16 @@ public class Inno72GameApiController {
 	@RequestMapping(value = "/getSampling", method = {RequestMethod.POST, RequestMethod.GET})
 	public Result<List<Inno72SamplingGoods>> getSampling(String machineCode) {
 		return inno72GameApiService.getSampling(machineCode);
+	}
+
+
+	/**
+	 * 获取派样商品
+	 * @return Result
+	 */
+	@RequestMapping(value = "/getSamplingNew", method = {RequestMethod.POST, RequestMethod.GET})
+	public Result<List<Inno72SamplingGoods>> getSamplingNew(String machineCode) {
+		return paiYangService.getSampling(machineCode);
 	}
 
 	/**

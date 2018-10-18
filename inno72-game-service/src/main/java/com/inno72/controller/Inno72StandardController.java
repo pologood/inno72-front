@@ -7,6 +7,8 @@ import java.time.format.DateTimeFormatter;
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletResponse;
 
+import com.inno72.service.Inno72PaiYangService;
+import com.inno72.vo.*;
 import com.alibaba.fastjson.JSON;
 import com.inno72.common.*;
 import com.inno72.common.util.UuidUtil;
@@ -62,6 +64,9 @@ public class Inno72StandardController {
 
 	@Resource
 	private GameSessionRedisUtil gameSessionRedisUtil;
+
+	@Resource
+	private Inno72PaiYangService inno72PaiYangService;
 
 	@Resource
 	private Inno72GameServiceProperties inno72GameServiceProperties;
