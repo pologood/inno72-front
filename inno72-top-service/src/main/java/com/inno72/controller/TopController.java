@@ -232,6 +232,17 @@ public class TopController {
 		}
 	}
 
+	/**
+	 * 调用游戏服务端获取入会状态
+	 * @param sessionUuid
+	 * @param sellSessionKey
+	 * @param taobaoUserId
+	 * @param meberJoinCallBackUrl
+	 * @return
+	 */
+	private boolean newRetailmemberJoin(String sessionUuid, String sellSessionKey, String taobaoUserId, String meberJoinCallBackUrl) {
+	}
+
 	private String getH5ErrUrl(String env, String status) {
 		String h5ErrUrl = String.format(h5MobileErrUrl, env, status);
 		LOGGER.info("h5ErrUrl is {}", h5ErrUrl);
