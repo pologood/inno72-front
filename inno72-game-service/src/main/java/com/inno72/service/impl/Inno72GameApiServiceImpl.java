@@ -99,10 +99,6 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 
 	@Resource
 	private Inno72InteractMachineGoodsService inno72InteractMachineGoodsService;
-	@Resource
-	private Inno72MachineDeviceService inno72MachineDeviceService;
-	@Resource
-	private Inno72NewretailService inno72NewretailService;
 
 	@Value("${machinecheckappbackend.uri}")
 	private String machinecheckappbackendUri;
@@ -118,6 +114,7 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 	private static final String QRSTATUS_INVALID = "-1"; // 二维码失效
 	private static final String QRSTATUS_EXIST_USER = "-2"; // 存在用户登录
 
+	public static final Integer PRODUCT_NO_EXIST = -1; // 商品不存在
 	private static final Integer SAMPLING_TYPE = 1; // 类型（派样）
 
 	public static final Integer PRODUCT_NO_EXIST = -1; // 商品不存在
@@ -628,10 +625,6 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 		List<Inno72ActivityPlanGameResult> planGameResults = this.getGameResults(vo, userSessionVo);
 		LOGGER.info("获取游戏结果 {}", planGameResults);
 
-		if (planGameResults.size() == 0) {
-			return Results.failure("无配置商品!");
-		}
-
 		LOGGER.debug("下单 userSessionVo ==> {}", JSON.toJSONString(userSessionVo));
 
 		List<String> resultGoodsId = new ArrayList<>();
@@ -684,6 +677,10 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 		Map<String, Object> result = new HashMap<>();
 
 		this.setChannelInfo(userSessionVo, result, resultGoodsId);
+
+		if (resultGoodsId.isEmpty()) {
+			orderCode = PRODUCT_NO_EXIST;
+		}
 
 		result.put("time", new Date().getTime());
 		result.put("lotteryResult", lotteryCode);

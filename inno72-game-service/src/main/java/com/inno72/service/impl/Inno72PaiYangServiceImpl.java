@@ -148,7 +148,7 @@ public class Inno72PaiYangServiceImpl implements Inno72PaiYangService {
         //如果货物不够5个，展示无货的
         for(int i = list.size()-1;i>=0;i--){
             Inno72SamplingGoods inno72SamplingGoods = list.get(i);
-            if(inno72SamplingGoods.getMachineSurplusGoodsNum() == 0){
+            if(inno72SamplingGoods.getMachineSurplusGoodsNum() <= 0){
                 retList.add(inno72SamplingGoods);
                 if(retList.size() == goodsSize) return Results.success(retList);
             }

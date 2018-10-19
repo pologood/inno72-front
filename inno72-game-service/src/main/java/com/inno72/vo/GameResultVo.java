@@ -16,6 +16,10 @@ public class GameResultVo {
 
 	private String banner;
 
+	private String specRemark;
+
+	private String price;
+
 	public String getGoodsId() {
 		return goodsId;
 	}
@@ -70,5 +74,21 @@ public class GameResultVo {
 
 	public void setBanner(String banner) {
 		this.banner = banner;
+	}
+
+	public String getSpecRemark() {
+		return specRemark;
+	}
+
+	public void setSpecRemark(String specRemark) {
+		this.specRemark = specRemark;
+	}
+
+	public String getPrice() {
+		return price;
+	}
+
+	public void setPrice(String price) {
+		this.price = price;
 	}
 }

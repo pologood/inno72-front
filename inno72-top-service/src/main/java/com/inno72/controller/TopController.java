@@ -659,13 +659,6 @@ public class TopController {
 		return "index";
 	}
 
-	@RequestMapping("/test")
-	public String test() {
-		LOGGER.info("test -----");
-		return "hahatest";
-		// return JSON.toJSONString(client);
-	}
-
 	/**
 	 *
 	 * @param image 图片的base64（必须以base64,开头）	base64,xxx
@@ -705,56 +698,6 @@ public class TopController {
 	}
 
 	/**
-	 * API名称:tmall.fans.automachine.saveact( 保存更新活动信息至天猫 ) 前台类目:互动吧API
-	 * API用户授权类型:不需要 API安全等级:W1
-	 * API标签:
-	 * 收费策略: 简要描述:保存更新活动信息至天猫
-	 *
-	 * API 应用级输入参数
-	 * owner_id Long 必填 供应商为一ID，淘宝ID 23434234
-	 * machine_v_o MachineVo 必填 设备信息
-	 *
-	 * @return  {
-	 * 			  "tmall_fans_automachine_saveact_response":{
-	 *  			"model":true,
-	 *  			"msg_info":"参数错误",
-	 *				"msg_code":"SUCCESS"
-	 *			  }
-	 *			}
-	 *
-	 *	model    Boolean 否 付款成功状态，true成功，false为失败 true
-	 *  msg_info String  否 请求失败时的错误信息 参数错误
-	 *  msg_code String  否 SUCCESS为请求成功，其他为请求失败 SUCCESS
-	 *
-	 */
-	@RequestMapping("/tmall/fans/automachine/saveact")
-	private Object saveact(@RequestBody FansActVo request) {
-
-
-		return JSON.toJSONString(request);
-	}
-
-	/**
-	 * API名称:tmall.fans.automachine.savemachine( 注册、更新供应商上的设备信息到天猫互动吧 ) 前台类目:互动吧API
-	 * API用户授权类型:需要 API安全等级:W1
-	 * API标签:
-	 * 收费策略: 简要描述:注册、更新供应商上的设备信息到天猫互动吧
-	 *
-	 * @return  {
-	 * 			  "tmall_fans_automachine_savemachine_response":{
-	 *  			"model":true,
-	 *  			"msg_info":"参数错误",
-	 *				"msg_code":"SUCCESS"
-	 *			  }
-	 *			}
-	 */
-	@RequestMapping("/tmall/fans/automachine/savemachine")
-	private Object savemachine(@RequestBody MachineVo request) {
-
-		return JSON.toJSONString(request);
-	}
-
-	/**
 	 * 入会回调
 	 */
 	@RequestMapping("/api/meberJoinCallBack/{sessionUuid}/{env}/{playCode}/{qrStatus}/{sellerId}")
@@ -768,6 +711,8 @@ public class TopController {
 
 		// 设置用户已登录
 		boolean logged = this.setUserLogged(sessionUuid, env);
+		// 入会记录日志
+		this.log(sessionUuid,env);
 		LOGGER.info("meberJoinCallBack logged is {} ", logged);
 
 		String h5url = String.format(h5MobileUrl, env, playCode) + "?qrStatus=" + qrStatus + "&sellerId=" + sellerId;
@@ -776,6 +721,26 @@ public class TopController {
 			// 跳转 手机h5
 			response.sendRedirect(h5url);
 		} catch (IOException e) {
+			LOGGER.error(e.getMessage(), e);
+		}
+	}
+
+	private void log(String sessionUuid, String env) {
+		LOGGER.info("gameServerUrl is " + gameServerUrl);
+		RestTemplate client = new RestTemplate();
+		MultiValueMap<String, Object> postParameters = new LinkedMultiValueMap<>();
+		postParameters.add("sessionUuid", sessionUuid);
+		postParameters.add("type","34");
+		HttpHeaders headers = new HttpHeaders();
+		headers.add("Content-Type", "application/x-www-form-urlencoded");
+		String result;
+		try {
+			String h5Url = propertiesBean.getValue(env + "HostGame") + "/api/point";
+			LOGGER.info("url is {}", h5Url);
+			HttpEntity<MultiValueMap<String, Object>> requestEntity = new HttpEntity<>(postParameters, headers);
+			result = client.postForObject(h5Url, requestEntity, String.class);
+			LOGGER.info("log result = {}",result);
+		} catch (Exception e) {
 			LOGGER.error(e.getMessage(), e);
 		}
 	}
@@ -816,7 +781,7 @@ public class TopController {
 	 */
 	private String memberJoin(String mid, String code, String sessionUuid, String env, String itemId, String isVip,
 			String sessionKey, String callbackUrl) {
-
+		itemId = "10000"; // itemId 暂时写死 ，否则影响 优惠券作为商品时code过长问题
 		LOGGER.info(
 				"mid is {}, code is {}, sessionUuid is {}, env is {}, ItemId is {}, isVip is {}, sessionKey is {}，callbackUrl is{}",
 				mid, code, sessionUuid, env, itemId, isVip, sessionKey, callbackUrl);
