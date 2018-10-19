@@ -100,6 +100,12 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 	@Resource
 	private Inno72InteractMachineGoodsService inno72InteractMachineGoodsService;
 
+    @Resource
+    private Inno72MachineDeviceService inno72MachineDeviceService;
+
+    @Resource
+    private Inno72NewretailService inno72NewretailService;
+
 	@Value("${machinecheckappbackend.uri}")
 	private String machinecheckappbackendUri;
 
@@ -116,8 +122,6 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 
 	public static final Integer PRODUCT_NO_EXIST = -1; // 商品不存在
 	private static final Integer SAMPLING_TYPE = 1; // 类型（派样）
-
-	public static final Integer PRODUCT_NO_EXIST = -1; // 商品不存在
 
 	/**
 	 * {

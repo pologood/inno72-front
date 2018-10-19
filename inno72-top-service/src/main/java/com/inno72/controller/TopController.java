@@ -203,7 +203,7 @@ public class TopController {
 				}else{
 					//新零售派样
 					//1.判断是否是会员
-					boolean vipFlag = newRetailmemberJoin(sessionUuid,sellSessionKey,taobaoUserId,meberJoinCallBackUrl);
+					boolean vipFlag = newRetailmemberJoin(sessionUuid,sellSessionKey,taobaoUserId,meberJoinCallBackUrl,env);
 					if(vipFlag){
 						//是会员
 						// 设置用户已登录
@@ -240,7 +240,34 @@ public class TopController {
 	 * @param meberJoinCallBackUrl
 	 * @return
 	 */
-	private boolean newRetailmemberJoin(String sessionUuid, String sellSessionKey, String taobaoUserId, String meberJoinCallBackUrl) {
+	private boolean newRetailmemberJoin(String sessionUuid, String sellSessionKey, String taobaoUserId, String meberJoinCallBackUrl,String env) {
+		LOGGER.info("gameServerUrl is " + gameServerUrl);
+		RestTemplate client = new RestTemplate();
+		MultiValueMap<String, Object> postParameters = new LinkedMultiValueMap<>();
+		postParameters.add("sessionUuid", sessionUuid);
+		postParameters.add("sellSessionKey",sellSessionKey);
+		postParameters.add("taobaoUserId",taobaoUserId);
+		postParameters.add("meberJoinCallBackUrl",meberJoinCallBackUrl);
+		LOGGER.info("newRetailmemberJoin param = {}",FastJsonUtils.toJson(postParameters));
+		HttpHeaders headers = new HttpHeaders();
+		headers.add("Content-Type", "application/x-www-form-urlencoded");
+		String result;
+		String gameUrl = propertiesBean.getValue(env + "HostGame") + "/api/standard/newRetailmemberJoin";
+		LOGGER.info("gameUrl is {}", gameUrl);
+		HttpEntity<MultiValueMap<String, Object>> requestEntity = new HttpEntity<>(postParameters, headers);
+		result = client.postForObject(gameUrl, requestEntity, String.class);
+		LOGGER.info("newRetailmemberJoin result = {}",result);
+
+		String code = FastJsonUtils.getString(result, "code");
+		String data = FastJsonUtils.getString(result, "data");
+		LOGGER.info("code is {}, data is {}", code, data);
+		if (!StringUtils.isEmpty(code) && !StringUtils.isEmpty(data) && code.equals("0")) {
+			//1已经入会
+			return data.equals("1");
+		}else{
+			throw new RuntimeException("调用游戏出错result="+result);
+		}
+
 	}
 
 	private String getH5ErrUrl(String env, String status) {
