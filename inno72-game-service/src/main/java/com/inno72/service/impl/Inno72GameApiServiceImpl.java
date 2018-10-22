@@ -1962,19 +1962,34 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 			String itemId = FastJsonUtils.getString(ext, "itemId");
 			String goodsCode = FastJsonUtils.getString(ext, "goodsCode");
 			String sessionKey = FastJsonUtils.getString(ext, "sessionKey");
-
+			String sellerId = FastJsonUtils.getString(ext, "sellerId");
+			Inno72Merchant merchant = null;
 			if (StringUtil.isNotEmpty(isVip)) {
 				userSessionVo.setIsVip(isVip);
 			}
 			if (StringUtil.isNotEmpty(itemId)) {
 				userSessionVo.setGoodsId(itemId);
+				merchant = inno72MerchantMapper.findByGoodsId(itemId);
 			}
 			if (StringUtil.isNotEmpty(sessionKey)) {
 				userSessionVo.setSessionKey(sessionKey);
 			}
 			if (StringUtil.isNotEmpty(goodsCode)) {
 				userSessionVo.setGoodsCode(goodsCode);
+				if(merchant != null) merchant = inno72MerchantMapper.findByGoodsCode(goodsCode);
 			}
+			if (StringUtil.isNotEmpty(sellerId)) {
+				if(merchant != null)  {
+					Inno72Merchant param = new Inno72Merchant();
+					param.setMerchantCode(sellerId);
+					merchant = inno72MerchantMapper.selectOne(param);
+				}
+			}
+			if(merchant!=null){
+				userSessionVo.setSellerId(merchant.getMerchantCode());
+				userSessionVo.setMerchantName(merchant.getMerchantName());
+			}
+
 		}
 	}
 
