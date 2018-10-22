@@ -24,10 +24,22 @@ public class PointController {
 		if (sessionKey == null){
 			return Results.failure("session 过期！");
 		}
+		String msg = "";
+		switch (type){
+			case CommonBean.POINT_TYPE_FANS:
+				msg = "用户["+sessionKey.getUserNick()+"]入会成功.";
+				break;
+			case CommonBean.POINT_TYPE_CONCERN:
+				msg = "用户["+sessionKey.getUserNick()+"]关注店铺成功.";
+				break;
+			default:
+				return Results.failure("无此类型！");
+		}
+
 		CommonBean.logger(
 				type,
 				sessionKey.getMachineCode(),
-				"用户["+sessionKey.getUserNick()+"]入会成功.",
+				msg,
 				sessionKey.getActivityId()
 		);
 
