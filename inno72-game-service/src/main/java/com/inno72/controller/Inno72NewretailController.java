@@ -19,7 +19,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
 
-@RestController
+@RestController("/newretail")
 public class Inno72NewretailController {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(Inno72NewretailController.class);
