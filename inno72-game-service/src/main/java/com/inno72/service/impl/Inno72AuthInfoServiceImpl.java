@@ -618,7 +618,7 @@ public class Inno72AuthInfoServiceImpl implements Inno72AuthInfoService {
 			}
 		}
 
-		if(dayNumber!=null){
+		if(dayNumber!=null&&dayNumber != -1){
 			if(gameSessionRedisUtil.exists(String.format(RedisConstants.PAIYANG_DAY_ORDER_TIMES,interact.getId(),date,userId))){
 				Integer mydayTimes = Integer.parseInt(redisUtil.get(String.format(RedisConstants.PAIYANG_DAY_ORDER_TIMES,interact.getId(),date,userId)));
 				if(mydayTimes >= dayNumber){
