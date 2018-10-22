@@ -11,6 +11,7 @@ import com.taobao.api.ApiException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
@@ -40,6 +41,9 @@ public class Inno72LocalDataSendServiceImpl implements Inno72LocalDataSendServic
 
     @Autowired
     Inno72MachineDeviceMapper inno72MachineDeviceMapper;
+
+    @Value("${sell_session_key}")
+    private String sellSessionKey;
 
     private static Map<String,String> deviceCodeMap = new HashMap<String,String>();
     @Transactional
@@ -75,7 +79,7 @@ public class Inno72LocalDataSendServiceImpl implements Inno72LocalDataSendServic
                                 throw new Inno72BizException("无法找到deviceCode");
                             }
                             //调用淘宝回流
-                            String body = inno72NewretailService.deviceVendorFeedback("6100816bd6f85638abd2fdae18beee05e32809cebf39e224008390433",orderOrderGoodsVo.getTaobaoOrderNum(),"tmall_trade",deviceCode,"SHIP_CNT",orderOrderGoodsVo.getTaobaoGoodsId(),"2018-10-28 00:00:00");
+                            String body = inno72NewretailService.deviceVendorFeedback(sellSessionKey,orderOrderGoodsVo.getTaobaoOrderNum(),"tmall_trade",deviceCode,"SHIP_CNT",orderOrderGoodsVo.getTaobaoGoodsId(),"2018-10-28 00:00:00");
                             //插入日志
                             log = new Inno72FeedBackLog();
                             log.setGoodsId(orderOrderGoodsVo.getGoodsId());
