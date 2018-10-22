@@ -8,11 +8,7 @@ import com.inno72.vo.UserSessionVo;
  */
 public interface Inno72AuthInfoService {
 
-	Result<Object> createQrCode(String machineId);
-
 	Result<Object> sessionPolling(String sessionUuid);
-
-	Result<Object> createSamplingQrCode(String machineCode, String itemId, String isVip, String sessionKey);
 
 	/**
 	 * 登录前处理

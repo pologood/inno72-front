@@ -128,20 +128,4 @@ public class Inno72SuperOpenController {
 		return Results.success(result);
 	}
 
-	/**
-	 * 定义转发开放接口错误信息
-	 */
-	@RequestMapping(value = "/noMethod/open", method = {RequestMethod.GET, RequestMethod.POST})
-	public Result<String> noMethod() {
-		return Results.failure("方法不存在!");
-	}
-
-	/**
-	 *  定义转发开放接口错误信息
-	 */
-	@RequestMapping(value = "/noVersion/open", method = {RequestMethod.GET, RequestMethod.POST})
-	public Result<String> noVersion() {
-		return Results.failure("版本错误!");
-	}
-
 }
