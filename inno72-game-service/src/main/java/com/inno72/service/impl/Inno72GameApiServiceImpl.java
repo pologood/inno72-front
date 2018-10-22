@@ -1976,10 +1976,10 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 			}
 			if (StringUtil.isNotEmpty(goodsCode)) {
 				userSessionVo.setGoodsCode(goodsCode);
-				if(merchant != null) merchant = inno72MerchantMapper.findByGoodsCode(goodsCode);
+				if(merchant == null) merchant = inno72MerchantMapper.findByGoodsCode(goodsCode);
 			}
 			if (StringUtil.isNotEmpty(sellerId)) {
-				if(merchant != null)  {
+				if(merchant == null)  {
 					Inno72Merchant param = new Inno72Merchant();
 					param.setMerchantCode(sellerId);
 					merchant = inno72MerchantMapper.selectOne(param);
