@@ -537,7 +537,7 @@ public class Inno72AuthInfoServiceImpl implements Inno72AuthInfoService {
 		resultMap.put("traceId", traceId);
 		//是否走新零售入会新零售入会
 		resultMap.put("paiyangType",interact.getPaiyangType());
-		resultMap.put("sellerSessionKey",inno72Merchant.getSellerSessionKey());
+		resultMap.put("sellSessionKey",inno72Merchant.getSellerSessionKey());
 		this.dealIsVip(resultMap, sessionVo);
 
 		resultMap.put("activityType", activityType);
