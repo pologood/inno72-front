@@ -37,11 +37,18 @@ public class CommonBean {
 
 	/************************************************* -> 埋点 <- ******************************************************/
 
+	// 登录
 	public static final String POINT_TYPE_LOGIN = "31";
+	// 商品下单
 	public static final String POINT_TYPE_GOODS_ORDER = "32";
+	// 优惠券下单
 	public static final String POINT_TYPE_COUPON_ORDER = "35";
+	// 出货量
 	public static final String POINT_TYPE_FINISH = "33";
+	// 客流量 外部传入
 	public static final String POINT_TYPE_FANS = "34";
+	// 关注店铺数量 外部传入
+	public static final String POINT_TYPE_CONCERN = "36";
 
 	/**
 	 * @param msg 消息体

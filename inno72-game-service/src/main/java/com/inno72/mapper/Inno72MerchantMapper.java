@@ -14,4 +14,8 @@ public interface Inno72MerchantMapper extends Mapper<Inno72Merchant> {
     List<Inno72Merchant> findMerchantByName(@Param("merchantName") String merchantName);
 
     Inno72Merchant findMerchantByByGoodsId(@Param("goodsId") String goodsId);
+
+    Inno72Merchant findByGoodsId(String goodsId);
+
+	Inno72Merchant findByGoodsCode(String goodsCode);
 }

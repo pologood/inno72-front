@@ -143,75 +143,6 @@ public class Inno72AuthInfoServiceImpl implements Inno72AuthInfoService {
 	private static final String QRSTATUS_EXIST_USER = "-2"; // 存在用户登录
 
 
-	@Override
-	public Result<Object> createQrCode(String machineId) {
-		LOGGER.info("根据机器id生成二维码 machineCode is {} ", machineId);
-
-		Inno72Machine inno72Machine = inno72MachineMapper.findMachineByCode(machineId);
-		Map<String, Object> map = new HashMap<String, Object>();
-		// 在machine库查询bluetooth地址 "6893a2ada9dd4f7eb8dc33adfc6eda73"
-		String bluetoothAdd = "";
-		String bluetoothAddAes = "";
-		String _machineId = "";
-		if (inno72Machine != null) {
-			bluetoothAdd = inno72Machine.getBluetoothAddress();
-			if (!StringUtil.isEmpty(bluetoothAdd)) {
-				bluetoothAddAes = AesUtils.encrypt(bluetoothAdd);
-			}
-			_machineId = inno72Machine.getId();
-		} else {
-			return Results.failure(machineId + "对应的 inno72Machine 不存在");
-		}
-		String machineCode = "";
-		if (!StringUtil.isEmpty(machineId)) {
-			machineCode = AesUtils.encrypt(machineId);
-		}
-
-		LOGGER.info("Mac蓝牙地址 {} ", bluetoothAddAes);
-
-		// 生成sessionUuid
-		String sessionUuid = UuidUtil.getUUID32();
-		// 获取运行环境
-		String env = getActive();
-		// 调用天猫的地址
-		String url = inno72GameServiceProperties.get("tmallUrl") + _machineId + "/" + sessionUuid + "/" + env + "/?1=1"
-				+ "&bluetoothAddAes=" + bluetoothAddAes + "&machineCode=" + machineCode;
-
-		LOGGER.info("二维码字符串 {} ", url);
-
-		// 二维码存储在本地的路径
-		String localUrl = _machineId + sessionUuid + ".png";
-
-		// 存储在阿里云上的文件名
-		String objectName = "qrcode/" + localUrl;
-
-		// 提供给前端用来调用二维码的地址
-		String returnUrl = inno72GameServiceProperties.get("returnUrl") + objectName;
-
-		try {
-			boolean result = QrCodeUtil.createQrCode(localUrl, url, 1800, "png");
-			if (result) {
-
-				this.dealLocalQrCodeImg(localUrl, objectName);
-
-				// 设置二维码过期时间
-				gameSessionRedisUtil.setSession(sessionUuid, "");
-
-				map.put("qrCodeUrl", returnUrl);
-				map.put("sessionUuid", sessionUuid);
-				// LOGGER.info("二维码生成成功 - result -> {}", JSON.toJSONString(map).replace("\"",
-				// "'"));
-				LOGGER.info("二维码生成成功 - result -> {}", JsonUtil.toJson(map));
-			} else {
-				LOGGER.info("二维码生成失败");
-			}
-
-		} catch (Exception e) {
-			LOGGER.error(e.getMessage(), e);
-		}
-		return Results.success(map);
-	}
-
 	/**
 	 * 处理本地生成二维码
 	 */
@@ -258,83 +189,6 @@ public class Inno72AuthInfoServiceImpl implements Inno72AuthInfoService {
 			active = "dev";
 		}
 		return active;
-	}
-
-	@Override
-	public Result<Object> createSamplingQrCode(String machineCode, String itemId, String isVip, String sessionKey) {
-		LOGGER.info("根据机器code生成二维码 machineCode is {} ", machineCode);
-
-		Inno72Machine inno72Machine = inno72MachineMapper.findMachineByCode(machineCode);
-		Map<String, Object> map = new HashMap<String, Object>();
-		// 在machine库查询bluetooth地址 "6893a2ada9dd4f7eb8dc33adfc6eda73"
-		String bluetoothAdd = "";
-		String bluetoothAddAes = "";
-		String _machineId = "";
-		if (inno72Machine != null) {
-			bluetoothAdd = inno72Machine.getBluetoothAddress();
-			if (!StringUtil.isEmpty(bluetoothAdd)) {
-				bluetoothAddAes = AesUtils.encrypt(bluetoothAdd);
-			}
-			_machineId = inno72Machine.getId();
-		} else {
-			return Results.failure(machineCode + "对应的 inno72Machine 不存在");
-		}
-		if (!StringUtil.isEmpty(machineCode)) {
-			machineCode = AesUtils.encrypt(machineCode);
-		}
-
-		LOGGER.info("Mac蓝牙地址 {} ", bluetoothAddAes);
-
-		// 生成sessionUuid
-		String sessionUuid = UuidUtil.getUUID32();
-		// 获取运行环境
-		String env = getActive();
-		// 调用天猫的地址
-		// String testUrl =
-		// "https://oauth.taobao.com/authorize?response_type=code&client_id=24952452&redirect_uri=http://inno72test.ews.m.jaeapp.com/api/samplingTop/";
-		String url = inno72GameServiceProperties.get("tmallSamplingUrl") + _machineId + "/" + sessionUuid + "/" + env
-				+ "/" + itemId + "/" + isVip + "/" + sessionKey + "/?1=1" + "&bluetoothAddAes=" + bluetoothAddAes
-				+ "&machineCode=" + machineCode;
-
-		LOGGER.info("二维码字符串 {} ", url);
-		// 二维码存储在本地的路径
-		String localUrl = _machineId + sessionUuid + ".png";
-
-		// 存储在阿里云上的文件名
-		String objectName = "qrcode/" + localUrl;
-		// 提供给前端用来调用二维码的地址
-		String returnUrl = inno72GameServiceProperties.get("returnUrl") + objectName;
-
-		try {
-			boolean result = QrCodeUtil.createQrCode(localUrl, url, 1800, "png");
-			if (result) {
-				File f = new File(localUrl);
-				if (f.exists()) {
-					// 压缩图片
-					Thumbnails.of(localUrl).scale(0.5f).outputQuality(0f).toFile(localUrl);
-					// 上传阿里云
-					OSSUtil.uploadLocalFile(localUrl, objectName);
-					// 删除本地文件
-					f.delete();
-				}
-
-				// 设置二维码过期时间
-				gameSessionRedisUtil.setSession(sessionUuid, "");
-
-				map.put("qrCodeUrl", returnUrl);
-				map.put("sessionUuid", sessionUuid);
-				map.put("env", env);
-				// LOGGER.info("二维码生成成功 - result -> {}", JSON.toJSONString(map).replace("\"",
-				// "'"));
-				LOGGER.info("二维码生成成功 - result -> {}", JsonUtil.toJson(map));
-			} else {
-				LOGGER.info("二维码生成失败");
-			}
-
-		} catch (Exception e) {
-			LOGGER.error(e.getMessage(), e);
-		}
-		return Results.success(map);
 	}
 
 	@Override
@@ -479,7 +333,7 @@ public class Inno72AuthInfoServiceImpl implements Inno72AuthInfoService {
 		resultMap.put("machineCode", inno72Machine.getMachineCode());
 		resultMap.put("playCode", playCode);
 		resultMap.put("qrStatus", QRSTATUS_NORMAL);
-		resultMap.put("sellerId", inno72Merchant.getMerchantCode());
+		resultMap.put("sellerId", sessionVo.getSellerId());
 
 		this.dealIsVip(resultMap, sessionVo);
 
@@ -679,7 +533,7 @@ public class Inno72AuthInfoServiceImpl implements Inno72AuthInfoService {
 		resultMap.put("machineCode", inno72Machine.getMachineCode());
 		resultMap.put("playCode", playCode);
 		resultMap.put("qrStatus", qrStatus);
-		resultMap.put("sellerId", inno72Merchant.getMerchantCode());
+		resultMap.put("sellerId", sessionVo.getSellerId());
 		resultMap.put("traceId", traceId);
 		//是否走新零售入会新零售入会
 		resultMap.put("paiyangType",interact.getPaiyangType());

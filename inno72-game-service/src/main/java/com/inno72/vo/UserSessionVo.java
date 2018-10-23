@@ -16,6 +16,8 @@ public class UserSessionVo {
 	private String mixnick;
 	private String source;
 	private String refOrderId;
+	private String sellerId;
+	private String merchantName;
 	private Inno72MachineVo inno72MachineVo;
 
 
