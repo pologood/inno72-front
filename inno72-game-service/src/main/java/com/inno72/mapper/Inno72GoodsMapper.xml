@@ -102,4 +102,16 @@
 	WHERE
 	    id=#{goodsId}
   </select>
+
+    <select id="selectByOrderId" resultType="com.inno72.model.Inno72Goods" parameterType="string">
+  	SELECT
+	g.*,m.merchant_code
+    FROM
+        inno72_goods g
+    LEFT JOIN inno72_order_goods og
+    on og.goods_id = g.id
+    left join inno72_merchant m
+    on g.seller_id = m.id
+    where og.order_id=#{inno72OrderId}
+  </select>
 </mapper>

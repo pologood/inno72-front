@@ -90,7 +90,7 @@ public class Inno72NewretailServiceImpl implements Inno72NewretailService {
      *               WINDOWS("WINDOWS", "WINDOWS"),
      *               ANDROID("ANDROID", "ANDROID"),
      *               IOS("IOS", "IOS"), LINUX("LINUX", "LINUX"), OTHER("OTHER", "OTHER");
-     * @param deviceType 设备类型：
+     *  deviceType 设备类型：
      *                   CAMERA("CAMERA", "客流摄像头"), SHELF("SHELF", "云货架"),
      *                   MAKEUP_MIRROR("MAKEUP_MIRROR", "试妆镜"), FITTING_MIRROR("FITTING_MIRROR", "试衣镜"),
      *                   VENDOR("VENDOR", "售货机"), WIFI("WIFI","WIFI探针"), SAMPLE_MACHINE("SAMPLE_MACHINE","派样机"),
@@ -104,17 +104,17 @@ public class Inno72NewretailServiceImpl implements Inno72NewretailService {
      * @throws ApiException
      */
     @Override
-    public String saveDevice(String sessionKey, String deviceName, Long storeId, String osType, String deviceType, String outerCode) throws Exception {
+    public String saveDevice(String sessionKey, String deviceName, Long storeId, String osType, String outerCode) throws Exception {
         SmartstoreDeviceAddRequest req = new SmartstoreDeviceAddRequest();
         req.setDeviceName(deviceName);
         req.setStoreId(storeId);
         req.setOsType(osType);
-        req.setDeviceType(deviceType);
+        req.setDeviceType("VENDOR");
         req.setOuterCode(outerCode);
         SmartstoreDeviceAddResponse rsp = client.execute(req, sessionKey);
-        LOGGER.debug("saveDevice deviceName ={},storeId = {},osType = {},deviceType = {},outerCode = {},response = {}",deviceName,storeId,osType,deviceType,outerCode,rsp.getBody());
+        LOGGER.debug("saveDevice deviceName ={},storeId = {},osType = {},deviceType = {},outerCode = {},response = {}",deviceName,storeId,osType,"VENDOR",outerCode,rsp.getBody());
         if(!StringUtils.isEmpty(rsp.getErrorCode())){
-            LOGGER.error("saveDevice error deviceName ={},storeId = {},osType = {},deviceType = {},outerCode = {},response = {}",deviceName,storeId,osType,deviceType,outerCode,rsp.getBody());
+            LOGGER.error("saveDevice error deviceName ={},storeId = {},osType = {},deviceType = {},outerCode = {},response = {}",deviceName,storeId,osType,"VENDOR",outerCode,rsp.getBody());
             throw new Inno72BizException("保存设备天猫返回错误："+rsp.getSubMsg());
         }else{
             return rsp.getDeviceCode();
@@ -209,14 +209,36 @@ public class Inno72NewretailServiceImpl implements Inno72NewretailService {
                 tradeNo,tradeType,deviceCode,action,itemId,couponId,userNick,outerBizId,opTime,outerUser,rsp.getBody());
         return rsp.getBody();
     }
-
+    /**
+     * 数据回流
+     * @param sessionKey
+     * @param tradeNo  订单编号
+     *  tradeType "trade_type枚举值： alipay_trade（支付宝订单类型，对应的trade_no设置支付宝订单号） tmall_trade（
+     *                  天猫/淘宝订单类型，对应的trade_no设置天猫/淘宝订单号）"
+     * @param deviceCode 硬件CODE
+     *  action ACTION枚举值： BUY_CLICK_START(广告首页、点击开始购买)
+     *               ITEM_CLICK（商品点击时必须设置ITEM_ID）
+     *               BUY_CLICK（点击购买/领取必须设置ITEM_ID）
+     *               VENDING_MACHINE_SHIPMENT（派样机出货时TRADE_TYPE、TRADE_NO要设置）
+     *               SHIP_CNT (商品掉货成功，必须设置ITEM_ID） SHARE_CLICK（点击分享）
+     *               RECEIVE_COUPONS (扫码领取优惠券时必须设置COUPON_ID)
+     * @param itemId 商品ID，item_id 在action为ITEM_CLICK、BUY_CLICK、VENDING_MACHINE_SHIPMENT、SHIP_CNT必须传入； 必须使用淘宝商品id，否则失败
+     * couponId "例如官方领取优惠券链接里的activityId： https://taoquan.taobao.com/coupon/unify_apply.htm?sellerId=2649119619&activityId=9d390579777e41a981b54aa4d6154f5e"
+     * userNick 用户昵称（混淆）
+     * outerBizId 数据外部编码，保证数据唯一性
+     * opTime 操作时间，后续统一使用该字段，考虑兼容，start_time跟该字段含义一致 2018-01-01 00:00:00
+     * outerUser 硬件识别的用户标识
+     * @throws ApiException
+     */
     @Override
-    public String deviceVendorFeedback(String sessionKey, String tradeNo, String tradeType, String deviceCode, String action
-            , String itemId, String opTime) throws ApiException {
+    public String deviceVendorFeedback(String sessionKey, String tradeNo, String deviceCode, String itemId, String opTime) throws ApiException {
         SmartstoreDeviceVendorFeedbackRequest req = new SmartstoreDeviceVendorFeedbackRequest();
         req.setTradeNo(tradeNo);
+        String tradeType = "tmall_trade";
         req.setTradeType(tradeType);
         req.setDeviceCode(deviceCode);
+
+        String action = "SHIP_CNT";
         req.setAction(action);
         req.setItemId(itemId);
         req.setOpTime(StringUtils.parseDateTime(opTime));
@@ -252,7 +274,7 @@ public class Inno72NewretailServiceImpl implements Inno72NewretailService {
                     //根据机器code查询storeId
                     Long storeId = findStores(sellSessionKey,deviceVo.getStoreName());
                     //调用淘宝接口
-                    String deviceCode = saveDevice(sellSessionKey,deviceVo.getDeviceName(),storeId,"ANDROID","SAMPLE_MACHINE",deviceVo.getMachineCode());
+                    String deviceCode = saveDevice(sellSessionKey,deviceVo.getDeviceName(),storeId,"ANDROID",deviceVo.getMachineCode());
                     //保存结果信息
                     inno72MachineDevice = new Inno72MachineDevice();
                     inno72MachineDevice.setCreateTime(new Date());

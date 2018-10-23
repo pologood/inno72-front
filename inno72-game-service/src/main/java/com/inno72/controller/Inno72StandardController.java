@@ -66,13 +66,7 @@ public class Inno72StandardController {
 	private GameSessionRedisUtil gameSessionRedisUtil;
 
 	@Resource
-	private Inno72PaiYangService inno72PaiYangService;
-
-	@Resource
 	private Inno72GameServiceProperties inno72GameServiceProperties;
-
-	@Resource
-	private IRedisUtil redisUtil;
 
 	@Value("${top_h5_err_url}")
 	private String topH5ErrUrl;

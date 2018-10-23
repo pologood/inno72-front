@@ -122,6 +122,8 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 
 	public static final Integer PRODUCT_NO_EXIST = -1; // 商品不存在
 	private static final Integer SAMPLING_TYPE = 1; // 类型（派样）
+	@Value("${sell_session_key}")
+	private String sellSessionKey;
 
 	/**
 	 *
@@ -1186,6 +1188,22 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 		}
 
 		Inno72Goods inno72Goods = inno72GoodsMapper.selectByChannelId(inno72SupplyChannel.getId());
+
+
+		//调用淘宝数据回流接口回流数据
+		try {
+			//查找goodsId信息
+			Inno72Goods goods = inno72GoodsMapper.selectByOrderId(userSessionVo.getInno72OrderId());
+			Inno72Order order = inno72OrderMapper.selectByPrimaryKey(userSessionVo.getInno72OrderId());
+			Inno72MachineDevice deviceCode = inno72MachineDeviceService.findByMachineCodeAndSellerId(machineCode,goods.getMerchantCode());
+			String orderTime = DateUtil.format(order.getOrderTime(),DateUtil.getDatePattern());
+			LOGGER.info("调用淘宝数据回流sessionKey={},orderId={},deviceCode={},goodsId={},orderTime={}",sellSessionKey,orderId,deviceCode.getDeviceCode(),goods.getCode(),orderTime);
+			inno72NewretailService.deviceVendorFeedback(sellSessionKey,orderId,deviceCode.getDeviceCode(),goods.getCode(),orderTime);
+		} catch (ApiException e) {
+			LOGGER.error("淘宝回流失败",e);
+		}
+
+
 		/* 埋点 */
 		CommonBean.logger(
 				CommonBean.POINT_TYPE_FINISH,
