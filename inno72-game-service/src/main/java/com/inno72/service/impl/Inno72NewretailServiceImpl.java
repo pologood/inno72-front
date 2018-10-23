@@ -259,29 +259,28 @@ public class Inno72NewretailServiceImpl implements Inno72NewretailService {
                 //获取sessionKey
                 Inno72Goods goods = inno72GoodsMapper.selectByPrimaryKey(deviceVo.getGoodsId());
                 String sellerId = goods.getSellerId();
-//                sellerId = "217101303";
-//                Inno72Merchant merchant = inno72MerchantMapper.selectByPrimaryKey(goods.getSellerId());
+                Inno72Merchant merchant = inno72MerchantMapper.selectByPrimaryKey(goods.getSellerId());
 //                String sessionKey = merchant.getSellerSessionKey();
 //                LOGGER.debug("saveMachine.SellerId = {},saveMachine.sessionKey = {}",goods.getSellerId(),sessionKey);
 
                 //检查数据库是否添加过
                 Inno72MachineDevice inno72MachineDevice = inno72MachineDeviceService.findByMachineCodeAndSellerId(deviceVo.getMachineCode(),sellerId);
                 if(StringUtils.isEmpty(deviceVo.getDeviceName())){
-                    deviceVo.setStoreName(deviceVo.getMachineCode()+"-"+sellerId);
+                    deviceVo.setStoreName(deviceVo.getMachineCode()+"-"+merchant.getMerchantCode());
                 }
                 //没有添加过
                 if(inno72MachineDevice == null){
                     //根据机器code查询storeId
                     Long storeId = findStores(sellSessionKey,deviceVo.getStoreName());
                     //调用淘宝接口
-                    String deviceCode = saveDevice(sellSessionKey,deviceVo.getDeviceName(),storeId,"ANDROID",deviceVo.getMachineCode());
+                    String deviceCode = saveDevice(sellSessionKey,deviceVo.getStoreName(),storeId,"ANDROID",deviceVo.getMachineCode());
                     //保存结果信息
                     inno72MachineDevice = new Inno72MachineDevice();
                     inno72MachineDevice.setCreateTime(new Date());
                     inno72MachineDevice.setDeviceCode(deviceCode);
                     inno72MachineDevice.setMachineCode(deviceVo.getMachineCode());
                     inno72MachineDevice.setStoreId(storeId);
-                    inno72MachineDevice.setSellerId(sellerId);
+                    inno72MachineDevice.setSellerId(merchant.getMerchantCode());
                     inno72MachineDeviceService.save(inno72MachineDevice);
                 }
             }
