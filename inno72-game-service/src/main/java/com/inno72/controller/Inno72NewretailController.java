@@ -77,7 +77,7 @@ public class Inno72NewretailController {
     @RequestMapping(value = "/saveDevice",method = RequestMethod.POST)
     public Result<Object> saveDevice(String sessionKey, String deviceName, Long storeId, String osType, String deviceType, String outerCode) {
         try{
-            String deviceCode = service.saveDevice(sessionKey,deviceName,storeId,osType,deviceType,outerCode);
+            String deviceCode = service.saveDevice(sessionKey,deviceName,storeId,osType,outerCode);
             return Results.success(deviceCode);
         }catch(Inno72BizException e){
             return Results.failure(e.getMessage());
