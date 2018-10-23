@@ -2340,6 +2340,7 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 				String url = inno72NewretailService.getStoreMemberurl(sellSessionKey,device.getDeviceCode(),meberJoinCallBackUrl);
 				userSessionVo.setNewRetailMemberUrl(url);
 //				userSessionVo.setDisplayNewRetailMemberUrlFlag(UserSessionVo.DISPLAYNEWRETAILMEMBERURLFLAG_YES);
+				gameSessionRedisUtil.setSession(sessionUuid, JSON.toJSONString(userSessionVo));
 				return Results.success(0);
 			}
 		} catch (ApiException e) {
