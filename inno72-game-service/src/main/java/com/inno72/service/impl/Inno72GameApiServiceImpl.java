@@ -147,6 +147,9 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 	@Resource
 	private Inno72InteractMachineGoodsService inno72InteractMachineGoodsService;
 
+	@Resource
+	private Inno72MachineService inno72MachineService;
+
 	@Value("${machinecheckappbackend.uri}")
 	private String machinecheckappbackendUri;
 
@@ -1869,15 +1872,15 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 		userSessionVo.setMachineCode(inno72Machine.getMachineCode());
 		userSessionVo.setMachineId(inno72Machine.getId());
 		userSessionVo.setLogged(false);
-
-        String rVoJson = redisUtil.get(CommonBean.REDIS_ACTIVITY_PLAN_CACHE_KEY + inno72Machine.getMachineCode());
+		String activityId = inno72MachineService.findActivityIdByMachineCode(inno72Machine.getMachineCode());
+        String rVoJson = redisUtil.get(CommonBean.REDIS_ACTIVITY_PLAN_CACHE_KEY +activityId+":"+ inno72Machine.getMachineCode());
         LOGGER.debug("redis cache machine data =====> {}", rVoJson);
         if (StringUtil.isNotEmpty(rVoJson)) {
             Inno72MachineVo inno72MachineVo = JSON.parseObject(rVoJson, Inno72MachineVo.class);
             userSessionVo.setInno72MachineVo(inno72MachineVo);
             LOGGER.debug("parse rVoJson string finish --> {}", inno72MachineVo);
         }else{
-            LOGGER.error("从redis读取机器信息错误key={}",CommonBean.REDIS_ACTIVITY_PLAN_CACHE_KEY + inno72Machine.getMachineCode());
+            LOGGER.error("从redis读取机器信息错误key={}",CommonBean.REDIS_ACTIVITY_PLAN_CACHE_KEY +activityId+":"+ inno72Machine.getMachineCode());
         }
 
         // 解析 ext

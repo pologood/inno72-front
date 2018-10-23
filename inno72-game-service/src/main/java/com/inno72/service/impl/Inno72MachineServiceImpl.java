@@ -87,7 +87,7 @@ public class Inno72MachineServiceImpl extends AbstractService<Inno72Machine> imp
 			//查询日期是否到期
 			if (time == null) {
 				LOGGER.info("活动过期 ==>   ", JSON.toJSONString(interactMachine));
-				redisUtil.del(CommonBean.REDIS_ACTIVITY_PLAN_CACHE_KEY + machineId);
+				redisUtil.del(CommonBean.REDIS_ACTIVITY_PLAN_CACHE_KEY +inno72MachineVo.getActivityPlanId()+":"+ machineId);
 				inno72MachineVo.setReload(true);
 			}
 
@@ -113,7 +113,7 @@ public class Inno72MachineServiceImpl extends AbstractService<Inno72Machine> imp
 				LocalDateTime now = LocalDateTime.now();
 				if (!(endTime.isAfter(now) && startTime.isBefore(now))) {
 					LOGGER.info("活动过期 ==>   ", JSON.toJSONString(inno72ActivityPlan));
-					redisUtil.del(CommonBean.REDIS_ACTIVITY_PLAN_CACHE_KEY  + machineId);
+					redisUtil.del(CommonBean.REDIS_ACTIVITY_PLAN_CACHE_KEY  +inno72MachineVo.getActivityPlanId()+":"+ machineId);
 					inno72MachineVo.setReload(true);
 				}
 			}
@@ -200,7 +200,7 @@ public class Inno72MachineServiceImpl extends AbstractService<Inno72Machine> imp
 					.selectByMachineId(inno72Machine.getId());
 			boolean paiyangFlag = false;
 			Inno72Interact interact = null;
-			if (inno72ActivityPlans.size() == 0) {
+			if (inno72ActivityPlans == null || inno72ActivityPlans.size() == 0) {
 				LOGGER.debug("机器 【{}】 没有配置 活动计划!查询派样", inno72Machine.getMachineCode());
 
 				//查看派样
@@ -273,13 +273,36 @@ public class Inno72MachineServiceImpl extends AbstractService<Inno72Machine> imp
 				inno72MachineVo.setActivityType(Inno72MachineVo.ACTIVITYTYPE_NOTPAIYANG);
 			}
 			inno72MachineVo.setReload(false);
-			redisUtil.set(CommonBean.REDIS_ACTIVITY_PLAN_CACHE_KEY + machineId,
+			redisUtil.set(CommonBean.REDIS_ACTIVITY_PLAN_CACHE_KEY +inno72MachineVo.getActivityPlanId()+":"+ machineId,
 					 JSON.toJSONString(inno72MachineVo));
 		}
 		return Results.success(inno72MachineVo);
 	}
+	@Override
+	public String findActivityIdByMachineCode(String machineCode){
+		Inno72Machine inno72Machine = inno72MachineMapper.findMachineByCode(machineCode);
+		if (inno72Machine == null) {
+			return null;
+		}
 
-
+		List<Inno72ActivityPlan> inno72ActivityPlans = inno72ActivityPlanMapper
+				.selectByMachineId(inno72Machine.getId());
+		if(inno72ActivityPlans!=null && inno72ActivityPlans.size()>0){
+			return inno72ActivityPlans.get(0).getId();
+		}
+		//查看派样
+		//查询该机器配置的商品信息（当前时间在起止时间内的）
+		Inno72InteractMachine interactMachine = inno72InteractMachineTimeService.findActiveInteractMachine(machineCode);
+		if(interactMachine == null){
+			return null;
+		}
+		String interactId = interactMachine.getInteractId();
+		Inno72Interact interact = inno72InteractService.findById(interactId);
+		if(interact != null){
+			return interact.getId();
+		}
+		return null;
+	}
 	private Result<Inno72MachineVo> initDefaultGameFromRedis(String machineId) {
 
 		Inno72MachineVo inno72MachineVo = null;
