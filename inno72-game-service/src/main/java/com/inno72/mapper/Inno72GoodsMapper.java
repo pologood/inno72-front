@@ -23,4 +23,6 @@ public interface Inno72GoodsMapper extends Mapper<Inno72Goods> {
     Inno72SamplingGoods findSamplingGoodsById(String goodsId);
 
 	Inno72Goods selectByChannelId(String channelId);
+
+    Inno72SamplingGoods findSamplingCouponById(String goodsId);
 }

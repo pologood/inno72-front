@@ -7,6 +7,10 @@ import java.math.BigDecimal;
  */
 public class Inno72SamplingGoods {
 	/**
+	 * 类型：0商品，1优惠券
+	 */
+	private Integer goodsType;
+	/**
 	 * 商品ID
 	 */
 	private String id;
@@ -375,5 +379,13 @@ public class Inno72SamplingGoods {
 
 	public void setMachineSurplusGoodsNum(Integer machineSurplusGoodsNum) {
 		this.machineSurplusGoodsNum = machineSurplusGoodsNum;
+	}
+
+	public Integer getGoodsType() {
+		return goodsType;
+	}
+
+	public void setGoodsType(Integer goodsType) {
+		this.goodsType = goodsType;
 	}
 }

@@ -102,4 +102,12 @@
 	WHERE
 	    id=#{goodsId}
   </select>
+
+    <select id="findSamplingCouponById" resultMap="SamplingGoodsMap" parameterType="String">
+    SELECT
+	    id,name,code,img,banner,shops_id,is_delete,remark,
+	FROM inno72_coupon
+	WHERE
+	    id=#{goodsId}
+  </select>
 </mapper>
