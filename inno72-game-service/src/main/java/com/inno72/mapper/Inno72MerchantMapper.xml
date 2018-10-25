@@ -37,4 +37,18 @@
         )
         and is_delete = 0
     </select>
+
+    <select id="findByGoodsId" resultMap="BaseResultMap" parameterType="string">
+      select * from inno72_merchant m
+       join inno72_goods g on g.seller_id = m.id
+      where g.id=#{goodsId} and m.is_delete = 0
+    </select>
+
+
+    <select id="findByGoodsCode" resultMap="BaseResultMap" parameterType="string">
+      select * from inno72_merchant m
+       join inno72_goods g on g.seller_id = m.id
+      where g.code=#{goodsCode} and  g.use_type != 1 and m.is_delete = 0
+    </select>
+
 </mapper>

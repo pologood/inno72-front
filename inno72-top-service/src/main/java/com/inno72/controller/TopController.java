@@ -172,7 +172,7 @@ public class TopController {
 				String grade_name = FastJsonUtils.getString(identityResBody, "grade_name");
 				LOGGER.info("topIndex2 grade_name is {}", grade_name);
 
-				String formatUrl = String.format(h5MobileUrl, env, playCode) + "?qrStatus=" + qrStatus + "&sellerId=" + sellerId;
+				String formatUrl = String.format(h5MobileUrl, env, playCode) + "?qrStatus=" + qrStatus + "&sellerId=" + sellerId + "&sessionUuid=" + sessionUuid;
 
 				LOGGER.info("topIndex2 formatUrl is {}", formatUrl);
 				if (grade_name == null || "".equals(grade_name)) {
@@ -208,7 +208,7 @@ public class TopController {
 			// 跳转到游戏页面 手机端redirect
 			LOGGER.info("topIndex2 h5MobileUrl is {} , playCode is {}, env is {}", h5MobileUrl, playCode, env);
 			String formatUrl = String.format(h5MobileUrl, env, playCode) + "?qrStatus=" + qrStatus + "&sellerId="
-					+ sellerId;
+					+ sellerId + "&sessionUuid=" + sessionUuid;
 			LOGGER.info("topIndex2 formatUrl is {}", formatUrl);
 			response.sendRedirect(formatUrl);
 		} catch (IOException e) {
@@ -220,119 +220,6 @@ public class TopController {
 		String h5ErrUrl = String.format(h5MobileErrUrl, env, status);
 		LOGGER.info("h5ErrUrl is {}", h5ErrUrl);
 		return h5ErrUrl;
-	}
-
-	/**
-	 * 登录回调接口
-	 */
-	@RequestMapping("/api/top/{sessionUuid}/{env}")
-	public void topIndex(HttpServletResponse response,
-			@PathVariable("sessionUuid") String sessionUuid, String code, @PathVariable("env") String env)
-			throws Exception {
-		LOGGER.info("code is {}, sessionUuid is {}, env is {}", code, sessionUuid, env);
-
-		// 解决老接口继续被调用，报404问题
-		if (!StringUtils.isEmpty(sessionUuid) && sessionUuid.length() == 32) {
-			String hrErrUrl = this.getH5ErrUrl(env, "0");
-			LOGGER.info("topIndex hrErrUrl is {}" , hrErrUrl);
-			response.sendRedirect(hrErrUrl);
-		}
-
-		String playCode = "";
-		String data;
-		String qrStatus = "";
-		String sellerId = "";
-		if (!StringUtils.isEmpty(code) && !StringUtils.isEmpty(sessionUuid)) {
-
-			String authInfo = getAuthInfo(code);
-			LOGGER.debug("authInfo is {}", authInfo);
-
-			String tokenResult = FastJsonUtils.getString(authInfo, "token_result");
-			LOGGER.info("tokenResult is {}", tokenResult);
-
-			String taobaoUserId = FastJsonUtils.getString(tokenResult, "taobao_user_nick");
-			LOGGER.info("taobaoUserId is {}", taobaoUserId);
-
-			UserInfo userInfo = new UserInfo();
-			userInfo.setSessionUuid(sessionUuid);
-			userInfo.setAuthInfo(tokenResult);
-
-			data = this.processBeforeLogged(userInfo, env);
-			LOGGER.info("processBeforeLogged result is {}", data);
-
-			String machineCode = "";
-			String goodsCode = "";
-			String isVip = "";
-			String sessionKey = "";
-
-			if (!StringUtils.isEmpty(data)) {
-				playCode = FastJsonUtils.getString(data, "playCode");
-				qrStatus = FastJsonUtils.getString(data, "qrStatus");
-				String sId = FastJsonUtils.getString(data, "sellerId");
-				machineCode = FastJsonUtils.getString(data, "machineCode");
-
-				goodsCode = FastJsonUtils.getString(data, "goodsCode");
-				isVip = FastJsonUtils.getString(data, "isVip");
-				sessionKey = FastJsonUtils.getString(data, "sessionKey");
-
-				if (!StringUtils.isEmpty(sId)) {
-					sellerId = sId.trim();
-				}
-			}
-
-			// 判断是否入会
-			if (!StringUtils.isEmpty(isVip) && Integer.valueOf(isVip) == 1) {
-				LOGGER.info("派样入会逻辑");
-				// 派样活动逻辑
-				String identityResBody = this.memberIdentity(machineCode, goodsCode, taobaoUserId, sessionKey);
-
-				LOGGER.info("identityResBody is {}", identityResBody);
-				String grade_name = FastJsonUtils.getString(identityResBody, "grade_name");
-				LOGGER.info("grade_name is {}", grade_name);
-
-				String formatUrl = String.format(h5MobileUrl, env, playCode) + "?qrStatus=" + qrStatus + "&sellerId=" + sellerId;
-
-				LOGGER.info("formatUrl is {}", formatUrl);
-				if (grade_name == null || "".equals(grade_name)) {
-
-					String meberJoinCallBackUrl = jstUrl + "/api/meberJoinCallBack/" + sessionUuid + "/" + env + "/" + playCode + "/"
-									+ qrStatus + "/" + sellerId;
-					LOGGER.info("meberJoinCallBackUrl is {}", meberJoinCallBackUrl);
-
-					// 如果不是会员做入会操作
-					String memberJoinResBody = memberJoin(machineCode, code, sessionUuid, env, goodsCode, isVip, sessionKey,
-							meberJoinCallBackUrl);
-					LOGGER.info("memberJoinResBody is {}", memberJoinResBody);
-					String resultUrl = FastJsonUtils.getString(memberJoinResBody, "result");
-					LOGGER.info("resultUrl is {}", resultUrl);
-					response.sendRedirect("http:" + resultUrl);
-
-				} else {
-					// 设置用户已登录
-					boolean logged = this.setUserLogged(sessionUuid, env);
-					LOGGER.info("logged is {}", logged);
-					// 是会员直接跳转h5页面
-					response.sendRedirect(formatUrl);
-				}
-
-			} else {
-				// 正常逻辑
-				String logged = this.setLogged(sessionUuid, env);
-			}
-
-			LOGGER.info("data is {}", data);
-		}
-		try {
-			// String h5Url = this.getHostGameH5Url(env);
-			// 跳转到游戏页面 手机端redirect
-			LOGGER.info("h5MobileUrl is {} , playCode is {}, env is {}", h5MobileUrl, playCode, env);
-			String formatUrl = String.format(h5MobileUrl, env, playCode) + "?qrStatus=" + qrStatus + "&sellerId="
-					+ sellerId;
-			LOGGER.info("formatUrl is {}", formatUrl);
-			response.sendRedirect(formatUrl);
-		} catch (IOException e) {
-			LOGGER.error(e.getMessage(), e);
-		}
 	}
 
 	/**
@@ -688,7 +575,7 @@ public class TopController {
 		this.log(sessionUuid,env);
 		LOGGER.info("meberJoinCallBack logged is {} ", logged);
 
-		String h5url = String.format(h5MobileUrl, env, playCode) + "?qrStatus=" + qrStatus + "&sellerId=" + sellerId;
+		String h5url = String.format(h5MobileUrl, env, playCode) + "?qrStatus=" + qrStatus + "&sellerId=" + sellerId + "&sessionUuid=" + sessionUuid;
 		LOGGER.info("meberJoinCallBack h5url is {} ", h5url);
 		try {
 			// 跳转 手机h5

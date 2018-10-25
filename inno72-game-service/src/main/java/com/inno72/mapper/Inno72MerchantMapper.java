@@ -7,4 +7,8 @@ public interface Inno72MerchantMapper extends Mapper<Inno72Merchant> {
 	String selectBoundNameByActivityId(String id);
 
 	String selectShopCodeByPlanId(String activityPlanId);
+
+    Inno72Merchant findByGoodsId(String goodsId);
+
+	Inno72Merchant findByGoodsCode(String goodsCode);
 }
