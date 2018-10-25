@@ -2338,10 +2338,17 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 				//查询deviceCode
 				Inno72MachineDevice device = inno72MachineDeviceService.findByMachineCodeAndSellerId(userSessionVo.getMachineCode(),m.getMerchantCode());
 				String url = inno72NewretailService.getStoreMemberurl(sellSessionKey,device.getDeviceCode(),meberJoinCallBackUrl);
-				userSessionVo.setNewRetailMemberUrl(url);
+				try {
+                    String joinUrl = QrCodeUtil.readQrCode(url);
+                    return Results.success(joinUrl);
+                }catch (Exception e){
+				    LOGGER.error("解析入会二维码错误url = {}",url);
+				    LOGGER.error("解析入会二维码错误",e);
+				    return Results.failure("解析入会二维码错误");
+                }
+//				userSessionVo.setNewRetailMemberUrl(url);
 //				userSessionVo.setDisplayNewRetailMemberUrlFlag(UserSessionVo.DISPLAYNEWRETAILMEMBERURLFLAG_YES);
-				gameSessionRedisUtil.setSession(sessionUuid, JSON.toJSONString(userSessionVo));
-				return Results.success(0);
+//				gameSessionRedisUtil.setSession(sessionUuid, JSON.toJSONString(userSessionVo));
 			}
 		} catch (ApiException e) {
 			e.printStackTrace();

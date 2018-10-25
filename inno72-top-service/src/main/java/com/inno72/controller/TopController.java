@@ -203,15 +203,18 @@ public class TopController {
 				}else{
 					//新零售派样
 					//1.判断是否是会员
-					boolean vipFlag = newRetailmemberJoin(sessionUuid,sellSessionKey,taobaoUserId,meberJoinCallBackUrl,env);
-					if(vipFlag){
+					String r = newRetailmemberJoin(sessionUuid,sellSessionKey,taobaoUserId,meberJoinCallBackUrl,env);
+					if("1".equals(r)){
 						//是会员
 						// 设置用户已登录
 						boolean logged = this.setUserLogged(sessionUuid, env);
 						LOGGER.info("topIndex2 logged is {}", logged);
 						// 是会员直接跳转h5页面
 						response.sendRedirect(formatUrl);
-					}
+					}else{
+                        LOGGER.info("不是会员入会url={}",r);
+                        response.sendRedirect(r);
+                    }
 				}
 			} else {
 				// 正常逻辑
@@ -240,7 +243,7 @@ public class TopController {
 	 * @param meberJoinCallBackUrl
 	 * @return
 	 */
-	private boolean newRetailmemberJoin(String sessionUuid, String sellSessionKey, String taobaoUserId, String meberJoinCallBackUrl,String env) {
+	private String newRetailmemberJoin(String sessionUuid, String sellSessionKey, String taobaoUserId, String meberJoinCallBackUrl,String env) {
 		LOGGER.info("gameServerUrl is " + gameServerUrl);
 		RestTemplate client = new RestTemplate();
 		MultiValueMap<String, Object> postParameters = new LinkedMultiValueMap<>();
@@ -263,7 +266,7 @@ public class TopController {
 		LOGGER.info("code is {}, data is {}", code, data);
 		if (!StringUtils.isEmpty(code) && !StringUtils.isEmpty(data) && code.equals("0")) {
 			//1已经入会
-			return data.equals("1");
+			return data;
 		}else{
 			throw new RuntimeException("调用游戏出错result="+result);
 		}
