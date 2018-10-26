@@ -181,16 +181,6 @@ public class Inno72AuthInfoServiceImpl implements Inno72AuthInfoService {
 		return Results.success(sessionStr);
 	}
 
-	private String getActive() {
-		String active = System.getenv("spring_profiles_active");
-		LOGGER.info("获取spring_profiles_active：{}", active);
-		if (active == null || active.equals("")) {
-			LOGGER.info("未读取到spring_profiles_active的环境变量,使用默认值: dev");
-			active = "dev";
-		}
-		return active;
-	}
-
 	@Override
 	public Result<Object> processBeforeLogged(String sessionUuid, String authInfo, String traceId) {
 		LOGGER.info("processBeforeLogged params sessionUuid is {}, authInfo is {}, traceId is {} ", sessionUuid, authInfo, traceId);

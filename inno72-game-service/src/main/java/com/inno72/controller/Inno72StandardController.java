@@ -5,12 +5,12 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
 import javax.annotation.Resource;
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import com.inno72.common.CommonBean;
 import com.inno72.service.Inno72PaiYangService;
-import com.inno72.vo.*;
 import com.alibaba.fastjson.JSON;
-import com.inno72.common.*;
 import com.inno72.common.util.UuidUtil;
 import com.inno72.redis.IRedisUtil;
 import org.apache.commons.lang3.StringUtils;
@@ -23,7 +23,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.alibaba.fastjson.JSON;
 import com.inno72.common.Inno72GameServiceProperties;
 import com.inno72.common.Result;
 import com.inno72.common.Results;
@@ -33,11 +32,9 @@ import com.inno72.common.datetime.LocalDateTimeUtil;
 import com.inno72.common.util.GameSessionRedisUtil;
 import com.inno72.log.PointLogContext;
 import com.inno72.log.vo.LogType;
-import com.inno72.redis.IRedisUtil;
 import com.inno72.service.Inno72AuthInfoService;
 import com.inno72.service.Inno72GameApiService;
 import com.inno72.service.Inno72MachineService;
-import com.inno72.vo.Inno72MachineVo;
 import com.inno72.vo.MachineApiVo;
 import com.inno72.vo.StandardPrepareLoginReqVo;
 import com.inno72.vo.StandardShipmentReqVo;
@@ -261,5 +258,27 @@ public class Inno72StandardController {
 			e.printStackTrace();
 		}
 	}
+	@RequestMapping(value = "/concern", method = {RequestMethod.GET, RequestMethod.POST})
+	public Result<String> Concern(HttpServletResponse response, String sessionUuid) throws IOException {
+		Result<String> result = inno72GameApiService.concern(sessionUuid);
+		if (result.getCode() == Result.SUCCESS){
+			response.sendRedirect(result.getData());
+		}
+		return result;
+	}
 
+	@RequestMapping(value = "/concern_callback", method = {RequestMethod.GET, RequestMethod.POST})
+	public Result<String> ConcernCallback(HttpServletResponse response, HttpServletRequest request,
+			String sessionUuid, String tbResult)  {
+		LOGGER.info("关注店铺回调参数 {}", JSON.toJSONString(request.getParameterMap()));
+		if ("1".equals(tbResult)){
+			try {
+				response.sendRedirect("/api/point?sessionUuid="+sessionUuid+"&type="+CommonBean.POINT_TYPE_CONCERN);
+			} catch (IOException e) {
+				LOGGER.error("关注店铺回调异常 {}, {}",e.getMessage(), e);
+			}
+		}
+		LOGGER.info("关注店铺失败 -> {}", sessionUuid);
+		return Results.success();
+	}
 }
