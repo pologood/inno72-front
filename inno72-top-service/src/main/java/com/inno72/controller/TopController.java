@@ -100,10 +100,10 @@ public class TopController {
 		samplinghClient = new DefaultTaobaoClient(propertiesBean.getUrl(), propertiesBean.getSampLingAppkey(),
 				propertiesBean.getSecret());
 		envParam = new HashMap<>(4);
-		envParam.put("dev","dev-api");
-		envParam.put("test","test-api");
-		envParam.put("stage","stage-api");
-		envParam.put("prod","prod-api");
+		envParam.put("dev","dev-game-api");
+		envParam.put("test","test-game-api");
+		envParam.put("stage","stage-game-api");
+		envParam.put("prod","prod-game-api");
 	}
 
 
@@ -112,7 +112,11 @@ public class TopController {
 	 */
 	@RequestMapping("/api/top/{sessionUuid}/{env}/{traceId}")
 	public void topIndex2(HttpServletResponse response,
-			@PathVariable("sessionUuid") String sessionUuid, String code, @PathVariable("env") String env, @PathVariable("traceId") String traceId)
+			@PathVariable("sessionUuid") String sessionUuid,
+			String code,
+			@PathVariable("env") String env,
+			@PathVariable("traceId") String traceId,
+			String sellerSessionKey)
 			throws Exception {
 		LOGGER.info("topIndex2 code is {}, sessionUuid is {}, env is {}, traceId is {}", code, sessionUuid, env, traceId);
 		String playCode = "";
@@ -120,6 +124,7 @@ public class TopController {
 		String qrStatus = "";
 		String sellerId = "";
 		String accessToken = "";
+		sellerSessionKey = "6100b08ac97c097b1e8596c72267bbd8e550d8f5992fe342901504526";
 		if (!StringUtils.isEmpty(code) && !StringUtils.isEmpty(sessionUuid)) {
 
 			String authInfo = getAuthInfo(code);
@@ -209,10 +214,6 @@ public class TopController {
 					String resultUrl = FastJsonUtils.getString(memberJoinResBody, "result");
 					LOGGER.info("topIndex2 resultUrl is {}", resultUrl);
 
-//					StoreFollowurlGetRequest req = new StoreFollowurlGetRequest();
-//					req.setCallbackUrl(h5EnvHost+envParam.get(env) + "/api/standard/concern_callback?sessionUuid="+sessionUuid);
-//					StoreFollowurlGetResponse rsp = client.execute(req, accessToken);
-
 					response.sendRedirect("http:" + resultUrl);
 
 				} else {
@@ -237,18 +238,25 @@ public class TopController {
 					+ sellerId + "&sessionUuid=" + sessionUuid;
 			LOGGER.info("topIndex2 formatUrl is {}", formatUrl);
 
-			String encodeUrl = URLEncoder.encode(formatUrl);
+			if ( StringUtils.isEmpty(sellerSessionKey)){
+				response.sendRedirect(formatUrl);
+			}else{
+				String encodeUrl = URLEncoder.encode(formatUrl, java.nio.charset.StandardCharsets.UTF_8.toString());
 
-			StoreFollowurlGetRequest req = new StoreFollowurlGetRequest();
-			req.setCallbackUrl(
-					h5EnvHost
-							+ envParam.get(env)
-							+ "/api/standard/concern_callback?sessionUuid="+sessionUuid
-							+ "&redirectUrl="+encodeUrl);
-			StoreFollowurlGetResponse rsp = client.execute(req, accessToken);
+				StoreFollowurlGetRequest req = new StoreFollowurlGetRequest();
+				req.setCallbackUrl(
+						h5EnvHost
+								+ envParam.get(env)
+								+ "/standard/concern_callback?sessionUuid="+sessionUuid
+								+ "&redirectUrl="+encodeUrl);
+				LOGGER.info("关注callBackUrl"+h5EnvHost
+						+ envParam.get(env)
+						+ "/api/standard/concern_callback?sessionUuid="+sessionUuid
+						+ "&redirectUrl="+encodeUrl);
+				StoreFollowurlGetResponse rsp = client.execute(req, sellerSessionKey);
 
-			response.sendRedirect(rsp.getUrl());
-
+				response.sendRedirect(rsp.getUrl());
+			}
 		} catch (IOException e) {
 			LOGGER.error(e.getMessage(), e);
 		}
