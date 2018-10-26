@@ -572,9 +572,18 @@ public class Inno72AuthInfoServiceImpl implements Inno72AuthInfoService {
 	 * 处理关注sessionkey
 	 */
 	void dealFollowSessionKey(Map<String, Object> resultMap, UserSessionVo sessionVo) {
+		Inno72Goods inno72Goods = null;
 		String goodsId = sessionVo.getGoodsId();
-		LOGGER.info("dealFollowSessionKey goodsId is {}", goodsId);
-		Inno72Goods inno72Goods = inno72GoodsMapper.selectByPrimaryKey(goodsId);
+		String goodsCode = sessionVo.getGoodsCode();
+
+		LOGGER.info("dealFollowSessionKey goodsId is {}, goodsCode is {}", goodsId, goodsCode);
+
+		if (StringUtil.isNotEmpty(goodsId)) {
+			inno72Goods = inno72GoodsMapper.selectByPrimaryKey(goodsId);
+		} else if (StringUtil.isNotEmpty(goodsCode)) {
+			inno72Goods = inno72GoodsMapper.selectByCode(goodsCode);
+		}
+
 		String shopId = inno72Goods.getShopId();
 		Inno72Shops inno72Shops = inno72ShopsMapper.selectByPrimaryKey(shopId);
 		resultMap.put("followSessionKey", inno72Shops.getFocusSessionKey());
