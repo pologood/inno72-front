@@ -608,10 +608,7 @@ public class TopController {
 	 *
 	 */
 	@RequestMapping("/api/top/concern")
-	public String concern(
-			@PathVariable("accessToken") String accessToken,
-			@PathVariable("sessionUuid")String sessionUuid,
-			@PathVariable("env")String env) {
+	public String concern(String accessToken, String sessionUuid, String env) {
 
 		LOGGER.info( "concern params accessToken is {}, sessionUuid is {}, env is {}", accessToken, sessionUuid, env);
 		try {
