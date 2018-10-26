@@ -135,9 +135,6 @@ public class TopController {
 			String taobaoUserId = FastJsonUtils.getString(tokenResult, "taobao_user_nick");
 			LOGGER.info("topIndex2 taobaoUserId is {}", taobaoUserId);
 
-			followSessionKey= FastJsonUtils.getString(tokenResult, "followSessionKey");
-			LOGGER.info("topIndex2 accessToken is {}", accessToken);
-
 			UserInfo userInfo = new UserInfo();
 			userInfo.setSessionUuid(sessionUuid);
 			userInfo.setAuthInfo(tokenResult);
@@ -162,6 +159,8 @@ public class TopController {
 					qrStatus = FastJsonUtils.getString(result, "qrStatus");
 					String sId = FastJsonUtils.getString(result, "sellerId");
 					machineCode = FastJsonUtils.getString(result, "machineCode");
+					followSessionKey= FastJsonUtils.getString(result, "followSessionKey");
+
 
 					goodsCode = FastJsonUtils.getString(result, "goodsCode");
 					isVip = FastJsonUtils.getString(result, "isVip");
