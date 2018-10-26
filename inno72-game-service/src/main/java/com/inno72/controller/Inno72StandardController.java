@@ -1,6 +1,7 @@
 package com.inno72.controller;
 
 import java.io.IOException;
+import java.net.URLDecoder;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
@@ -300,11 +301,25 @@ public class Inno72StandardController {
 
 	@RequestMapping(value = "/concern_callback", method = {RequestMethod.GET, RequestMethod.POST})
 	public Result<String> ConcernCallback(HttpServletResponse response, HttpServletRequest request,
-			String sessionUuid, String tbResult)  {
+			String sessionUuid, String tbResult, String redirectUrl)  {
 		LOGGER.info("关注店铺回调参数 {}", JSON.toJSONString(request.getParameterMap()));
 		if ("1".equals(tbResult)){
 			try {
-				response.sendRedirect("/api/point?sessionUuid="+sessionUuid+"&type="+CommonBean.POINT_TYPE_CONCERN);
+
+				UserSessionVo sessionKey = gameSessionRedisUtil.getSessionKey(sessionUuid);
+				if (sessionKey == null){
+					return Results.failure("session 过期！");
+				}
+				String msg = "用户["+sessionKey.getUserNick()+"]关注店铺成功.";
+
+				CommonBean.logger(
+						CommonBean.POINT_TYPE_CONCERN,
+						sessionKey.getMachineCode(),
+						msg,
+						sessionKey.getActivityId()
+				);
+
+				response.sendRedirect(URLDecoder.decode(redirectUrl, java.nio.charset.StandardCharsets.UTF_8.toString()));
 			} catch (IOException e) {
 				LOGGER.error("关注店铺回调异常 {}, {}",e.getMessage(), e);
 			}
