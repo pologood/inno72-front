@@ -3,6 +3,7 @@ package com.inno72.controller;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
+import java.net.URLEncoder;
 import java.text.MessageFormat;
 import java.util.HashMap;
 import java.util.Map;
@@ -79,7 +80,7 @@ public class TopController {
 	private String jstUrl;
 
 	@Value("${h5_env_host}")
-	private String h5EnvMap;
+	private String h5EnvHost;
 
 	private TaobaoClient client;
 	private TaobaoClient samplinghClient;
@@ -118,6 +119,7 @@ public class TopController {
 		String result;
 		String qrStatus = "";
 		String sellerId = "";
+		String accessToken = "";
 		if (!StringUtils.isEmpty(code) && !StringUtils.isEmpty(sessionUuid)) {
 
 			String authInfo = getAuthInfo(code);
@@ -128,6 +130,9 @@ public class TopController {
 
 			String taobaoUserId = FastJsonUtils.getString(tokenResult, "taobao_user_nick");
 			LOGGER.info("topIndex2 taobaoUserId is {}", taobaoUserId);
+
+			accessToken= FastJsonUtils.getString(tokenResult, "access_token");
+			LOGGER.info("topIndex2 accessToken is {}", accessToken);
 
 			UserInfo userInfo = new UserInfo();
 			userInfo.setSessionUuid(sessionUuid);
@@ -203,6 +208,11 @@ public class TopController {
 					LOGGER.info("topIndex2 memberJoinResBody is {}", memberJoinResBody);
 					String resultUrl = FastJsonUtils.getString(memberJoinResBody, "result");
 					LOGGER.info("topIndex2 resultUrl is {}", resultUrl);
+
+//					StoreFollowurlGetRequest req = new StoreFollowurlGetRequest();
+//					req.setCallbackUrl(h5EnvHost+envParam.get(env) + "/api/standard/concern_callback?sessionUuid="+sessionUuid);
+//					StoreFollowurlGetResponse rsp = client.execute(req, accessToken);
+
 					response.sendRedirect("http:" + resultUrl);
 
 				} else {
@@ -226,7 +236,19 @@ public class TopController {
 			String formatUrl = String.format(h5MobileUrl, env, playCode) + "?qrStatus=" + qrStatus + "&sellerId="
 					+ sellerId + "&sessionUuid=" + sessionUuid;
 			LOGGER.info("topIndex2 formatUrl is {}", formatUrl);
-			response.sendRedirect(formatUrl);
+
+			String encodeUrl = URLEncoder.encode(formatUrl);
+
+			StoreFollowurlGetRequest req = new StoreFollowurlGetRequest();
+			req.setCallbackUrl(
+					h5EnvHost
+							+ envParam.get(env)
+							+ "/api/standard/concern_callback?sessionUuid="+sessionUuid
+							+ "&redirectUrl="+encodeUrl);
+			StoreFollowurlGetResponse rsp = client.execute(req, accessToken);
+
+			response.sendRedirect(rsp.getUrl());
+
 		} catch (IOException e) {
 			LOGGER.error(e.getMessage(), e);
 		}
@@ -613,7 +635,7 @@ public class TopController {
 		LOGGER.info( "concern params accessToken is {}, sessionUuid is {}, env is {}", accessToken, sessionUuid, env);
 		try {
 			StoreFollowurlGetRequest req = new StoreFollowurlGetRequest();
-			req.setCallbackUrl(envParam.get(env) + "/api/standard/concern_callback?sessionUuid="+sessionUuid);
+			req.setCallbackUrl(h5EnvHost+envParam.get(env) + "/api/standard/concern_callback?sessionUuid="+sessionUuid);
 			StoreFollowurlGetResponse rsp = client.execute(req, accessToken);
 			LOGGER.info("活动关注链接 StoreFollowurlGetResponse =》 {}", JSON.toJSONString(rsp));
 			return rsp.getBody();
