@@ -160,7 +160,7 @@ public class TopController {
 					String sId = FastJsonUtils.getString(result, "sellerId");
 					machineCode = FastJsonUtils.getString(result, "machineCode");
 					followSessionKey= FastJsonUtils.getString(result, "followSessionKey");
-
+					LOGGER.info("followSessionKey is {}", followSessionKey);
 
 					goodsCode = FastJsonUtils.getString(result, "goodsCode");
 					isVip = FastJsonUtils.getString(result, "isVip");
@@ -233,7 +233,7 @@ public class TopController {
 			// 跳转到游戏页面 手机端redirect
 			LOGGER.info("topIndex2 h5MobileUrl is {} , playCode is {}, env is {}", h5MobileUrl, playCode, env);
 			String formatUrl = String.format(h5MobileUrl, env, playCode) + "?qrStatus=" + qrStatus + "&sellerId="
-					+ sellerId + "&sessionUuid=" + sessionUuid;
+					+ sellerId + "&method=href&sessionUuid=" + sessionUuid;
 			LOGGER.info("topIndex2 formatUrl is {}", formatUrl);
 
 			if ( StringUtils.isEmpty(followSessionKey)){
@@ -246,11 +246,11 @@ public class TopController {
 						h5EnvHost
 								+ envParam.get(env)
 								+ "/standard/concern_callback?sessionUuid="+sessionUuid
-								+ "&redirectUrl="+encodeUrl);
-				LOGGER.info("关注callBackUrl"+h5EnvHost
+								+ "&redirectUrl="+encodeUrl+"&method=href");
+				LOGGER.info("关注callBackUrl : " + h5EnvHost
 						+ envParam.get(env)
-						+ "/api/standard/concern_callback?sessionUuid="+sessionUuid
-						+ "&redirectUrl="+encodeUrl);
+						+ "/standard/concern_callback?sessionUuid="+sessionUuid
+						+ "&redirectUrl="+encodeUrl+"&method=href");
 				StoreFollowurlGetResponse rsp = client.execute(req, followSessionKey);
 
 				response.sendRedirect(rsp.getUrl());
