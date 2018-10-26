@@ -328,6 +328,7 @@ public class Inno72AuthInfoServiceImpl implements Inno72AuthInfoService {
 		resultMap.put("sellerId", sessionVo.getSellerId());
 
 		this.dealIsVip(resultMap, sessionVo);
+		this.dealFollowSessionKey(resultMap, sessionVo);
 
 		resultMap.put("activityType", activityType);
 		resultMap.put("goodsCode", sessionVo.getGoodsCode() != null ? sessionVo.getGoodsCode() : "");
