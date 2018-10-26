@@ -123,6 +123,9 @@ public class SuperOpenServiceImpl implements SuperOpenService {
 		/** 标准查找活动接口 */
 		POINT_LOG("108", "point", "/api/point", "标准埋点接口", "1.0.0"),
 
+		/** 标准查找活动接口 */
+		CONCERN("109", "concern", "/api/standard/concern", "关注", "1.0.0"),
+
 		;
 
 		private String code;

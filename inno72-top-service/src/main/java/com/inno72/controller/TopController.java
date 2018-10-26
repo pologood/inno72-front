@@ -4,6 +4,8 @@ import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 import java.text.MessageFormat;
+import java.util.HashMap;
+import java.util.Map;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.Resource;
@@ -18,7 +20,6 @@ import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
@@ -27,8 +28,6 @@ import org.springframework.web.client.RestTemplate;
 import com.alibaba.fastjson.JSON;
 import com.inno72.util.FastJsonUtils;
 import com.inno72.validator.Validators;
-import com.inno72.vo.FansActVo;
-import com.inno72.vo.MachineVo;
 import com.inno72.vo.PropertiesBean;
 import com.inno72.vo.UserInfo;
 import com.taobao.api.ApiException;
@@ -36,6 +35,7 @@ import com.taobao.api.DefaultTaobaoClient;
 import com.taobao.api.TaobaoClient;
 import com.taobao.api.request.CrmMemberIdentityGetRequest;
 import com.taobao.api.request.CrmMemberJoinurlGetRequest;
+import com.taobao.api.request.StoreFollowurlGetRequest;
 import com.taobao.api.request.TmallFansAutomachineDeliveryrecordRequest;
 import com.taobao.api.request.TmallFansAutomachineGetmaskusernickRequest;
 import com.taobao.api.request.TmallFansAutomachineOrderAddlogRequest;
@@ -46,6 +46,7 @@ import com.taobao.api.request.TmallMarketingFaceSkindetectRequest;
 import com.taobao.api.request.TopAuthTokenCreateRequest;
 import com.taobao.api.response.CrmMemberIdentityGetResponse;
 import com.taobao.api.response.CrmMemberJoinurlGetResponse;
+import com.taobao.api.response.StoreFollowurlGetResponse;
 import com.taobao.api.response.TmallFansAutomachineDeliveryrecordResponse;
 import com.taobao.api.response.TmallFansAutomachineGetmaskusernickResponse;
 import com.taobao.api.response.TmallFansAutomachineOrderAddlogResponse;
@@ -64,14 +65,22 @@ public class TopController {
 	private PropertiesBean propertiesBean;
 
 	private static final String APP_NAME = "点72互动";
+
 	@Value("${game_server_url}")
 	private String gameServerUrl;
+
 	@Value("${h5_mobile_url}")
 	private String h5MobileUrl;
+
 	@Value("${h5_mobile_err_url}")
 	private String h5MobileErrUrl;
+
 	@Value("${jst_url}")
 	private String jstUrl;
+
+	@Value("${h5_env_host}")
+	private String h5EnvMap;
+
 	private TaobaoClient client;
 	private TaobaoClient samplinghClient;
 
@@ -81,12 +90,19 @@ public class TopController {
 	public static final Integer IS_VIP = 1;
 	public static final Integer IS_NOT_VIP = 0;
 
+	private Map<String, String> envParam;
+
 	@PostConstruct
 	public void initClient() {
 		client = new DefaultTaobaoClient(propertiesBean.getUrl(), propertiesBean.getAppkey(),
 				propertiesBean.getSecret());
 		samplinghClient = new DefaultTaobaoClient(propertiesBean.getUrl(), propertiesBean.getSampLingAppkey(),
 				propertiesBean.getSecret());
+		envParam = new HashMap<>(4);
+		envParam.put("dev","dev-api");
+		envParam.put("test","test-api");
+		envParam.put("stage","stage-api");
+		envParam.put("prod","prod-api");
 	}
 
 
@@ -585,6 +601,31 @@ public class TopController {
 		}
 	}
 
+	/**
+	 * 关注
+	 * @param accessToken accessToken 淘宝token
+	 * @param sessionUuid sessionUuid 机器sessionid
+	 *
+	 */
+	@RequestMapping("/api/top/concern")
+	public String concern(
+			@PathVariable("accessToken") String accessToken,
+			@PathVariable("sessionUuid")String sessionUuid,
+			@PathVariable("env")String env) {
+
+		LOGGER.info( "concern params accessToken is {}, sessionUuid is {}, env is {}", accessToken, sessionUuid, env);
+		try {
+			StoreFollowurlGetRequest req = new StoreFollowurlGetRequest();
+			req.setCallbackUrl(envParam.get(env) + "/api/standard/concern_callback?sessionUuid="+sessionUuid);
+			StoreFollowurlGetResponse rsp = client.execute(req, accessToken);
+			LOGGER.info("活动关注链接 StoreFollowurlGetResponse =》 {}", JSON.toJSONString(rsp));
+			return rsp.getBody();
+		} catch (Exception e) {
+			LOGGER.error(e.getMessage(), e);
+		}
+		return "";
+	}
+
 	private void log(String sessionUuid, String env) {
 		LOGGER.info("gameServerUrl is " + gameServerUrl);
 		RestTemplate client = new RestTemplate();
@@ -693,4 +734,5 @@ public class TopController {
 		LOGGER.info("unescape is {}", decode);
 		return decode;
 	}
+
 }
