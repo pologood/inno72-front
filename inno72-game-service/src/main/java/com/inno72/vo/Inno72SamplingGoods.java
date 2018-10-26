@@ -36,6 +36,11 @@ public class Inno72SamplingGoods {
 	private String sellerId;
 
 	/**
+	 * 商户Code
+	 */
+	private String sellerCode;
+
+	/**
 	 * 店铺ID
 	 */
 	private String shopId;
@@ -388,4 +393,11 @@ public class Inno72SamplingGoods {
 	public void setGoodsType(Integer goodsType) {
 		this.goodsType = goodsType;
 	}
+    public String getSellerCode() {
+        return sellerCode;
+    }
+
+    public void setSellerCode(String sellerCode) {
+        this.sellerCode = sellerCode;
+    }
 }
