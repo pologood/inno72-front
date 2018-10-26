@@ -115,8 +115,7 @@ public class TopController {
 			@PathVariable("sessionUuid") String sessionUuid,
 			String code,
 			@PathVariable("env") String env,
-			@PathVariable("traceId") String traceId,
-			String sellerSessionKey)
+			@PathVariable("traceId") String traceId)
 			throws Exception {
 		LOGGER.info("topIndex2 code is {}, sessionUuid is {}, env is {}, traceId is {}", code, sessionUuid, env, traceId);
 		String playCode = "";
@@ -124,7 +123,7 @@ public class TopController {
 		String qrStatus = "";
 		String sellerId = "";
 		String accessToken = "";
-		sellerSessionKey = "6100b08ac97c097b1e8596c72267bbd8e550d8f5992fe342901504526";
+		String followSessionKey = "";
 		if (!StringUtils.isEmpty(code) && !StringUtils.isEmpty(sessionUuid)) {
 
 			String authInfo = getAuthInfo(code);
@@ -136,7 +135,7 @@ public class TopController {
 			String taobaoUserId = FastJsonUtils.getString(tokenResult, "taobao_user_nick");
 			LOGGER.info("topIndex2 taobaoUserId is {}", taobaoUserId);
 
-			accessToken= FastJsonUtils.getString(tokenResult, "access_token");
+			followSessionKey= FastJsonUtils.getString(tokenResult, "followSessionKey");
 			LOGGER.info("topIndex2 accessToken is {}", accessToken);
 
 			UserInfo userInfo = new UserInfo();
@@ -238,7 +237,7 @@ public class TopController {
 					+ sellerId + "&sessionUuid=" + sessionUuid;
 			LOGGER.info("topIndex2 formatUrl is {}", formatUrl);
 
-			if ( StringUtils.isEmpty(sellerSessionKey)){
+			if ( StringUtils.isEmpty(followSessionKey)){
 				response.sendRedirect(formatUrl);
 			}else{
 				String encodeUrl = URLEncoder.encode(formatUrl, java.nio.charset.StandardCharsets.UTF_8.toString());
@@ -253,7 +252,7 @@ public class TopController {
 						+ envParam.get(env)
 						+ "/api/standard/concern_callback?sessionUuid="+sessionUuid
 						+ "&redirectUrl="+encodeUrl);
-				StoreFollowurlGetResponse rsp = client.execute(req, sellerSessionKey);
+				StoreFollowurlGetResponse rsp = client.execute(req, followSessionKey);
 
 				response.sendRedirect(rsp.getUrl());
 			}
