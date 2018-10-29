@@ -3,6 +3,7 @@ package com.inno72.service.impl;
 import java.io.File;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -1270,11 +1271,17 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 			//查找goodsId信息
 			Inno72Goods goods = inno72GoodsMapper.selectByOrderId(userSessionVo.getInno72OrderId());
 			Inno72Order order = inno72OrderMapper.selectByPrimaryKey(userSessionVo.getInno72OrderId());
-			Inno72MachineDevice deviceCode = inno72MachineDeviceService.findByMachineCodeAndSellerId(machineCode,goods.getMerchantCode());
-			String orderTime = DateUtil.format(order.getOrderTime(),DateUtil.getDatePattern());
-			LOGGER.info("调用淘宝数据回流sessionKey={},orderId={},deviceCode={},goodsId={},orderTime={}",sellSessionKey,orderId,deviceCode.getDeviceCode(),goods.getCode(),orderTime);
-			inno72NewretailService.deviceVendorFeedback(sellSessionKey,orderId,deviceCode.getDeviceCode(),goods.getCode(),orderTime);
-		} catch (ApiException e) {
+//			Inno72Order order = inno72OrderMapper.select(new Inno72Order()).get(0);
+			String userNick = inno72GameUserChannelMapper.selectUserNickByGameUserId(order.getUserId());
+			if(!StringUtils.isEmpty(userNick)){
+				String orderTime = DateUtil.format(order.getOrderTime(),DateUtil.getDatePattern());
+				Inno72MachineDevice deviceCode = inno72MachineDeviceService.findByMachineCodeAndSellerId(machineCode,goods.getMerchantCode());
+				LOGGER.info("调用淘宝数据回流sessionKey={},orderId={},deviceCode={},goodsId={},orderTime={}",sellSessionKey,orderId,deviceCode.getDeviceCode(),goods.getCode(),orderTime);
+				inno72NewretailService.deviceVendorFeedback(sellSessionKey,orderId,deviceCode.getDeviceCode(),goods.getCode(),orderTime,userNick);
+			}else{
+				LOGGER.error("userNick is null 不回流数据 orderId = {}",order.getId());
+			}
+		} catch (Exception e) {
 			LOGGER.error("淘宝回流失败",e);
 		}
 

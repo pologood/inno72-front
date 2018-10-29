@@ -20,4 +20,9 @@
       where channel_id = #{channelId}
       and channel_user_key = #{channelUserKey}
     </select>
+
+    <select id="selectUserNickByGameUserId" resultType="string">
+      select user_nick from inno72_game_user_channel
+      where game_user_id = #{userId}
+    </select>
 </mapper>

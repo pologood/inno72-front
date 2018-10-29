@@ -237,7 +237,7 @@ public class Inno72NewretailServiceImpl implements Inno72NewretailService {
      * @throws ApiException
      */
     @Override
-    public String deviceVendorFeedback(String sessionKey, String tradeNo, String deviceCode, String itemId, String opTime) throws ApiException {
+    public String deviceVendorFeedback(String sessionKey, String tradeNo, String deviceCode, String itemId, String opTime,String userNick) throws ApiException {
         SmartstoreDeviceVendorFeedbackRequest req = new SmartstoreDeviceVendorFeedbackRequest();
         req.setTradeNo(tradeNo);
         String tradeType = "tmall_trade";
@@ -248,6 +248,7 @@ public class Inno72NewretailServiceImpl implements Inno72NewretailService {
         req.setAction(action);
         req.setItemId(itemId);
         req.setOpTime(StringUtils.parseDateTime(opTime));
+        req.setUserNick(userNick);
         SmartstoreDeviceVendorFeedbackResponse rsp = client.execute(req, sessionKey);
         LOGGER.debug("deviceVendorFeedback tradeNo={},tradeType={},deviceCode={},action={}," +
                         "itemId={},opTime={},response={}",

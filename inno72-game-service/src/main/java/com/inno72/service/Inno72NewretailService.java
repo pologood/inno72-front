@@ -20,7 +20,7 @@ public interface Inno72NewretailService {
     String deviceVendorFeedback(String sessionKey, String tradeNo, String tradeType, String deviceCode, String action
             , String itemId, String couponId, String userNick, String outerBizId, String opTime, String outerUser) throws ApiException;
 
-    String deviceVendorFeedback(String sessionKey, String tradeNo, String deviceCode, String itemId, String opTime) throws ApiException;
+    String deviceVendorFeedback(String sessionKey, String tradeNo, String deviceCode, String itemId, String opTime,String userNick) throws ApiException;
 
     /**
      * 新增机器
