@@ -3,8 +3,29 @@ package com.inno72.controller;
 import com.inno72.common.Inno72BizException;
 import com.inno72.common.Result;
 import com.inno72.common.Results;
+import com.inno72.common.json.JsonUtil;
+import com.inno72.common.util.FastJsonUtils;
+import com.inno72.common.util.excel.ExportExcel;
+import com.inno72.mapper.Inno72AdminAreaMapper;
+import com.inno72.mapper.Inno72LocaleMapper;
+import com.inno72.mapper.Inno72MachineMapper;
+import com.inno72.model.Inno72AdminArea;
+import com.inno72.model.Inno72Locale;
+import com.inno72.model.Inno72Machine;
 import com.inno72.service.Inno72NewretailService;
 import com.inno72.vo.DeviceVo;
+import com.inno72.vo.MachineVo;
+import com.taobao.api.ApiException;
+import com.taobao.api.DefaultTaobaoClient;
+import com.taobao.api.TaobaoClient;
+import com.taobao.api.internal.util.StringUtils;
+import com.taobao.api.request.SmartstoreDeviceAddRequest;
+import com.taobao.api.request.SmartstoreDeviceQueryRequest;
+import com.taobao.api.request.SmartstoreStoresQueryRequest;
+import com.taobao.api.response.SmartstoreDeviceAddResponse;
+import com.taobao.api.response.SmartstoreDeviceQueryResponse;
+import com.taobao.api.response.SmartstoreStoresQueryResponse;
+import org.apache.poi.ss.usermodel.Row;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,15 +34,40 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
+import javax.annotation.Resource;
+import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
+import java.util.UUID;
 
 @RestController
 @RequestMapping("/newretail")
 public class Inno72NewretailController {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(Inno72NewretailController.class);
-    @Autowired
-    private Inno72NewretailService service;
+
+	public static final String sessionKey = "6100816bd6f85638abd2fdae18beee05e32809cebf39e224008390433";
+
+	public static final String url = "https://eco.taobao.com/router/rest";
+
+	public static final String appkey = "25101422";
+
+	public static final String secret = "8ac43496a419501705a3dfb20b12dafe";
+
+	@Autowired
+	private Inno72NewretailService service;
+
+	@Resource
+	private Inno72MachineMapper inno72MachineMapper;
+
+	@Resource
+	private Inno72LocaleMapper inno72LocaleMapper;
+
+	@Resource
+	private Inno72AdminAreaMapper inno72AdminAreaMapper;
+
     /**
      * 查找门店id
      */
@@ -119,4 +165,99 @@ public class Inno72NewretailController {
             return Results.failure("系统异常");
         }
     }
+
+	@RequestMapping(value = "/exportShop")
+	public void exportShop(String machineCodes, String sellerId, HttpServletResponse response) {
+    	List<Inno72Machine> machineList = new ArrayList<>();
+
+		String[] machineCodesStr = machineCodes.split(",");
+		for (String machineCode : machineCodesStr) {
+			Inno72Machine machine = inno72MachineMapper.findMachineByCode(machineCode);
+			machineList.add(machine);
+		}
+
+		List<String> headerList = buildHeaderList();
+		ExportExcel excelShop = new ExportExcel("", headerList);
+
+		for (Inno72Machine inno72Machine : machineList) {
+			String localeId = inno72Machine.getLocaleId();
+			Inno72Locale inno72Locale = inno72LocaleMapper.selectByPrimaryKey(localeId);
+			String areaCode = inno72Locale.getAreaCode();
+			Inno72AdminArea inno72AdminArea = inno72AdminAreaMapper.selectByPrimaryKey(areaCode);
+
+			String province = inno72AdminArea.getProvince();
+			String city = inno72AdminArea.getCity();
+			String locale = inno72Locale.getName();
+
+			String shopName = sellerId + "-" + inno72Machine.getMachineCode();
+
+			Row row = excelShop.addRow();
+			excelShop.addCell(row, 0, province); // 省
+			excelShop.addCell(row, 1, city); // 市
+			excelShop.addCell(row, 6, shopName); // 店名
+			excelShop.addCell(row, 9, locale); // 地址
+			excelShop.addCell(row, 10, getTel()); // 联系电话
+			excelShop.addCell(row, 12, "https://img.alicdn.com/top/i1/TB1Xb0QXjfguuRjy1zewu20KFXa.png"); // 图片地址
+			excelShop.addCell(row, 15, "09:00-22:00"); // 营业时间
+		}
+
+		try {
+			excelShop.write(response, "门店").dispose();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
+
+	/**
+	 * 构建sheet表头
+	 */
+	private List<String> buildHeaderList() {
+		List<String> headerList = new ArrayList<String>();
+		headerList.add("省份名(prov_name)");
+		headerList.add("市名称(city_name)");
+		headerList.add("区域名称(area_name)");
+		headerList.add("街道名称(street_name)");
+		headerList.add("品牌名称(brand_name)");
+		headerList.add("商家编码(out_id)");
+		headerList.add("店名(store_name)");
+		headerList.add("分店名(sub_store_name)");
+		headerList.add("展示名称(display)");
+		headerList.add("地址(address)");
+		headerList.add("联系电话(contact)");
+		headerList.add("咨询电话(hotline)");
+		headerList.add("图片地址(pic_addr)");
+		headerList.add("支付宝账号(alipay_account)");
+		headerList.add("支付宝实名(alipay_real_name)");
+		headerList.add("营业时间(bustime)");
+		headerList.add("营业时间描述(bustime_desc)");
+		headerList.add("门店旺旺(wangwang)");
+		headerList.add("门店邮箱(email)");
+		headerList.add("核销账号(write_off_account)");
+		headerList.add("法人姓名(legal_person_name)");
+		headerList.add("法人身份证号(legal_cert_no)");
+		headerList.add("营业主体名称(license_name)");
+		headerList.add("营业主体类型(license_type)");
+		headerList.add("营业执照编号(license_code)");
+		return headerList;
+	}
+
+	/**
+	 * 返回手机号码
+	 */
+	private static String[] telFirst = "134,135,136,137,138,139,150,151,152,157,158,159,130,131,132,155,156,133,153"
+			.split(",");
+
+	private static String getTel() {
+		int index = getNum(0, telFirst.length - 1);
+		String first = telFirst[index];
+		String second = String.valueOf(getNum(1, 888) + 10000).substring(1);
+		String third = String.valueOf(getNum(1, 9100) + 10000).substring(1);
+		return first + second + third;
+	}
+
+	public static int getNum(int start, int end) {
+		return (int) (Math.random() * (end - start + 1) + start);
+	}
+
+
 }

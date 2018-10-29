@@ -11,6 +11,9 @@
     <packaging>war</packaging>
     <name>inno72-game-service</name>
     <description>game-front</description>
+    <properties>
+        <poi.version>3.9</poi.version>
+    </properties>
 
     <dependencies>
         <!--淘宝派样-->
@@ -142,6 +145,24 @@
             <artifactId>inno72-alarm</artifactId>
             <version>0.0.1-SNAPSHOT</version>
         </dependency>
+
+        <!-- poi office start -->
+        <dependency>
+            <groupId>org.apache.poi</groupId>
+            <artifactId>poi</artifactId>
+            <version>${poi.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.poi</groupId>
+            <artifactId>poi-ooxml</artifactId>
+            <version>${poi.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.poi</groupId>
+            <artifactId>poi-ooxml-schemas</artifactId>
+            <version>${poi.version}</version>
+        </dependency>
+
 
     </dependencies>
 

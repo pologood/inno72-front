@@ -67,4 +67,8 @@
       where g.code=#{goodsCode} and  g.use_type != 1 and m.is_delete = 0
     </select>
 
+    <select id="findMerchantByCode" parameterType="string" resultMap="BaseResultMap">
+        select * from inno72_merchant where merchant_code = #{merchantCode} and is_delete = 0
+    </select>
+
 </mapper>
