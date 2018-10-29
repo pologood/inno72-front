@@ -3,8 +3,10 @@ package com.inno72.service.impl;
 import com.inno72.common.Inno72BizException;
 import com.inno72.common.json.JsonUtil;
 import com.inno72.common.util.FastJsonUtils;
+import com.inno72.mapper.Inno72FeedBackLogMapper;
 import com.inno72.mapper.Inno72GoodsMapper;
 import com.inno72.mapper.Inno72MerchantMapper;
+import com.inno72.model.Inno72FeedBackLog;
 import com.inno72.model.Inno72Goods;
 import com.inno72.model.Inno72MachineDevice;
 import com.inno72.model.Inno72Merchant;
@@ -27,6 +29,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
+import java.time.LocalDateTime;
 import java.util.Date;
 import java.util.List;
 
@@ -47,6 +50,9 @@ public class Inno72NewretailServiceImpl implements Inno72NewretailService {
 
     @Value("${sell_session_key}")
     private String sellSessionKey;
+
+    @Autowired
+    Inno72FeedBackLogMapper inno72FeedBackLogMapper;
 
     @Autowired
     private TaobaoClient client;
@@ -246,6 +252,14 @@ public class Inno72NewretailServiceImpl implements Inno72NewretailService {
         LOGGER.debug("deviceVendorFeedback tradeNo={},tradeType={},deviceCode={},action={}," +
                         "itemId={},opTime={},response={}",
                 tradeNo,tradeType,deviceCode,action,itemId,opTime,rsp.getBody());
+        //插入日志
+        Inno72FeedBackLog log = new Inno72FeedBackLog();
+        log.setGoodsId(itemId);
+        log.setOrderId(tradeNo);
+        log.setMerchantName(null);
+        log.setResponseBody(rsp.getBody());
+        log.setOrderTime(LocalDateTime.now());
+        inno72FeedBackLogMapper.insert(log);
         return rsp.getBody();
     }
 

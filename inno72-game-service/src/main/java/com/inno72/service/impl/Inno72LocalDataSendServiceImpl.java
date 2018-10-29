@@ -3,7 +3,10 @@ package com.inno72.service.impl;
 import com.inno72.common.Inno72BizException;
 import com.inno72.common.json.JsonUtil;
 import com.inno72.mapper.*;
-import com.inno72.model.*;
+import com.inno72.model.Inno72FeedBackLog;
+import com.inno72.model.Inno72Goods;
+import com.inno72.model.Inno72MachineDevice;
+import com.inno72.model.Inno72Merchant;
 import com.inno72.service.Inno72LocalDataSendService;
 import com.inno72.service.Inno72NewretailService;
 import com.inno72.vo.OrderOrderGoodsVo;
@@ -15,10 +18,10 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
-import tk.mybatis.mapper.entity.Condition;
 
-import java.time.LocalDateTime;
-import java.util.*;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 @Service
 public class Inno72LocalDataSendServiceImpl implements Inno72LocalDataSendService {
@@ -81,13 +84,13 @@ public class Inno72LocalDataSendServiceImpl implements Inno72LocalDataSendServic
                             //调用淘宝回流
                             String body = inno72NewretailService.deviceVendorFeedback(sellSessionKey,orderOrderGoodsVo.getTaobaoOrderNum(),deviceCode,orderOrderGoodsVo.getTaobaoGoodsId(),"2018-10-28 00:00:00");
                             //插入日志
-                            log = new Inno72FeedBackLog();
-                            log.setGoodsId(orderOrderGoodsVo.getGoodsId());
-                            log.setOrderId(orderOrderGoodsVo.getOrderId());
-                            log.setMerchantName(merchantName);
-                            log.setResponseBody(body);
-                            log.setOrderTime(LocalDateTime.now());
-                            saveLog(log);
+//                            log = new Inno72FeedBackLog();
+//                            log.setGoodsId(orderOrderGoodsVo.getGoodsId());
+//                            log.setOrderId(orderOrderGoodsVo.getOrderId());
+//                            log.setMerchantName(merchantName);
+//                            log.setResponseBody(body);
+//                            log.setOrderTime(LocalDateTime.now());
+//                            saveLog(log);
                             System.out.println(size);
                         }
                     }
