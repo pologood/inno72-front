@@ -237,7 +237,7 @@ public class Inno72NewretailServiceImpl implements Inno72NewretailService {
      * @throws ApiException
      */
     @Override
-    public String deviceVendorFeedback(String sessionKey, String tradeNo, String deviceCode, String itemId, String opTime,String userNick) throws ApiException {
+    public String deviceVendorFeedback(String sessionKey, String tradeNo, String deviceCode, String itemId, String opTime,String userNick,String merchantName,String merchantCode) throws ApiException {
         SmartstoreDeviceVendorFeedbackRequest req = new SmartstoreDeviceVendorFeedbackRequest();
         req.setTradeNo(tradeNo);
         String tradeType = "tmall_trade";
@@ -257,7 +257,8 @@ public class Inno72NewretailServiceImpl implements Inno72NewretailService {
         Inno72FeedBackLog log = new Inno72FeedBackLog();
         log.setGoodsId(itemId);
         log.setOrderId(tradeNo);
-        log.setMerchantName(null);
+        log.setMerchantName(merchantName);
+        log.setMerchantCode(merchantCode);
         log.setResponseBody(rsp.getBody());
         log.setOrderTime(LocalDateTime.now());
         inno72FeedBackLogMapper.insert(log);

@@ -16,6 +16,9 @@ public class Inno72FeedBackLog {
     @Column(name = "merchant_name")
     private String merchantName;
 
+    @Column(name = "merchant_code")
+    private String merchantCode;
+
     @Column(name = "goods_id")
     private String goodsId;
 
@@ -103,5 +106,13 @@ public class Inno72FeedBackLog {
 
     public void setOrderTime(LocalDateTime orderTime) {
         this.orderTime = orderTime;
+    }
+
+    public String getMerchantCode() {
+        return merchantCode;
+    }
+
+    public void setMerchantCode(String merchantCode) {
+        this.merchantCode = merchantCode;
     }
 }
