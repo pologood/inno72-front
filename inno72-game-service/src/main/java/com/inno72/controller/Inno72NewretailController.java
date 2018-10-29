@@ -3,12 +3,8 @@ package com.inno72.controller;
 import com.inno72.common.Inno72BizException;
 import com.inno72.common.Result;
 import com.inno72.common.Results;
-import com.inno72.common.json.JsonUtil;
 import com.inno72.service.Inno72NewretailService;
-import com.inno72.vo.DeviceParamVo;
 import com.inno72.vo.DeviceVo;
-import com.inno72.vo.MachineVo;
-import com.taobao.api.ApiException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -123,5 +119,4 @@ public class Inno72NewretailController {
             return Results.failure("系统异常");
         }
     }
-
 }
