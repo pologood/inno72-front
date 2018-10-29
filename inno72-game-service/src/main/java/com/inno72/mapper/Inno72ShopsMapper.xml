@@ -12,6 +12,7 @@
         <result column="is_delete" jdbcType="INTEGER" property="isDelete"/>
         <result column="remark" jdbcType="VARCHAR" property="remark"/>
         <result column="session_key" jdbcType="VARCHAR" property="sessionKey"/>
+        <result column="focus_session_key" jdbcType="VARCHAR" property="focusSessionKey"/>
         <result column="create_id" jdbcType="VARCHAR" property="createId"/>
         <result column="create_time" jdbcType="TIMESTAMP" property="createTime"/>
         <result column="update_id" jdbcType="VARCHAR" property="updateId"/>

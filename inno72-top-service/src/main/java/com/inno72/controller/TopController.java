@@ -3,7 +3,10 @@ package com.inno72.controller;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
+import java.net.URLEncoder;
 import java.text.MessageFormat;
+import java.util.HashMap;
+import java.util.Map;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.Resource;
@@ -19,7 +22,6 @@ import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
@@ -28,8 +30,6 @@ import org.springframework.web.client.RestTemplate;
 import com.alibaba.fastjson.JSON;
 import com.inno72.util.FastJsonUtils;
 import com.inno72.validator.Validators;
-import com.inno72.vo.FansActVo;
-import com.inno72.vo.MachineVo;
 import com.inno72.vo.PropertiesBean;
 import com.inno72.vo.UserInfo;
 import com.taobao.api.ApiException;
@@ -37,6 +37,7 @@ import com.taobao.api.DefaultTaobaoClient;
 import com.taobao.api.TaobaoClient;
 import com.taobao.api.request.CrmMemberIdentityGetRequest;
 import com.taobao.api.request.CrmMemberJoinurlGetRequest;
+import com.taobao.api.request.StoreFollowurlGetRequest;
 import com.taobao.api.request.TmallFansAutomachineDeliveryrecordRequest;
 import com.taobao.api.request.TmallFansAutomachineGetmaskusernickRequest;
 import com.taobao.api.request.TmallFansAutomachineOrderAddlogRequest;
@@ -47,6 +48,7 @@ import com.taobao.api.request.TmallMarketingFaceSkindetectRequest;
 import com.taobao.api.request.TopAuthTokenCreateRequest;
 import com.taobao.api.response.CrmMemberIdentityGetResponse;
 import com.taobao.api.response.CrmMemberJoinurlGetResponse;
+import com.taobao.api.response.StoreFollowurlGetResponse;
 import com.taobao.api.response.TmallFansAutomachineDeliveryrecordResponse;
 import com.taobao.api.response.TmallFansAutomachineGetmaskusernickResponse;
 import com.taobao.api.response.TmallFansAutomachineOrderAddlogResponse;
@@ -65,14 +67,22 @@ public class TopController {
 	private PropertiesBean propertiesBean;
 
 	private static final String APP_NAME = "点72互动";
+
 	@Value("${game_server_url}")
 	private String gameServerUrl;
+
 	@Value("${h5_mobile_url}")
 	private String h5MobileUrl;
+
 	@Value("${h5_mobile_err_url}")
 	private String h5MobileErrUrl;
+
 	@Value("${jst_url}")
 	private String jstUrl;
+
+	@Value("${h5_env_host}")
+	private String h5EnvHost;
+
 	private TaobaoClient client;
 	private TaobaoClient samplinghClient;
 
@@ -82,12 +92,19 @@ public class TopController {
 	public static final Integer IS_VIP = 1;
 	public static final Integer IS_NOT_VIP = 0;
 
+	private Map<String, String> envParam;
+
 	@PostConstruct
 	public void initClient() {
 		client = new DefaultTaobaoClient(propertiesBean.getUrl(), propertiesBean.getAppkey(),
 				propertiesBean.getSecret());
 		samplinghClient = new DefaultTaobaoClient(propertiesBean.getUrl(), propertiesBean.getSampLingAppkey(),
 				propertiesBean.getSecret());
+		envParam = new HashMap<>(4);
+		envParam.put("dev","dev-game-api");
+		envParam.put("test","test-game-api");
+		envParam.put("stage","stage-game-api");
+		envParam.put("prod","prod-game-api");
 	}
 
 
@@ -96,13 +113,18 @@ public class TopController {
 	 */
 	@RequestMapping("/api/top/{sessionUuid}/{env}/{traceId}")
 	public void topIndex2(HttpServletResponse response,
-			@PathVariable("sessionUuid") String sessionUuid, String code, @PathVariable("env") String env, @PathVariable("traceId") String traceId)
+			@PathVariable("sessionUuid") String sessionUuid,
+			String code,
+			@PathVariable("env") String env,
+			@PathVariable("traceId") String traceId)
 			throws Exception {
 		LOGGER.info("topIndex2 code is {}, sessionUuid is {}, env is {}, traceId is {}", code, sessionUuid, env, traceId);
 		String playCode = "";
 		String result;
 		String qrStatus = "";
 		String sellerId = "";
+		String accessToken = "";
+		String followSessionKey = "";
 		if (!StringUtils.isEmpty(code) && !StringUtils.isEmpty(sessionUuid)) {
 
 			String authInfo = getAuthInfo(code);
@@ -141,6 +163,9 @@ public class TopController {
 					qrStatus = FastJsonUtils.getString(result, "qrStatus");
 					String sId = FastJsonUtils.getString(result, "sellerId");
 					machineCode = FastJsonUtils.getString(result, "machineCode");
+					followSessionKey= FastJsonUtils.getString(result, "followSessionKey");
+					LOGGER.info("followSessionKey is {}", followSessionKey);
+
 					paiyangType = FastJsonUtils.getInteger(result,"paiyangType");
 					sellSessionKey = FastJsonUtils.getString(result,"sellSessionKey");
 					goodsCode = FastJsonUtils.getString(result, "goodsCode");
@@ -185,13 +210,14 @@ public class TopController {
 
 						LOGGER.info("topIndex2 meberJoinCallBackUrl is {}", meberJoinCallBackUrl);
 
-						// 如果不是会员做入会操作
-						String memberJoinResBody = memberJoin(machineCode, code, sessionUuid, env, goodsCode, isVip, sessionKey,
-								meberJoinCallBackUrl);
-						LOGGER.info("topIndex2 memberJoinResBody is {}", memberJoinResBody);
-						String resultUrl = FastJsonUtils.getString(memberJoinResBody, "result");
-						LOGGER.info("topIndex2 resultUrl is {}", resultUrl);
-						response.sendRedirect("http:" + resultUrl);
+					// 如果不是会员做入会操作
+					String memberJoinResBody = memberJoin(machineCode, code, sessionUuid, env, goodsCode, isVip, sessionKey,
+							meberJoinCallBackUrl);
+					LOGGER.info("topIndex2 memberJoinResBody is {}", memberJoinResBody);
+					String resultUrl = FastJsonUtils.getString(memberJoinResBody, "result");
+					LOGGER.info("topIndex2 resultUrl is {}", resultUrl);
+
+					response.sendRedirect("http:" + resultUrl);
 
 					} else {
 						// 设置用户已登录
@@ -227,9 +253,28 @@ public class TopController {
 			// 跳转到游戏页面 手机端redirect
 			LOGGER.info("topIndex2 h5MobileUrl is {} , playCode is {}, env is {}", h5MobileUrl, playCode, env);
 			String formatUrl = String.format(h5MobileUrl, env, playCode) + "?qrStatus=" + qrStatus + "&sellerId="
-					+ sellerId + "&sessionUuid=" + sessionUuid;
+					+ sellerId + "&method=href&sessionUuid=" + sessionUuid;
 			LOGGER.info("topIndex2 formatUrl is {}", formatUrl);
-			response.sendRedirect(formatUrl);
+
+			if ( StringUtils.isEmpty(followSessionKey)){
+				response.sendRedirect(formatUrl);
+			}else{
+				String encodeUrl = URLEncoder.encode(formatUrl, java.nio.charset.StandardCharsets.UTF_8.toString());
+
+				StoreFollowurlGetRequest req = new StoreFollowurlGetRequest();
+				req.setCallbackUrl(
+						h5EnvHost
+								+ envParam.get(env)
+								+ "/standard/concern_callback?sessionUuid="+sessionUuid
+								+ "&redirectUrl="+encodeUrl+"&method=href");
+				LOGGER.info("关注callBackUrl : " + h5EnvHost
+						+ envParam.get(env)
+						+ "/standard/concern_callback?sessionUuid="+sessionUuid
+						+ "&redirectUrl="+encodeUrl+"&method=href");
+				StoreFollowurlGetResponse rsp = client.execute(req, followSessionKey);
+
+				response.sendRedirect(rsp.getUrl());
+			}
 		} catch (IOException e) {
 			LOGGER.error(e.getMessage(), e);
 		}
@@ -642,6 +687,28 @@ public class TopController {
 		}
 	}
 
+	/**
+	 * 关注
+	 * @param accessToken accessToken 淘宝token
+	 * @param sessionUuid sessionUuid 机器sessionid
+	 *
+	 */
+	@RequestMapping("/api/top/concern")
+	public String concern(String accessToken, String sessionUuid, String env) {
+
+		LOGGER.info( "concern params accessToken is {}, sessionUuid is {}, env is {}", accessToken, sessionUuid, env);
+		try {
+			StoreFollowurlGetRequest req = new StoreFollowurlGetRequest();
+			req.setCallbackUrl(h5EnvHost+envParam.get(env) + "/api/standard/concern_callback?sessionUuid="+sessionUuid);
+			StoreFollowurlGetResponse rsp = client.execute(req, accessToken);
+			LOGGER.info("活动关注链接 StoreFollowurlGetResponse =》 {}", JSON.toJSONString(rsp));
+			return rsp.getBody();
+		} catch (Exception e) {
+			LOGGER.error(e.getMessage(), e);
+		}
+		return "";
+	}
+
 	private void log(String sessionUuid, String env) {
 		LOGGER.info("gameServerUrl is " + gameServerUrl);
 		RestTemplate client = new RestTemplate();
@@ -750,4 +817,5 @@ public class TopController {
 		LOGGER.info("unescape is {}", decode);
 		return decode;
 	}
+
 }
