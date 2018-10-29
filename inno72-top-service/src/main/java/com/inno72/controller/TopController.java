@@ -249,6 +249,34 @@ public class TopController {
 			}
 
 		}
+		this.concern(response, sessionUuid, accessToken, env, playCode, qrStatus, sellerId);
+	}
+
+	private String buildConcernParamUrl(
+			String r, String sessionUuid, String accessToken,
+			String env, String playCode, String qrStatus,
+			String sellerId){
+		StringBuilder sb = new StringBuilder(r);
+		if ( !r.contains("?") ){
+			sb.append("?");
+		}
+		sb.append("sessionUuid").append("=").append(sessionUuid);
+		sb.append("&");
+		sb.append("accessToken").append("=").append(accessToken);
+		sb.append("&");
+		sb.append("env").append("=").append(env);
+		sb.append("&");
+		sb.append("playCode").append("=").append(playCode);
+		sb.append("&");
+		sb.append("qrStatus").append("=").append(qrStatus);
+		sb.append("&");
+		sb.append("sellerId").append("=").append(sellerId);
+
+		return sb.toString();
+	}
+
+	@RequestMapping(value = "/api/top/concern")
+	public void concern(HttpServletResponse response, String sessionUuid, String accessToken, String env, String playCode, String qrStatus, String sellerId){
 		try {
 			// 跳转到游戏页面 手机端redirect
 			LOGGER.info("topIndex2 h5MobileUrl is {} , playCode is {}, env is {}", h5MobileUrl, playCode, env);
@@ -263,18 +291,19 @@ public class TopController {
 					h5EnvHost
 							+ envParam.get(env)
 							+ "/standard/concern_callback?sessionUuid="+sessionUuid
-							+ "&redirectUrl="+encodeUrl+"&method=href");
+							+ "&redirectUrl="+encodeUrl+"&call_concern=false");
 			req.setUserId(Long.parseLong(sellerId));
 			LOGGER.info("关注callBackUrl : " + h5EnvHost
 					+ envParam.get(env)
 					+ "/standard/concern_callback?sessionUuid="+sessionUuid
-					+ "&redirectUrl="+encodeUrl+"&method=href");
+					+ "&redirectUrl="+encodeUrl+"&call_concern=false");
 			StoreFollowurlGetResponse rsp = client.execute(req, accessToken);
 
 			response.sendRedirect(rsp.getUrl());
-		} catch (IOException e) {
+		} catch (Exception e) {
 			LOGGER.error(e.getMessage(), e);
 		}
+
 	}
 
 	/**
