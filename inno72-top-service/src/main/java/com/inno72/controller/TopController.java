@@ -204,7 +204,8 @@ public class TopController {
 				if (grade_name == null || "".equals(grade_name)) {
 
 					String meberJoinCallBackUrl = jstUrl + "/api/meberJoinCallBack/" + sessionUuid + "/" + env + "/" + playCode + "/"
-							+ qrStatus + "/" + sellerId + "/" + accessToken;
+							+ qrStatus + "/" + sellerId;
+					///api/meberJoinCallBack/{sessionUuid}/{env}/{playCode}/{qrStatus}/{sellerId}/{accessToken}
 					LOGGER.info("topIndex2 meberJoinCallBackUrl is {}", meberJoinCallBackUrl);
 
 					// 如果不是会员做入会操作
@@ -223,6 +224,8 @@ public class TopController {
 					// 是会员直接跳转h5页面
 					response.sendRedirect(formatUrl);
 				}
+
+				return;
 
 			} else {
 				// 正常逻辑
@@ -255,24 +258,22 @@ public class TopController {
 			String encodeUrl = URLEncoder.encode(formatUrl, java.nio.charset.StandardCharsets.UTF_8.toString());
 
 			StoreFollowurlGetRequest req = new StoreFollowurlGetRequest();
-			req.setUserId(Long.valueOf(sellerId));
 			req.setCallbackUrl(
 					h5EnvHost
 							+ envParam.get(env)
 							+ "/standard/concern_callback?sessionUuid="+sessionUuid
 							+ "&redirectUrl="+encodeUrl+"&method=href");
+			req.setUserId(Long.parseLong(sellerId));
 			LOGGER.info("关注callBackUrl : " + h5EnvHost
 					+ envParam.get(env)
 					+ "/standard/concern_callback?sessionUuid="+sessionUuid
 					+ "&redirectUrl="+encodeUrl+"&method=href");
-
-
-			StoreFollowurlGetResponse rsp = client.execute(req, accessToken);
+			StoreFollowurlGetResponse rsp = client.execute(req, "");
+			LOGGER.info("fllowStoreFlow  - StoreFollowurlGetResponse - {}", JSON.toJSONString(rsp));
 			response.sendRedirect(rsp.getUrl());
 		} catch (Exception e) {
 			LOGGER.error(e.getMessage() ,e);
 		}
-
 	}
 
 	private String getH5ErrUrl(String env, String status) {
@@ -618,8 +619,9 @@ public class TopController {
 
 	/**
 	 * 入会回调
+	 * http://inno72top.ews.m.jaeapp.com/api/meberJoinCallBack/18640451/test/20/0/3098056950
 	 */
-	@RequestMapping("/api/meberJoinCallBack/{sessionUuid}/{env}/{playCode}/{qrStatus}/{sellerId}/{accessToken}")
+	@RequestMapping("/api/meberJoinCallBack/{sessionUuid}/{env}/{playCode}/{qrStatus}/{sellerId}")
 	public void meberJoinCallBack(HttpServletResponse response, @PathVariable("sessionUuid") String sessionUuid,
 			@PathVariable("env") String env, @PathVariable("playCode") String playCode,
 			@PathVariable("qrStatus") String qrStatus, @PathVariable("sellerId") String sellerId, @PathVariable("accessToken") String accessToken) {
