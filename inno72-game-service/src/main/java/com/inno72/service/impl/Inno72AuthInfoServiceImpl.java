@@ -317,7 +317,7 @@ public class Inno72AuthInfoServiceImpl implements Inno72AuthInfoService {
 
 		this.startGameLife(userChannel, inno72Activity, inno72ActivityPlan, inno72Game, inno72Machine, userId,
 				sessionVo.getSellerId() == null ? "" : sessionVo.getSellerId(),
-				sessionVo.getGoodsCode() == null ? "" : sessionVo.getGoodsCode());
+				sessionVo.getGoodsCode() == null ? inno72Merchant.getMerchantCode() : sessionVo.getGoodsCode());
 
 		LOGGER.info("playCode is" + playCode);
 
@@ -515,7 +515,7 @@ public class Inno72AuthInfoServiceImpl implements Inno72AuthInfoService {
 				userChannel == null ? null : userChannel.getUserNick(), interact.getId(),
 				interact.getName(), interact.getId(), inno72Game.getId(), inno72Game.getName(),
 				inno72Machine.getLocaleId(), inno72Locale == null ? "" : inno72Locale.getMall(), null, "", null, null,
-				userId, sessionVo.getSellerId() == null ? "" : sessionVo.getSellerId(), sessionVo.getGoodsCode() == null ? "" : sessionVo.getGoodsCode());
+				userId, sessionVo.getSellerId() == null ? inno72Merchant.getMerchantCode() : sessionVo.getSellerId(), sessionVo.getGoodsCode() == null ? "" : sessionVo.getGoodsCode());
 		LOGGER.info("插入用户游戏记录 ===> {}", JSON.toJSONString(life));
 		inno72GameUserLifeMapper.insert(life);
 
