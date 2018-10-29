@@ -210,14 +210,14 @@ public class TopController {
 
 						LOGGER.info("topIndex2 meberJoinCallBackUrl is {}", meberJoinCallBackUrl);
 
-					// 如果不是会员做入会操作
-					String memberJoinResBody = memberJoin(machineCode, code, sessionUuid, env, goodsCode, isVip, sessionKey,
-							meberJoinCallBackUrl);
-					LOGGER.info("topIndex2 memberJoinResBody is {}", memberJoinResBody);
-					String resultUrl = FastJsonUtils.getString(memberJoinResBody, "result");
-					LOGGER.info("topIndex2 resultUrl is {}", resultUrl);
+						// 如果不是会员做入会操作
+						String memberJoinResBody = memberJoin(machineCode, code, sessionUuid, env, goodsCode, isVip, sessionKey,
+								meberJoinCallBackUrl);
+						LOGGER.info("topIndex2 memberJoinResBody is {}", memberJoinResBody);
+						String resultUrl = FastJsonUtils.getString(memberJoinResBody, "result");
+						LOGGER.info("topIndex2 resultUrl is {}", resultUrl);
 
-					response.sendRedirect("http:" + resultUrl);
+						response.sendRedirect("http:" + resultUrl);
 
 					} else {
 						// 设置用户已登录
@@ -238,9 +238,9 @@ public class TopController {
 						// 是会员直接跳转h5页面
 						response.sendRedirect(formatUrl);
 					}else{
-                        LOGGER.info("不是会员入会url={}",r);
-                        response.sendRedirect(r);
-                    }
+						LOGGER.info("不是会员入会url={}",r);
+						response.sendRedirect(r);
+					}
 				}
 			} else {
 				// 正常逻辑
@@ -256,25 +256,22 @@ public class TopController {
 					+ sellerId + "&method=href&sessionUuid=" + sessionUuid;
 			LOGGER.info("topIndex2 formatUrl is {}", formatUrl);
 
-			if ( StringUtils.isEmpty(followSessionKey)){
-				response.sendRedirect(formatUrl);
-			}else{
-				String encodeUrl = URLEncoder.encode(formatUrl, java.nio.charset.StandardCharsets.UTF_8.toString());
+			String encodeUrl = URLEncoder.encode(formatUrl, java.nio.charset.StandardCharsets.UTF_8.toString());
 
-				StoreFollowurlGetRequest req = new StoreFollowurlGetRequest();
-				req.setCallbackUrl(
-						h5EnvHost
-								+ envParam.get(env)
-								+ "/standard/concern_callback?sessionUuid="+sessionUuid
-								+ "&redirectUrl="+encodeUrl+"&method=href");
-				LOGGER.info("关注callBackUrl : " + h5EnvHost
-						+ envParam.get(env)
-						+ "/standard/concern_callback?sessionUuid="+sessionUuid
-						+ "&redirectUrl="+encodeUrl+"&method=href");
-				StoreFollowurlGetResponse rsp = client.execute(req, followSessionKey);
+			StoreFollowurlGetRequest req = new StoreFollowurlGetRequest();
+			req.setCallbackUrl(
+					h5EnvHost
+							+ envParam.get(env)
+							+ "/standard/concern_callback?sessionUuid="+sessionUuid
+							+ "&redirectUrl="+encodeUrl+"&method=href");
+			req.setUserId(Long.parseLong(sellerId));
+			LOGGER.info("关注callBackUrl : " + h5EnvHost
+					+ envParam.get(env)
+					+ "/standard/concern_callback?sessionUuid="+sessionUuid
+					+ "&redirectUrl="+encodeUrl+"&method=href");
+			StoreFollowurlGetResponse rsp = client.execute(req, accessToken);
 
-				response.sendRedirect(rsp.getUrl());
-			}
+			response.sendRedirect(rsp.getUrl());
 		} catch (IOException e) {
 			LOGGER.error(e.getMessage(), e);
 		}
@@ -687,27 +684,6 @@ public class TopController {
 		}
 	}
 
-	/**
-	 * 关注
-	 * @param accessToken accessToken 淘宝token
-	 * @param sessionUuid sessionUuid 机器sessionid
-	 *
-	 */
-	@RequestMapping("/api/top/concern")
-	public String concern(String accessToken, String sessionUuid, String env) {
-
-		LOGGER.info( "concern params accessToken is {}, sessionUuid is {}, env is {}", accessToken, sessionUuid, env);
-		try {
-			StoreFollowurlGetRequest req = new StoreFollowurlGetRequest();
-			req.setCallbackUrl(h5EnvHost+envParam.get(env) + "/api/standard/concern_callback?sessionUuid="+sessionUuid);
-			StoreFollowurlGetResponse rsp = client.execute(req, accessToken);
-			LOGGER.info("活动关注链接 StoreFollowurlGetResponse =》 {}", JSON.toJSONString(rsp));
-			return rsp.getBody();
-		} catch (Exception e) {
-			LOGGER.error(e.getMessage(), e);
-		}
-		return "";
-	}
 
 	private void log(String sessionUuid, String env) {
 		LOGGER.info("gameServerUrl is " + gameServerUrl);
