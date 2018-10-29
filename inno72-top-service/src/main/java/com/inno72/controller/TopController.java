@@ -567,7 +567,7 @@ public class TopController {
 		req.setChannelId(channelId);
 		TmallFansAutomachineDeliveryrecordResponse rsp = client.execute(req, accessToken);
 		String result = rsp.getBody();
-		LOGGER.info("deliveryRecord result is", result);
+		LOGGER.info("deliveryRecord result is {}", result);
 		return result;
 	}
 

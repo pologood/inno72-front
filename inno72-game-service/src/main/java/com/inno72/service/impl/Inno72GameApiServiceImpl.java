@@ -1519,6 +1519,7 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 	 * @param ext
 	 */
 	private void analysisExt(UserSessionVo userSessionVo, String ext) {
+		LOGGER.info("analysisExt is {}", ext);
 		// 如果是派样商品的话，goodsCode 先保存到缓存里
 		if (StringUtil.isNotEmpty(ext)) {
 			String isVip = FastJsonUtils.getString(ext, "isVip");
