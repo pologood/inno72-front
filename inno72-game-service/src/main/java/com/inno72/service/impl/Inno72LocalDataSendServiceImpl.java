@@ -82,7 +82,7 @@ public class Inno72LocalDataSendServiceImpl implements Inno72LocalDataSendServic
                                 throw new Inno72BizException("无法找到deviceCode");
                             }
                             //调用淘宝回流
-                            String body = inno72NewretailService.deviceVendorFeedback(sellSessionKey,orderOrderGoodsVo.getTaobaoOrderNum(),deviceCode,orderOrderGoodsVo.getTaobaoGoodsId(),"2018-10-28 00:00:00");
+                            String body = inno72NewretailService.deviceVendorFeedback(sellSessionKey,orderOrderGoodsVo.getTaobaoOrderNum(),deviceCode,orderOrderGoodsVo.getTaobaoGoodsId(),"2018-10-28 00:00:00","");
                             //插入日志
 //                            log = new Inno72FeedBackLog();
 //                            log.setGoodsId(orderOrderGoodsVo.getGoodsId());

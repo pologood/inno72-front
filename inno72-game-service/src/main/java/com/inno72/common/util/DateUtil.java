@@ -129,8 +129,9 @@ public class DateUtil extends DateUtils {
 	public static String format(LocalDateTime date, String pattern) {
 		String returnValue = "";
 		if (date != null) {
-			SimpleDateFormat df = new SimpleDateFormat(pattern);
-			returnValue = df.format(date);
+			DateTimeFormatter fomatter1 = DateTimeFormatter
+					.ofPattern(pattern);
+			returnValue = date.format(fomatter1);
 		}
 		return returnValue;
 	}
