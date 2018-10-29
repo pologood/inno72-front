@@ -119,13 +119,23 @@ public class Inno72GameUserLife {
 	 */
 	private Integer age;
 
+	/**
+	 * 商户code（sellerId）
+	 */
+	private String merchantCode;
+
+	/**
+	 * 商品code
+	 */
+	private String goodsCode;
+
 	public Inno72GameUserLife() {
 	}
 
 	public Inno72GameUserLife(String gameUserId, String userChannelId, String machineCode, String nickName,
 			String activityId, String activityName, String activityPlanId, String gameId, String gameName,
 			String merPointId, String merPointAddress, String gameResult, String orderId, Integer sex, Integer age,
-			String thirdRefId) {
+			String thirdRefId, String merchantCode, String goodsCode) {
 		this.gameUserId = gameUserId;
 		this.userChannelId = userChannelId;
 		this.machineCode = machineCode;
@@ -143,6 +153,8 @@ public class Inno72GameUserLife {
 		this.sex = sex;
 		this.age = age;
 		this.thirdRefId = thirdRefId;
+		this.merchantCode = merchantCode;
+		this.goodsCode = goodsCode;
 	}
 
 	/**
@@ -441,5 +453,19 @@ public class Inno72GameUserLife {
 		this.thirdRefId = thirdRefId;
 	}
 
+	public String getMerchantCode() {
+		return merchantCode;
+	}
 
+	public void setMerchantCode(String merchantCode) {
+		this.merchantCode = merchantCode;
+	}
+
+	public String getGoodsCode() {
+		return goodsCode;
+	}
+
+	public void setGoodsCode(String goodsCode) {
+		this.goodsCode = goodsCode;
+	}
 }

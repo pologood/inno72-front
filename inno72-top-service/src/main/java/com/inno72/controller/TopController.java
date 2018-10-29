@@ -12,7 +12,6 @@ import javax.annotation.PostConstruct;
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletResponse;
 
-import com.inno72.constants.TopConstant;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
@@ -136,6 +135,8 @@ public class TopController {
 			String taobaoUserId = FastJsonUtils.getString(tokenResult, "taobao_user_nick");
 			LOGGER.info("topIndex2 taobaoUserId is {}", taobaoUserId);
 
+			accessToken = FastJsonUtils.getString(tokenResult, "access_token");
+
 			UserInfo userInfo = new UserInfo();
 			userInfo.setSessionUuid(sessionUuid);
 			userInfo.setAuthInfo(tokenResult);
@@ -148,9 +149,6 @@ public class TopController {
 			String goodsCode = "";
 			String isVip = "";
 			String sessionKey = "";
-			//0普通派样1新零售派样
-			Integer paiyangType=0;
-			String sellSessionKey = "";
 
 			if (!StringUtils.isEmpty(result)) {
 				String resultCode = FastJsonUtils.getString(result, "code");
@@ -166,8 +164,6 @@ public class TopController {
 					followSessionKey= FastJsonUtils.getString(result, "followSessionKey");
 					LOGGER.info("followSessionKey is {}", followSessionKey);
 
-					paiyangType = FastJsonUtils.getInteger(result,"paiyangType");
-					sellSessionKey = FastJsonUtils.getString(result,"sellSessionKey");
 					goodsCode = FastJsonUtils.getString(result, "goodsCode");
 					isVip = FastJsonUtils.getString(result, "isVip");
 					sessionKey = FastJsonUtils.getString(result, "sessionKey");
@@ -194,54 +190,40 @@ public class TopController {
 
 			// 判断是否入会
 			if (!StringUtils.isEmpty(isVip) && Integer.valueOf(isVip) == IS_VIP) {
+				LOGGER.info("topIndex2 派样入会逻辑");
+				// 派样活动逻辑
+				String identityResBody = this.memberIdentity(machineCode, goodsCode, taobaoUserId, sessionKey);
+
+				LOGGER.info("topIndex2 identityResBody is {}", identityResBody);
+				String grade_name = FastJsonUtils.getString(identityResBody, "grade_name");
+				LOGGER.info("topIndex2 grade_name is {}", grade_name);
+
 				String formatUrl = String.format(h5MobileUrl, env, playCode) + "?qrStatus=" + qrStatus + "&sellerId=" + sellerId + "&sessionUuid=" + sessionUuid;
-				String meberJoinCallBackUrl = jstUrl + "/api/meberJoinCallBack/" + sessionUuid + "/" + env + "/" + playCode + "/"
-						+ qrStatus + "/" + sellerId;
-				if(paiyangType== null || paiyangType == TopConstant.PAIYANG_TYPE_COMMON){
-					LOGGER.info("topIndex2 派样入会逻辑");
-					// 派样活动逻辑
-					String identityResBody = this.memberIdentity(machineCode, goodsCode, taobaoUserId, sessionKey);
 
-					LOGGER.info("topIndex2 identityResBody is {}", identityResBody);
-					String grade_name = FastJsonUtils.getString(identityResBody, "grade_name");
-					LOGGER.info("topIndex2 grade_name is {}", grade_name);
-					LOGGER.info("topIndex2 formatUrl is {}", formatUrl);
-					if (grade_name == null || "".equals(grade_name)) {
+				LOGGER.info("topIndex2 formatUrl is {}", formatUrl);
+				if (grade_name == null || "".equals(grade_name)) {
 
-						LOGGER.info("topIndex2 meberJoinCallBackUrl is {}", meberJoinCallBackUrl);
+					String meberJoinCallBackUrl = jstUrl + "/api/meberJoinCallBack/" + sessionUuid + "/" + env + "/" + playCode + "/"
+							+ qrStatus + "/" + sellerId + "/" + accessToken;
+					LOGGER.info("topIndex2 meberJoinCallBackUrl is {}", meberJoinCallBackUrl);
 
-						// 如果不是会员做入会操作
-						String memberJoinResBody = memberJoin(machineCode, code, sessionUuid, env, goodsCode, isVip, sessionKey,
-								meberJoinCallBackUrl);
-						LOGGER.info("topIndex2 memberJoinResBody is {}", memberJoinResBody);
-						String resultUrl = FastJsonUtils.getString(memberJoinResBody, "result");
-						LOGGER.info("topIndex2 resultUrl is {}", resultUrl);
+					// 如果不是会员做入会操作
+					String memberJoinResBody = memberJoin(machineCode, code, sessionUuid, env, goodsCode, isVip, sessionKey,
+							meberJoinCallBackUrl);
+					LOGGER.info("topIndex2 memberJoinResBody is {}", memberJoinResBody);
+					String resultUrl = FastJsonUtils.getString(memberJoinResBody, "result");
+					LOGGER.info("topIndex2 resultUrl is {}", resultUrl);
 
-						response.sendRedirect("http:" + resultUrl);
+					response.sendRedirect("http:" + resultUrl);
 
-					} else {
-						// 设置用户已登录
-						boolean logged = this.setUserLogged(sessionUuid, env);
-						LOGGER.info("topIndex2 logged is {}", logged);
-						// 是会员直接跳转h5页面
-						response.sendRedirect(formatUrl);
-					}
-				}else{
-					//新零售派样
-					//1.判断是否是会员
-					String r = newRetailmemberJoin(sessionUuid,sellSessionKey,taobaoUserId,meberJoinCallBackUrl,env);
-					if("1".equals(r)){
-						//是会员
-						// 设置用户已登录
-						boolean logged = this.setUserLogged(sessionUuid, env);
-						LOGGER.info("topIndex2 logged is {}", logged);
-						// 是会员直接跳转h5页面
-						response.sendRedirect(formatUrl);
-					}else{
-						LOGGER.info("不是会员入会url={}",r);
-						response.sendRedirect(r);
-					}
+				} else {
+					// 设置用户已登录
+					boolean logged = this.setUserLogged(sessionUuid, env);
+					LOGGER.info("topIndex2 logged is {}", logged);
+					// 是会员直接跳转h5页面
+					response.sendRedirect(formatUrl);
 				}
+
 			} else {
 				// 正常逻辑
 				String logged = this.setLogged2(sessionUuid, env, traceId);
@@ -249,34 +231,6 @@ public class TopController {
 			}
 
 		}
-		this.concern(response, sessionUuid, accessToken, env, playCode, qrStatus, sellerId);
-	}
-
-	private String buildConcernParamUrl(
-			String r, String sessionUuid, String accessToken,
-			String env, String playCode, String qrStatus,
-			String sellerId){
-		StringBuilder sb = new StringBuilder(r);
-		if ( !r.contains("?") ){
-			sb.append("?");
-		}
-		sb.append("sessionUuid").append("=").append(sessionUuid);
-		sb.append("&");
-		sb.append("accessToken").append("=").append(accessToken);
-		sb.append("&");
-		sb.append("env").append("=").append(env);
-		sb.append("&");
-		sb.append("playCode").append("=").append(playCode);
-		sb.append("&");
-		sb.append("qrStatus").append("=").append(qrStatus);
-		sb.append("&");
-		sb.append("sellerId").append("=").append(sellerId);
-
-		return sb.toString();
-	}
-
-	@RequestMapping(value = "/api/top/concern")
-	public void concern(HttpServletResponse response, String sessionUuid, String accessToken, String env, String playCode, String qrStatus, String sellerId){
 		try {
 			// 跳转到游戏页面 手机端redirect
 			LOGGER.info("topIndex2 h5MobileUrl is {} , playCode is {}, env is {}", h5MobileUrl, playCode, env);
@@ -284,62 +238,39 @@ public class TopController {
 					+ sellerId + "&method=href&sessionUuid=" + sessionUuid;
 			LOGGER.info("topIndex2 formatUrl is {}", formatUrl);
 
+			fllowStoreFlow(response, env, sellerId, sessionUuid, accessToken, formatUrl);
+		} catch (Exception e) {
+			LOGGER.error(e.getMessage(), e);
+		}
+	}
+
+	/**
+	 * 关注店铺流程
+	 */
+	public void fllowStoreFlow(HttpServletResponse response, String env, String sellerId,
+			String sessionUuid, String accessToken, String formatUrl) {
+		LOGGER.info("env is {}, sellerId is {}, sessionUuid is {}, accessToken is {}, formatUrl is {}",
+				env, sellerId, sellerId, accessToken, formatUrl );
+		try {
 			String encodeUrl = URLEncoder.encode(formatUrl, java.nio.charset.StandardCharsets.UTF_8.toString());
 
 			StoreFollowurlGetRequest req = new StoreFollowurlGetRequest();
+			req.setUserId(Long.valueOf(sellerId));
 			req.setCallbackUrl(
 					h5EnvHost
 							+ envParam.get(env)
 							+ "/standard/concern_callback?sessionUuid="+sessionUuid
-							+ "&redirectUrl="+encodeUrl+"&call_concern=false");
-			req.setUserId(Long.parseLong(sellerId));
+							+ "&redirectUrl="+encodeUrl+"&method=href");
 			LOGGER.info("关注callBackUrl : " + h5EnvHost
 					+ envParam.get(env)
 					+ "/standard/concern_callback?sessionUuid="+sessionUuid
-					+ "&redirectUrl="+encodeUrl+"&call_concern=false");
-			StoreFollowurlGetResponse rsp = client.execute(req, accessToken);
+					+ "&redirectUrl="+encodeUrl+"&method=href");
 
+
+			StoreFollowurlGetResponse rsp = client.execute(req, accessToken);
 			response.sendRedirect(rsp.getUrl());
 		} catch (Exception e) {
-			LOGGER.error(e.getMessage(), e);
-		}
-
-	}
-
-	/**
-	 * 调用游戏服务端获取入会状态
-	 * @param sessionUuid
-	 * @param sellSessionKey
-	 * @param taobaoUserId
-	 * @param meberJoinCallBackUrl
-	 * @return
-	 */
-	private String newRetailmemberJoin(String sessionUuid, String sellSessionKey, String taobaoUserId, String meberJoinCallBackUrl,String env) {
-		LOGGER.info("gameServerUrl is " + gameServerUrl);
-		RestTemplate client = new RestTemplate();
-		MultiValueMap<String, Object> postParameters = new LinkedMultiValueMap<>();
-		postParameters.add("sessionUuid", sessionUuid);
-		postParameters.add("sellSessionKey",sellSessionKey);
-		postParameters.add("taobaoUserId",taobaoUserId);
-		postParameters.add("meberJoinCallBackUrl",meberJoinCallBackUrl);
-		LOGGER.info("newRetailmemberJoin param = {}",FastJsonUtils.toJson(postParameters));
-		HttpHeaders headers = new HttpHeaders();
-		headers.add("Content-Type", "application/x-www-form-urlencoded");
-		String result;
-		String gameUrl = propertiesBean.getValue(env + "HostGame") + "/api/standard/newRetailmemberJoin";
-		LOGGER.info("gameUrl is {}", gameUrl);
-		HttpEntity<MultiValueMap<String, Object>> requestEntity = new HttpEntity<>(postParameters, headers);
-		result = client.postForObject(gameUrl, requestEntity, String.class);
-		LOGGER.info("newRetailmemberJoin result = {}",result);
-
-		String code = FastJsonUtils.getString(result, "code");
-		String data = FastJsonUtils.getString(result, "data");
-		LOGGER.info("code is {}, data is {}", code, data);
-		if (!StringUtils.isEmpty(code) && !StringUtils.isEmpty(data) && code.equals("0")) {
-			//1已经入会
-			return data;
-		}else{
-			throw new RuntimeException("调用游戏出错result="+result);
+			LOGGER.error(e.getMessage() ,e);
 		}
 
 	}
@@ -688,14 +619,14 @@ public class TopController {
 	/**
 	 * 入会回调
 	 */
-	@RequestMapping("/api/meberJoinCallBack/{sessionUuid}/{env}/{playCode}/{qrStatus}/{sellerId}")
+	@RequestMapping("/api/meberJoinCallBack/{sessionUuid}/{env}/{playCode}/{qrStatus}/{sellerId}/{accessToken}")
 	public void meberJoinCallBack(HttpServletResponse response, @PathVariable("sessionUuid") String sessionUuid,
 			@PathVariable("env") String env, @PathVariable("playCode") String playCode,
-			@PathVariable("qrStatus") String qrStatus, @PathVariable("sellerId") String sellerId) {
+			@PathVariable("qrStatus") String qrStatus, @PathVariable("sellerId") String sellerId, @PathVariable("accessToken") String accessToken) {
 
 		LOGGER.info(
-				"meberJoinCallBack params sessionUuid is {}, env is {}, playCode is {}, qrStatus is {}, sellerId is {}",
-				sessionUuid, env, playCode, qrStatus, sellerId);
+				"meberJoinCallBack params sessionUuid is {}, env is {}, playCode is {}, qrStatus is {}, sellerId is {}, accessToken is {}",
+				sessionUuid, env, playCode, qrStatus, sellerId, accessToken);
 
 		// 设置用户已登录
 		boolean logged = this.setUserLogged(sessionUuid, env);
@@ -706,13 +637,36 @@ public class TopController {
 		String h5url = String.format(h5MobileUrl, env, playCode) + "?qrStatus=" + qrStatus + "&sellerId=" + sellerId + "&sessionUuid=" + sessionUuid;
 		LOGGER.info("meberJoinCallBack h5url is {} ", h5url);
 		try {
+			LOGGER.info("入会回调走关注流程");
+			fllowStoreFlow(response, env, sellerId, sessionUuid, accessToken, h5url);
 			// 跳转 手机h5
-			response.sendRedirect(h5url);
-		} catch (IOException e) {
+			// response.sendRedirect(h5url);
+		} catch (Exception e) {
 			LOGGER.error(e.getMessage(), e);
 		}
 	}
 
+	/**
+	 * 关注
+	 * @param accessToken accessToken 淘宝token
+	 * @param sessionUuid sessionUuid 机器sessionid
+	 *
+	 */
+	@RequestMapping("/api/top/concern")
+	public String concern(String accessToken, String sessionUuid, String env) {
+
+		LOGGER.info( "concern params accessToken is {}, sessionUuid is {}, env is {}", accessToken, sessionUuid, env);
+		try {
+			StoreFollowurlGetRequest req = new StoreFollowurlGetRequest();
+			req.setCallbackUrl(h5EnvHost+envParam.get(env) + "/api/standard/concern_callback?sessionUuid="+sessionUuid);
+			StoreFollowurlGetResponse rsp = client.execute(req, accessToken);
+			LOGGER.info("活动关注链接 StoreFollowurlGetResponse =》 {}", JSON.toJSONString(rsp));
+			return rsp.getBody();
+		} catch (Exception e) {
+			LOGGER.error(e.getMessage(), e);
+		}
+		return "";
+	}
 
 	private void log(String sessionUuid, String env) {
 		LOGGER.info("gameServerUrl is " + gameServerUrl);
