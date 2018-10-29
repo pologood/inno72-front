@@ -1978,7 +1978,7 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 				userChannel == null ? null : userChannel.getUserNick(), inno72ActivityPlan.getActivityId(),
 				inno72Activity.getName(), inno72ActivityPlan.getId(), inno72Game.getId(), inno72Game.getName(),
 				inno72Machine.getLocaleId(), inno72Locale == null ? "" : inno72Locale.getMall(), null, "", null, null,
-				userId);
+				userId, "", "");
 		LOGGER.info("插入用户游戏记录 ===> {}", JSON.toJSONString(life));
 		inno72GameUserLifeMapper.insert(life);
 		return life;
