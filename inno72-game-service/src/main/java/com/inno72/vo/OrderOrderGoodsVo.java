@@ -10,6 +10,7 @@ public class OrderOrderGoodsVo implements Serializable {
     private String taobaoGoodsId;
     private String machineCode;
     private String userNick;
+    private String userId;
 
     public String getOrderId() {
         return orderId;
@@ -60,5 +61,13 @@ public class OrderOrderGoodsVo implements Serializable {
 
     public void setUserNick(String userNick) {
         this.userNick = userNick;
+    }
+
+    public String getUserId() {
+        return userId;
+    }
+
+    public void setUserId(String userId) {
+        this.userId = userId;
     }
 }

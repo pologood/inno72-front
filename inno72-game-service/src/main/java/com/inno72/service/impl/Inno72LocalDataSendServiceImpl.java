@@ -11,6 +11,7 @@ import com.inno72.service.Inno72LocalDataSendService;
 import com.inno72.service.Inno72NewretailService;
 import com.inno72.vo.OrderOrderGoodsVo;
 import com.taobao.api.ApiException;
+import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -41,6 +42,8 @@ public class Inno72LocalDataSendServiceImpl implements Inno72LocalDataSendServic
     Inno72NewretailService inno72NewretailService;
     @Autowired
     Inno72MachineMapper inno72MachineMapper;
+    @Autowired
+    Inno72GameUserChannelMapper inno72GameUserChannelMapper;
 
     @Autowired
     Inno72MachineDeviceMapper inno72MachineDeviceMapper;
@@ -56,7 +59,7 @@ public class Inno72LocalDataSendServiceImpl implements Inno72LocalDataSendServic
         LOGGER.debug("datasend start...");
         for(String merchantName:merchantNames){
             //查找商户id
-            int size = 16019;
+            int size = 0;
             List<Inno72Merchant> merchantList = inno72MerchantMapper.findMerchantByName(merchantName);
             if(merchantList == null || merchantList.size()==0){
                 LOGGER.error("merchantName = {},无法找到商户",merchantName);
@@ -68,6 +71,8 @@ public class Inno72LocalDataSendServiceImpl implements Inno72LocalDataSendServic
                 if(list!=null&&list.size()>0){
                     for(int i=0;i<list.size();i++){
                         OrderOrderGoodsVo orderOrderGoodsVo = list.get(i);
+                        //获取userNick
+                        String userNick = inno72GameUserChannelMapper.selectUserNickByGameUserId(orderOrderGoodsVo.getUserId());
                         size++;
                         Inno72FeedBackLog log = null;//findLogByOrderId(orderOrderGoodsVo.getOrderId());
                         if(log== null){
@@ -78,9 +83,13 @@ public class Inno72LocalDataSendServiceImpl implements Inno72LocalDataSendServic
                                 devicelist.put(""+merchant.getMerchantCode()+"_"+orderOrderGoodsVo.getMachineCode(),1);
                                 throw new Inno72BizException("无法找到deviceCode");
                             }
-                            //调用淘宝回流
-                            inno72NewretailService.deviceVendorFeedback(sellSessionKey,orderOrderGoodsVo.getTaobaoOrderNum(),deviceCode,orderOrderGoodsVo.getTaobaoGoodsId(),"2018-11-01 00:00:00","",merchant.getMerchantName(),merchant.getMerchantCode());
-                            System.out.println(size);
+                            if(!StringUtils.isEmpty(userNick)){
+                                //调用淘宝回流
+                                inno72NewretailService.deviceVendorFeedback(sellSessionKey,orderOrderGoodsVo.getTaobaoOrderNum(),deviceCode,orderOrderGoodsVo.getTaobaoGoodsId(),"2018-11-01 00:00:00",userNick,merchant.getMerchantName(),merchant.getMerchantCode());
+                                System.out.println(size);
+                            }else{
+                                LOGGER.error("userNick is null 不回流接口 orderId = {}",orderOrderGoodsVo.getOrderId());
+                            }
                         }
                     }
                 }
