@@ -1,18 +1,23 @@
 package com.inno72.controller;
 
 import java.io.IOException;
+import java.net.URLDecoder;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.List;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import com.inno72.common.CommonBean;
+import com.inno72.mapper.Inno72CouponMapper;
+import com.inno72.model.Inno72Coupon;
 import com.inno72.service.Inno72PaiYangService;
 import com.alibaba.fastjson.JSON;
 import com.inno72.common.util.UuidUtil;
 import com.inno72.redis.IRedisUtil;
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -39,6 +44,7 @@ import com.inno72.vo.MachineApiVo;
 import com.inno72.vo.StandardPrepareLoginReqVo;
 import com.inno72.vo.StandardShipmentReqVo;
 import com.inno72.vo.UserSessionVo;
+import tk.mybatis.mapper.entity.Condition;
 
 /**
  * 标准接口
@@ -64,6 +70,9 @@ public class Inno72StandardController {
 
 	@Resource
 	private Inno72PaiYangService inno72PaiYangService;
+
+	@Resource
+	private Inno72CouponMapper inno72CouponMapper;
 
 	@Resource
 	private Inno72GameServiceProperties inno72GameServiceProperties;
@@ -137,6 +146,29 @@ public class Inno72StandardController {
 		}
 
 		return inno72GameApiService.standardOrder(vo);
+	}
+
+	/**
+	 * 发券（单独发优惠券流程）
+	 * @return
+	 */
+	@ResponseBody
+	@RequestMapping(value = "/lottery", method = {RequestMethod.POST})
+	public Result<Object> lottery(MachineApiVo vo) {
+		UserSessionVo userSessionVo = gameSessionRedisUtil.getSessionKey(vo.getSessionUuid());
+		if (userSessionVo == null) {
+			return Results.failure("会话不存在!" + vo.toString());
+		}
+
+		Condition condition = new Condition(Inno72Coupon.class);
+		condition.createCriteria().andEqualTo("code", vo.getInteractId());
+		List<Inno72Coupon> inno72Coupons = inno72CouponMapper.selectByCondition(condition);
+		if (CollectionUtils.isEmpty(inno72Coupons)) {
+			return Results.failure(vo.getInteractId() + "不存在");
+		}
+		String prizeId = inno72Coupons.get(0).getId();
+		logger.info("lottery prizeId is {}", prizeId);
+		return inno72GameApiService.lottery(userSessionVo, vo.getUa(), vo.getUmid(), prizeId);
 	}
 
 	/**
@@ -258,27 +290,31 @@ public class Inno72StandardController {
 			e.printStackTrace();
 		}
 	}
-	@RequestMapping(value = "/concern", method = {RequestMethod.GET, RequestMethod.POST})
-	public Result<String> Concern(HttpServletResponse response, String sessionUuid) throws IOException {
-		Result<String> result = inno72GameApiService.concern(sessionUuid);
-		if (result.getCode() == Result.SUCCESS){
-			response.sendRedirect(result.getData());
-		}
-		return result;
-	}
 
 	@RequestMapping(value = "/concern_callback", method = {RequestMethod.GET, RequestMethod.POST})
-	public Result<String> ConcernCallback(HttpServletResponse response, HttpServletRequest request,
-			String sessionUuid, String tbResult)  {
+	public Result<String> concernCallback(HttpServletResponse response, HttpServletRequest request,
+			String sessionUuid, String tbResult, String redirectUrl)  {
 		LOGGER.info("关注店铺回调参数 {}", JSON.toJSONString(request.getParameterMap()));
-		if ("1".equals(tbResult)){
-			try {
-				response.sendRedirect("/api/point?sessionUuid="+sessionUuid+"&type="+CommonBean.POINT_TYPE_CONCERN);
-			} catch (IOException e) {
-				LOGGER.error("关注店铺回调异常 {}, {}",e.getMessage(), e);
+		try {
+			if (StringUtils.isNotEmpty(tbResult) && tbResult.equals("1")){
+				UserSessionVo sessionKey = gameSessionRedisUtil.getSessionKey(sessionUuid);
+				if (sessionKey == null){
+					return Results.failure("session 过期！");
+				}
+				String msg = "用户["+sessionKey.getUserNick()+"]关注店铺成功.";
+
+				CommonBean.logger(
+						CommonBean.POINT_TYPE_CONCERN,
+						sessionKey.getMachineCode(),
+						msg,
+						sessionKey.getActivityId()
+				);
 			}
+			response.sendRedirect(URLDecoder.decode(redirectUrl, java.nio.charset.StandardCharsets.UTF_8.toString()));
+		} catch (IOException e) {
+			LOGGER.error("关注店铺回调异常 {}, {}",e.getMessage(), e);
 		}
-		LOGGER.info("关注店铺失败 -> {}", sessionUuid);
 		return Results.success();
 	}
+
 }

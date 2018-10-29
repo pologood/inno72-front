@@ -3,6 +3,7 @@ package com.inno72.controller;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
+import java.net.URLEncoder;
 import java.text.MessageFormat;
 import java.util.HashMap;
 import java.util.Map;
@@ -79,7 +80,7 @@ public class TopController {
 	private String jstUrl;
 
 	@Value("${h5_env_host}")
-	private String h5EnvMap;
+	private String h5EnvHost;
 
 	private TaobaoClient client;
 	private TaobaoClient samplinghClient;
@@ -99,10 +100,10 @@ public class TopController {
 		samplinghClient = new DefaultTaobaoClient(propertiesBean.getUrl(), propertiesBean.getSampLingAppkey(),
 				propertiesBean.getSecret());
 		envParam = new HashMap<>(4);
-		envParam.put("dev","dev-api");
-		envParam.put("test","test-api");
-		envParam.put("stage","stage-api");
-		envParam.put("prod","prod-api");
+		envParam.put("dev","dev-game-api");
+		envParam.put("test","test-game-api");
+		envParam.put("stage","stage-game-api");
+		envParam.put("prod","prod-game-api");
 	}
 
 
@@ -111,13 +112,18 @@ public class TopController {
 	 */
 	@RequestMapping("/api/top/{sessionUuid}/{env}/{traceId}")
 	public void topIndex2(HttpServletResponse response,
-			@PathVariable("sessionUuid") String sessionUuid, String code, @PathVariable("env") String env, @PathVariable("traceId") String traceId)
+			@PathVariable("sessionUuid") String sessionUuid,
+			String code,
+			@PathVariable("env") String env,
+			@PathVariable("traceId") String traceId)
 			throws Exception {
 		LOGGER.info("topIndex2 code is {}, sessionUuid is {}, env is {}, traceId is {}", code, sessionUuid, env, traceId);
 		String playCode = "";
 		String result;
 		String qrStatus = "";
 		String sellerId = "";
+		String accessToken = "";
+		String followSessionKey = "";
 		if (!StringUtils.isEmpty(code) && !StringUtils.isEmpty(sessionUuid)) {
 
 			String authInfo = getAuthInfo(code);
@@ -153,6 +159,8 @@ public class TopController {
 					qrStatus = FastJsonUtils.getString(result, "qrStatus");
 					String sId = FastJsonUtils.getString(result, "sellerId");
 					machineCode = FastJsonUtils.getString(result, "machineCode");
+					followSessionKey= FastJsonUtils.getString(result, "followSessionKey");
+					LOGGER.info("followSessionKey is {}", followSessionKey);
 
 					goodsCode = FastJsonUtils.getString(result, "goodsCode");
 					isVip = FastJsonUtils.getString(result, "isVip");
@@ -203,6 +211,7 @@ public class TopController {
 					LOGGER.info("topIndex2 memberJoinResBody is {}", memberJoinResBody);
 					String resultUrl = FastJsonUtils.getString(memberJoinResBody, "result");
 					LOGGER.info("topIndex2 resultUrl is {}", resultUrl);
+
 					response.sendRedirect("http:" + resultUrl);
 
 				} else {
@@ -224,9 +233,28 @@ public class TopController {
 			// 跳转到游戏页面 手机端redirect
 			LOGGER.info("topIndex2 h5MobileUrl is {} , playCode is {}, env is {}", h5MobileUrl, playCode, env);
 			String formatUrl = String.format(h5MobileUrl, env, playCode) + "?qrStatus=" + qrStatus + "&sellerId="
-					+ sellerId + "&sessionUuid=" + sessionUuid;
+					+ sellerId + "&method=href&sessionUuid=" + sessionUuid;
 			LOGGER.info("topIndex2 formatUrl is {}", formatUrl);
-			response.sendRedirect(formatUrl);
+
+			if ( StringUtils.isEmpty(followSessionKey)){
+				response.sendRedirect(formatUrl);
+			}else{
+				String encodeUrl = URLEncoder.encode(formatUrl, java.nio.charset.StandardCharsets.UTF_8.toString());
+
+				StoreFollowurlGetRequest req = new StoreFollowurlGetRequest();
+				req.setCallbackUrl(
+						h5EnvHost
+								+ envParam.get(env)
+								+ "/standard/concern_callback?sessionUuid="+sessionUuid
+								+ "&redirectUrl="+encodeUrl+"&method=href");
+				LOGGER.info("关注callBackUrl : " + h5EnvHost
+						+ envParam.get(env)
+						+ "/standard/concern_callback?sessionUuid="+sessionUuid
+						+ "&redirectUrl="+encodeUrl+"&method=href");
+				StoreFollowurlGetResponse rsp = client.execute(req, followSessionKey);
+
+				response.sendRedirect(rsp.getUrl());
+			}
 		} catch (IOException e) {
 			LOGGER.error(e.getMessage(), e);
 		}
@@ -608,15 +636,12 @@ public class TopController {
 	 *
 	 */
 	@RequestMapping("/api/top/concern")
-	public String concern(
-			@PathVariable("accessToken") String accessToken,
-			@PathVariable("sessionUuid")String sessionUuid,
-			@PathVariable("env")String env) {
+	public String concern(String accessToken, String sessionUuid, String env) {
 
 		LOGGER.info( "concern params accessToken is {}, sessionUuid is {}, env is {}", accessToken, sessionUuid, env);
 		try {
 			StoreFollowurlGetRequest req = new StoreFollowurlGetRequest();
-			req.setCallbackUrl(envParam.get(env) + "/api/standard/concern_callback?sessionUuid="+sessionUuid);
+			req.setCallbackUrl(h5EnvHost+envParam.get(env) + "/api/standard/concern_callback?sessionUuid="+sessionUuid);
 			StoreFollowurlGetResponse rsp = client.execute(req, accessToken);
 			LOGGER.info("活动关注链接 StoreFollowurlGetResponse =》 {}", JSON.toJSONString(rsp));
 			return rsp.getBody();

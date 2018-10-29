@@ -136,6 +136,8 @@ public class Inno72AuthInfoServiceImpl implements Inno72AuthInfoService {
 	private Inno72InteractGoodsService inno72InteractGoodsService;
 	@Resource
 	private Inno72MachineService inno72MachineService;
+	@Resource
+	private Inno72ShopsMapper inno72ShopsMapper;
 
 	// todo gxg 使用枚举
 	private static final String QRSTATUS_NORMAL = "0"; // 二维码正常
@@ -326,6 +328,7 @@ public class Inno72AuthInfoServiceImpl implements Inno72AuthInfoService {
 		resultMap.put("sellerId", sessionVo.getSellerId());
 
 		this.dealIsVip(resultMap, sessionVo);
+		this.dealFollowSessionKey(resultMap, sessionVo);
 
 		resultMap.put("activityType", activityType);
 		resultMap.put("goodsCode", sessionVo.getGoodsCode() != null ? sessionVo.getGoodsCode() : "");
@@ -526,6 +529,7 @@ public class Inno72AuthInfoServiceImpl implements Inno72AuthInfoService {
 		resultMap.put("sellerId", sessionVo.getSellerId());
 		resultMap.put("traceId", traceId);
 		this.dealIsVip(resultMap, sessionVo);
+		this.dealFollowSessionKey(resultMap, sessionVo);
 
 		resultMap.put("activityType", activityType);
 		resultMap.put("goodsCode", sessionVo.getGoodsCode() != null ? sessionVo.getGoodsCode() : "");
@@ -564,6 +568,30 @@ public class Inno72AuthInfoServiceImpl implements Inno72AuthInfoService {
 		}
 	}
 
+	/**
+	 * 处理关注sessionkey
+	 */
+	void dealFollowSessionKey(Map<String, Object> resultMap, UserSessionVo sessionVo) {
+
+		String goodsId = sessionVo.getGoodsId();
+		String goodsCode = sessionVo.getGoodsCode();
+
+		LOGGER.info("dealFollowSessionKey goodsId is {}, goodsCode is {}", goodsId, goodsCode);
+		if (StringUtil.isEmpty(goodsId) && StringUtil.isEmpty(goodsCode)) {
+			resultMap.put("followSessionKey", "");
+		} else {
+			Inno72Goods inno72Goods = null;
+			if (StringUtil.isNotEmpty(goodsId)) {
+				inno72Goods = inno72GoodsMapper.selectByPrimaryKey(goodsId);
+			} else if (StringUtil.isNotEmpty(goodsCode)) {
+				inno72Goods = inno72GoodsMapper.selectByCode(goodsCode);
+			}
+			String shopId = inno72Goods.getShopId();
+			Inno72Shops inno72Shops = inno72ShopsMapper.selectByPrimaryKey(shopId);
+			resultMap.put("followSessionKey", inno72Shops.getFocusSessionKey());
+		}
+
+	}
 
 	/**
 	 * 处理是否入会

@@ -984,7 +984,8 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 	 * @param prizeId
 	 * @return
 	 */
-	private Result<Object> lottery(UserSessionVo vo, String ua, String umid, String prizeId) {
+	@Override
+	public Result<Object> lottery(UserSessionVo vo, String ua, String umid, String prizeId) {
 
 		String sessionUuid = vo.getSessionUuid();
 		String activityPlanId = vo.getActivityPlanId();
