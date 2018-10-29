@@ -66,11 +66,8 @@ public class Inno72LocalDataSendServiceImpl implements Inno72LocalDataSendServic
 
                 List<OrderOrderGoodsVo> list = findSuccessOrderByMerchantId(merchant.getId());
                 if(list!=null&&list.size()>0){
-//                            System.out.println(JsonUtil.toJson(list));
-//                    size += list.size();
-                    for(int i=16020;i<list.size();i++){
+                    for(int i=0;i<list.size();i++){
                         OrderOrderGoodsVo orderOrderGoodsVo = list.get(i);
-//                    for(OrderOrderGoodsVo orderOrderGoodsVo:list){
                         size++;
                         Inno72FeedBackLog log = null;//findLogByOrderId(orderOrderGoodsVo.getOrderId());
                         if(log== null){
@@ -82,15 +79,7 @@ public class Inno72LocalDataSendServiceImpl implements Inno72LocalDataSendServic
                                 throw new Inno72BizException("无法找到deviceCode");
                             }
                             //调用淘宝回流
-                            String body = inno72NewretailService.deviceVendorFeedback(sellSessionKey,orderOrderGoodsVo.getTaobaoOrderNum(),deviceCode,orderOrderGoodsVo.getTaobaoGoodsId(),"2018-10-28 00:00:00","","","");
-                            //插入日志
-//                            log = new Inno72FeedBackLog();
-//                            log.setGoodsId(orderOrderGoodsVo.getGoodsId());
-//                            log.setOrderId(orderOrderGoodsVo.getOrderId());
-//                            log.setMerchantName(merchantName);
-//                            log.setResponseBody(body);
-//                            log.setOrderTime(LocalDateTime.now());
-//                            saveLog(log);
+                            inno72NewretailService.deviceVendorFeedback(sellSessionKey,orderOrderGoodsVo.getTaobaoOrderNum(),deviceCode,orderOrderGoodsVo.getTaobaoGoodsId(),"2018-11-01 00:00:00","",merchant.getMerchantName(),merchant.getMerchantCode());
                             System.out.println(size);
                         }
                     }
