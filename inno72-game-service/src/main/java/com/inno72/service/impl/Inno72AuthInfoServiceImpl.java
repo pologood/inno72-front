@@ -256,13 +256,7 @@ public class Inno72AuthInfoServiceImpl implements Inno72AuthInfoService {
 		playCode = inno72Activity.getCode();
 		LOGGER.info("sessionRedirect layCode is {}", playCode);
 
-		Inno72Merchant inno72Merchant = null;
-
-		if (!StringUtil.isEmpty(sessionVo.getSellerId())) {
-			inno72Merchant = inno72MerchantMapper.findMerchantByCode(sessionVo.getSellerId());
-		} else {
-			inno72Merchant = inno72MerchantMapper.selectByPrimaryKey(sellerId);
-		}
+		Inno72Merchant inno72Merchant = inno72MerchantMapper.selectByPrimaryKey(sellerId);
 
 		String nickName = inno72TopService.getMaskUserNick(sessionUuid, accessToken, inno72Merchant.getMerchantCode(), userId);
 
