@@ -133,15 +133,17 @@ public class Inno72NewretailServiceImpl implements Inno72NewretailService {
      * @param storeId
      * @throws ApiException
      */
-//    public static void findDeviceByStoreId(String sessionKey,Long storeId) throws ApiException {
-//        TaobaoClient client = new DefaultTaobaoClient(url, appkey, secret);
-//        SmartstoreDeviceQueryRequest req = new SmartstoreDeviceQueryRequest();
-//        req.setStoreId(storeId);
-//        req.setPageNum(1L);
-//        req.setPageSize(20L);
-//        SmartstoreDeviceQueryResponse rsp = client.execute(req, sessionKey);
-//        System.out.println(rsp.getBody());
-//    }
+    public String findDeviceByStoreId(String sessionKey,Long storeId) throws ApiException {
+        SmartstoreDeviceQueryRequest req = new SmartstoreDeviceQueryRequest();
+        req.setStoreId(storeId);
+        req.setPageNum(1L);
+        req.setPageSize(20L);
+        SmartstoreDeviceQueryResponse rsp = client.execute(req, sessionKey);
+        if(rsp.getDeviceInfoList()!=null&&rsp.getDeviceInfoList().size()>0){
+            return rsp.getDeviceInfoList().get(0).getDeviceCode();
+        }
+        return null;
+    }
 
     /**
      * 是否入会
@@ -282,14 +284,18 @@ public class Inno72NewretailServiceImpl implements Inno72NewretailService {
                 //检查数据库是否添加过
                 Inno72MachineDevice inno72MachineDevice = inno72MachineDeviceService.findByMachineCodeAndSellerId(deviceVo.getMachineCode(),sellerId);
                 if(StringUtils.isEmpty(deviceVo.getDeviceName())){
-                    deviceVo.setStoreName(deviceVo.getMachineCode()+"-"+merchant.getMerchantCode());
+                    deviceVo.setStoreName(merchant.getMerchantCode()+"-"+deviceVo.getMachineCode());
                 }
                 //没有添加过
                 if(inno72MachineDevice == null){
                     //根据机器code查询storeId
                     Long storeId = findStores(sellSessionKey,deviceVo.getStoreName());
-                    //调用淘宝接口
-                    String deviceCode = saveDevice(sellSessionKey,deviceVo.getStoreName(),storeId,"ANDROID",deviceVo.getMachineCode());
+                    //根据storeId查找deviceCode;
+                    String deviceCode = findDeviceByStoreId(sellSessionKey,storeId);
+                    if(StringUtils.isEmpty(deviceCode)){
+                        //调用淘宝接口
+                        deviceCode = saveDevice(sellSessionKey,deviceVo.getStoreName(),storeId,"ANDROID",deviceVo.getMachineCode());
+                    }
                     //保存结果信息
                     inno72MachineDevice = new Inno72MachineDevice();
                     inno72MachineDevice.setCreateTime(new Date());

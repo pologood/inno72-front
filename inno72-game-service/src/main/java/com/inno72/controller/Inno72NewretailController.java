@@ -4,6 +4,7 @@ import com.inno72.common.Inno72BizException;
 import com.inno72.common.Result;
 import com.inno72.common.Results;
 import com.inno72.common.json.JsonUtil;
+import com.inno72.feign.GameServiceFeignClient;
 import com.inno72.service.Inno72NewretailService;
 import com.inno72.vo.DeviceParamVo;
 import com.inno72.vo.DeviceVo;
@@ -26,6 +27,8 @@ public class Inno72NewretailController {
     private static final Logger LOGGER = LoggerFactory.getLogger(Inno72NewretailController.class);
     @Autowired
     private Inno72NewretailService service;
+    @Autowired
+    GameServiceFeignClient gameServiceFeignClient;
     /**
      * 查找门店id
      */
@@ -123,5 +126,4 @@ public class Inno72NewretailController {
             return Results.failure("系统异常");
         }
     }
-
 }
