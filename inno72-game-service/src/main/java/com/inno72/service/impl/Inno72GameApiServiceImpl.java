@@ -570,7 +570,7 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 			return Results.failure("无商品类型");
 		}
 
-		if (resultGoodsId.isEmpty()) {
+		if (resultGoodsId == null ||resultGoodsId.isEmpty()) {
 			orderCode = PRODUCT_NO_EXIST;
 		}
 
