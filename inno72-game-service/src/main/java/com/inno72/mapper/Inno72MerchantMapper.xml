@@ -73,8 +73,18 @@
       where g.code=#{goodsCode} and  g.use_type != 1 and m.is_delete = 0
     </select>
 
-    <select id="findMerchantByCode" parameterType="string" resultMap="BaseResultMap">
-        select * from inno72_merchant where merchant_code = #{merchantCode} and is_delete = 0
+    <select id="findMerchantByMap" parameterType="java.util.Map" resultMap="BaseResultMap">
+        select m.* from inno72_activity_shops ias
+        left join inno72_shops s on ias.shops_id = s.id
+        left join inno72_merchant m on s.seller_id = m.id
+        where ias.activity_id = #{activityId} and m.merchant_code = #{merchantCode}
+    </select>
+
+    <select id="findMerchantByActivityId" parameterType="string" resultMap="BaseResultMap">
+        select m.* from inno72_activity_shops ias
+        left join inno72_shops s on ias.shops_id = s.id
+        left join inno72_merchant m on s.seller_id = m.id
+        where ias.activity_id = #{activityId} limit 0,1
     </select>
 
 </mapper>

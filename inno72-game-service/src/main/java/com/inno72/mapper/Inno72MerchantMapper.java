@@ -5,6 +5,7 @@ import com.inno72.model.Inno72Merchant;
 import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
+import java.util.Map;
 
 public interface Inno72MerchantMapper extends Mapper<Inno72Merchant> {
 	String selectBoundNameByActivityId(String id);
@@ -21,5 +22,7 @@ public interface Inno72MerchantMapper extends Mapper<Inno72Merchant> {
 
     Inno72Merchant findByCoupon(String itemId);
 
-	Inno72Merchant findMerchantByCode(String merchantByCode);
+	Inno72Merchant findMerchantByMap(Map<String, Object> params);
+
+	Inno72Merchant findMerchantByActivityId(String activityId);
 }
