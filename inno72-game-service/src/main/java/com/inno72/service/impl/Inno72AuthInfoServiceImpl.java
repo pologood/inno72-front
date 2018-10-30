@@ -264,6 +264,7 @@ public class Inno72AuthInfoServiceImpl implements Inno72AuthInfoService {
 			inno72Merchant = inno72MerchantMapper.findMerchantByMap(params);
 		} else {
 			inno72Merchant = inno72MerchantMapper.findMerchantByActivityId(inno72Activity.getId());
+			sessionVo.setSellerId(inno72Merchant.getMerchantCode());
 		}
 
 		playCode = inno72Activity.getCode();
