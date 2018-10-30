@@ -254,11 +254,21 @@ public class Inno72AuthInfoServiceImpl implements Inno72AuthInfoService {
 		}
 
 		Inno72Activity inno72Activity = inno72ActivityMapper.selectByPrimaryKey(inno72ActivityPlan.getActivityId());
-		String sellerId = inno72Activity.getSellerId();
+
+		Inno72Merchant inno72Merchant = null;
+		String merchantCode = sessionVo.getSellerId();
+		if (!StringUtil.isEmpty(merchantCode)) {
+			Map<String, Object> params = new HashMap<>();
+			params.put("activityId", inno72Activity.getId());
+			params.put("merchantCode", merchantCode);
+			inno72Merchant = inno72MerchantMapper.findMerchantByMap(params);
+		} else {
+			inno72Merchant = inno72MerchantMapper.findMerchantByActivityId(inno72Activity.getId());
+			sessionVo.setSellerId(inno72Merchant.getMerchantCode());
+		}
+
 		playCode = inno72Activity.getCode();
 		LOGGER.info("sessionRedirect layCode is {}", playCode);
-
-		Inno72Merchant inno72Merchant = inno72MerchantMapper.selectByPrimaryKey(sellerId);
 
 		String nickName = inno72TopService.getMaskUserNick(sessionUuid, accessToken, inno72Merchant.getMerchantCode(), userId);
 
@@ -318,8 +328,8 @@ public class Inno72AuthInfoServiceImpl implements Inno72AuthInfoService {
 		sessionVo.setGoodsList(list);
 
 		this.startGameLife(userChannel, inno72Activity, inno72ActivityPlan, inno72Game, inno72Machine, userId,
-				sessionVo.getSellerId() == null ? "" : sessionVo.getSellerId(),
-				sessionVo.getGoodsCode() == null ? inno72Merchant.getMerchantCode() : sessionVo.getGoodsCode());
+				inno72Merchant.getMerchantCode(),
+				sessionVo.getGoodsCode() == null ? "" : sessionVo.getGoodsCode());
 
 		LOGGER.info("playCode is" + playCode);
 
@@ -329,7 +339,7 @@ public class Inno72AuthInfoServiceImpl implements Inno72AuthInfoService {
 		resultMap.put("machineCode", inno72Machine.getMachineCode());
 		resultMap.put("playCode", playCode);
 		resultMap.put("qrStatus", QRSTATUS_NORMAL);
-		resultMap.put("sellerId", sessionVo.getSellerId() == null ? inno72Merchant.getMerchantCode() : sessionVo.getSellerId());
+		resultMap.put("sellerId", inno72Merchant.getMerchantCode());
 
 		this.dealIsVip(resultMap, sessionVo);
 //		this.dealFollowSessionKey(resultMap, sessionVo);
