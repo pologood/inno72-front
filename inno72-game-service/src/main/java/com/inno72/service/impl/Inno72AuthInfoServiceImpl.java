@@ -332,7 +332,7 @@ public class Inno72AuthInfoServiceImpl implements Inno72AuthInfoService {
 		resultMap.put("sellerId", sessionVo.getSellerId() == null ? inno72Merchant.getMerchantCode() : sessionVo.getSellerId());
 
 		this.dealIsVip(resultMap, sessionVo);
-		this.dealFollowSessionKey(resultMap, sessionVo);
+//		this.dealFollowSessionKey(resultMap, sessionVo);
 
 		resultMap.put("activityType", activityType);
 		resultMap.put("goodsCode", sessionVo.getGoodsCode() != null ? sessionVo.getGoodsCode() : "");
@@ -538,7 +538,7 @@ public class Inno72AuthInfoServiceImpl implements Inno72AuthInfoService {
 		resultMap.put("paiyangType",interact.getPaiyangType());
 		resultMap.put("sellSessionKey",inno72Merchant.getSellerSessionKey());
 		this.dealIsVip(resultMap, sessionVo);
-		this.dealFollowSessionKey(resultMap, sessionVo);
+//		this.dealFollowSessionKey(resultMap, sessionVo);
 
 		resultMap.put("activityType", activityType);
 		resultMap.put("goodsCode", sessionVo.getGoodsCode() != null ? sessionVo.getGoodsCode() : "");
