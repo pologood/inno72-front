@@ -328,8 +328,8 @@ public class Inno72AuthInfoServiceImpl implements Inno72AuthInfoService {
 		sessionVo.setGoodsList(list);
 
 		this.startGameLife(userChannel, inno72Activity, inno72ActivityPlan, inno72Game, inno72Machine, userId,
-				sessionVo.getSellerId() == null ? "" : sessionVo.getSellerId(),
-				sessionVo.getGoodsCode() == null ? inno72Merchant.getMerchantCode() : sessionVo.getGoodsCode());
+				inno72Merchant.getMerchantCode(),
+				sessionVo.getGoodsCode() == null ? "" : sessionVo.getGoodsCode());
 
 		LOGGER.info("playCode is" + playCode);
 
