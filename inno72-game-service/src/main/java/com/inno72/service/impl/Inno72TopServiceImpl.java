@@ -37,6 +37,7 @@ public class Inno72TopServiceImpl implements Inno72TopService {
 		LogReqrest logReqrest = new LogReqrest();
 		logReqrest.setType(LogReqrest.LogRequest_Type.follow.getBizType());
 		logReqrest.setSellerId(Long.valueOf(sellerId));
+		logReqrest.setValue2("");
 		this.addLog(sessionUuid, logReqrest);
 	}
 
