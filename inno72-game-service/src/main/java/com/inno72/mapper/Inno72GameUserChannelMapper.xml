@@ -22,7 +22,7 @@
     </select>
 
     <select id="selectUserNickByGameUserId" resultType="string">
-      select user_nick from inno72_game_user_channel
+      select channel_user_key from inno72_game_user_channel
       where game_user_id = #{userId}
     </select>
 </mapper>
