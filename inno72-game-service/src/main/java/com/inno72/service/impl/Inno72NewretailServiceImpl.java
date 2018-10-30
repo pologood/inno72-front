@@ -293,7 +293,7 @@ public class Inno72NewretailServiceImpl implements Inno72NewretailService {
                         String deviceCode = findDeviceByStoreId(sellSessionKey,storeId);
                         if(StringUtils.isEmpty(deviceCode)){
                             //调用淘宝接口
-                            deviceCode = saveDevice(sellSessionKey,deviceVo.getStoreName(),storeId,"ANDROID",deviceVo.getStoreName()+"-"+deviceVo.getMachineCode());
+                            deviceCode = saveDevice(sellSessionKey,deviceVo.getStoreName(),storeId,"ANDROID",deviceVo.getStoreName()+"-"+System.currentTimeMillis());
                         }
                         //保存结果信息
                         inno72MachineDevice = new Inno72MachineDevice();
