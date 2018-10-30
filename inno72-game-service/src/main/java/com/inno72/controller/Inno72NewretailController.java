@@ -202,7 +202,7 @@ public class Inno72NewretailController {
 		}
 
 		try {
-			excelShop.write(response, "门店").dispose();
+			excelShop.write(response, "门店.xlsx").dispose();
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
