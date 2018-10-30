@@ -269,7 +269,7 @@ public class Inno72NewretailServiceImpl implements Inno72NewretailService {
 
     @Override
     public void saveMachine(List<DeviceVo> list) throws Exception {
-        LOGGER.debug("saveMachine param = {}",JsonUtil.toJson(list));
+        LOGGER.info("saveMachine param = {}",JsonUtil.toJson(list));
         if(list!= null && list.size()>0){
             for(DeviceVo deviceVo:list){
                 checkDeviceParamVo(deviceVo);
