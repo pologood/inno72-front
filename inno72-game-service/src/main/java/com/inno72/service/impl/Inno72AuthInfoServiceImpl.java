@@ -613,12 +613,12 @@ public class Inno72AuthInfoServiceImpl implements Inno72AuthInfoService {
 			String goodsId = sessionVo.getGoodsId();
 			if (!StringUtil.isEmpty(goodsId)) {
 				if(sessionVo.getGoodsType()!=null && UserSessionVo.GOODSTYPE_COUPON == sessionVo.getGoodsType()){
+					Inno72Coupon inno72Coupon = inno72CouponMapper.selectByPrimaryKey(goodsId);
+					sessionVo.setGoodsCode(inno72Coupon.getCode());
+				}else{
 					Inno72Goods inno72Goods = inno72GoodsMapper.selectByPrimaryKey(goodsId);
 					String goodsCode = inno72Goods.getCode();
 					sessionVo.setGoodsCode(goodsCode);
-				}else{
-					Inno72Coupon inno72Coupon = inno72CouponMapper.selectByPrimaryKey(goodsId);
-					sessionVo.setGoodsCode(inno72Coupon.getCode());
 				}
 			}
 			String goodsCode = sessionVo.getGoodsCode();
