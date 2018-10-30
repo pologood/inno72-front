@@ -44,6 +44,12 @@
       where g.id=#{goodsId} and m.is_delete = 0
     </select>
 
+    <select id="findByCoupon" resultMap="BaseResultMap" parameterType="string">
+      select m.* from inno72_merchant m
+         join inno72_shops shops on m.id = shops.seller_id
+         join inno72_coupon c on c.shops_id = shops.id
+          where c.id=#{itemId} and c.is_delete = 0
+    </select>
 
     <select id="findByGoodsCode" resultMap="BaseResultMap" parameterType="string">
       select * from inno72_merchant m

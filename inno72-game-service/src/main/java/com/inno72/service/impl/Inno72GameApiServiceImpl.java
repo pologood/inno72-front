@@ -1439,6 +1439,9 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 			if (StringUtil.isNotEmpty(itemId)) {
 				userSessionVo.setGoodsId(itemId);
 				merchant = inno72MerchantMapper.findByGoodsId(itemId);
+				if(merchant == null){
+					merchant = inno72MerchantMapper.findByCoupon(itemId);
+				}
 			}
 			if (StringUtil.isNotEmpty(sessionKey)) {
 				userSessionVo.setSessionKey(sessionKey);
