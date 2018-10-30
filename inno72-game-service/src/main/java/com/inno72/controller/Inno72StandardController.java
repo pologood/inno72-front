@@ -13,10 +13,10 @@ import javax.servlet.http.HttpServletResponse;
 import com.inno72.common.CommonBean;
 import com.inno72.mapper.Inno72CouponMapper;
 import com.inno72.model.Inno72Coupon;
-import com.inno72.service.Inno72PaiYangService;
+import com.inno72.service.*;
 import com.alibaba.fastjson.JSON;
 import com.inno72.common.util.UuidUtil;
-import com.inno72.redis.IRedisUtil;
+import com.inno72.util.StringUtil;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -37,9 +37,6 @@ import com.inno72.common.datetime.LocalDateTimeUtil;
 import com.inno72.common.util.GameSessionRedisUtil;
 import com.inno72.log.PointLogContext;
 import com.inno72.log.vo.LogType;
-import com.inno72.service.Inno72AuthInfoService;
-import com.inno72.service.Inno72GameApiService;
-import com.inno72.service.Inno72MachineService;
 import com.inno72.vo.MachineApiVo;
 import com.inno72.vo.StandardPrepareLoginReqVo;
 import com.inno72.vo.StandardShipmentReqVo;
@@ -73,6 +70,9 @@ public class Inno72StandardController {
 
 	@Resource
 	private Inno72CouponMapper inno72CouponMapper;
+
+	@Resource
+	private Inno72TopService inno72TopService;
 
 	@Resource
 	private Inno72GameServiceProperties inno72GameServiceProperties;
@@ -307,6 +307,13 @@ public class Inno72StandardController {
                     return Results.failure("session 过期！");
                 }
                 String msg = "用户["+sessionKey.getUserNick()+"]关注店铺成功.";
+
+				// 调用关注接口
+				String sellerId = sessionKey.getSellerId();
+				LOGGER.info("concernCallback sellerId is {}", sellerId);
+				if (!StringUtil.isEmpty(sellerId)) {
+					inno72TopService.fllowshopLog(sessionUuid, sellerId);
+				}
 
                 CommonBean.logger(
                         CommonBean.POINT_TYPE_CONCERN,
