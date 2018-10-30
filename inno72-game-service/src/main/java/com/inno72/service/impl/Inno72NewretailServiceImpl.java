@@ -12,10 +12,8 @@ import com.inno72.model.Inno72MachineDevice;
 import com.inno72.model.Inno72Merchant;
 import com.inno72.service.Inno72MachineDeviceService;
 import com.inno72.service.Inno72NewretailService;
-import com.inno72.vo.DeviceParamVo;
 import com.inno72.vo.DeviceVo;
 import com.taobao.api.ApiException;
-import com.taobao.api.DefaultTaobaoClient;
 import com.taobao.api.TaobaoClient;
 import com.taobao.api.internal.util.StringUtils;
 import com.taobao.api.request.*;
@@ -250,7 +248,7 @@ public class Inno72NewretailServiceImpl implements Inno72NewretailService {
         req.setAction(action);
         req.setItemId(itemId);
         req.setOpTime(StringUtils.parseDateTime(opTime));
-        req.setUserNick(userNick);
+        req.setUserNick(unescape(userNick));
         SmartstoreDeviceVendorFeedbackResponse rsp = client.execute(req, sessionKey);
         LOGGER.debug("deviceVendorFeedback tradeNo={},tradeType={},deviceCode={},action={}," +
                         "itemId={},opTime={},response={}",
@@ -295,7 +293,7 @@ public class Inno72NewretailServiceImpl implements Inno72NewretailService {
                         String deviceCode = findDeviceByStoreId(sellSessionKey,storeId);
                         if(StringUtils.isEmpty(deviceCode)){
                             //调用淘宝接口
-                            deviceCode = saveDevice(sellSessionKey,deviceVo.getStoreName(),storeId,"ANDROID",deviceVo.getMachineCode());
+                            deviceCode = saveDevice(sellSessionKey,deviceVo.getStoreName(),storeId,"ANDROID",deviceVo.getStoreName()+"-"+deviceVo.getMachineCode());
                         }
                         //保存结果信息
                         inno72MachineDevice = new Inno72MachineDevice();
