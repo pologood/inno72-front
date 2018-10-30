@@ -19,5 +19,7 @@ public interface Inno72MerchantMapper extends Mapper<Inno72Merchant> {
 
 	Inno72Merchant findByGoodsCode(String goodsCode);
 
+    Inno72Merchant findByCoupon(String itemId);
+
 	Inno72Merchant findMerchantByCode(String merchantByCode);
 }

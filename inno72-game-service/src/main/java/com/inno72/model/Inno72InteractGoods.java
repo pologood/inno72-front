@@ -35,6 +35,8 @@ public class Inno72InteractGoods implements Serializable {
     public final static Integer TYPE_GOODS = 0;
     public final static Integer TYPE_COUPON = 1;
 
+    private String coupon;
+
     /**
      * @return id
      */
@@ -109,5 +111,13 @@ public class Inno72InteractGoods implements Serializable {
 
     public void setType(Integer type) {
         this.type = type;
+    }
+
+    public String getCoupon() {
+        return coupon;
+    }
+
+    public void setCoupon(String coupon) {
+        this.coupon = coupon;
     }
 }

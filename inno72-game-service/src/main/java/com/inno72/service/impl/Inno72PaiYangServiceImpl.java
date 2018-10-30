@@ -103,21 +103,27 @@ public class Inno72PaiYangServiceImpl implements Inno72PaiYangService {
         for(Inno72InteractMachineGoods inno72InteractMachineGoods:inno72InteractMachineGoodsList){
 
             String goodsId = inno72InteractMachineGoods.getGoodsId();
-            Inno72SamplingGoods sampLingGoods = inno72GoodsMapper.findSamplingGoodsById(goodsId);
-            Integer goodsCount = inno72MachineService.getMachineGoodsCount(sampLingGoods.getId(),interactMachine.getMachineId());
-            //机器里面的所有货到的此商品数量
-            sampLingGoods.setNum(goodsCount);
+            Integer goodsType = inno72InteractMachineGoods.getType();
+            Inno72SamplingGoods sampLingGoods = null;
+            if(Inno72InteractMachineGoods.TYPE_GOODS == goodsType){
+                sampLingGoods = inno72GoodsMapper.findSamplingGoodsById(goodsId);
+                Integer goodsCount = inno72MachineService.getMachineGoodsCount(sampLingGoods.getId(),interactMachine.getMachineId());
+                //机器里面的所有货到的此商品数量
+                sampLingGoods.setNum(goodsCount);
 
-            //商品的剩余数量（此机器）配置的数量-掉货数量
-            Integer number = inno72InteractMachineGoods.getNumber();//机器配置的此商品的数量
-            //已经掉货的数量
-            String redisKey = String.format(RedisConstants.PAIYANG_MACHINE_GOODS,interactId,interactMachine.getMachineId(),goodsId);
-            boolean flag = redisTemplate.hasKey(redisKey);
-            if(flag){
-                number = number - Integer.parseInt(redisTemplate.opsForValue().get(redisKey));
+                //商品的剩余数量（此机器）配置的数量-掉货数量
+                Integer number = inno72InteractMachineGoods.getNumber();//机器配置的此商品的数量
+                //已经掉货的数量
+                String redisKey = String.format(RedisConstants.PAIYANG_MACHINE_GOODS,interactId,interactMachine.getMachineId(),goodsId);
+                boolean flag = redisTemplate.hasKey(redisKey);
+                if(flag){
+                    number = number - Integer.parseInt(redisTemplate.opsForValue().get(redisKey));
+                }
+                sampLingGoods.setMachineSurplusGoodsNum(number);
+            }else{
+                sampLingGoods = inno72GoodsMapper.findSamplingCouponById(goodsId);
             }
-            sampLingGoods.setMachineSurplusGoodsNum(number);
-
+            sampLingGoods.setGoodsType(goodsType);
             // 根据商品id查询相关店铺信息
             Inno72InteractShops inno72InteractShops = inno72InteractShopsMapper.findByInteractIdAndShopId(interactId,sampLingGoods.getShopId());
             if (inno72InteractShops != null) {
@@ -140,7 +146,7 @@ public class Inno72PaiYangServiceImpl implements Inno72PaiYangService {
         if(list.size() <= goodsSize) return Results.success(list);
         List<Inno72SamplingGoods> retList = new ArrayList<Inno72SamplingGoods>(goodsSize);
         for(Inno72SamplingGoods inno72SamplingGoods:list){
-            if(inno72SamplingGoods.getMachineSurplusGoodsNum()> 0){
+            if(Inno72InteractMachineGoods.TYPE_COUPON == inno72SamplingGoods.getGoodsType() || inno72SamplingGoods.getMachineSurplusGoodsNum()> 0){
                 retList.add(inno72SamplingGoods);
                 if(retList.size() == goodsSize) return Results.success(retList);
             }
@@ -148,7 +154,7 @@ public class Inno72PaiYangServiceImpl implements Inno72PaiYangService {
         //如果货物不够5个，展示无货的
         for(int i = list.size()-1;i>=0;i--){
             Inno72SamplingGoods inno72SamplingGoods = list.get(i);
-            if(inno72SamplingGoods.getMachineSurplusGoodsNum() <= 0){
+            if(Inno72InteractMachineGoods.TYPE_GOODS == inno72SamplingGoods.getGoodsType() && inno72SamplingGoods.getMachineSurplusGoodsNum() <= 0){
                 retList.add(inno72SamplingGoods);
                 if(retList.size() == goodsSize) return Results.success(retList);
             }

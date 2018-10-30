@@ -16,6 +16,7 @@ import java.util.Optional;
 
 import javax.annotation.Resource;
 
+import com.inno72.service.*;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -194,6 +195,9 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 
     @Resource
     private Inno72NewretailService inno72NewretailService;
+
+	@Resource
+	private Inno72MachineService inno72MachineService;
 
 	@Value("${machinecheckappbackend.uri}")
 	private String machinecheckappbackendUri;
@@ -548,23 +552,15 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 				payQrcodeImage = (String)map.get("payQrcodeImage");
 			}
 			resultGoodsId.add(goodsId);
-			//下单优惠卷 商品所在店铺的优惠卷
-            Inno72Coupon param = new Inno72Coupon();
-            param.setShopsId(inno72Goods.getShopId());
-            List<Inno72Coupon> list = inno72CouponMapper.select(param);
-            if(list!=null&&list.size()>0){
-                for(Inno72Coupon coupon:list){
-                	//查看有没有配置
-					boolean settingFlag = findPaiyangCouponSettingFlag(userSessionVo.getInno72MachineVo().getMachineCode(),coupon.getId());
-					if(settingFlag){
-						//下单优惠卷
-						LOGGER.debug("下单优惠卷 id={}",coupon.getId());
-						Result<Object> lottery = this.lottery(userSessionVo, vo.getUa(), vo.getUmid(), coupon.getId());
-						LOGGER.debug("抽取奖券 结果 ==> {}", JSON.toJSONString(lottery));
-						lotteryCode = lottery.getCode();
-					}
-                }
-            }
+			//下单优惠卷 商品所关联的优惠卷
+            if(!StringUtils.isEmpty(inno72InteractGoods.getCoupon())){
+				Inno72Coupon coupon = inno72CouponMapper.selectByPrimaryKey(inno72InteractGoods.getCoupon());
+				//下单优惠卷
+				LOGGER.debug("下单优惠卷 id={}",coupon.getId());
+				Result<Object> lottery = this.lottery(userSessionVo, vo.getUa(), vo.getUmid(), coupon.getId());
+				LOGGER.debug("抽取奖券 结果 ==> {}", JSON.toJSONString(lottery));
+				lotteryCode = lottery.getCode();
+			}
 		}else if(Inno72InteractGoods.TYPE_COUPON == prizeType){
 			// 下优惠券订单
 			Result<Object> lottery = this.lottery(userSessionVo, vo.getUa(), vo.getUmid(), goodsId);
@@ -574,7 +570,7 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 			return Results.failure("无商品类型");
 		}
 
-		if (resultGoodsId.isEmpty()) {
+		if (resultGoodsId == null ||resultGoodsId.isEmpty()) {
 			orderCode = PRODUCT_NO_EXIST;
 		}
 
@@ -1411,15 +1407,15 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 		userSessionVo.setMachineCode(inno72Machine.getMachineCode());
 		userSessionVo.setMachineId(inno72Machine.getId());
 		userSessionVo.setLogged(false);
-
-        String rVoJson = redisUtil.get(CommonBean.REDIS_ACTIVITY_PLAN_CACHE_KEY + inno72Machine.getMachineCode());
+		String activityId = inno72MachineService.findActivityIdByMachineCode(inno72Machine.getMachineCode());
+        String rVoJson = redisUtil.get(CommonBean.REDIS_ACTIVITY_PLAN_CACHE_KEY +activityId+":"+ inno72Machine.getMachineCode());
         LOGGER.debug("redis cache machine data =====> {}", rVoJson);
         if (StringUtil.isNotEmpty(rVoJson)) {
             Inno72MachineVo inno72MachineVo = JSON.parseObject(rVoJson, Inno72MachineVo.class);
             userSessionVo.setInno72MachineVo(inno72MachineVo);
             LOGGER.debug("parse rVoJson string finish --> {}", inno72MachineVo);
         }else{
-            LOGGER.error("从redis读取机器信息错误key={}",CommonBean.REDIS_ACTIVITY_PLAN_CACHE_KEY + inno72Machine.getMachineCode());
+            LOGGER.error("从redis读取机器信息错误key={}",CommonBean.REDIS_ACTIVITY_PLAN_CACHE_KEY +activityId+":"+ inno72Machine.getMachineCode());
         }
 
         // 解析 ext
@@ -1534,6 +1530,12 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 			if (StringUtil.isNotEmpty(itemId)) {
 				userSessionVo.setGoodsId(itemId);
 				merchant = inno72MerchantMapper.findByGoodsId(itemId);
+				if(merchant == null){
+					merchant = inno72MerchantMapper.findByCoupon(itemId);
+					if(merchant!=null){
+						userSessionVo.setGoodsType(UserSessionVo.GOODSTYPE_COUPON);
+					}
+				}
 			}
 			if (StringUtil.isNotEmpty(sessionKey)) {
 				userSessionVo.setSessionKey(sessionKey);

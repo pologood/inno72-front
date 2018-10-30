@@ -91,6 +91,12 @@ public class UserSessionVo {
 	 * 是否显示新零售入会码0不展示，1展示
 	 */
 	private Integer displayNewRetailMemberUrlFlag;
+	/**
+	 * 商品类型：0商品，1优惠券
+	 */
+	private Integer goodsType;
+	public static final Integer GOODSTYPE_GOODS = 0;
+	public static final Integer GOODSTYPE_COUPON = 1;
 	public static final Integer DISPLAYNEWRETAILMEMBERURLFLAG_YES = 1;
 	public static final Integer DISPLAYNEWRETAILMEMBERURLFLAG_NO = 0;
 

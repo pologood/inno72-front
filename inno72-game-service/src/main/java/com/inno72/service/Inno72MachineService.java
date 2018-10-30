@@ -26,4 +26,6 @@ public interface Inno72MachineService extends Service<Inno72Machine> {
 	Result<MachineVo> selectTianMaoMachineVoById(String machineId);
 	//查询机器下这个商品的个数
     Integer getMachineGoodsCount(String goodsId, String machineId);
+
+    String findActivityIdByMachineCode(String machineCode);
 }

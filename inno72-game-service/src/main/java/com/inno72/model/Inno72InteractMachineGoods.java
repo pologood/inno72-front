@@ -49,6 +49,15 @@ public class Inno72InteractMachineGoods implements Serializable {
     private Date endTime;
 
     /**
+     * 类型：0商品，1优惠券
+     */
+    private Integer type;
+
+    public final static Integer TYPE_GOODS = 0;
+
+    public final static Integer TYPE_COUPON = 1;
+
+    /**
      * 获取ID
      *
      * @return id - ID
@@ -172,5 +181,13 @@ public class Inno72InteractMachineGoods implements Serializable {
      */
     public void setEndTime(Date endTime) {
         this.endTime = endTime;
+    }
+
+    public Integer getType() {
+        return type;
+    }
+
+    public void setType(Integer type) {
+        this.type = type;
     }
 }

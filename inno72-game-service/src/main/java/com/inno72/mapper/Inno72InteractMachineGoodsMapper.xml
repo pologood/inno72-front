@@ -12,11 +12,12 @@
     <result column="seq" jdbcType="INTEGER" property="seq" />
     <result column="start_time" jdbcType="TIMESTAMP" property="startTime" />
     <result column="end_time" jdbcType="TIMESTAMP" property="endTime" />
+    <result column="type" jdbcType="INTEGER" property="type" />
   </resultMap>
 
   <select id="findMachineGoods" resultMap="BaseResultMap">
-   select goods_id,number from inno72_interact_machine_goods
-   where interact_machine_id = #{interactMachineId} and type = 0
+   select goods_id,number,type from inno72_interact_machine_goods
+   where interact_machine_id = #{interactMachineId}
    and CURRENT_TIMESTAMP() BETWEEN start_time and end_time order by seq
   </select>
 </mapper>

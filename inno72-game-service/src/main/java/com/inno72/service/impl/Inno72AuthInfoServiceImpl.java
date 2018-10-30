@@ -138,6 +138,8 @@ public class Inno72AuthInfoServiceImpl implements Inno72AuthInfoService {
 	private Inno72MachineService inno72MachineService;
 	@Resource
 	private Inno72ShopsMapper inno72ShopsMapper;
+	@Resource
+	private Inno72CouponMapper inno72CouponMapper;
 
 	// todo gxg 使用枚举
 	private static final String QRSTATUS_NORMAL = "0"; // 二维码正常
@@ -317,7 +319,7 @@ public class Inno72AuthInfoServiceImpl implements Inno72AuthInfoService {
 
 		this.startGameLife(userChannel, inno72Activity, inno72ActivityPlan, inno72Game, inno72Machine, userId,
 				sessionVo.getSellerId() == null ? "" : sessionVo.getSellerId(),
-				sessionVo.getGoodsCode() == null ? "" : sessionVo.getGoodsCode());
+				sessionVo.getGoodsCode() == null ? inno72Merchant.getMerchantCode() : sessionVo.getGoodsCode());
 
 		LOGGER.info("playCode is" + playCode);
 
@@ -330,7 +332,7 @@ public class Inno72AuthInfoServiceImpl implements Inno72AuthInfoService {
 		resultMap.put("sellerId", sessionVo.getSellerId() == null ? inno72Merchant.getMerchantCode() : sessionVo.getSellerId());
 
 		this.dealIsVip(resultMap, sessionVo);
-		this.dealFollowSessionKey(resultMap, sessionVo);
+//		this.dealFollowSessionKey(resultMap, sessionVo);
 
 		resultMap.put("activityType", activityType);
 		resultMap.put("goodsCode", sessionVo.getGoodsCode() != null ? sessionVo.getGoodsCode() : "");
@@ -384,14 +386,17 @@ public class Inno72AuthInfoServiceImpl implements Inno72AuthInfoService {
 
 		// 检查二维码是否可以重复扫
 		String qrStatus = this.checkQrCode(sessionUuid);
-		Inno72Goods goods = inno72GoodsMapper.selectByPrimaryKey(sessionVo.getGoodsId());
-//		Inno72Goods goods = inno72GoodsMapper.selectByCode(sessionVo.getGoodsCode());
-		String sellerId = goods.getSellerId();
+		Inno72Merchant inno72Merchant = null;
+		if(sessionVo.getGoodsType()!=null && UserSessionVo.GOODSTYPE_COUPON == sessionVo.getGoodsType()){
+			inno72Merchant = inno72MerchantMapper.findByCoupon(sessionVo.getGoodsId());
+		}else{
+			Inno72Goods goods = inno72GoodsMapper.selectByPrimaryKey(sessionVo.getGoodsId());
+			String sellerId = goods.getSellerId();
+			inno72Merchant = inno72MerchantMapper.selectByPrimaryKey(sellerId);
+		}
 		Inno72Interact interact = inno72InteractService.findById(sessionVo.getInno72MachineVo().getActivityId());
 		playCode = interact.getPlanCode();
 		LOGGER.info("sessionRedirect layCode is {}", playCode);
-
-		Inno72Merchant inno72Merchant = inno72MerchantMapper.selectByPrimaryKey(sellerId);
 
 		String nickName = inno72TopService.getMaskUserNick(sessionUuid, accessToken, inno72Merchant.getMerchantCode(), userId);
 
@@ -424,7 +429,7 @@ public class Inno72AuthInfoServiceImpl implements Inno72AuthInfoService {
 		Integer number = interact.getNumber();//同一用户获得商品次数
 		Integer dayNumber = interact.getDayNumber();//同一用户每天获得商品次数
 		//获取这个商品的限制个数
-		Integer userDayNumber = inno72InteractGoodsService.findByInteractIdAndGoodsId(interact.getId(),goods.getId()).getUserDayNumber();
+		Integer userDayNumber = inno72InteractGoodsService.findByInteractIdAndGoodsId(interact.getId(),sessionVo.getGoodsId()).getUserDayNumber();
 		//获取展示商品的个数
 		Integer goodsSize = findIntentGoodsSize(interact.getGameId());
 		//设置canOrder
@@ -478,7 +483,7 @@ public class Inno72AuthInfoServiceImpl implements Inno72AuthInfoService {
 		}
 
 		if(userDayNumber!=null&&userDayNumber!=-1){
-			key = String.format(RedisConstants.PAIYANG_GOODS_ORDER_TIMES,interact.getId(),goods.getId(),date,userId);
+			key = String.format(RedisConstants.PAIYANG_GOODS_ORDER_TIMES,interact.getId(),sessionVo.getGoodsId(),date,userId);
 			if(gameSessionRedisUtil.exists(key)){
 				Integer mydayTimes = Integer.parseInt(redisUtil.get(key));
 				if(mydayTimes >= userDayNumber){
@@ -488,7 +493,7 @@ public class Inno72AuthInfoServiceImpl implements Inno72AuthInfoService {
 			}
 		}
 
-		Integer goodsCount = inno72MachineService.getMachineGoodsCount(goods.getId(),inno72Machine.getId());
+		Integer goodsCount = inno72MachineService.getMachineGoodsCount(sessionVo.getGoodsId(),inno72Machine.getId());
 
 		sessionVo.setUserNick(nickName);
 		sessionVo.setUserId(userId);
@@ -498,7 +503,11 @@ public class Inno72AuthInfoServiceImpl implements Inno72AuthInfoService {
 		sessionVo.setActivityPlanId(interact.getId());
 
 		sessionVo.setCanOrder(canOrder);
-		sessionVo.setCountGoods(goodsCount>0);
+        if(sessionVo.getGoodsType()!=null && UserSessionVo.GOODSTYPE_COUPON == sessionVo.getGoodsType()){
+            sessionVo.setCountGoods(true);
+        }else{
+			sessionVo.setCountGoods(goodsCount>0);
+		}
 		sessionVo.setChannelId(channelId);
 		sessionVo.setActivityId(interact.getId());
 		/**
@@ -515,7 +524,7 @@ public class Inno72AuthInfoServiceImpl implements Inno72AuthInfoService {
 				userChannel == null ? null : userChannel.getUserNick(), interact.getId(),
 				interact.getName(), interact.getId(), inno72Game.getId(), inno72Game.getName(),
 				inno72Machine.getLocaleId(), inno72Locale == null ? "" : inno72Locale.getMall(), null, "", null, null,
-				userId, sessionVo.getSellerId() == null ? "" : sessionVo.getSellerId(), sessionVo.getGoodsCode() == null ? "" : sessionVo.getGoodsCode());
+				userId, sessionVo.getSellerId() == null ? inno72Merchant.getMerchantCode() : sessionVo.getSellerId(), sessionVo.getGoodsCode() == null ? "" : sessionVo.getGoodsCode());
 		LOGGER.info("插入用户游戏记录 ===> {}", JSON.toJSONString(life));
 		inno72GameUserLifeMapper.insert(life);
 
@@ -533,7 +542,7 @@ public class Inno72AuthInfoServiceImpl implements Inno72AuthInfoService {
 		resultMap.put("paiyangType",interact.getPaiyangType());
 		resultMap.put("sellSessionKey",inno72Merchant.getSellerSessionKey());
 		this.dealIsVip(resultMap, sessionVo);
-		this.dealFollowSessionKey(resultMap, sessionVo);
+//		this.dealFollowSessionKey(resultMap, sessionVo);
 
 		resultMap.put("activityType", activityType);
 		resultMap.put("goodsCode", sessionVo.getGoodsCode() != null ? sessionVo.getGoodsCode() : "");
@@ -607,9 +616,14 @@ public class Inno72AuthInfoServiceImpl implements Inno72AuthInfoService {
 		if (StringUtil.isNotEmpty(isVip) && sessionVo.getIsVip().equals("1")) {
 			String goodsId = sessionVo.getGoodsId();
 			if (!StringUtil.isEmpty(goodsId)) {
-				Inno72Goods inno72Goods = inno72GoodsMapper.selectByPrimaryKey(goodsId);
-				String goodsCode = inno72Goods.getCode();
-				sessionVo.setGoodsCode(goodsCode);
+				if(sessionVo.getGoodsType()!=null && UserSessionVo.GOODSTYPE_COUPON == sessionVo.getGoodsType()){
+					Inno72Coupon inno72Coupon = inno72CouponMapper.selectByPrimaryKey(goodsId);
+					sessionVo.setGoodsCode(inno72Coupon.getCode());
+				}else{
+					Inno72Goods inno72Goods = inno72GoodsMapper.selectByPrimaryKey(goodsId);
+					String goodsCode = inno72Goods.getCode();
+					sessionVo.setGoodsCode(goodsCode);
+				}
 			}
 			String goodsCode = sessionVo.getGoodsCode();
 			LOGGER.info("返回给聚石塔的入会信息 goodsCode is {}  isVip is {}, sessionKey is {}", goodsCode, sessionVo.getIsVip(), sessionVo.getSessionKey());
