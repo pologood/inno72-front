@@ -505,8 +505,9 @@ public class Inno72AuthInfoServiceImpl implements Inno72AuthInfoService {
 		sessionVo.setCanOrder(canOrder);
         if(sessionVo.getGoodsType()!=null && UserSessionVo.GOODSTYPE_COUPON == sessionVo.getGoodsType()){
             sessionVo.setCountGoods(true);
-        }
-		sessionVo.setCountGoods(goodsCount>0);
+        }else{
+			sessionVo.setCountGoods(goodsCount>0);
+		}
 		sessionVo.setChannelId(channelId);
 		sessionVo.setActivityId(interact.getId());
 		/**
