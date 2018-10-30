@@ -138,6 +138,8 @@ public class Inno72AuthInfoServiceImpl implements Inno72AuthInfoService {
 	private Inno72MachineService inno72MachineService;
 	@Resource
 	private Inno72ShopsMapper inno72ShopsMapper;
+	@Resource
+	private Inno72CouponMapper inno72CouponMapper;
 
 	// todo gxg 使用枚举
 	private static final String QRSTATUS_NORMAL = "0"; // 二维码正常
@@ -610,9 +612,14 @@ public class Inno72AuthInfoServiceImpl implements Inno72AuthInfoService {
 		if (StringUtil.isNotEmpty(isVip) && sessionVo.getIsVip().equals("1")) {
 			String goodsId = sessionVo.getGoodsId();
 			if (!StringUtil.isEmpty(goodsId)) {
-				Inno72Goods inno72Goods = inno72GoodsMapper.selectByPrimaryKey(goodsId);
-				String goodsCode = inno72Goods.getCode();
-				sessionVo.setGoodsCode(goodsCode);
+				if(sessionVo.getGoodsType()!=null && UserSessionVo.GOODSTYPE_COUPON == sessionVo.getGoodsType()){
+					Inno72Goods inno72Goods = inno72GoodsMapper.selectByPrimaryKey(goodsId);
+					String goodsCode = inno72Goods.getCode();
+					sessionVo.setGoodsCode(goodsCode);
+				}else{
+					Inno72Coupon inno72Coupon = inno72CouponMapper.selectByPrimaryKey(goodsId);
+					sessionVo.setGoodsCode(inno72Coupon.getCode());
+				}
 			}
 			String goodsCode = sessionVo.getGoodsCode();
 			LOGGER.info("返回给聚石塔的入会信息 goodsCode is {}  isVip is {}, sessionKey is {}", goodsCode, sessionVo.getIsVip(), sessionVo.getSessionKey());
