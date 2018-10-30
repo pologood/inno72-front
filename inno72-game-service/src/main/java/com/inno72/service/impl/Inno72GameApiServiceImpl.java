@@ -1532,6 +1532,9 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 				merchant = inno72MerchantMapper.findByGoodsId(itemId);
 				if(merchant == null){
 					merchant = inno72MerchantMapper.findByCoupon(itemId);
+					if(merchant!=null){
+						userSessionVo.setGoodsType(UserSessionVo.GOODSTYPE_COUPON);
+					}
 				}
 			}
 			if (StringUtil.isNotEmpty(sessionKey)) {

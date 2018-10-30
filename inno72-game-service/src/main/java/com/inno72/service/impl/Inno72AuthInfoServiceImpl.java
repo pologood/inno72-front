@@ -384,14 +384,17 @@ public class Inno72AuthInfoServiceImpl implements Inno72AuthInfoService {
 
 		// 检查二维码是否可以重复扫
 		String qrStatus = this.checkQrCode(sessionUuid);
-		Inno72Goods goods = inno72GoodsMapper.selectByPrimaryKey(sessionVo.getGoodsId());
-//		Inno72Goods goods = inno72GoodsMapper.selectByCode(sessionVo.getGoodsCode());
-		String sellerId = goods.getSellerId();
+		Inno72Merchant inno72Merchant = null;
+		if(sessionVo.getGoodsType()!=null && UserSessionVo.GOODSTYPE_COUPON == sessionVo.getGoodsType()){
+			inno72Merchant = inno72MerchantMapper.findByCoupon(sessionVo.getGoodsId());
+		}else{
+			Inno72Goods goods = inno72GoodsMapper.selectByPrimaryKey(sessionVo.getGoodsId());
+			String sellerId = goods.getSellerId();
+			inno72Merchant = inno72MerchantMapper.selectByPrimaryKey(sellerId);
+		}
 		Inno72Interact interact = inno72InteractService.findById(sessionVo.getInno72MachineVo().getActivityId());
 		playCode = interact.getPlanCode();
 		LOGGER.info("sessionRedirect layCode is {}", playCode);
-
-		Inno72Merchant inno72Merchant = inno72MerchantMapper.selectByPrimaryKey(sellerId);
 
 		String nickName = inno72TopService.getMaskUserNick(sessionUuid, accessToken, inno72Merchant.getMerchantCode(), userId);
 
@@ -424,7 +427,7 @@ public class Inno72AuthInfoServiceImpl implements Inno72AuthInfoService {
 		Integer number = interact.getNumber();//同一用户获得商品次数
 		Integer dayNumber = interact.getDayNumber();//同一用户每天获得商品次数
 		//获取这个商品的限制个数
-		Integer userDayNumber = inno72InteractGoodsService.findByInteractIdAndGoodsId(interact.getId(),goods.getId()).getUserDayNumber();
+		Integer userDayNumber = inno72InteractGoodsService.findByInteractIdAndGoodsId(interact.getId(),sessionVo.getGoodsId()).getUserDayNumber();
 		//获取展示商品的个数
 		Integer goodsSize = findIntentGoodsSize(interact.getGameId());
 		//设置canOrder
@@ -478,7 +481,7 @@ public class Inno72AuthInfoServiceImpl implements Inno72AuthInfoService {
 		}
 
 		if(userDayNumber!=null&&userDayNumber!=-1){
-			key = String.format(RedisConstants.PAIYANG_GOODS_ORDER_TIMES,interact.getId(),goods.getId(),date,userId);
+			key = String.format(RedisConstants.PAIYANG_GOODS_ORDER_TIMES,interact.getId(),sessionVo.getGoodsId(),date,userId);
 			if(gameSessionRedisUtil.exists(key)){
 				Integer mydayTimes = Integer.parseInt(redisUtil.get(key));
 				if(mydayTimes >= userDayNumber){
@@ -488,7 +491,7 @@ public class Inno72AuthInfoServiceImpl implements Inno72AuthInfoService {
 			}
 		}
 
-		Integer goodsCount = inno72MachineService.getMachineGoodsCount(goods.getId(),inno72Machine.getId());
+		Integer goodsCount = inno72MachineService.getMachineGoodsCount(sessionVo.getGoodsId(),inno72Machine.getId());
 
 		sessionVo.setUserNick(nickName);
 		sessionVo.setUserId(userId);
