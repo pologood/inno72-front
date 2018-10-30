@@ -126,6 +126,16 @@ public class DateUtil extends DateUtils {
 		return returnValue;
 	}
 
+	public static String format(LocalDateTime date, String pattern) {
+		String returnValue = "";
+		if (date != null) {
+			DateTimeFormatter fomatter1 = DateTimeFormatter
+					.ofPattern(pattern);
+			returnValue = date.format(fomatter1);
+		}
+		return returnValue;
+	}
+
 	/**
 	 * 使用参数Format格式化Timestamp成字符串
 	 */

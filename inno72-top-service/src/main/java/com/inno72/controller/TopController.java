@@ -135,6 +135,8 @@ public class TopController {
 			String taobaoUserId = FastJsonUtils.getString(tokenResult, "taobao_user_nick");
 			LOGGER.info("topIndex2 taobaoUserId is {}", taobaoUserId);
 
+			accessToken = FastJsonUtils.getString(tokenResult, "access_token");
+
 			UserInfo userInfo = new UserInfo();
 			userInfo.setSessionUuid(sessionUuid);
 			userInfo.setAuthInfo(tokenResult);
@@ -203,6 +205,7 @@ public class TopController {
 
 					String meberJoinCallBackUrl = jstUrl + "/api/meberJoinCallBack/" + sessionUuid + "/" + env + "/" + playCode + "/"
 							+ qrStatus + "/" + sellerId;
+					///api/meberJoinCallBack/{sessionUuid}/{env}/{playCode}/{qrStatus}/{sellerId}/{accessToken}
 					LOGGER.info("topIndex2 meberJoinCallBackUrl is {}", meberJoinCallBackUrl);
 
 					// 如果不是会员做入会操作
@@ -213,14 +216,15 @@ public class TopController {
 					LOGGER.info("topIndex2 resultUrl is {}", resultUrl);
 
 					response.sendRedirect("http:" + resultUrl);
-
+					return;
 				} else {
 					// 设置用户已登录
 					boolean logged = this.setUserLogged(sessionUuid, env);
 					LOGGER.info("topIndex2 logged is {}", logged);
 					// 是会员直接跳转h5页面
-					response.sendRedirect(formatUrl);
 				}
+
+
 
 			} else {
 				// 正常逻辑
@@ -236,27 +240,38 @@ public class TopController {
 					+ sellerId + "&method=href&sessionUuid=" + sessionUuid;
 			LOGGER.info("topIndex2 formatUrl is {}", formatUrl);
 
-			if ( StringUtils.isEmpty(followSessionKey)){
-				response.sendRedirect(formatUrl);
-			}else{
-				String encodeUrl = URLEncoder.encode(formatUrl, java.nio.charset.StandardCharsets.UTF_8.toString());
-
-				StoreFollowurlGetRequest req = new StoreFollowurlGetRequest();
-				req.setCallbackUrl(
-						h5EnvHost
-								+ envParam.get(env)
-								+ "/standard/concern_callback?sessionUuid="+sessionUuid
-								+ "&redirectUrl="+encodeUrl+"&method=href");
-				LOGGER.info("关注callBackUrl : " + h5EnvHost
-						+ envParam.get(env)
-						+ "/standard/concern_callback?sessionUuid="+sessionUuid
-						+ "&redirectUrl="+encodeUrl+"&method=href");
-				StoreFollowurlGetResponse rsp = client.execute(req, followSessionKey);
-
-				response.sendRedirect(rsp.getUrl());
-			}
-		} catch (IOException e) {
+			fllowStoreFlow(response, env, sellerId, sessionUuid, formatUrl);
+		} catch (Exception e) {
 			LOGGER.error(e.getMessage(), e);
+		}
+	}
+
+	/**
+	 * 关注店铺流程
+	 */
+	public void fllowStoreFlow(HttpServletResponse response, String env, String sellerId,
+			String sessionUuid, String formatUrl) {
+		LOGGER.info("env is {}, sellerId is {}, sessionUuid is {}, accessToken is {}, formatUrl is {}",
+				env, sellerId, sellerId, formatUrl );
+		try {
+			String encodeUrl = URLEncoder.encode(formatUrl, java.nio.charset.StandardCharsets.UTF_8.toString());
+
+			StoreFollowurlGetRequest req = new StoreFollowurlGetRequest();
+			req.setCallbackUrl(
+					h5EnvHost
+							+ envParam.get(env)
+							+ "/standard/concern_callback?sessionUuid="+sessionUuid
+							+ "&redirectUrl="+encodeUrl+"&method=href");
+			req.setUserId(Long.parseLong(sellerId));
+			LOGGER.info("关注callBackUrl : " + h5EnvHost
+					+ envParam.get(env)
+					+ "/standard/concern_callback?sessionUuid="+sessionUuid
+					+ "&redirectUrl="+encodeUrl+"&method=href");
+			StoreFollowurlGetResponse rsp = client.execute(req, "");
+			LOGGER.info("fllowStoreFlow  - StoreFollowurlGetResponse - {}", JSON.toJSONString(rsp));
+			response.sendRedirect(rsp.getUrl());
+		} catch (Exception e) {
+			LOGGER.error(e.getMessage() ,e);
 		}
 	}
 
@@ -552,7 +567,7 @@ public class TopController {
 		req.setChannelId(channelId);
 		TmallFansAutomachineDeliveryrecordResponse rsp = client.execute(req, accessToken);
 		String result = rsp.getBody();
-		LOGGER.info("deliveryRecord result is", result);
+		LOGGER.info("deliveryRecord result is {}", result);
 		return result;
 	}
 
@@ -603,6 +618,7 @@ public class TopController {
 
 	/**
 	 * 入会回调
+	 * http://inno72top.ews.m.jaeapp.com/api/meberJoinCallBack/18640451/test/20/0/3098056950
 	 */
 	@RequestMapping("/api/meberJoinCallBack/{sessionUuid}/{env}/{playCode}/{qrStatus}/{sellerId}")
 	public void meberJoinCallBack(HttpServletResponse response, @PathVariable("sessionUuid") String sessionUuid,
@@ -622,9 +638,11 @@ public class TopController {
 		String h5url = String.format(h5MobileUrl, env, playCode) + "?qrStatus=" + qrStatus + "&sellerId=" + sellerId + "&sessionUuid=" + sessionUuid;
 		LOGGER.info("meberJoinCallBack h5url is {} ", h5url);
 		try {
+			LOGGER.info("入会回调走关注流程");
+			fllowStoreFlow(response, env, sellerId, sessionUuid, h5url);
 			// 跳转 手机h5
-			response.sendRedirect(h5url);
-		} catch (IOException e) {
+			// response.sendRedirect(h5url);
+		} catch (Exception e) {
 			LOGGER.error(e.getMessage(), e);
 		}
 	}

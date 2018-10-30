@@ -40,6 +40,13 @@ public class FastJsonUtils {
 		return getString(payloadJson, key);
 	}
 
+	public static Integer getInteger(String payload, String key) {
+		JSONObject payloadJson = JSON.parseObject(payload);
+		String value =  getString(payloadJson, key);
+		if(StringUtils.isEmpty(value)) return null;
+		return Integer.parseInt(value);
+	}
+
 	public static String getString(JSONObject payloadJson, String key) {
 		Set entrySet = payloadJson.entrySet();
 

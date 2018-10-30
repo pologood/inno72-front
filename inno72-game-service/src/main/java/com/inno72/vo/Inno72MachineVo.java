@@ -48,6 +48,10 @@ public class Inno72MachineVo extends Inno72Machine {
 	 * 活动计划详情
 	 */
 	private Inno72ActivityPlan inno72ActivityPlan;
+	/**
+	 * 0普通派样1新零售派样
+	 */
+	private Integer paiyangType;
 
 	/**
 	 * 奖品类型（100100商品，100200优惠券，100300商品+优惠券)
@@ -132,5 +136,13 @@ public class Inno72MachineVo extends Inno72Machine {
 
 	public void setActivityType(Integer activityType) {
 		this.activityType = activityType;
+	}
+
+	public Integer getPaiyangType() {
+		return paiyangType;
+	}
+
+	public void setPaiyangType(Integer paiyangType) {
+		this.paiyangType = paiyangType;
 	}
 }

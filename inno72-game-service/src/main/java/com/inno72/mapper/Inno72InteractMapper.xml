@@ -21,5 +21,6 @@
     <result column="update_id" jdbcType="VARCHAR" property="updateId" />
     <result column="update_time" jdbcType="TIMESTAMP" property="updateTime" />
     <result column="plan_code" jdbcType="VARCHAR" property="planCode" />
+    <result column="paiyang_type" jdbcType="INTEGER" property="paiyangType" />
   </resultMap>
 </mapper>

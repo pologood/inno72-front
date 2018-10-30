@@ -82,6 +82,8 @@ public class Inno72Shops {
 	@Column(name = "update_time")
 	private Date updateTime;
 
+
+
 	/**
 	 * 获取店铺ID
 	 *
@@ -269,6 +271,7 @@ public class Inno72Shops {
 	public void setSessionKey(String sessionKey) {
 		this.sessionKey = sessionKey;
 	}
+
 
 	public String getFocusSessionKey() {
 		return focusSessionKey;

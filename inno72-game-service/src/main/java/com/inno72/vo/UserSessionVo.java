@@ -83,6 +83,16 @@ public class UserSessionVo {
 	 * 是否扫描过的
 	 */
 	private boolean isScanned;
+	/**
+	 * 新零售入会二维码
+	 */
+	private String newRetailMemberUrl;
+	/**
+	 * 是否显示新零售入会码0不展示，1展示
+	 */
+	private Integer displayNewRetailMemberUrlFlag;
+	public static final Integer DISPLAYNEWRETAILMEMBERURLFLAG_YES = 1;
+	public static final Integer DISPLAYNEWRETAILMEMBERURLFLAG_NO = 0;
 
 	/**
 	 * 活动类型
@@ -195,4 +205,5 @@ public class UserSessionVo {
 	public void setIsScanned(boolean isScanned) {
 		this.isScanned = isScanned;
 	}
+
 }

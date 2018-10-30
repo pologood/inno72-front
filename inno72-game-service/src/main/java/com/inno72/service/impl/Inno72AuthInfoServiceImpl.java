@@ -315,7 +315,9 @@ public class Inno72AuthInfoServiceImpl implements Inno72AuthInfoService {
 		LOGGER.info("loadGameInfo is {} ", JsonUtil.toJson(list));
 		sessionVo.setGoodsList(list);
 
-		this.startGameLife(userChannel, inno72Activity, inno72ActivityPlan, inno72Game, inno72Machine, userId);
+		this.startGameLife(userChannel, inno72Activity, inno72ActivityPlan, inno72Game, inno72Machine, userId,
+				sessionVo.getSellerId() == null ? "" : sessionVo.getSellerId(),
+				sessionVo.getGoodsCode() == null ? inno72Merchant.getMerchantCode() : sessionVo.getGoodsCode());
 
 		LOGGER.info("playCode is" + playCode);
 
@@ -325,7 +327,7 @@ public class Inno72AuthInfoServiceImpl implements Inno72AuthInfoService {
 		resultMap.put("machineCode", inno72Machine.getMachineCode());
 		resultMap.put("playCode", playCode);
 		resultMap.put("qrStatus", QRSTATUS_NORMAL);
-		resultMap.put("sellerId", sessionVo.getSellerId());
+		resultMap.put("sellerId", sessionVo.getSellerId() == null ? inno72Merchant.getMerchantCode() : sessionVo.getSellerId());
 
 		this.dealIsVip(resultMap, sessionVo);
 		this.dealFollowSessionKey(resultMap, sessionVo);
@@ -506,7 +508,6 @@ public class Inno72AuthInfoServiceImpl implements Inno72AuthInfoService {
 //		LOGGER.info("loadGameInfo is {} ", JsonUtil.toJson(list));
 //		sessionVo.setGoodsList(list);
 
-
 		//插入gameLife表
 		Inno72Locale inno72Locale = inno72LocaleMapper.selectByPrimaryKey(inno72Machine.getLocaleId());
 		Inno72GameUserLife life = new Inno72GameUserLife(userChannel == null ? null : userChannel.getGameUserId(),
@@ -514,7 +515,7 @@ public class Inno72AuthInfoServiceImpl implements Inno72AuthInfoService {
 				userChannel == null ? null : userChannel.getUserNick(), interact.getId(),
 				interact.getName(), interact.getId(), inno72Game.getId(), inno72Game.getName(),
 				inno72Machine.getLocaleId(), inno72Locale == null ? "" : inno72Locale.getMall(), null, "", null, null,
-				userId);
+				userId, sessionVo.getSellerId() == null ? inno72Merchant.getMerchantCode() : sessionVo.getSellerId(), sessionVo.getGoodsCode() == null ? "" : sessionVo.getGoodsCode());
 		LOGGER.info("插入用户游戏记录 ===> {}", JSON.toJSONString(life));
 		inno72GameUserLifeMapper.insert(life);
 
@@ -528,6 +529,9 @@ public class Inno72AuthInfoServiceImpl implements Inno72AuthInfoService {
 		resultMap.put("qrStatus", qrStatus);
 		resultMap.put("sellerId", sessionVo.getSellerId());
 		resultMap.put("traceId", traceId);
+		//是否走新零售入会新零售入会
+		resultMap.put("paiyangType",interact.getPaiyangType());
+		resultMap.put("sellSessionKey",inno72Merchant.getSellerSessionKey());
 		this.dealIsVip(resultMap, sessionVo);
 		this.dealFollowSessionKey(resultMap, sessionVo);
 
@@ -723,14 +727,14 @@ public class Inno72AuthInfoServiceImpl implements Inno72AuthInfoService {
 	 * @param userId
 	 */
 	private Inno72GameUserLife startGameLife(Inno72GameUserChannel userChannel, Inno72Activity inno72Activity,
-			Inno72ActivityPlan inno72ActivityPlan, Inno72Game inno72Game, Inno72Machine inno72Machine, String userId) {
+			Inno72ActivityPlan inno72ActivityPlan, Inno72Game inno72Game, Inno72Machine inno72Machine, String userId, String merchantCode, String goodsCode) {
 		Inno72Locale inno72Locale = inno72LocaleMapper.selectByPrimaryKey(inno72Machine.getLocaleId());
 		Inno72GameUserLife life = new Inno72GameUserLife(userChannel == null ? null : userChannel.getGameUserId(),
 				userChannel == null ? null : userChannel.getId(), inno72Machine.getMachineCode(),
 				userChannel == null ? null : userChannel.getUserNick(), inno72ActivityPlan.getActivityId(),
 				inno72Activity.getName(), inno72ActivityPlan.getId(), inno72Game.getId(), inno72Game.getName(),
 				inno72Machine.getLocaleId(), inno72Locale == null ? "" : inno72Locale.getMall(), null, "", null, null,
-				userId);
+				userId, merchantCode == null ? "" : merchantCode, goodsCode == null ? "" : goodsCode);
 		LOGGER.info("插入用户游戏记录 ===> {}", JSON.toJSONString(life));
 		inno72GameUserLifeMapper.insert(life);
 		return life;

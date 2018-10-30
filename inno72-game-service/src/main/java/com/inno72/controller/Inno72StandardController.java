@@ -77,9 +77,6 @@ public class Inno72StandardController {
 	@Resource
 	private Inno72GameServiceProperties inno72GameServiceProperties;
 
-	@Resource
-	private IRedisUtil redisUtil;
-
 	@Value("${top_h5_err_url}")
 	private String topH5ErrUrl;
 
@@ -291,30 +288,38 @@ public class Inno72StandardController {
 		}
 	}
 
-	@RequestMapping(value = "/concern_callback", method = {RequestMethod.GET, RequestMethod.POST})
-	public Result<String> concernCallback(HttpServletResponse response, HttpServletRequest request,
-			String sessionUuid, String tbResult, String redirectUrl)  {
-		LOGGER.info("关注店铺回调参数 {}", JSON.toJSONString(request.getParameterMap()));
-		try {
-			if (StringUtils.isNotEmpty(tbResult) && tbResult.equals("1")){
-				UserSessionVo sessionKey = gameSessionRedisUtil.getSessionKey(sessionUuid);
-				if (sessionKey == null){
-					return Results.failure("session 过期！");
-				}
-				String msg = "用户["+sessionKey.getUserNick()+"]关注店铺成功.";
-
-				CommonBean.logger(
-						CommonBean.POINT_TYPE_CONCERN,
-						sessionKey.getMachineCode(),
-						msg,
-						sessionKey.getActivityId()
-				);
-			}
-			response.sendRedirect(URLDecoder.decode(redirectUrl, java.nio.charset.StandardCharsets.UTF_8.toString()));
-		} catch (IOException e) {
-			LOGGER.error("关注店铺回调异常 {}, {}",e.getMessage(), e);
-		}
-		return Results.success();
+	/**
+	 * 入会操作（目前聚石塔回调）
+	 */
+	@ResponseBody
+	@RequestMapping(value = "/newRetailmemberJoin", method = {RequestMethod.POST})
+	public Result<Object> newRetailmemberJoin(String sessionUuid,String sellSessionKey,String taobaoUserId,String meberJoinCallBackUrl) {
+		return inno72GameApiService.newRetailmemberJoin(sessionUuid,sellSessionKey,taobaoUserId,meberJoinCallBackUrl);
 	}
+    @RequestMapping(value = "/concern_callback", method = {RequestMethod.GET, RequestMethod.POST})
+    public Result<String> concernCallback(HttpServletResponse response, HttpServletRequest request,
+                                          String sessionUuid, String tbResult, String redirectUrl)  {
+        LOGGER.info("关注店铺回调参数 {}", JSON.toJSONString(request.getParameterMap()));
+        try {
+            if (StringUtils.isNotEmpty(tbResult) && tbResult.equals("1")){
+                UserSessionVo sessionKey = gameSessionRedisUtil.getSessionKey(sessionUuid);
+                if (sessionKey == null){
+                    return Results.failure("session 过期！");
+                }
+                String msg = "用户["+sessionKey.getUserNick()+"]关注店铺成功.";
+
+                CommonBean.logger(
+                        CommonBean.POINT_TYPE_CONCERN,
+                        sessionKey.getMachineCode(),
+                        msg,
+                        sessionKey.getActivityId()
+                );
+            }
+            response.sendRedirect(URLDecoder.decode(redirectUrl, java.nio.charset.StandardCharsets.UTF_8.toString()));
+        } catch (IOException e) {
+            LOGGER.error("关注店铺回调异常 {}, {}",e.getMessage(), e);
+        }
+        return Results.success();
+    }
 
 }

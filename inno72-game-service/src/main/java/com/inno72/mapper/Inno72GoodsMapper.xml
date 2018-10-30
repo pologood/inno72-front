@@ -110,4 +110,36 @@
 	WHERE
 	    id=#{goodsId}
   </select>
+    <resultMap id="selectByOrderIdMap" type="com.inno72.model.Inno72Goods">
+        <!--
+          WARNING - @mbg.generated
+        -->
+        <id column="id" jdbcType="VARCHAR" property="id" />
+        <result column="name" jdbcType="VARCHAR" property="name" />
+        <result column="code" jdbcType="VARCHAR" property="code" />
+        <result column="price" jdbcType="DECIMAL" property="price" />
+        <result column="seller_id" jdbcType="VARCHAR" property="sellerId" />
+        <result column="shop_id" jdbcType="VARCHAR" property="shopId"/>
+        <result column="img" jdbcType="VARCHAR" property="img" />
+        <result column="banner" jdbcType="VARCHAR" property="banner" />
+        <result column="is_delete" jdbcType="INTEGER" property="isDelete" />
+        <result column="remark" jdbcType="VARCHAR" property="remark" />
+        <result column="create_id" jdbcType="VARCHAR" property="createId" />
+        <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
+        <result column="update_id" jdbcType="VARCHAR" property="updateId" />
+        <result column="update_time" jdbcType="TIMESTAMP" property="updateTime" />
+        <result column="spec_remark" jdbcType="VARCHAR" property="specRemark" />
+        <result column="merchant_code" jdbcType="VARCHAR" property="merchantCode" />
+    </resultMap>
+    <select id="selectByOrderId" resultMap="selectByOrderIdMap" parameterType="string">
+  	SELECT
+	g.*,m.merchant_code
+    FROM
+        inno72_goods g
+    LEFT JOIN inno72_order_goods og
+    on og.goods_id = g.id
+    left join inno72_merchant m
+    on g.seller_id = m.id
+    where og.order_id=#{inno72OrderId}
+  </select>
 </mapper>

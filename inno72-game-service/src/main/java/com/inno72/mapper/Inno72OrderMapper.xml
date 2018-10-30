@@ -61,5 +61,14 @@
             and DATE_FORMAT(order_time, '%Y-%m-%d') = CURDATE()
         </if>
     </select>
-    
+
+
+    <select id="findSuccessOrderByMerchantId" resultType="com.inno72.vo.OrderOrderGoodsVo" parameterType="string">
+         select orderGoods.goods_id as goodsId,orderGoods.order_id as orderId,o.user_id as userId,machine.machine_code machineCode,o.ref_order_id as taobaoOrderNum, orderGoods.goods_code as taobaoGoodsId from inno72_order_goods orderGoods
+                 join inno72_order o on orderGoods.order_id = o.id
+                 join inno72_goods g on orderGoods.goods_id = g.id
+                 left join inno72_machine machine on o.machine_id = machine.id
+                where  o.merchant_id=#{merchantId} and o.goods_status=1 and o.goods_type = 1 and g.seller_id=#{merchantId}
+    </select>
+
 </mapper>

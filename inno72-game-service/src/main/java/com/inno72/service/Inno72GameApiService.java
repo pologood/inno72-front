@@ -6,6 +6,7 @@ import com.inno72.common.Result;
 import com.inno72.vo.Inno72SamplingGoods;
 import com.inno72.vo.MachineApiVo;
 import com.inno72.vo.StandardPrepareLoginReqVo;
+import com.taobao.api.ApiException;
 import com.inno72.vo.UserSessionVo;
 
 public interface Inno72GameApiService {
@@ -39,4 +40,14 @@ public interface Inno72GameApiService {
 	Result<String> concern(String sessionUuid);
 
 	Result<Object> lottery(UserSessionVo vo, String ua, String umid, String prizeId);
+
+	/**
+	 * 入会
+	 * @param sessionUuid
+	 * @param sellSessionKey
+	 * @param taobaoUserId
+	 * @param meberJoinCallBackUrl
+	 * @return
+	 */
+    Result<Object> newRetailmemberJoin(String sessionUuid, String sellSessionKey, String taobaoUserId, String meberJoinCallBackUrl);
 }

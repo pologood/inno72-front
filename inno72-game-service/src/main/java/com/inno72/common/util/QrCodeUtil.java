@@ -1,30 +1,21 @@
 package com.inno72.common.util;
 
-import java.awt.Color;
-import java.awt.Graphics2D;
-import java.awt.image.BufferedImage;
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.util.Hashtable;
-
-import javax.imageio.ImageIO;
-
-import com.google.zxing.BarcodeFormat;
-import com.google.zxing.BinaryBitmap;
-import com.google.zxing.EncodeHintType;
-import com.google.zxing.LuminanceSource;
-import com.google.zxing.ReaderException;
-import com.google.zxing.Result;
-import com.google.zxing.WriterException;
+import com.google.zxing.*;
 import com.google.zxing.client.j2se.BufferedImageLuminanceSource;
 import com.google.zxing.common.BitMatrix;
 import com.google.zxing.common.HybridBinarizer;
 import com.google.zxing.qrcode.QRCodeReader;
 import com.google.zxing.qrcode.QRCodeWriter;
 import com.google.zxing.qrcode.decoder.ErrorCorrectionLevel;
+
+import javax.imageio.ImageIO;
+import java.awt.*;
+import java.awt.image.BufferedImage;
+import java.io.*;
+import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.util.Hashtable;
 
 /**
  * 二维码生成和读的工具类
@@ -86,6 +77,26 @@ public class QrCodeUtil {
 		}
 		return result.getText();
 	}
+
+	/**
+	 * 读二维码并输出携带的信息
+	 */
+	public static String readQrCode(String  url) throws IOException {
+		try(InputStream is = parseUrl(url)){
+			String result = readQrCode(is);
+			return result;
+		}
+	}
+
+	public static InputStream parseUrl(String path) throws IOException {
+		URL url = new URL(path);
+		HttpURLConnection conn = (HttpURLConnection) url.openConnection();//利用HttpURLConnection对象,我们可以从网络中获取网页数据.
+		conn.setDoInput(true);
+		conn.connect();
+		InputStream is = conn.getInputStream();	//得到网络返回的输入流
+		return is;
+	}
+
 
 	/**
 	 * 生成讲课二维码

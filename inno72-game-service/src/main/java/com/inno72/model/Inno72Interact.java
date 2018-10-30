@@ -95,6 +95,13 @@ public class Inno72Interact implements Serializable {
      */
     @Column(name = "update_time")
     private Date updateTime;
+    public static final Integer PAIYANG_TYPE_COMMON = 0;
+    public static final Integer PAIYANG_TYPE_NEWRETAIL = 1;
+    /**
+     * 0普通派样1新零售派样
+     */
+    @Column(name = "paiyang_type")
+    private Integer paiyangType;
 
     /**
      * @return id
@@ -364,5 +371,13 @@ public class Inno72Interact implements Serializable {
 
     public void setPlanCode(String planCode) {
         this.planCode = planCode;
+    }
+
+    public Integer getPaiyangType() {
+        return paiyangType;
+    }
+
+    public void setPaiyangType(Integer paiyangType) {
+        this.paiyangType = paiyangType;
     }
 }

@@ -3,6 +3,7 @@ package com.inno72.service.impl;
 import java.io.File;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -27,6 +28,7 @@ import org.springframework.transaction.annotation.Transactional;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.google.gson.Gson;
+import com.inno72.common.*;
 import com.inno72.common.CommonBean;
 import com.inno72.common.Inno72GameServiceProperties;
 import com.inno72.common.RedisConstants;
@@ -35,6 +37,8 @@ import com.inno72.common.Results;
 import com.inno72.common.StandardLoginTypeEnum;
 import com.inno72.common.json.JsonUtil;
 import com.inno72.common.shiro.filter.JWTUtil;
+import com.inno72.common.util.*;
+import com.inno72.common.util.DateUtil;
 import com.inno72.common.util.AesUtils;
 import com.inno72.common.util.DateUtil;
 import com.inno72.common.util.FastJsonUtils;
@@ -44,6 +48,8 @@ import com.inno72.common.util.QrCodeUtil;
 import com.inno72.common.util.UuidUtil;
 import com.inno72.common.utils.StringUtil;
 import com.inno72.machine.vo.SupplyRequestVo;
+import com.inno72.mapper.*;
+import com.inno72.model.*;
 import com.inno72.mapper.Inno72ActivityMapper;
 import com.inno72.mapper.Inno72ActivityPlanGameResultMapper;
 import com.inno72.mapper.Inno72ActivityPlanMapper;
@@ -88,7 +94,16 @@ import com.inno72.model.MachineDropGoodsBean;
 import com.inno72.oss.OSSUtil;
 import com.inno72.plugin.http.HttpClient;
 import com.inno72.redis.IRedisUtil;
+import com.inno72.service.*;
+import com.inno72.service.Inno72GameApiService;
+import com.inno72.service.Inno72GameService;
+import com.inno72.service.Inno72InteractGoodsService;
+import com.inno72.service.Inno72InteractMachineGoodsService;
+import com.inno72.service.Inno72InteractMachineTimeService;
+import com.inno72.service.Inno72TopService;
 import com.inno72.util.AlarmUtil;
+import com.inno72.vo.*;
+import com.taobao.api.ApiException;
 import com.inno72.vo.AlarmMessageBean;
 import com.inno72.vo.GoodsVo;
 import com.inno72.vo.Inno72MachineVo;
@@ -98,6 +113,19 @@ import com.inno72.vo.StandardPrepareLoginReqVo;
 import com.inno72.vo.UserSessionVo;
 
 import net.coobird.thumbnailator.Thumbnails;
+import org.apache.commons.lang.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
+
+import javax.annotation.Resource;
+import java.io.File;
+import java.math.BigDecimal;
+import java.time.LocalDateTime;
+import java.util.*;
 
 @Service
 public class Inno72GameApiServiceImpl implements Inno72GameApiService {
@@ -162,6 +190,12 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 	@Resource
 	private Inno72InteractMachineGoodsService inno72InteractMachineGoodsService;
 
+    @Resource
+    private Inno72MachineDeviceService inno72MachineDeviceService;
+
+    @Resource
+    private Inno72NewretailService inno72NewretailService;
+
 	@Resource
 	private Inno72MachineService inno72MachineService;
 
@@ -179,8 +213,10 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 	private static final String QRSTATUS_INVALID = "-1"; // 二维码失效
 	private static final String QRSTATUS_EXIST_USER = "-2"; // 存在用户登录
 
-	private static final Integer PRODUCT_NO_EXIST = -1; // 商品不存在
-
+	public static final Integer PRODUCT_NO_EXIST = -1; // 商品不存在
+	private static final Integer SAMPLING_TYPE = 1; // 类型（派样）
+	@Value("${sell_session_key}")
+	private String sellSessionKey;
 	/**
 	 *
 	 * @param vo
@@ -425,6 +461,8 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 		String payQrcodeImage = "";
 		int orderCode = 1;
 
+		// 判断是否有商品
+
 //		boolean hasGoods = checkHasGoods(planGameResults, userSessionVo.getMachineId());
 //		if (!hasGoods) {
 //			return Results.failure("货道可用商品数量为0！");
@@ -532,6 +570,10 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 			return Results.failure("无商品类型");
 		}
 
+		if (resultGoodsId.isEmpty()) {
+			orderCode = PRODUCT_NO_EXIST;
+		}
+
 		Map<String, Object> result = new HashMap<>();
 		if(resultGoodsId!=null&&resultGoodsId.size()>0){
 			this.setChannelInfo(userSessionVo, result, resultGoodsId);
@@ -547,6 +589,8 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 		LOGGER.info("standardOrder is {}", JsonUtil.toJson(result));
 		return Results.success(result);
 	}
+
+
 
 	/**
 	 * 查找派样优惠卷有没有配置
@@ -1216,6 +1260,28 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 		}
 
 		Inno72Goods inno72Goods = inno72GoodsMapper.selectByChannelId(inno72SupplyChannel.getId());
+
+
+		//调用淘宝数据回流接口回流数据
+		try {
+			//查找goodsId信息
+			Inno72Goods goods = inno72GoodsMapper.selectByOrderId(userSessionVo.getInno72OrderId());
+			Inno72Order order = inno72OrderMapper.selectByPrimaryKey(userSessionVo.getInno72OrderId());
+			String userNick = inno72GameUserChannelMapper.selectUserNickByGameUserId(order.getUserId());
+			if(!StringUtils.isEmpty(userNick)){
+				String orderTime = DateUtil.format(order.getOrderTime(),DateUtil.getDatePattern());
+				Inno72MachineDevice deviceCode = inno72MachineDeviceService.findByMachineCodeAndSellerId(machineCode,goods.getMerchantCode());
+				Inno72Merchant merchant = inno72MerchantMapper.selectByPrimaryKey(goods.getSellerId());
+				LOGGER.info("调用淘宝数据回流sessionKey={},orderId={},deviceCode={},goodsId={},orderTime={}",sellSessionKey,orderId,deviceCode.getDeviceCode(),goods.getCode(),orderTime);
+				inno72NewretailService.deviceVendorFeedback(sellSessionKey,orderId,deviceCode.getDeviceCode(),goods.getCode(),orderTime,userNick,merchant.getMerchantName(),merchant.getMerchantCode());
+			}else{
+				LOGGER.error("userNick is null 不回流数据 orderId = {}",order.getId());
+			}
+		} catch (Exception e) {
+			LOGGER.error("淘宝回流失败",e);
+		}
+
+
 		/* 埋点 */
 		CommonBean.logger(
 				CommonBean.POINT_TYPE_FINISH,
@@ -1316,10 +1382,13 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 		if (StandardPrepareLoginReqVo.OperTypeEnum.CREATE_QRCODE.getKey() == operType) {
 			// 生成二维码流程
 			returnUrl = this.createQrCode(inno72Machine, machineCode);
+		}
+		// 开始会话流程
+		try {
 			this.startSession(inno72Machine, ext, sessionUuid);
-		} else if (StandardPrepareLoginReqVo.OperTypeEnum.START_SESSION.getKey() == operType) {
-			// 开始会话流程
-			this.startSession(inno72Machine, ext, sessionUuid);
+		}catch(Exception e){
+			LOGGER.error("prepareLoginQrCode",e);
+			return Results.failure("系统异常");
 		}
 		Map<String, Object> map = new HashMap<String, Object>();
 		map.put("qrCodeUrl", returnUrl);
@@ -1333,7 +1402,7 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 	 * @param ext
 	 * @param sessionUuid
 	 */
-	private void startSession(Inno72Machine inno72Machine, String ext, String sessionUuid) {
+	private void startSession(Inno72Machine inno72Machine, String ext, String sessionUuid){
 		UserSessionVo userSessionVo = new UserSessionVo();
 		userSessionVo.setMachineCode(inno72Machine.getMachineCode());
 		userSessionVo.setMachineId(inno72Machine.getId());
@@ -1352,10 +1421,31 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
         // 解析 ext
 		this.analysisExt(userSessionVo, ext);
 
+        //设置新零售入会url
+//		if(userSessionVo.findPaiyangFlag()&&userSessionVo.getInno72MachineVo().getPaiyangType()==Inno72Interact.PAIYANG_TYPE_NEWRETAIL){
+//			initNewRetailMemberUrl(userSessionVo);
+//		}
+
 		gameSessionRedisUtil.setSession(sessionUuid, JsonUtil.toJson(userSessionVo));
 
 		// 设置15秒内二维码不能被扫
 		gameSessionRedisUtil.setSessionEx(sessionUuid + "qrCode", sessionUuid, 15);
+	}
+
+	/**
+	 * 设置新零售入会url
+	 * @param userSessionVo
+	 */
+	private void initNewRetailMemberUrl(UserSessionVo userSessionVo,String callbackUrl) throws ApiException {
+		String goodsId = userSessionVo.getGoodsId();
+		//查找新零售sessionKey
+		Inno72Merchant inno72Merchant = inno72MerchantMapper.findMerchantByByGoodsId(goodsId);
+		//查找deviceCode
+		Inno72MachineDevice device = inno72MachineDeviceService.findByMachineCodeAndSellerId(userSessionVo.getMachineCode(),inno72Merchant.getMerchantCode());
+		//调用淘宝获取入会二维码url
+		String url = inno72NewretailService.getStoreMemberurl(inno72Merchant.getSellerSessionKey(),device.getDeviceCode(),callbackUrl);
+		userSessionVo.setNewRetailMemberUrl(url);
+
 	}
 
 	/**
@@ -1425,6 +1515,7 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 	 * @param ext
 	 */
 	private void analysisExt(UserSessionVo userSessionVo, String ext) {
+		LOGGER.info("analysisExt is {}", ext);
 		// 如果是派样商品的话，goodsCode 先保存到缓存里
 		if (StringUtil.isNotEmpty(ext)) {
 			String isVip = FastJsonUtils.getString(ext, "isVip");
@@ -1887,7 +1978,7 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 				userChannel == null ? null : userChannel.getUserNick(), inno72ActivityPlan.getActivityId(),
 				inno72Activity.getName(), inno72ActivityPlan.getId(), inno72Game.getId(), inno72Game.getName(),
 				inno72Machine.getLocaleId(), inno72Locale == null ? "" : inno72Locale.getMall(), null, "", null, null,
-				userId);
+				userId, "", "");
 		LOGGER.info("插入用户游戏记录 ===> {}", JSON.toJSONString(life));
 		inno72GameUserLifeMapper.insert(life);
 		return life;
@@ -2336,6 +2427,41 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 			return Results.failure("关注失败!");
 		}
 
+	}
+
+	@Override
+	public Result<Object> newRetailmemberJoin(String sessionUuid, String sellSessionKey, String taobaoUserId, String meberJoinCallBackUrl){
+		//查看是否入会
+		try {
+			Boolean vipflag = inno72NewretailService.getMemberIdentity(sellSessionKey,taobaoUserId);
+			if(vipflag){
+				//如果是会员
+				return Results.success(1);
+			}else{
+				//如果不是会员获取入会的二维码url
+				UserSessionVo userSessionVo = gameSessionRedisUtil.getSessionKey(sessionUuid);
+				String goodsId = userSessionVo.getGoodsId();
+				Inno72Merchant m = inno72MerchantMapper.findMerchantByByGoodsId(goodsId);
+				//查询deviceCode
+				Inno72MachineDevice device = inno72MachineDeviceService.findByMachineCodeAndSellerId(userSessionVo.getMachineCode(),m.getMerchantCode());
+				String url = inno72NewretailService.getStoreMemberurl(sellSessionKey,device.getDeviceCode(),meberJoinCallBackUrl);
+				try {
+                    String joinUrl = QrCodeUtil.readQrCode(url);
+                    return Results.success(joinUrl);
+                }catch (Exception e){
+				    LOGGER.error("解析入会二维码错误url = {}",url);
+				    LOGGER.error("解析入会二维码错误",e);
+				    return Results.failure("解析入会二维码错误");
+                }
+//				userSessionVo.setNewRetailMemberUrl(url);
+//				userSessionVo.setDisplayNewRetailMemberUrlFlag(UserSessionVo.DISPLAYNEWRETAILMEMBERURLFLAG_YES);
+//				gameSessionRedisUtil.setSession(sessionUuid, JSON.toJSONString(userSessionVo));
+			}
+		} catch (ApiException e) {
+			e.printStackTrace();
+			LOGGER.error("newRetailmemberJoin",e);
+			return Results.failure("调用淘宝失败");
+		}
 	}
 
 }

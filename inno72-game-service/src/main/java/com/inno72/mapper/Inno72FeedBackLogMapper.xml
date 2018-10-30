@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.inno72.mapper.Inno72FeedBackLogMapper">
+  <resultMap id="BaseResultMap" type="com.inno72.model.Inno72FeedBackLog">
+    <!--
+      WARNING - @mbg.generated
+    -->
+    <id column="id" jdbcType="VARCHAR" property="id" />
+    <result column="merchant_name" jdbcType="VARCHAR" property="merchantName" />
+    <result column="merchant_code" jdbcType="VARCHAR" property="merchantCode" />
+    <result column="goods_id" jdbcType="VARCHAR" property="goodsId" />
+    <result column="order_id" jdbcType="VARCHAR" property="orderId" />
+    <result column="response_body" jdbcType="LONGVARCHAR" property="responseBody" />
+    <result column="order_time" jdbcType="TIMESTAMP" property="orderTime" javaType="java.time.LocalDateTime"
+            typeHandler="org.apache.ibatis.type.LocalDateTimeTypeHandler"/>
+  </resultMap>
+</mapper>
