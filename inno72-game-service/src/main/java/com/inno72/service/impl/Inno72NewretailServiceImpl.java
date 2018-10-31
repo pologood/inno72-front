@@ -60,6 +60,11 @@ public class Inno72NewretailServiceImpl implements Inno72NewretailService {
     @Autowired
     MsgUtil msgUtil;
 
+    @Value("${dingding_newretail_code}")
+    private String dingdingNewretailCode;
+    @Value("${dingding_newretail_groupid}")
+    private String groupid;
+
 
     @Autowired
     private TaobaoClient client;
@@ -278,9 +283,9 @@ public class Inno72NewretailServiceImpl implements Inno72NewretailService {
     public void saveMachine(List<DeviceVo> list) throws Exception {
         LOGGER.info("saveMachine param = {}",JsonUtil.toJson(list));
         if(list!= null && list.size()>0){
-            String bizid = StringUtil.getUUID();
-            Date date = new Date();
             Set<String> cacheSet = new HashSet<String>();
+            boolean errorFlag = false;
+            String msg = null;
             for(DeviceVo deviceVo:list){
                 checkDeviceParamVo(deviceVo);
 
@@ -304,8 +309,8 @@ public class Inno72NewretailServiceImpl implements Inno72NewretailService {
                                 storeId = findStores(sellSessionKey, deviceVo.getStoreName());
                             }catch (Exception e){
                                 LOGGER.error(e.getMessage());
-                                //新增失败日志
-                                saveMachineDeviceErrorlog(deviceVo.getMachineCode(),merchant.getMerchantCode(),e.getMessage(),date,bizid);
+                                errorFlag = true;
+                                msg = e.getMessage();
                             }
                             if(storeId!=null){
                                 //根据storeId查找deviceCode;
@@ -316,8 +321,8 @@ public class Inno72NewretailServiceImpl implements Inno72NewretailService {
                                         deviceCode = saveDevice(sellSessionKey, deviceVo.getStoreName(), storeId, "ANDROID", deviceVo.getStoreName() + "-" + System.currentTimeMillis());
                                     }catch (Exception e){
                                         LOGGER.error(e.getMessage());
-                                        //新增失败日志
-                                        saveMachineDeviceErrorlog(deviceVo.getMachineCode(),merchant.getMerchantCode(),e.getMessage(),date,bizid);
+                                        errorFlag = true;
+                                        msg = e.getMessage();
                                     }
                                 }
                                 if(!StringUtils.isEmpty(deviceCode)) {
@@ -338,17 +343,13 @@ public class Inno72NewretailServiceImpl implements Inno72NewretailService {
                     LOGGER.info("goods is null 优惠卷不调用 goodsId={}",deviceVo.getGoodsId());
                 }
             }
+            if(errorFlag){
+                //发送丁丁消息
+                Map<String, String> map = new HashMap<String, String>();
+                map.put("detail", msg);
+                msgUtil.sendDDTextByGroup(dingdingNewretailCode,map,groupid,"gameService");
+            }
         }
-    }
-    @Transactional(propagation=Propagation.REQUIRES_NEW)
-    public void saveMachineDeviceErrorlog(String machineCode, String merchantCode, String message,Date now,String bizid) {
-        Inno72MachineDeviceErrorlog log = new Inno72MachineDeviceErrorlog();
-        log.setMachineCode(machineCode);
-        log.setSellerId(merchantCode);
-        log.setMsg(message);
-        log.setCreateTime(now);
-        log.setBizid(bizid);
-        inno72MachineDeviceErrorlogMapper.insert(log);
     }
 
     @Transactional(propagation=Propagation.REQUIRES_NEW)
