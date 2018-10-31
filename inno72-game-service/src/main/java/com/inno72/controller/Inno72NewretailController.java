@@ -10,6 +10,7 @@ import com.inno72.mapper.*;
 import com.inno72.model.Inno72AdminArea;
 import com.inno72.model.Inno72Locale;
 import com.inno72.model.Inno72Machine;
+import com.inno72.model.Inno72MachineDeviceErrorlog;
 import com.inno72.service.Inno72NewretailService;
 import com.inno72.vo.DeviceVo;
 import com.inno72.vo.MachineSellerVo;
@@ -74,6 +75,9 @@ public class Inno72NewretailController {
 
     @Resource
     private Inno72ActivityMapper inno72ActivityMapper;
+
+    @Resource
+    private Inno72MachineDeviceErrorlogMapper inno72MachineDeviceErrorlogMapper;
 
 	@Value("${sell_session_key}")
 	private String sellSessionKey;
@@ -174,6 +178,14 @@ public class Inno72NewretailController {
             LOGGER.error("deviceVendorFeedback",e);
             return Results.failure("系统异常");
         }
+    }
+
+    @RequestMapping(value = "/errorlog")
+    public Result<Object> exportShop(String bizid) throws Exception {
+        Inno72MachineDeviceErrorlog log = new Inno72MachineDeviceErrorlog();
+        log.setBizid(bizid);
+        List<Inno72MachineDeviceErrorlog> list = inno72MachineDeviceErrorlogMapper.select(log);
+        return Results.success(list);
     }
 
 	@RequestMapping(value = "/exportShop")

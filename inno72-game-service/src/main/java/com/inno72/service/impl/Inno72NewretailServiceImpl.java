@@ -3,13 +3,14 @@ package com.inno72.service.impl;
 import com.inno72.common.Inno72BizException;
 import com.inno72.common.json.JsonUtil;
 import com.inno72.common.util.FastJsonUtils;
+import com.inno72.common.utils.StringUtil;
+import com.inno72.core.dto.MsgDTO;
 import com.inno72.mapper.Inno72FeedBackLogMapper;
 import com.inno72.mapper.Inno72GoodsMapper;
+import com.inno72.mapper.Inno72MachineDeviceErrorlogMapper;
 import com.inno72.mapper.Inno72MerchantMapper;
-import com.inno72.model.Inno72FeedBackLog;
-import com.inno72.model.Inno72Goods;
-import com.inno72.model.Inno72MachineDevice;
-import com.inno72.model.Inno72Merchant;
+import com.inno72.model.*;
+import com.inno72.msg.MsgUtil;
 import com.inno72.service.Inno72MachineDeviceService;
 import com.inno72.service.Inno72NewretailService;
 import com.inno72.vo.DeviceVo;
@@ -22,14 +23,15 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 import java.time.LocalDateTime;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 
 @Service
 @Transactional
@@ -51,6 +53,13 @@ public class Inno72NewretailServiceImpl implements Inno72NewretailService {
 
     @Autowired
     Inno72FeedBackLogMapper inno72FeedBackLogMapper;
+
+    @Autowired
+    Inno72MachineDeviceErrorlogMapper inno72MachineDeviceErrorlogMapper;
+
+    @Autowired
+    MsgUtil msgUtil;
+
 
     @Autowired
     private TaobaoClient client;
@@ -264,52 +273,86 @@ public class Inno72NewretailServiceImpl implements Inno72NewretailService {
         inno72FeedBackLogMapper.insert(log);
         return rsp.getBody();
     }
-
+    @Async
     @Override
     public void saveMachine(List<DeviceVo> list) throws Exception {
         LOGGER.info("saveMachine param = {}",JsonUtil.toJson(list));
-        return;
-//        if(list!= null && list.size()>0){
-//            for(DeviceVo deviceVo:list){
-//                checkDeviceParamVo(deviceVo);
-//
-//                //获取sessionKey
-//                Inno72Goods goods = inno72GoodsMapper.selectByPrimaryKey(deviceVo.getGoodsId());
-//                if(goods!=null){
-//                    String sellerId = goods.getSellerId();
-//                    Inno72Merchant merchant = inno72MerchantMapper.selectByPrimaryKey(goods.getSellerId());
-////                String sessionKey = merchant.getSellerSessionKey();
-////                LOGGER.debug("saveMachine.SellerId = {},saveMachine.sessionKey = {}",goods.getSellerId(),sessionKey);
-//
-//                    //检查数据库是否添加过
-//                    Inno72MachineDevice inno72MachineDevice = inno72MachineDeviceService.findByMachineCodeAndSellerId(deviceVo.getMachineCode(),sellerId);
-//                    if(StringUtils.isEmpty(deviceVo.getDeviceName())){
-//                        deviceVo.setStoreName(merchant.getMerchantCode()+"-"+deviceVo.getMachineCode());
-//                    }
-//                    //没有添加过
-//                    if(inno72MachineDevice == null){
-//                        //根据机器code查询storeId
-//                        Long storeId = findStores(sellSessionKey,deviceVo.getStoreName());
-//                        //根据storeId查找deviceCode;
-//                        String deviceCode = findDeviceByStoreId(sellSessionKey,storeId);
-//                        if(StringUtils.isEmpty(deviceCode)){
-//                            //调用淘宝接口
-//                            deviceCode = saveDevice(sellSessionKey,deviceVo.getStoreName(),storeId,"ANDROID",deviceVo.getStoreName()+"-"+System.currentTimeMillis());
-//                        }
-//                        //保存结果信息
-//                        inno72MachineDevice = new Inno72MachineDevice();
-//                        inno72MachineDevice.setCreateTime(new Date());
-//                        inno72MachineDevice.setDeviceCode(deviceCode);
-//                        inno72MachineDevice.setMachineCode(deviceVo.getMachineCode());
-//                        inno72MachineDevice.setStoreId(storeId);
-//                        inno72MachineDevice.setSellerId(merchant.getMerchantCode());
-//                        inno72MachineDeviceService.save(inno72MachineDevice);
-//                    }
-//                }else{
-//                    LOGGER.info("goods is null 优惠卷不调用 goodsId={}",deviceVo.getGoodsId());
-//                }
-//            }
-//        }
+        if(list!= null && list.size()>0){
+            String bizid = StringUtil.getUUID();
+            Date date = new Date();
+            Set<String> cacheSet = new HashSet<String>();
+            for(DeviceVo deviceVo:list){
+                checkDeviceParamVo(deviceVo);
+
+                //获取sessionKey
+                Inno72Goods goods = inno72GoodsMapper.selectByPrimaryKey(deviceVo.getGoodsId());
+                if(goods!=null){
+                    String sellerId = goods.getSellerId();
+                    Inno72Merchant merchant = inno72MerchantMapper.selectByPrimaryKey(goods.getSellerId());
+                    String storeName = merchant.getMerchantCode()+"-"+deviceVo.getMachineCode();
+                    if(!cacheSet.contains(storeName)){
+                        //检查数据库是否添加过
+                        Inno72MachineDevice inno72MachineDevice = inno72MachineDeviceService.findByMachineCodeAndSellerId(deviceVo.getMachineCode(),sellerId);
+                        if(StringUtils.isEmpty(deviceVo.getDeviceName())){
+                            deviceVo.setStoreName(storeName);
+                        }
+                        //没有添加过
+                        if(inno72MachineDevice == null){
+                            //根据机器code查询storeId
+                            Long storeId = null;
+                            try {
+                                storeId = findStores(sellSessionKey, deviceVo.getStoreName());
+                            }catch (Exception e){
+                                LOGGER.error(e.getMessage());
+                                //新增失败日志
+                                saveMachineDeviceErrorlog(deviceVo.getMachineCode(),merchant.getMerchantCode(),e.getMessage(),date);
+                            }
+                            if(storeId!=null){
+                                //根据storeId查找deviceCode;
+                                String deviceCode = findDeviceByStoreId(sellSessionKey,storeId);
+                                if(StringUtils.isEmpty(deviceCode)){
+                                    //调用淘宝接口
+                                    try {
+                                        deviceCode = saveDevice(sellSessionKey, deviceVo.getStoreName(), storeId, "ANDROID", deviceVo.getStoreName() + "-" + System.currentTimeMillis());
+                                    }catch (Exception e){
+                                        LOGGER.error(e.getMessage());
+                                        //新增失败日志
+                                        saveMachineDeviceErrorlog(deviceVo.getMachineCode(),merchant.getMerchantCode(),e.getMessage(),date);
+                                    }
+                                }
+                                if(!StringUtils.isEmpty(deviceCode)) {
+                                    //保存结果信息
+                                    inno72MachineDevice = new Inno72MachineDevice();
+                                    inno72MachineDevice.setCreateTime(new Date());
+                                    inno72MachineDevice.setDeviceCode(deviceCode);
+                                    inno72MachineDevice.setMachineCode(deviceVo.getMachineCode());
+                                    inno72MachineDevice.setStoreId(storeId);
+                                    inno72MachineDevice.setSellerId(merchant.getMerchantCode());
+                                    saveMachineDevice(inno72MachineDevice);
+                                }
+                            }
+                        }
+                        cacheSet.add(storeName);
+                    }
+                }else{
+                    LOGGER.info("goods is null 优惠卷不调用 goodsId={}",deviceVo.getGoodsId());
+                }
+            }
+        }
+    }
+    @Transactional(propagation=Propagation.REQUIRES_NEW)
+    public void saveMachineDeviceErrorlog(String machineCode, String merchantCode, String message,Date now) {
+        Inno72MachineDeviceErrorlog log = new Inno72MachineDeviceErrorlog();
+        log.setMachineCode(machineCode);
+        log.setSellerId(merchantCode);
+        log.setMsg(message);
+        log.setCreateTime(now);
+        inno72MachineDeviceErrorlogMapper.insert(log);
+    }
+
+    @Transactional(propagation=Propagation.REQUIRES_NEW)
+    public void saveMachineDevice(Inno72MachineDevice inno72MachineDevice) {
+        inno72MachineDeviceService.save(inno72MachineDevice);
     }
 
     private void checkDeviceParamVo(DeviceVo vo) {

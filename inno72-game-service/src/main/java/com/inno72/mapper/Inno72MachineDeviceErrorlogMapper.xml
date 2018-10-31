@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.inno72.mapper.Inno72MachineDeviceErrorlogMapper">
+  <resultMap id="BaseResultMap" type="com.inno72.model.Inno72MachineDeviceErrorlog">
+    <!--
+      WARNING - @mbg.generated
+    -->
+    <id column="id" jdbcType="VARCHAR" property="id" />
+    <result column="machine_code" jdbcType="VARCHAR" property="machineCode" />
+    <result column="seller_id" jdbcType="VARCHAR" property="sellerId" />
+    <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
+    <result column="msg" jdbcType="LONGVARCHAR" property="msg" />
+    <result column="bizid" jdbcType="LONGVARCHAR" property="bizid" />
+  </resultMap>
+</mapper>
