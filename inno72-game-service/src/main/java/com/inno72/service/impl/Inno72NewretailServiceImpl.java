@@ -305,7 +305,7 @@ public class Inno72NewretailServiceImpl implements Inno72NewretailService {
                             }catch (Exception e){
                                 LOGGER.error(e.getMessage());
                                 //新增失败日志
-                                saveMachineDeviceErrorlog(deviceVo.getMachineCode(),merchant.getMerchantCode(),e.getMessage(),date);
+                                saveMachineDeviceErrorlog(deviceVo.getMachineCode(),merchant.getMerchantCode(),e.getMessage(),date,bizid);
                             }
                             if(storeId!=null){
                                 //根据storeId查找deviceCode;
@@ -317,7 +317,7 @@ public class Inno72NewretailServiceImpl implements Inno72NewretailService {
                                     }catch (Exception e){
                                         LOGGER.error(e.getMessage());
                                         //新增失败日志
-                                        saveMachineDeviceErrorlog(deviceVo.getMachineCode(),merchant.getMerchantCode(),e.getMessage(),date);
+                                        saveMachineDeviceErrorlog(deviceVo.getMachineCode(),merchant.getMerchantCode(),e.getMessage(),date,bizid);
                                     }
                                 }
                                 if(!StringUtils.isEmpty(deviceCode)) {
@@ -341,12 +341,13 @@ public class Inno72NewretailServiceImpl implements Inno72NewretailService {
         }
     }
     @Transactional(propagation=Propagation.REQUIRES_NEW)
-    public void saveMachineDeviceErrorlog(String machineCode, String merchantCode, String message,Date now) {
+    public void saveMachineDeviceErrorlog(String machineCode, String merchantCode, String message,Date now,String bizid) {
         Inno72MachineDeviceErrorlog log = new Inno72MachineDeviceErrorlog();
         log.setMachineCode(machineCode);
         log.setSellerId(merchantCode);
         log.setMsg(message);
         log.setCreateTime(now);
+        log.setBizid(bizid);
         inno72MachineDeviceErrorlogMapper.insert(log);
     }
 
