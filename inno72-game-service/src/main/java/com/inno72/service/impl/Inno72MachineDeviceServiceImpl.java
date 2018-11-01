@@ -8,6 +8,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
+
 @Service
 @Transactional
 public class Inno72MachineDeviceServiceImpl extends AbstractService<Inno72MachineDevice> implements Inno72MachineDeviceService {
@@ -25,6 +27,8 @@ public class Inno72MachineDeviceServiceImpl extends AbstractService<Inno72Machin
         Inno72MachineDevice param = new Inno72MachineDevice();
         param.setMachineCode(machineCode);
         param.setSellerId(sellerId);
-        return mapper.selectOne(param);
+        List<Inno72MachineDevice> list =  mapper.select(param);
+        if(list == null || list.size()==0) return null;
+        return list.get(0);
     }
 }

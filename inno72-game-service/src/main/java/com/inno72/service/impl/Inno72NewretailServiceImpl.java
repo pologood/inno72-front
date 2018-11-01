@@ -65,18 +65,8 @@ public class Inno72NewretailServiceImpl implements Inno72NewretailService {
 
     @Autowired
     private TaobaoClient client;
-//    public static void main(String[] args) throws Exception {
-//        Long storeId = findStores(sessionKey,"吉羏测试");
-//        System.out.println(storeId);
-//        String deviceCode = new Inno72NewretailServiceImpl().saveDevice(sessionKey,"设备3",187209386L,"ANDROID","SAMPLE_MACHINE","device003");
-//        System.out.println(deviceCode); //049AA6585C
-//        findDeviceByStoreId(sessionKey,187209386L); //"device_code":"A6B820BF7E"
-//        Boolean flag = getMemberIdentity(sessionKey,"aaa");
-//        System.out.println(flag);
-//        getStoreMemberurl(sessionKey,"A6B820BF7E");
-//        deviceVendorFeedback(sessionKey,"001","tmall_trade","049AA6585C","VENDING_MACHINE_SHIPMENT","001","001","001",
-//                "001","2018-10-08 10:28:29","001");
-//    }
+
+
     @Override
     public Long findStores(String sessionKey, String storeName) throws Exception {
         SmartstoreStoresQueryRequest req = new SmartstoreStoresQueryRequest();
