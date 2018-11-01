@@ -3,29 +3,15 @@ package com.inno72.controller;
 import com.inno72.common.Inno72BizException;
 import com.inno72.common.Result;
 import com.inno72.common.Results;
-import com.inno72.common.json.JsonUtil;
-import com.inno72.common.util.FastJsonUtils;
 import com.inno72.common.util.excel.ExportExcel;
 import com.inno72.mapper.*;
 import com.inno72.model.Inno72AdminArea;
 import com.inno72.model.Inno72Locale;
 import com.inno72.model.Inno72Machine;
-import com.inno72.model.Inno72MachineDeviceErrorlog;
 import com.inno72.service.Inno72NewretailService;
 import com.inno72.vo.DeviceVo;
 import com.inno72.vo.MachineSellerVo;
-import com.inno72.vo.MachineVo;
-import com.inno72.vo.UserSessionVo;
-import com.taobao.api.ApiException;
-import com.taobao.api.DefaultTaobaoClient;
-import com.taobao.api.TaobaoClient;
 import com.taobao.api.internal.util.StringUtils;
-import com.taobao.api.request.SmartstoreDeviceAddRequest;
-import com.taobao.api.request.SmartstoreDeviceQueryRequest;
-import com.taobao.api.request.SmartstoreStoresQueryRequest;
-import com.taobao.api.response.SmartstoreDeviceAddResponse;
-import com.taobao.api.response.SmartstoreDeviceQueryResponse;
-import com.taobao.api.response.SmartstoreStoresQueryResponse;
 import org.apache.poi.ss.usermodel.Row;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -39,7 +25,10 @@ import org.springframework.web.bind.annotation.RestController;
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 @RestController
 @RequestMapping("/newretail")
@@ -75,9 +64,6 @@ public class Inno72NewretailController {
 
     @Resource
     private Inno72ActivityMapper inno72ActivityMapper;
-
-    @Resource
-    private Inno72MachineDeviceErrorlogMapper inno72MachineDeviceErrorlogMapper;
 
 	@Value("${sell_session_key}")
 	private String sellSessionKey;
@@ -178,14 +164,6 @@ public class Inno72NewretailController {
             LOGGER.error("deviceVendorFeedback",e);
             return Results.failure("系统异常");
         }
-    }
-
-    @RequestMapping(value = "/errorlog")
-    public Result<Object> exportShop(String bizid) throws Exception {
-        Inno72MachineDeviceErrorlog log = new Inno72MachineDeviceErrorlog();
-        log.setBizid(bizid);
-        List<Inno72MachineDeviceErrorlog> list = inno72MachineDeviceErrorlogMapper.select(log);
-        return Results.success(list);
     }
 
 	@RequestMapping(value = "/exportShop")

@@ -3,13 +3,13 @@ package com.inno72.service.impl;
 import com.inno72.common.Inno72BizException;
 import com.inno72.common.json.JsonUtil;
 import com.inno72.common.util.FastJsonUtils;
-import com.inno72.common.utils.StringUtil;
-import com.inno72.core.dto.MsgDTO;
 import com.inno72.mapper.Inno72FeedBackLogMapper;
 import com.inno72.mapper.Inno72GoodsMapper;
-import com.inno72.mapper.Inno72MachineDeviceErrorlogMapper;
 import com.inno72.mapper.Inno72MerchantMapper;
-import com.inno72.model.*;
+import com.inno72.model.Inno72FeedBackLog;
+import com.inno72.model.Inno72Goods;
+import com.inno72.model.Inno72MachineDevice;
+import com.inno72.model.Inno72Merchant;
 import com.inno72.msg.MsgUtil;
 import com.inno72.service.Inno72MachineDeviceService;
 import com.inno72.service.Inno72NewretailService;
@@ -53,9 +53,6 @@ public class Inno72NewretailServiceImpl implements Inno72NewretailService {
 
     @Autowired
     Inno72FeedBackLogMapper inno72FeedBackLogMapper;
-
-    @Autowired
-    Inno72MachineDeviceErrorlogMapper inno72MachineDeviceErrorlogMapper;
 
     @Autowired
     MsgUtil msgUtil;
