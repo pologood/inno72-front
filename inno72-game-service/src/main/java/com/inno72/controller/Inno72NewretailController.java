@@ -72,9 +72,9 @@ public class Inno72NewretailController {
      * 查找门店id
      */
     @RequestMapping(value = "/findStores")
-    public Result<Object> findStoreId(String sessionKey, String storeName) {
+    public Result<Object> findStoreId(String storeName) {
         try{
-            Long storeId = service.findStores(sessionKey,storeName);
+            Long storeId = service.findStores(sellSessionKey,storeName);
             return Results.success(storeId);
         }catch(Inno72BizException e){
             return Results.failure(e.getMessage());
