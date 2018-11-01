@@ -169,15 +169,24 @@ public class Inno72NewretailController {
 	@RequestMapping(value = "/exportShop")
 	public void exportShop(String activityId,Integer activityType, HttpServletResponse response) throws Exception {
         List<MachineSellerVo> list = null;
-		if(ACTIVITYTYPE_PAIYANG == activityType){
-			//派样
-			list = inno72InteractMachineMapper.findMachineIdAndSellerId(activityId);
-		}else{
-			//互动
-            List<String> machinelist = inno72ActivityMapper.selectMachineCodeByActivityId(activityId);
-            List<String> sellerlist = inno72ActivityMapper.selectSellerIdByActivityId(activityId);
-            list = buildMachineSellerVoList(machinelist,sellerlist);
-		}
+        if(!StringUtils.isEmpty(activityId)){
+            if(ACTIVITYTYPE_PAIYANG == activityType){
+                //派样
+                list = inno72InteractMachineMapper.findMachineIdAndSellerId(activityId.split(","));
+            }else{
+                //互动
+                String[] activityIds = activityId.split(",");
+                list = new ArrayList<MachineSellerVo>();
+                for(String id:activityIds){
+                    List<String> machinelist = inno72ActivityMapper.selectMachineCodeByActivityId(activityId);
+                    List<String> sellerlist = inno72ActivityMapper.selectSellerIdByActivityId(activityId);
+                    List<MachineSellerVo> tmplist  = buildMachineSellerVoList(machinelist,sellerlist);
+                    if(tmplist!=null&&tmplist.size()>0){
+                        list.addAll(tmplist);
+                    }
+                }
+            }
+        }
         exportShop(list,response);
 	}
 
@@ -202,9 +211,10 @@ public class Inno72NewretailController {
     }
 
     private void exportShop(List<MachineSellerVo> list, HttpServletResponse response) throws Exception {
-    	if(list!=null && list.size()>0){
+
 			List<String> headerList = buildHeaderList();
 			ExportExcel excelShop = new ExportExcel("", headerList);
+        if(list!=null && list.size()>0){
             Set<String> cacheSet = new HashSet();
     		for(MachineSellerVo machineSellerVo:list){
     		    if(!StringUtils.isEmpty(machineSellerVo.getMachineCode())&& !StringUtils.isEmpty(machineSellerVo.getSellerId())){
@@ -245,12 +255,12 @@ public class Inno72NewretailController {
                 }
 
 			}
-			try {
-				excelShop.write(response, "门店.xlsx").dispose();
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
-		}
+        }
+        try {
+            excelShop.write(response, "门店.xlsx").dispose();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
 	}
 
 	/**

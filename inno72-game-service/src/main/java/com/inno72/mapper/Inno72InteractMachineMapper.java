@@ -11,5 +11,5 @@ import java.util.List;
 public interface Inno72InteractMachineMapper extends Mapper<Inno72InteractMachine> {
     List<Inno72InteractMachine> findActiveInteractMachine(@Param("machineCode") String machineCode);
 
-    List<MachineSellerVo> findMachineIdAndSellerId(String interactId);
+    List<MachineSellerVo> findMachineIdAndSellerId(String[] interactId);
 }

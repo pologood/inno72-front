@@ -25,6 +25,9 @@
     join inno72_interact_machine_goods img on im.id=img.interact_machine_id
     left join inno72_goods g on g.id=img.goods_id
     left join inno72_merchant m on g.seller_id = m.id
-    where img.type = 0 and im.interact_id=#{interactId}
+    where img.type = 0 and im.interact_id in
+    <foreach collection="array" item="id" index="index" open="(" close=")" separator=",">
+      #{id}
+    </foreach>
   </select>
 </mapper>
