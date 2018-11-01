@@ -11,6 +11,7 @@ import com.inno72.model.Inno72Goods;
 import com.inno72.model.Inno72MachineDevice;
 import com.inno72.model.Inno72Merchant;
 import com.inno72.msg.MsgUtil;
+import com.inno72.redis.IRedisUtil;
 import com.inno72.service.Inno72MachineDeviceService;
 import com.inno72.service.Inno72NewretailService;
 import com.inno72.vo.DeviceVo;
@@ -28,6 +29,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.annotation.Resource;
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 import java.time.LocalDateTime;
@@ -65,6 +67,11 @@ public class Inno72NewretailServiceImpl implements Inno72NewretailService {
 
     @Autowired
     private TaobaoClient client;
+
+    @Resource
+    private IRedisUtil redisUtil;
+
+    private static final String SAVEMACHINE_REDIS_KEY = "SAVEMACHINE_INVOKE_TIME";
 
 
     @Override
@@ -268,8 +275,20 @@ public class Inno72NewretailServiceImpl implements Inno72NewretailService {
     @Async
     @Override
     public void saveMachine(List<DeviceVo> list) throws Exception {
+        Long startTime = System.currentTimeMillis();
         LOGGER.info("saveMachine param = {}",JsonUtil.toJson(list));
-        if(list!= null && list.size()>0){
+        boolean canRun = true;
+        if(redisUtil.exists(SAVEMACHINE_REDIS_KEY)){
+            Long runTime = Long.parseLong(redisUtil.get(SAVEMACHINE_REDIS_KEY));
+            if(startTime -runTime < 5*60*1000){
+                canRun = false;
+            }
+        }
+        if(!canRun){
+            LOGGER.info("saveMachine 距离上次调用不足五分钟");
+        }
+        if(canRun & list!= null && list.size()>0){
+            redisUtil.set(SAVEMACHINE_REDIS_KEY,startTime+"");
             Set<String> cacheSet = new HashSet<String>();
             boolean errorFlag = false;
             String msg = null;
@@ -337,6 +356,7 @@ public class Inno72NewretailServiceImpl implements Inno72NewretailService {
                 msgUtil.sendDDTextByGroup(dingdingNewretailCode,map,groupid,"gameService");
             }
         }
+        LOGGER.info("saveMachine use time  = {}s",(System.currentTimeMillis()-startTime)/1000);
     }
 
     @Transactional(propagation=Propagation.REQUIRES_NEW)
