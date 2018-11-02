@@ -1,8 +1,13 @@
 package com.inno72.vo;
 
+import java.time.format.DateTimeFormatter;
+
 import javax.validation.constraints.NotNull;
 
 import org.hibernate.validator.constraints.Length;
+
+import com.inno72.common.datetime.LocalDateTimeUtil;
+import com.inno72.common.utils.StringUtil;
 
 import lombok.Data;
 
@@ -56,6 +61,18 @@ public class Inno72MachineInformation {
 	@NotNull(message = "消息类型不能为空!")
 	@Length(max = 6, min = 6, message = "非法类型")
 	private String type;
+
+	public Inno72MachineInformation build() {
+		if (StringUtil.notEmpty(this.clientTime)){
+			try {
+				Long l = Long.parseLong(this.clientTime);
+				this.clientTime = LocalDateTimeUtil.transfer(LocalDateTimeUtil.long2LocalDateTime(l),DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss SSS"));
+			}catch (Exception e){
+				System.out.println(this.clientTime);
+			}
+		}
+		return this;
+	}
 
 	public static enum ENUM_INNO72_MACHINE_INFORMATION_TYPE{
 		LOGIN("001","登录"),
@@ -143,6 +160,8 @@ public class Inno72MachineInformation {
 	private String planId;
 	/** 奖池ID */
 	private String interactId;
+
+	private String clickType;
 
 	public Inno72MachineInformation(String type, String sessionUuid) {
 		this.sessionUuid = sessionUuid;

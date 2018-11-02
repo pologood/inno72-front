@@ -57,7 +57,7 @@ public class PointServiceImpl implements PointService {
 
 		Inno72MachineInformation info = new Inno72MachineInformation();
 		BeanUtils.copyProperties(requestMachineInfoVo, info);
-		exec.execute(new Task(info));
+		exec.execute(new Task(info.build()));
 		return Results.success();
 	}
 
@@ -121,6 +121,10 @@ public class PointServiceImpl implements PointService {
 		}else if(type.equals(Inno72MachineInformation.ENUM_INNO72_MACHINE_INFORMATION_TYPE.PAY.getType())){
 			//添加商品订单支付 结果
 			buildPayFromSession(sessionKey, info);
+		}else if(type.substring(0, 3).equals(Inno72MachineInformation.ENUM_INNO72_MACHINE_INFORMATION_TYPE.CLICK.getType())){
+			if (StringUtil.isEmpty(info.getClickType())){
+				info.setClickType("0");
+			}
 		}
 
 	}
@@ -174,7 +178,6 @@ public class PointServiceImpl implements PointService {
 			String userId = Optional.ofNullable(sessionKey.getUserId()).orElse("");
 			info.setUserId(userId);
 			info.setNickName(userNick);
-			//		String clientTime = sessionKey.getClientTime();
 			String sellerId = Optional.ofNullable(sessionKey.getSellerId()).orElse("");
 			String sellerName = Optional.ofNullable(sessionKey.getSellerName()).orElse("");
 			info.setSellerId(sellerId);
