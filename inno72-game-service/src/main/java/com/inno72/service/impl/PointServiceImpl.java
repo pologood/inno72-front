@@ -99,8 +99,6 @@ public class PointServiceImpl implements PointService {
 		String activityId = sessionKey.getActivityId();
 		String activityName = sessionKey.getInno72MachineVo().getActivityName();
 
-		String machineCode = sessionKey.getMachineCode();
-
 		String provence = sessionKey.getInno72MachineVo().getProvence();
 		String city = sessionKey.getInno72MachineVo().getCity();
 		String district = sessionKey.getInno72MachineVo().getDistrict();
@@ -117,10 +115,9 @@ public class PointServiceImpl implements PointService {
 		//		String traceId, String activityId, String activityName, String provence, String city,
 		//		String district, String point, String userId, String nickName, String sellerId,
 		//		String sellerName, String goodsId, String goodsName, String playCode
-		Inno72TaoBaoCheckDataVo inno72TaoBaoCheckDataVo = vo
+		return vo
 				.buildBaseInformation(traceId, activityId, activityName, provence, city, district, point, userId,
 						userNick, sellerId, sellerName, goodsCode, goodsName, playCode, vo);
-		return inno72TaoBaoCheckDataVo;
 
 	}
 
@@ -129,14 +126,13 @@ public class PointServiceImpl implements PointService {
 	private Semaphore semaphore = new Semaphore(20);
 
 	/**
-	 * TODO 创建session需提前至初始化查询机器信息接口
 	 * 提交处理数据线程，保存至mongodb
 	 */
 	class Task implements Runnable{
 
 		private Inno72MachineInformation info;
 
-		public Task( Inno72MachineInformation info) {
+		Task(Inno72MachineInformation info) {
 			this.info = info;
 		}
 
@@ -194,7 +190,6 @@ public class PointServiceImpl implements PointService {
 		String provence;
 		String machineCode;
 		String district;
-		String actionTime = "";
 		String playCode;
 
 		if ( sessionKey == null ){
@@ -259,44 +254,32 @@ public class PointServiceImpl implements PointService {
 		Results.success(info);
 	}
 
-	private Result<Inno72MachineInformation> buildOrderFromSession(UserSessionVo sessionKey, Inno72MachineInformation info) {
+	private void buildOrderFromSession(UserSessionVo sessionKey, Inno72MachineInformation info) {
 		String refOrderId = sessionKey.getRefOrderId();
 		String inno72OrderId = sessionKey.getInno72OrderId();
 		info.setRefOrderId(refOrderId);
 		info.setOrderId(inno72OrderId);
-		return Results.success(info);
 	}
-	private Result<Inno72MachineInformation> buildCouponFromSession(UserSessionVo sessionKey, Inno72MachineInformation info) {
+	private void buildCouponFromSession(UserSessionVo sessionKey, Inno72MachineInformation info) {
 		info.setInteractId(sessionKey.getInteractId());
 		info.setOrderId(sessionKey.getInno72CouponOrderId());
-		return Results.success(info);
 	}
 
-	private Result<Inno72MachineInformation> buildOrderStatusFromSession(UserSessionVo sessionKey, Inno72MachineInformation info) {
-		String refOrderStatus = sessionKey.getRefOrderStatus();
-		info.setRefOrderStatus(refOrderStatus);
-		return Results.success(info);
-	}
-	private Result<Inno72MachineInformation> buildShipmentFromSession(UserSessionVo sessionKey, Inno72MachineInformation info) {
+	private void buildShipmentFromSession(UserSessionVo sessionKey, Inno72MachineInformation info) {
 		String channelId = sessionKey.getChannelId();
 		info.setChannel(channelId);
 		String shipmentNum = sessionKey.getShipmentNum();
 		info.setShipmentNum(shipmentNum);
-		return Results.success(info);
 	}
-	private Result<Inno72MachineInformation> buildScanLoginFromSession(UserSessionVo sessionKey, Inno72MachineInformation info) {
+	private void buildScanLoginFromSession(UserSessionVo sessionKey, Inno72MachineInformation info) {
 		info.setScanUrl(sessionKey.getScanLoginUrl());
-		return Results.success(info);
 	}
-	private Result<Inno72MachineInformation> buildScanPayFromSession(UserSessionVo sessionKey, Inno72MachineInformation info) {
+	private void buildScanPayFromSession(UserSessionVo sessionKey, Inno72MachineInformation info) {
 		info.setScanUrl(sessionKey.getScanPayUrl());
-		return Results.success(info);
 	}
-	private Result<Inno72MachineInformation> buildPayFromSession(UserSessionVo sessionKey, Inno72MachineInformation info) {
-		info.setScanUrl(sessionKey.getScanPayUrl());
+	private void buildPayFromSession(UserSessionVo sessionKey, Inno72MachineInformation info) {
 		info.setOrderId(sessionKey.getInno72OrderId());
 		info.setRefOrderStatus(sessionKey.getRefOrderStatus());
-		return Results.success(info);
 	}
 
 }

@@ -5,7 +5,21 @@ import com.inno72.vo.Inno72MachineInformation;
 import com.inno72.vo.Inno72TaoBaoCheckDataVo;
 
 public interface PointService {
+	/**
+	 * 外部调用
+	 *
+	 * @param request requestBody
+	 * @return 结果
+	 */
 	Result<String> information(String request);
+
+	/**
+	 * 内部调用保存新埋点数据
+	 *
+	 * @param session 必传
+	 * @param enumInno72MachineInformationType 类型
+	 * @return 结果
+	 */
 	Result<String> innerPoint(String session, Inno72MachineInformation.ENUM_INNO72_MACHINE_INFORMATION_TYPE enumInno72MachineInformationType);
 
 
