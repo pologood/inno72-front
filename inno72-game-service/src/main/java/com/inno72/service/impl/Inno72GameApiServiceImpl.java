@@ -17,6 +17,7 @@ import java.util.Optional;
 import javax.annotation.Resource;
 
 import com.inno72.service.*;
+import com.inno72.vo.*;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -98,13 +99,6 @@ import com.inno72.service.Inno72InteractMachineTimeService;
 import com.inno72.service.Inno72TopService;
 import com.inno72.util.AlarmUtil;
 import com.taobao.api.ApiException;
-import com.inno72.vo.AlarmMessageBean;
-import com.inno72.vo.GoodsVo;
-import com.inno72.vo.Inno72MachineVo;
-import com.inno72.vo.Inno72SamplingGoods;
-import com.inno72.vo.MachineApiVo;
-import com.inno72.vo.StandardPrepareLoginReqVo;
-import com.inno72.vo.UserSessionVo;
 
 import net.coobird.thumbnailator.Thumbnails;
 
@@ -179,6 +173,9 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 
 	@Resource
 	private Inno72MachineService inno72MachineService;
+
+	@Resource
+	private PointService pointService;
 
 	@Value("${machinecheckappbackend.uri}")
 	private String machinecheckappbackendUri;
@@ -266,6 +263,9 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 					Inno72OrderGoods goods = inno72OrderGoodsMapper.selectByOrderIdAndGoodsType(goodsParams);
 					goods.setStatus(Inno72Order.INNO72ORDER_PAYSTATUS.SUCC.getKey());
 					inno72OrderGoodsMapper.updateByPrimaryKeySelective(goods);
+
+					pointService.innerPoint(sessionUuid, Inno72MachineInformation.ENUM_INNO72_MACHINE_INFORMATION_TYPE.PAY);
+					this.taoBaoDataSyn(sessionUuid, JSON.toJSONString(requestForm), JSON.toJSONString(respJson), Inno72TaoBaoCheckDataVo.ENUM_INNO72_TAOBAO_CHECK_DATA_VO_TYPE.ORDER);
 				}
 			}
 
@@ -288,6 +288,14 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 		}
 	}
 
+	private void taoBaoDataSyn(String sessionUuid, String reqBody, String resBody, Inno72TaoBaoCheckDataVo.ENUM_INNO72_TAOBAO_CHECK_DATA_VO_TYPE type) {
+		Inno72TaoBaoCheckDataVo inno72TaoBaoCheckDataVo = new Inno72TaoBaoCheckDataVo();
+		inno72TaoBaoCheckDataVo.setSessionUuid(sessionUuid);
+		inno72TaoBaoCheckDataVo.setReqBody(reqBody);
+		inno72TaoBaoCheckDataVo.setRspBody(resBody);
+		inno72TaoBaoCheckDataVo.setType(type.getType());
+		pointService.innerTaoBaoDataSyn(inno72TaoBaoCheckDataVo);
+	}
 
 	@Override
 	@Transactional(propagation = Propagation.REQUIRED, rollbackFor = Exception.class)
@@ -855,6 +863,8 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 				return Results.failure("聚石塔无返回数据!");
 			}
 
+			pointService.innerPoint(sessionUuid, Inno72MachineInformation.ENUM_INNO72_MACHINE_INFORMATION_TYPE.ORDER_GOODS);
+
 			LOGGER.info("调用聚石塔接口  【下单】返回 ===> {}", respJson);
 
 			String msgCode = FastJsonUtils.getString(respJson, "msg_code");
@@ -867,10 +877,11 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 				String _payQrcodeImage = FastJsonUtils.getString(respJson, "pay_qrcode_image");
 				if (StringUtil.isNotEmpty(_payQrcodeImage)) {
 					needPay = true;
-					// todo gxg point 获得二维码链接
-					payQrcodeImage = this.getPayQrUrl(_payQrcodeImage ,sessionUuid, userSessionVo);
-					userSessionVo.setScanPayUrl(payQrcodeImage);
+					payQrcodeImage = _payQrcodeImage;
+//					payQrcodeImage = this.getPayQrUrl(_payQrcodeImage ,sessionUuid, userSessionVo);
+//					userSessionVo.setScanPayUrl(payQrcodeImage);
 				}
+
 			} else {
 				return Results.failure("淘宝下单失败！");
 			}
@@ -929,7 +940,7 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 				returnUrl = inno72GameServiceProperties.get("returnUrl") + objectName;
 				LOGGER.info("支付url is {}", payUrl);
 				try {
-					result = QrCodeUtil.createQrCode(localUrl, payUrl, 400, "png");
+					result = QrCodeUtil.createQrCode(localUrl, payUrl, 800, "png");
 				} catch (Exception e) {
 					LOGGER.error(e.getMessage(), e);
 				}
@@ -1113,6 +1124,8 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 		}
 
 		LOGGER.info("调用聚石塔接口  【抽奖】返回 ===> {}", respJson);
+
+		pointService.innerPoint(sessionUuid, Inno72MachineInformation.ENUM_INNO72_MACHINE_INFORMATION_TYPE.ORDER_COUPON);
 		// TODO 奖券下单
 		String orderId = "";
 		try {
@@ -1312,6 +1325,7 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 			LOGGER.error("淘宝回流失败",e);
 		}
 
+		pointService.innerPoint(sessionUuid, Inno72MachineInformation.ENUM_INNO72_MACHINE_INFORMATION_TYPE.SHIPMENT);
 
 		/* 埋点 */
 		CommonBean.logger(

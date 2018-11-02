@@ -2,6 +2,7 @@ package com.inno72.controller;
 
 import javax.annotation.Resource;
 
+import com.inno72.vo.Inno72MachineInformation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -21,6 +22,9 @@ public class PointController {
 	@Autowired
 	private GameSessionRedisUtil gameSessionRedisUtil;
 
+	@Resource
+	private PointService pointService;
+
 	@RequestMapping(value = "/api/point", method = {RequestMethod.POST, RequestMethod.GET})
 	public Result<String> point(String sessionUuid, String type){
 
@@ -31,6 +35,7 @@ public class PointController {
 		String msg = "";
 		switch (type){
 			case CommonBean.POINT_TYPE_FANS:
+				pointService.innerPoint(sessionUuid, Inno72MachineInformation.ENUM_INNO72_MACHINE_INFORMATION_TYPE.MEMBERSHIP);
 				msg = "用户["+sessionKey.getUserNick()+"]入会成功.";
 				break;
 			case CommonBean.POINT_TYPE_CONCERN:
@@ -49,9 +54,6 @@ public class PointController {
 
 		return Results.success();
 	}
-
-	@Resource
-	private PointService pointService;
 
 	@RequestMapping(value = "/api/point/information", method = {RequestMethod.POST, RequestMethod.GET})
 	public Result<String> information(@RequestBody String request){

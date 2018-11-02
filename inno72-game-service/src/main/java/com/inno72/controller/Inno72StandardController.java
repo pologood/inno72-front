@@ -17,6 +17,7 @@ import com.inno72.service.*;
 import com.alibaba.fastjson.JSON;
 import com.inno72.common.util.UuidUtil;
 import com.inno72.util.StringUtil;
+import com.inno72.vo.*;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -37,10 +38,6 @@ import com.inno72.common.datetime.LocalDateTimeUtil;
 import com.inno72.common.util.GameSessionRedisUtil;
 import com.inno72.log.PointLogContext;
 import com.inno72.log.vo.LogType;
-import com.inno72.vo.MachineApiVo;
-import com.inno72.vo.StandardPrepareLoginReqVo;
-import com.inno72.vo.StandardShipmentReqVo;
-import com.inno72.vo.UserSessionVo;
 import tk.mybatis.mapper.entity.Condition;
 
 /**
@@ -76,6 +73,9 @@ public class Inno72StandardController {
 
 	@Resource
 	private Inno72GameServiceProperties inno72GameServiceProperties;
+
+	@Resource
+	private PointService pointService;
 
 	@Value("${top_h5_err_url}")
 	private String topH5ErrUrl;
@@ -229,6 +229,7 @@ public class Inno72StandardController {
 		boolean result = inno72AuthInfoService.setLogged(sessionUuid);
 		LOGGER.info("setLogged result is {}", result);
 		if (result) {
+			pointService.innerPoint(sessionUuid, Inno72MachineInformation.ENUM_INNO72_MACHINE_INFORMATION_TYPE.LOGIN);
 			return Results.success();
 		} else {
 			return Results.failure("登录失败");
@@ -273,10 +274,13 @@ public class Inno72StandardController {
 						redirectUrl = String.format(topH5ErrUrl, env) + "/?status="+ TopH5ErrorTypeEnum.IS_SCANNED.getValue();
 					} else {
 						sessionVo.setIsScanned(true);
+						String traceId = UuidUtil.getUUID32();
+						sessionVo.setTraceId(traceId);
 						gameSessionRedisUtil.setSession(sessionUuid, JSON.toJSONString(sessionVo));
 						// 设置15秒内二维码不能被扫
 						gameSessionRedisUtil.setSessionEx(sessionUuid + "qrCode", sessionUuid, 15);
-						String traceId = UuidUtil.getUUID32();
+
+						pointService.innerPoint(sessionUuid, Inno72MachineInformation.ENUM_INNO72_MACHINE_INFORMATION_TYPE.SCAN_LOGIN);
 						redirectUrl = String.format("%s%s/%s/%s", inno72GameServiceProperties.get("tmallUrl"), sessionUuid, env, traceId);
 					}
 				}
@@ -341,6 +345,7 @@ public class Inno72StandardController {
 				String sellerId = sessionKey.getSellerId();
 				LOGGER.info("concernCallback sellerId is {}", sellerId);
 				if (!StringUtil.isEmpty(sellerId)) {
+					pointService.innerPoint(sessionUuid, Inno72MachineInformation.ENUM_INNO72_MACHINE_INFORMATION_TYPE.CONCERN);
 					inno72TopService.fllowshopLog(sessionUuid, sellerId);
 				}
 
