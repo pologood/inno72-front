@@ -1,5 +1,8 @@
 package com.inno72.service.impl;
 
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.Optional;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Semaphore;
@@ -13,14 +16,17 @@ import org.springframework.data.mongodb.core.MongoOperations;
 import org.springframework.stereotype.Service;
 
 import com.alibaba.fastjson.JSON;
+import com.inno72.common.CommonBean;
 import com.inno72.common.Result;
 import com.inno72.common.Results;
+import com.inno72.common.datetime.LocalDateTimeUtil;
 import com.inno72.common.util.GameSessionRedisUtil;
 import com.inno72.common.util.JSR303Util;
 import com.inno72.common.utils.StringUtil;
 import com.inno72.redis.IRedisUtil;
 import com.inno72.service.PointService;
 import com.inno72.vo.Inno72MachineInformation;
+import com.inno72.vo.Inno72MachineVo;
 import com.inno72.vo.RequestMachineInfoVo;
 import com.inno72.vo.UserSessionVo;
 
@@ -51,22 +57,16 @@ public class PointServiceImpl implements PointService {
 			return valid;
 		}
 
-		UserSessionVo sessionKey = gameSessionRedisUtil.getSessionKey(requestMachineInfoVo.getSessionUuid());
-
 		Inno72MachineInformation info = new Inno72MachineInformation();
 		BeanUtils.copyProperties(requestMachineInfoVo, info);
-		exec.execute(new Task(sessionKey, info));
+		exec.execute(new Task(info));
 		return Results.success();
 	}
 
 	@Override
 	public Result<String> innerPoint(String session, Inno72MachineInformation.ENUM_INNO72_MACHINE_INFORMATION_TYPE enumInno72MachineInformationType) {
 		LOGGER.info("innerPoint param : {}", session);
-		UserSessionVo sessionKey = gameSessionRedisUtil.getSessionKey(session);
-		if ( sessionKey == null ){
-			return Results.failure("登录失效!");
-		}
-		exec.execute(new Task(sessionKey, new Inno72MachineInformation()));
+		exec.execute(new Task(new Inno72MachineInformation()));
 		return Results.success();
 	}
 
@@ -80,11 +80,9 @@ public class PointServiceImpl implements PointService {
 	 */
 	class Task implements Runnable{
 
-		private UserSessionVo sessionKey;
 		private Inno72MachineInformation info;
 
-		public Task( UserSessionVo sessionKey,Inno72MachineInformation info) {
-			this.sessionKey = sessionKey;
+		public Task( Inno72MachineInformation info) {
 			this.info = info;
 		}
 
@@ -92,9 +90,12 @@ public class PointServiceImpl implements PointService {
 		public void run() {
 			try {
 				semaphore.acquire();
+				String sessionUuid = info.getSessionUuid();
+				UserSessionVo sessionKey = gameSessionRedisUtil.getSessionKey(sessionUuid);
 				buildBaseInfoFromSession(sessionKey, info);
 
 
+				mongoOperations.save(info,"Inno72MachineInformation");
 			} catch (InterruptedException e) {
 				e.printStackTrace();
 			}finally {
@@ -106,38 +107,76 @@ public class PointServiceImpl implements PointService {
 
 	private Result<Inno72MachineInformation> buildBaseInfoFromSession(UserSessionVo sessionKey, Inno72MachineInformation info) {
 
-		String traceId = sessionKey.getTraceId();
-		info.setTraceId(traceId);
+		String activityId = "";
+		String activityName = "";
+		String point = "";
+		String city = "";
+		String provence = "";
+		String machineCode = "";
+		String district = "";
+		String actionTime = "";
+		String playCode = "";
 
-		String activityId = sessionKey.getActivityId();
-		String activityName = sessionKey.getInno72MachineVo().getActivityName();
+		if ( sessionKey == null ){
+			String inno72MachineVoStr = redisUtil
+					.get(CommonBean.REDIS_ACTIVITY_PLAN_CACHE_KEY + info.getPlanId() + ":" + info.getSessionUuid());
+			if (StringUtil.isEmpty(inno72MachineVoStr)){
+				return Results.failure("失败");
+			}
 
-		String machineCode = sessionKey.getMachineCode();
+			Inno72MachineVo inno72MachineVo = JSON.parseObject(inno72MachineVoStr, Inno72MachineVo.class);
+			activityName = inno72MachineVo.getActivityName();
+			activityId = inno72MachineVo.getActivityId();
+			point = inno72MachineVo.getPoint();
+			city = inno72MachineVo.getCity();
+			provence = inno72MachineVo.getProvence();
+			district = inno72MachineVo.getDistrict();
+			machineCode = inno72MachineVo.getMachineCode();
+			playCode = inno72MachineVo.getPlayCode();
 
-		String provence = sessionKey.getInno72MachineVo().getProvence();
-		String city = sessionKey.getInno72MachineVo().getCity();
-		String district = sessionKey.getInno72MachineVo().getDistrict();
-		String point = sessionKey.getInno72MachineVo().getPoint();
+		}else{
+			String traceId = sessionKey.getTraceId();
+			info.setTraceId(traceId);
 
-		String userNick = sessionKey.getUserNick();
-		String userId = sessionKey.getUserId();
+			activityId = sessionKey.getActivityId();
+			activityName = sessionKey.getInno72MachineVo().getActivityName();
 
-//		String clientTime = sessionKey.getClientTime();
-		String actionTime = sessionKey.getActionTime();
+			machineCode = sessionKey.getMachineCode();
 
-		String sellerId = sessionKey.getSellerId();
-		String sellerName = sessionKey.getSellerName();
+			provence = sessionKey.getInno72MachineVo().getProvence();
+			city = sessionKey.getInno72MachineVo().getCity();
+			district = sessionKey.getInno72MachineVo().getDistrict();
+			point = sessionKey.getInno72MachineVo().getPoint();
+			playCode = sessionKey.getPlayCode();
 
-		String goodsCode = sessionKey.getGoodsCode();
-		String goodsName = sessionKey.getGoodsName();
+			String userNick = Optional.ofNullable(sessionKey.getUserNick()).orElse("");
+			String userId = Optional.ofNullable(sessionKey.getUserId()).orElse("");
+			info.setUserId(userId);
+			info.setNickName(userNick);
+			//		String clientTime = sessionKey.getClientTime();
+			String sellerId = Optional.ofNullable(sessionKey.getSellerId()).orElse("");
+			String sellerName = Optional.ofNullable(sessionKey.getSellerName()).orElse("");
+			info.setSellerId(sellerId);
+			info.setSellerName(sellerName);
+			String goodsCode = Optional.ofNullable(sessionKey.getGoodsCode()).orElse("");
+			String goodsName = Optional.ofNullable(sessionKey.getGoodsName()).orElse("");
+			info.setGoodsId(goodsCode);
+			info.setGoodsName(goodsName);
 
-		String playCode = sessionKey.getPlayCode();
+		}
+
+		info.setPlayCode(playCode);
+		info.setActivityName(activityId);
+		info.setActivityId(activityName);
+		info.setPoint(point);
+		info.setCity(city);
+		info.setProvence(provence);
+		info.setMachineCode(machineCode);
+		info.setDistrict(district);
+		info.setServiceTime(LocalDateTimeUtil
+				.transfer(LocalDateTime.now(), DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss SSS")));
 
 		return Results.success(info);
-	}
-
-	public static void lll(Inno72MachineInformation info){
-		info.setShipmentNum("1111");
 	}
 
 	private Result<Inno72MachineInformation> buildOrderFromSession(UserSessionVo sessionKey, Inno72MachineInformation info) {

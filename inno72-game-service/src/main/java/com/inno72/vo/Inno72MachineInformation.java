@@ -122,4 +122,7 @@ public class Inno72MachineInformation {
 
 	/** pageName */
 	private String pageName;
+
+	/** 计划ID */
+	private String planId;
 }
