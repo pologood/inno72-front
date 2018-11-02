@@ -1,6 +1,13 @@
 package com.inno72.vo;
 
+import java.time.format.DateTimeFormatter;
+
 import javax.validation.constraints.NotNull;
+
+import org.hibernate.validator.constraints.Length;
+
+import com.inno72.common.datetime.LocalDateTimeUtil;
+import com.inno72.common.utils.StringUtil;
 
 import lombok.Data;
 
@@ -22,7 +29,10 @@ public class Inno72MachineInformation {
 
 	/** 机器ID */
 	private String machineCode;
+	public String getMachineCode(){
+		return this.sessionUuid;
 
+	}
 	/** 省 */
 	private String provence;
 
@@ -49,20 +59,35 @@ public class Inno72MachineInformation {
 
 	/** 行为 - (登录:  、关注:002 、入会:003  、、、、 */
 	@NotNull(message = "消息类型不能为空!")
+	@Length(max = 6, min = 6, message = "非法类型")
 	private String type;
+
+	public Inno72MachineInformation build() {
+		if (StringUtil.notEmpty(this.clientTime)){
+			try {
+				Long l = Long.parseLong(this.clientTime);
+				this.clientTime = LocalDateTimeUtil.transfer(LocalDateTimeUtil.long2LocalDateTime(l),DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss SSS"));
+			}catch (Exception e){
+				System.out.println(this.clientTime);
+			}
+		}
+		return this;
+	}
 
 	public static enum ENUM_INNO72_MACHINE_INFORMATION_TYPE{
 		LOGIN("001","登录"),
-		CONCERN("002 ","关注"),
-		MEMBERSHIP("003 ","入会"),
-		CLICK("004 ","点击"),
+		CONCERN("002","关注"),
+		MEMBERSHIP("003","入会"),
+		CLICK("004","点击"),
 		GAME_START("005 ","游戏开始"),
 		GAME_OVER("006 ","游戏结束"),
-		ORDER("007 ","下单"),
-		SHIPMENT("008 ","出货"),
-		SCAN("009 ","扫码"),
+		ORDER_GOODS("007001","下单-商品"),
+		ORDER_COUPON("007002","下单-优惠券"),
+		SHIPMENT("008001","出货"),
+		SCAN_LOGIN("009001 ","扫码"),
+		SCAN_PAY("009002 ","扫码"),
 		JUMP("010 ","跳转"),
-
+		PAY("011002 ","订单支付"),
 		;
 		private String type;
 		private String desc;
@@ -70,6 +95,14 @@ public class Inno72MachineInformation {
 		ENUM_INNO72_MACHINE_INFORMATION_TYPE(String type, String desc) {
 			this.type = type;
 			this.desc = desc;
+		}
+
+		public String getType() {
+			return type;
+		}
+
+		public String getDesc() {
+			return desc;
 		}
 	}
 
@@ -125,4 +158,16 @@ public class Inno72MachineInformation {
 
 	/** 计划ID */
 	private String planId;
+	/** 奖池ID */
+	private String interactId;
+
+	private String clickType;
+
+	public Inno72MachineInformation(String type, String sessionUuid) {
+		this.sessionUuid = sessionUuid;
+		this.type = type;
+	}
+
+	public Inno72MachineInformation() {
+	}
 }
