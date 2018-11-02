@@ -820,11 +820,11 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 		String inno72OrderId = null;
 		if(paiyangflag){
 			// 下单 inno72_Order TODO 商品下单 itemId 对应的类型？
-			inno72OrderId = genPaiyangInno72Order(userSessionVo.getCanOrder(),channelId, activityPlanId, machineId, goodsId, userSessionVo.getUserId(),
+			inno72OrderId = genPaiyangInno72Order(sessionUuid, userSessionVo.getCanOrder(),channelId, activityPlanId, machineId, goodsId, userSessionVo.getUserId(),
 					Inno72Order.INNO72ORDER_GOODSTYPE.PRODUCT);
 		}else{
 			// 下单 inno72_Order TODO 商品下单 itemId 对应的类型？
-			inno72OrderId = genInno72Order(channelId, activityPlanId, machineId, itemId, userSessionVo.getUserId(),
+			inno72OrderId = genInno72Order(sessionUuid, channelId, activityPlanId, machineId, itemId, userSessionVo.getUserId(),
 					Inno72Order.INNO72ORDER_GOODSTYPE.PRODUCT);
 		}
 
@@ -956,7 +956,7 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 		return returnUrl;
 	}
 
-	private String genPaiyangInno72Order(boolean canOrder ,String channelId, String activityPlanId, String machineId, String goodsId, String channelUserKey, Inno72Order.INNO72ORDER_GOODSTYPE product) {
+	private String genPaiyangInno72Order(String sessionUuid, boolean canOrder ,String channelId, String activityPlanId, String machineId, String goodsId, String channelUserKey, Inno72Order.INNO72ORDER_GOODSTYPE product) {
 		Map<String, String> paramsChannel = new HashMap<>();
 		paramsChannel.put("channelId", channelId);
 		paramsChannel.put("channelUserKey", channelUserKey);
@@ -1009,6 +1009,9 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 		Inno72OrderGoods orderGoods = new Inno72OrderGoods();
 
 		String goodsName = "";
+
+		UserSessionVo userSessionVo = gameSessionRedisUtil.getSessionKey(sessionUuid);
+
 		if (product.getKey().equals(Inno72Order.INNO72ORDER_GOODSTYPE.PRODUCT.getKey())) {
 			Inno72Goods inno72Goods = inno72GoodsMapper.selectByPrimaryKey(goodsId);
 			goodsName = inno72Goods.getName();
@@ -1022,6 +1025,10 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 			inno72Order.setShopsName(inno72Shops.getShopName());
 
 			inno72Order.setMerchantId(inno72Goods.getSellerId());
+
+			userSessionVo.setGoodsId(goodsId);
+			userSessionVo.setGoodsCode(inno72Goods.getCode());
+			userSessionVo.setGoodsName(inno72Goods.getName());
 
 			/* 埋点 */
 			CommonBean.logger(
@@ -1043,6 +1050,8 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 
 			inno72Order.setMerchantId(inno72Shops.getSellerId());
 
+			userSessionVo.setInteractId(inno72Coupon.getCode());
+
 			/* 埋点 */
 			CommonBean.logger(
 					CommonBean.POINT_TYPE_COUPON_ORDER,
@@ -1059,6 +1068,7 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 		inno72OrderHistoryMapper.insert(new Inno72OrderHistory(inno72Order.getId(), inno72Order.getOrderNum(),
 				JSON.toJSONString(inno72Order), "初始化插入订单!"));
 
+		gameSessionRedisUtil.setSession(sessionUuid, JSON.toJSONString(userSessionVo));
 		return rep == 0 ? rep + "" : inno72Order.getId();
 	}
 
@@ -1131,10 +1141,10 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 		try {
 		    if(vo.findPaiyangFlag()){
 
-                orderId = this.genPaiyangInno72Order(vo.getCanOrder(),channelId, activityPlanId, _machineId, inno72Coupon.getId(), vo.getUserId(),
+                orderId = this.genPaiyangInno72Order(sessionUuid, vo.getCanOrder(),channelId, activityPlanId, _machineId, inno72Coupon.getId(), vo.getUserId(),
                         Inno72Order.INNO72ORDER_GOODSTYPE.COUPON);
             }else{
-                orderId = this.genInno72Order(channelId, activityPlanId, _machineId, inno72Coupon.getId(), vo.getUserId(),
+                orderId = this.genInno72Order(sessionUuid, channelId, activityPlanId, _machineId, inno72Coupon.getId(), vo.getUserId(),
                         Inno72Order.INNO72ORDER_GOODSTYPE.COUPON);
             }
 
@@ -1579,6 +1589,7 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 					merchant = inno72MerchantMapper.findByCoupon(itemId);
 					if(merchant!=null){
 						userSessionVo.setGoodsType(UserSessionVo.GOODSTYPE_COUPON);
+						userSessionVo.setSellerName(merchant.getMerchantName());
 					}
 				}
 			}
@@ -1588,17 +1599,20 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 			if (StringUtil.isNotEmpty(goodsCode)) {
 				userSessionVo.setGoodsCode(goodsCode);
 				if(merchant == null) merchant = inno72MerchantMapper.findByGoodsCode(goodsCode);
+				userSessionVo.setSellerName(merchant.getMerchantName());
 			}
 			if (StringUtil.isNotEmpty(sellerId)) {
 				if(merchant == null)  {
 					Inno72Merchant param = new Inno72Merchant();
 					param.setMerchantCode(sellerId);
 					merchant = inno72MerchantMapper.selectOne(param);
+					userSessionVo.setSellerName(merchant.getMerchantName());
 				}
 			}
 			if(merchant!=null){
 				userSessionVo.setSellerId(merchant.getMerchantCode());
 				userSessionVo.setMerchantName(merchant.getMerchantName());
+				userSessionVo.setSellerName(merchant.getMerchantName());
 			}
 
 		}
@@ -2128,7 +2142,7 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 	 * @param product 类型
 	 * @return 订单号
 	 */
-	private String genInno72Order(String channelId, String activityPlanId, String machineId, String goodsId,
+	private String genInno72Order(String sessionUuid, String channelId, String activityPlanId, String machineId, String goodsId,
 			String channelUserKey, Inno72Order.INNO72ORDER_GOODSTYPE product) {
 
 		Map<String, String> paramsChannel = new HashMap<>();
@@ -2185,6 +2199,9 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 		Inno72OrderGoods orderGoods = new Inno72OrderGoods();
 
 		String goodsName;
+
+		UserSessionVo userSessionVo = gameSessionRedisUtil.getSessionKey(sessionUuid);
+
 		if (product.getKey().equals(Inno72Order.INNO72ORDER_GOODSTYPE.PRODUCT.getKey())) {
 			Inno72Goods inno72Goods = inno72GoodsMapper.selectByCode(goodsId);
 			goodsName = inno72Goods.getName();
@@ -2196,6 +2213,11 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 			Inno72Shops inno72Shops = inno72ShopsMapper.selectByPrimaryKey(inno72Goods.getShopId());
 			inno72Order.setShopsId(inno72Shops.getId());
 			inno72Order.setShopsName(inno72Shops.getShopName());
+
+			userSessionVo.setGoodsId(goodsId);
+			userSessionVo.setGoodsName(goodsName);
+			userSessionVo.setGoodsCode(inno72Goods.getCode());
+
 			/* 埋点 */
 			CommonBean.logger(
 					CommonBean.POINT_TYPE_GOODS_ORDER,
@@ -2213,6 +2235,9 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 			Inno72Shops inno72Shops = inno72ShopsMapper.selectByPrimaryKey(inno72Coupon.getShopsId());
 			inno72Order.setShopsId(inno72Shops.getId());
 			inno72Order.setShopsName(inno72Shops.getShopName());
+
+			userSessionVo.setInteractId(inno72Coupon.getCode());
+
 			/* 埋点 */
 			CommonBean.logger(
 					CommonBean.POINT_TYPE_COUPON_ORDER,
@@ -2230,6 +2255,8 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 
 		inno72OrderHistoryMapper.insert(new Inno72OrderHistory(inno72Order.getId(), inno72Order.getOrderNum(),
 				JSON.toJSONString(inno72Order), "初始化插入订单!"));
+
+		gameSessionRedisUtil.setSession(sessionUuid, JSON.toJSONString(userSessionVo));
 
 		return rep.equals(Inno72Order.INNO72ORDER_REPETITION.REPETITION.getKey()) ? rep + "" : inno72Order.getId();
 	}
