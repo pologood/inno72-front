@@ -264,6 +264,7 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 					goods.setStatus(Inno72Order.INNO72ORDER_PAYSTATUS.SUCC.getKey());
 					inno72OrderGoodsMapper.updateByPrimaryKeySelective(goods);
 
+					userSessionVo.setRefOrderStatus(inno72Order.getRefOrderStatus());
 					pointService.innerPoint(sessionUuid, Inno72MachineInformation.ENUM_INNO72_MACHINE_INFORMATION_TYPE.PAY);
 					this.taoBaoDataSyn(sessionUuid, JSON.toJSONString(requestForm), JSON.toJSONString(respJson), Inno72TaoBaoCheckDataVo.ENUM_INNO72_TAOBAO_CHECK_DATA_VO_TYPE.ORDER);
 				}
@@ -1470,6 +1471,10 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
         if (StringUtil.isNotEmpty(rVoJson)) {
             Inno72MachineVo inno72MachineVo = JSON.parseObject(rVoJson, Inno72MachineVo.class);
             userSessionVo.setInno72MachineVo(inno72MachineVo);
+			String planCode = FastJsonUtils.getString(rVoJson, "planCode");
+			if (!StringUtil.isEmpty(planCode)) {
+				userSessionVo.setPlanCode(planCode);
+			}
             LOGGER.debug("parse rVoJson string finish --> {}", inno72MachineVo);
         }else{
             LOGGER.error("从redis读取机器信息错误key={}",CommonBean.REDIS_ACTIVITY_PLAN_CACHE_KEY +activityId+":"+ inno72Machine.getMachineCode());
@@ -2248,7 +2253,6 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 					inno72ActivityPlan.getActivityId()+"|"+inno72Coupon.getCode());
 		}
 
-
 		orderGoods.setOrderNum(inno72Order.getOrderNum());
 		orderGoods.setStatus(Inno72Order.INNO72ORDER_GOODSSTATUS.WAIT.getKey());
 		inno72OrderMapper.insert(inno72Order);
@@ -2258,6 +2262,7 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 		inno72OrderHistoryMapper.insert(new Inno72OrderHistory(inno72Order.getId(), inno72Order.getOrderNum(),
 				JSON.toJSONString(inno72Order), "初始化插入订单!"));
 
+		userSessionVo.setRefOrderStatus(inno72Order.getRefOrderStatus());
 		gameSessionRedisUtil.setSession(sessionUuid, JSON.toJSONString(userSessionVo));
 
 		return rep.equals(Inno72Order.INNO72ORDER_REPETITION.REPETITION.getKey()) ? rep + "" : inno72Order.getId();

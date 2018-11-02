@@ -103,7 +103,7 @@ public class PointServiceImpl implements PointService {
 		String city = sessionKey.getInno72MachineVo().getCity();
 		String district = sessionKey.getInno72MachineVo().getDistrict();
 		String point = sessionKey.getInno72MachineVo().getPoint();
-		String playCode = sessionKey.getPlayCode();
+		String playCode = sessionKey.getPlanCode();
 
 		String userNick = Optional.ofNullable(sessionKey.getUserNick()).orElse("");
 		String userId = Optional.ofNullable(sessionKey.getUserId()).orElse("");
@@ -223,7 +223,7 @@ public class PointServiceImpl implements PointService {
 			city = sessionKey.getInno72MachineVo().getCity();
 			district = sessionKey.getInno72MachineVo().getDistrict();
 			point = sessionKey.getInno72MachineVo().getPoint();
-			playCode = sessionKey.getPlayCode();
+			playCode = sessionKey.getPlanCode();
 
 			String userNick = Optional.ofNullable(sessionKey.getUserNick()).orElse("");
 			String userId = Optional.ofNullable(sessionKey.getUserId()).orElse("");
