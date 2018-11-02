@@ -8,7 +8,7 @@ import lombok.Data;
 public class UserSessionVo {
 
 	private String traceId;
-	private String playCode;//TODO
+	private String planCode;//TODO
 	private String sellerName;//TODO 品牌名称
 	private String shipmentNum;//TODO 出货数量
 	private String scanUrl;//TODO 扫码路径
