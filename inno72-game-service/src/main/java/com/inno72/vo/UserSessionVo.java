@@ -16,6 +16,10 @@ public class UserSessionVo {
 	private String scanUrl;//TODO 扫码路径
 	private String goodsName;//TODO 商品名称
 	private String refOrderStatus;//TODO 订单状态
+	private String scanLoginUrl;//TODO 扫码登录url
+	private String scanPayUrl;//TODO 支付url
+	private String interactId;//TODO 奖池ID
+
 
 
 	private String mid;

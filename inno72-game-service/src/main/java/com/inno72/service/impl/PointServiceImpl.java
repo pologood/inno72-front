@@ -30,8 +30,6 @@ import com.inno72.vo.Inno72MachineVo;
 import com.inno72.vo.RequestMachineInfoVo;
 import com.inno72.vo.UserSessionVo;
 
-import jdk.nashorn.internal.ir.RuntimeNode;
-
 @Service
 public class PointServiceImpl implements PointService {
 	private static final Logger LOGGER = LoggerFactory.getLogger(PointServiceImpl.class);
@@ -66,7 +64,7 @@ public class PointServiceImpl implements PointService {
 	@Override
 	public Result<String> innerPoint(String session, Inno72MachineInformation.ENUM_INNO72_MACHINE_INFORMATION_TYPE enumInno72MachineInformationType) {
 		LOGGER.info("innerPoint param : {}", session);
-		exec.execute(new Task(new Inno72MachineInformation()));
+		exec.execute(new Task(new Inno72MachineInformation(enumInno72MachineInformationType.getType(), session)));
 		return Results.success();
 	}
 
@@ -93,7 +91,21 @@ public class PointServiceImpl implements PointService {
 				String sessionUuid = info.getSessionUuid();
 				UserSessionVo sessionKey = gameSessionRedisUtil.getSessionKey(sessionUuid);
 				buildBaseInfoFromSession(sessionKey, info);
+				String type = info.getType();
+				if (type.equals(Inno72MachineInformation.ENUM_INNO72_MACHINE_INFORMATION_TYPE.SCAN_LOGIN.getType())){
+					//添加登录扫码路径
 
+				}else if(type.equals(Inno72MachineInformation.ENUM_INNO72_MACHINE_INFORMATION_TYPE.SCAN_PAY.getType())){
+					//添加支付扫码路径
+				}else if(type.equals(Inno72MachineInformation.ENUM_INNO72_MACHINE_INFORMATION_TYPE.SHIPMENT.getType())){
+					//添加出货 货道号 商品 出货数量
+				}else if(type.equals(Inno72MachineInformation.ENUM_INNO72_MACHINE_INFORMATION_TYPE.ORDER_GOODS.getType())){
+					//添加下单 订单号 三方订单号
+				}else if(type.equals(Inno72MachineInformation.ENUM_INNO72_MACHINE_INFORMATION_TYPE.ORDER_COUPON.getType())){
+					//添加优惠券 奖池ID 抽奖结果
+				}else if(type.equals(Inno72MachineInformation.ENUM_INNO72_MACHINE_INFORMATION_TYPE.PAY.getType())){
+					//添加商品订单支付 结果
+				}
 
 				mongoOperations.save(info,"Inno72MachineInformation");
 			} catch (InterruptedException e) {
@@ -105,23 +117,24 @@ public class PointServiceImpl implements PointService {
 	}
 
 
-	private Result<Inno72MachineInformation> buildBaseInfoFromSession(UserSessionVo sessionKey, Inno72MachineInformation info) {
+	private void buildBaseInfoFromSession(UserSessionVo sessionKey, Inno72MachineInformation info) {
 
-		String activityId = "";
-		String activityName = "";
-		String point = "";
-		String city = "";
-		String provence = "";
-		String machineCode = "";
-		String district = "";
+		String activityId;
+		String activityName;
+		String point;
+		String city;
+		String provence;
+		String machineCode;
+		String district;
 		String actionTime = "";
-		String playCode = "";
+		String playCode;
 
 		if ( sessionKey == null ){
 			String inno72MachineVoStr = redisUtil
 					.get(CommonBean.REDIS_ACTIVITY_PLAN_CACHE_KEY + info.getPlanId() + ":" + info.getSessionUuid());
 			if (StringUtil.isEmpty(inno72MachineVoStr)){
-				return Results.failure("失败");
+				Results.failure("失败");
+				return;
 			}
 
 			Inno72MachineVo inno72MachineVo = JSON.parseObject(inno72MachineVoStr, Inno72MachineVo.class);
@@ -176,7 +189,7 @@ public class PointServiceImpl implements PointService {
 		info.setServiceTime(LocalDateTimeUtil
 				.transfer(LocalDateTime.now(), DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss SSS")));
 
-		return Results.success(info);
+		Results.success(info);
 	}
 
 	private Result<Inno72MachineInformation> buildOrderFromSession(UserSessionVo sessionKey, Inno72MachineInformation info) {
