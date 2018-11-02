@@ -37,6 +37,9 @@ public class RequestMachineInfoVo {
 	@NotNull(message = "页面名称不能为空!")
 	private String pageName;
 
+	@NotNull(message = "计划不能为空!")
+	private String planId;
+
 	/** 自动手动，默认是自动.页面跳转行为使用 0/1 */
 	private String clickType;
 

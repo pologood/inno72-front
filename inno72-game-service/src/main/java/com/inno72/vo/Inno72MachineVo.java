@@ -24,6 +24,8 @@ public class Inno72MachineVo extends Inno72Machine {
 
 	private String provence;
 
+	/** playCode */
+	private String playCode;
 	/** 市 */
 	private String city;//TODO 新
 
@@ -199,5 +201,13 @@ public class Inno72MachineVo extends Inno72Machine {
 
 	public void setProvence(String provence) {
 		this.provence = provence;
+	}
+
+	public String getPlayCode() {
+		return playCode;
+	}
+
+	public void setPlayCode(String playCode) {
+		this.playCode = playCode;
 	}
 }
