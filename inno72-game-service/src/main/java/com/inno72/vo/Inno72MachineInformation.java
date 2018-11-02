@@ -81,13 +81,13 @@ public class Inno72MachineInformation {
 		CONCERN("002001","关注"),
 		MEMBERSHIP("003001","入会"),
 		CLICK("004","点击"),// 客户端自由定义
-		GAME_START("005001 ","游戏开始"),
+		GAME_START("005001","游戏开始"),
 		GAME_OVER("006001","游戏结束"),
 		ORDER_GOODS("007001","下单-商品"),
 		ORDER_COUPON("007002","下单-优惠券"),
 		SHIPMENT("008001","出货"),
-		SCAN_LOGIN("009001 ","扫码"),
-		SCAN_PAY("009002 ","扫码"),
+		SCAN_LOGIN("009001","扫码"),
+		SCAN_PAY("009002","扫码"),
 		JUMP("010001","跳转"),
 		PAY("011002 ","订单支付"),
 		;
