@@ -103,7 +103,6 @@ public class Inno72TopServiceImpl implements Inno72TopService {
 			LOGGER.info("getMaskUserNick params is {}", JsonUtil.toJson(requestForm));
 			respJson = HttpClient.form(jstUrl + "/api/top/getMaskUserNick", requestForm, null);
 			LOGGER.info("调用聚石塔接口 getMaskUserNick 返回 {}", JSON.toJSONString(respJson));
-			pointService.innerPoint(sessionUuid, Inno72MachineInformation.ENUM_INNO72_MACHINE_INFORMATION_TYPE.LOGIN);
 			this.taoBaoDataSyn(sessionUuid, JSON.toJSONString(requestForm), JSON.toJSONString(respJson), Inno72TaoBaoCheckDataVo.ENUM_INNO72_TAOBAO_CHECK_DATA_VO_TYPE.LOGIN);
 
 		} catch (Exception e) {
