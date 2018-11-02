@@ -289,6 +289,35 @@ public class Inno72StandardController {
 	}
 
 	/**
+	 * 支付跳转
+	 */
+	@ResponseBody
+	@RequestMapping(value = "/payRedirect", method = {RequestMethod.GET})
+	public void payRedirect(HttpServletResponse response, String sessionUuid, String env) {
+		LOGGER.info("payRedirect sessionUuid is {}, env is {}", sessionUuid, env);
+
+		// 判断支付二维码是否已经过期
+		UserSessionVo sessionVo = gameSessionRedisUtil.getSessionKey(sessionUuid);
+ 		if (sessionVo != null) {
+			String redirectUrl = "";
+			boolean payCode = gameSessionRedisUtil.exists(sessionUuid + "payCode");
+			if (payCode) {
+				// 存在的情况 直接跳转天猫支付
+				redirectUrl = sessionVo.getScanPayUrl();
+			} else {
+				// 不存在 说明已经过期 todo gxg point 需要跳转到对应提示页面
+				redirectUrl = String.format(topH5ErrUrl, env) + "/?status="+ TopH5ErrorTypeEnum.IS_SCANNED.getValue();
+			}
+			try {
+				LOGGER.info("payRedirect redirectUrl is {}", redirectUrl);
+				response.sendRedirect(redirectUrl);
+			} catch (IOException e) {
+				LOGGER.error(e.getMessage(), e);
+			}
+		}
+	}
+
+	/**
 	 * 入会操作（目前聚石塔回调）
 	 */
 	@ResponseBody
