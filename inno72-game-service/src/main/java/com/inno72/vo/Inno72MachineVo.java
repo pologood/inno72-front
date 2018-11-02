@@ -22,6 +22,21 @@ public class Inno72MachineVo extends Inno72Machine {
 	 */
 	private Inno72Game inno72Games;
 
+	private String provence;
+
+	/** 市 */
+	private String city;//TODO 新
+
+	/** 区 */
+	private String district;//TODO 新
+
+	/** 点位 */
+	private String point;//TODO 新
+	/**
+	 * 活动名称
+	 */
+	private String activityName;//TODO 新
+
 	/**
 	 * 商户名称
 	 */
@@ -144,5 +159,45 @@ public class Inno72MachineVo extends Inno72Machine {
 
 	public void setPaiyangType(Integer paiyangType) {
 		this.paiyangType = paiyangType;
+	}
+
+	public String getCity() {
+		return city;
+	}
+
+	public void setCity(String city) {
+		this.city = city;
+	}
+
+	public String getDistrict() {
+		return district;
+	}
+
+	public void setDistrict(String district) {
+		this.district = district;
+	}
+
+	public String getPoint() {
+		return point;
+	}
+
+	public void setPoint(String point) {
+		this.point = point;
+	}
+
+	public String getActivityName() {
+		return activityName;
+	}
+
+	public void setActivityName(String activityName) {
+		this.activityName = activityName;
+	}
+
+	public String getProvence() {
+		return provence;
+	}
+
+	public void setProvence(String provence) {
+		this.provence = provence;
 	}
 }

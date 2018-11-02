@@ -7,6 +7,17 @@ import lombok.Data;
 @Data
 public class UserSessionVo {
 
+	private String traceId;//TODO 新
+	//	private String clientTime;//TODO 客户端传入时间 传入{ 时间戳 }
+	private String actionTime;//TODO 触发时间
+	private String playCode;//TODO
+	private String sellerName;//TODO 品牌名称
+	private String shipmentNum;//TODO 出货数量
+	private String scanUrl;//TODO 扫码路径
+	private String goodsName;//TODO 商品名称
+	private String refOrderStatus;//TODO 订单状态
+
+
 	private String mid;
 	private String userNick;
 	private String userId;
