@@ -1,9 +1,9 @@
 package com.inno72.service.impl;
 
 import java.io.File;
+import java.io.IOException;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -28,7 +28,6 @@ import org.springframework.transaction.annotation.Transactional;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.google.gson.Gson;
-import com.inno72.common.*;
 import com.inno72.common.CommonBean;
 import com.inno72.common.Inno72GameServiceProperties;
 import com.inno72.common.RedisConstants;
@@ -37,10 +36,8 @@ import com.inno72.common.Results;
 import com.inno72.common.StandardLoginTypeEnum;
 import com.inno72.common.json.JsonUtil;
 import com.inno72.common.shiro.filter.JWTUtil;
-import com.inno72.common.util.*;
 import com.inno72.common.util.DateUtil;
 import com.inno72.common.util.AesUtils;
-import com.inno72.common.util.DateUtil;
 import com.inno72.common.util.FastJsonUtils;
 import com.inno72.common.util.GameSessionRedisUtil;
 import com.inno72.common.util.Inno72OrderNumGenUtil;
@@ -48,7 +45,6 @@ import com.inno72.common.util.QrCodeUtil;
 import com.inno72.common.util.UuidUtil;
 import com.inno72.common.utils.StringUtil;
 import com.inno72.machine.vo.SupplyRequestVo;
-import com.inno72.mapper.*;
 import com.inno72.model.*;
 import com.inno72.mapper.Inno72ActivityMapper;
 import com.inno72.mapper.Inno72ActivityPlanGameResultMapper;
@@ -94,7 +90,6 @@ import com.inno72.model.MachineDropGoodsBean;
 import com.inno72.oss.OSSUtil;
 import com.inno72.plugin.http.HttpClient;
 import com.inno72.redis.IRedisUtil;
-import com.inno72.service.*;
 import com.inno72.service.Inno72GameApiService;
 import com.inno72.service.Inno72GameService;
 import com.inno72.service.Inno72InteractGoodsService;
@@ -102,7 +97,6 @@ import com.inno72.service.Inno72InteractMachineGoodsService;
 import com.inno72.service.Inno72InteractMachineTimeService;
 import com.inno72.service.Inno72TopService;
 import com.inno72.util.AlarmUtil;
-import com.inno72.vo.*;
 import com.taobao.api.ApiException;
 import com.inno72.vo.AlarmMessageBean;
 import com.inno72.vo.GoodsVo;
@@ -113,19 +107,6 @@ import com.inno72.vo.StandardPrepareLoginReqVo;
 import com.inno72.vo.UserSessionVo;
 
 import net.coobird.thumbnailator.Thumbnails;
-import org.apache.commons.lang.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Propagation;
-import org.springframework.transaction.annotation.Transactional;
-
-import javax.annotation.Resource;
-import java.io.File;
-import java.math.BigDecimal;
-import java.time.LocalDateTime;
-import java.util.*;
 
 @Service
 public class Inno72GameApiServiceImpl implements Inno72GameApiService {
@@ -886,7 +867,9 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 				String _payQrcodeImage = FastJsonUtils.getString(respJson, "pay_qrcode_image");
 				if (StringUtil.isNotEmpty(_payQrcodeImage)) {
 					needPay = true;
-					payQrcodeImage = _payQrcodeImage;
+					// todo gxg point 获得二维码链接
+					payQrcodeImage = this.getPayQrUrl(_payQrcodeImage ,sessionUuid, userSessionVo);
+					userSessionVo.setScanPayUrl(payQrcodeImage);
 				}
 			} else {
 				return Results.failure("淘宝下单失败！");
@@ -912,6 +895,54 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 		map.put("payQrcodeImage", payQrcodeImage);
 		map.put("inno72OrderId", inno72OrderId);
 		return Results.success(map);
+	}
+
+	/**
+	 * 获得支付二维码
+	 * @return
+	 */
+	private String getPayQrUrl(String url, String sessionUuid, UserSessionVo userSessionVo) {
+		String tmallPayQrUrl = "";
+		String returnUrl = "";
+		boolean result = false;
+		try {
+			tmallPayQrUrl = QrCodeUtil.readQrCode(url);
+			LOGGER.info("tmallPayQrUrl is {}", tmallPayQrUrl);
+
+			if (!StringUtil.isEmpty(tmallPayQrUrl)) {
+				// 生成新的支付二维码链接
+				LOGGER.info("二维码访问 url is {} ", url);
+
+				userSessionVo.setScanPayUrl(tmallPayQrUrl);
+
+				// 二维码存储在本地的路径
+				String localUrl = "pay" + sessionUuid + ".png";
+
+				// 存储在阿里云上的文件名
+				String objectName = "payQrcode/" + localUrl;
+
+				String payUrl = String.format(
+						"%s/?sessionUuid=%s&env=%s",
+						inno72GameServiceProperties.get("payRedirect"), sessionUuid, env);
+
+				// 提供给前端用来调用二维码的地址
+				returnUrl = inno72GameServiceProperties.get("returnUrl") + objectName;
+				LOGGER.info("支付url is {}", payUrl);
+				try {
+					result = QrCodeUtil.createQrCode(localUrl, payUrl, 400, "png");
+				} catch (Exception e) {
+					LOGGER.error(e.getMessage(), e);
+				}
+
+				if (result) {
+					this.qrCodeImgDeal(localUrl, objectName);
+				}
+			}
+		} catch (IOException e) {
+			LOGGER.error(e.getMessage(), e);
+		}
+
+		return returnUrl;
 	}
 
 	private String genPaiyangInno72Order(boolean canOrder ,String channelId, String activityPlanId, String machineId, String goodsId, String channelUserKey, Inno72Order.INNO72ORDER_GOODSTYPE product) {
