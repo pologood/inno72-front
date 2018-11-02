@@ -1,10 +1,8 @@
 package com.inno72.vo;
 
-import java.time.format.DateTimeFormatter;
-
 import javax.validation.constraints.NotNull;
 
-import com.inno72.common.datetime.LocalDateTimeUtil;
+import com.inno72.common.DateUtil;
 
 import lombok.Data;
 
@@ -48,7 +46,7 @@ public class RequestMachineInfoVo {
 	public String getClientTime(){
 		try {
 			long l = Long.parseLong(this.clientTime);
-			return  LocalDateTimeUtil.transfer(LocalDateTimeUtil.long2LocalDateTime(l), DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss SSS"));
+			return DateUtil.getDateFormat().format(l);
 		}catch (Exception e){
 			return this.clientTime;
 		}
