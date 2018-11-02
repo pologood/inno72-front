@@ -77,18 +77,18 @@ public class Inno72MachineInformation {
 	}
 
 	public static enum ENUM_INNO72_MACHINE_INFORMATION_TYPE{
-		LOGIN("001","登录"),
-		CONCERN("002","关注"),
-		MEMBERSHIP("003","入会"),
-		CLICK("004","点击"),
-		GAME_START("005 ","游戏开始"),
-		GAME_OVER("006 ","游戏结束"),
+		LOGIN("001001","登录"),
+		CONCERN("002001","关注"),
+		MEMBERSHIP("003001","入会"),
+		CLICK("004","点击"),// 客户端自由定义
+		GAME_START("005001 ","游戏开始"),
+		GAME_OVER("006001","游戏结束"),
 		ORDER_GOODS("007001","下单-商品"),
 		ORDER_COUPON("007002","下单-优惠券"),
 		SHIPMENT("008001","出货"),
 		SCAN_LOGIN("009001 ","扫码"),
 		SCAN_PAY("009002 ","扫码"),
-		JUMP("010 ","跳转"),
+		JUMP("010001","跳转"),
 		PAY("011002 ","订单支付"),
 		;
 		private String type;
