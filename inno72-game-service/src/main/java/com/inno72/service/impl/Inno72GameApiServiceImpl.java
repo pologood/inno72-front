@@ -1468,17 +1468,20 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 		String activityId = inno72MachineService.findActivityIdByMachineCode(inno72Machine.getMachineCode());
         String rVoJson = redisUtil.get(CommonBean.REDIS_ACTIVITY_PLAN_CACHE_KEY +activityId+":"+ inno72Machine.getMachineCode());
         LOGGER.debug("redis cache machine data =====> {}", rVoJson);
-        if (StringUtil.isNotEmpty(rVoJson)) {
-            Inno72MachineVo inno72MachineVo = JSON.parseObject(rVoJson, Inno72MachineVo.class);
-            userSessionVo.setInno72MachineVo(inno72MachineVo);
-			String planCode = FastJsonUtils.getString(rVoJson, "planCode");
-			if (!StringUtil.isEmpty(planCode)) {
-				userSessionVo.setPlanCode(planCode);
-			}
-            LOGGER.debug("parse rVoJson string finish --> {}", inno72MachineVo);
-        }else{
-            LOGGER.error("从redis读取机器信息错误key={}",CommonBean.REDIS_ACTIVITY_PLAN_CACHE_KEY +activityId+":"+ inno72Machine.getMachineCode());
+
+        if (StringUtil.isEmpty(rVoJson)) {
+			inno72MachineService.findGame(inno72Machine.getMachineCode(), "-1", "", "");
         }
+
+		rVoJson = redisUtil.get(CommonBean.REDIS_ACTIVITY_PLAN_CACHE_KEY +activityId+":"+ inno72Machine.getMachineCode());
+
+		Inno72MachineVo inno72MachineVo = JSON.parseObject(rVoJson, Inno72MachineVo.class);
+		userSessionVo.setInno72MachineVo(inno72MachineVo);
+		String planCode = FastJsonUtils.getString(rVoJson, "planCode");
+		if (!StringUtil.isEmpty(planCode)) {
+			userSessionVo.setPlanCode(planCode);
+		}
+		LOGGER.debug("parse rVoJson string finish --> {}", inno72MachineVo);
 
         // 解析 ext
 		this.analysisExt(userSessionVo, ext);
