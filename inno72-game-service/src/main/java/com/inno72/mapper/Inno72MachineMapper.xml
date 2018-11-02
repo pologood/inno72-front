@@ -95,4 +95,12 @@
 
     </select>
 
+    <select id="findAreaByMachineCode" parameterType="string" resultType="com.inno72.model.Inno72AdminArea">
+        select area.province,area.city,area.district,locale.`name` as circle
+        from inno72_machine machine
+         left join inno72_locale locale on machine.locale_id=locale.id
+        left join inno72_admin_area area on area.`code` = locale.area_code
+        where machine.machine_code = #{machineCode}
+    </select>
+
 </mapper>
