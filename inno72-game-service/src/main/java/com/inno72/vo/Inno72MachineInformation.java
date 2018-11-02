@@ -1,6 +1,8 @@
 package com.inno72.vo;
 
+import java.text.SimpleDateFormat;
 import java.time.format.DateTimeFormatter;
+import java.util.Date;
 
 import javax.validation.constraints.NotNull;
 
@@ -66,7 +68,7 @@ public class Inno72MachineInformation {
 		if (StringUtil.notEmpty(this.clientTime)){
 			try {
 				Long l = Long.parseLong(this.clientTime);
-				this.clientTime = LocalDateTimeUtil.transfer(LocalDateTimeUtil.long2LocalDateTime(l),DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss SSS"));
+				this.clientTime = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss SSS").format(new Date(l));
 			}catch (Exception e){
 				System.out.println(this.clientTime);
 			}
