@@ -141,6 +141,8 @@ public class Inno72MachineInformation {
 
 	/** 计划ID */
 	private String planId;
+	/** 奖池ID */
+	private String interactId;
 
 	public Inno72MachineInformation(String type, String sessionUuid) {
 		this.sessionUuid = sessionUuid;

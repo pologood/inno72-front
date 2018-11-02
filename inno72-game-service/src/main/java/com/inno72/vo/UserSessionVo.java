@@ -20,8 +20,6 @@ public class UserSessionVo {
 	private String scanPayUrl;//TODO 支付url
 	private String interactId;//TODO 奖池ID
 
-
-
 	private String mid;
 	private String userNick;
 	private String userId;
@@ -44,6 +42,8 @@ public class UserSessionVo {
 	 * 下单存入
 	 */
 	private String inno72OrderId;
+
+	private String inno72CouponOrderId;
 
 	private String activityPlanId;
 

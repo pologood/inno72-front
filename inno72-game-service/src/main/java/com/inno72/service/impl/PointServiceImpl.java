@@ -91,22 +91,7 @@ public class PointServiceImpl implements PointService {
 				String sessionUuid = info.getSessionUuid();
 				UserSessionVo sessionKey = gameSessionRedisUtil.getSessionKey(sessionUuid);
 				buildBaseInfoFromSession(sessionKey, info);
-				String type = info.getType();
-				if (type.equals(Inno72MachineInformation.ENUM_INNO72_MACHINE_INFORMATION_TYPE.SCAN_LOGIN.getType())){
-					//添加登录扫码路径
-
-				}else if(type.equals(Inno72MachineInformation.ENUM_INNO72_MACHINE_INFORMATION_TYPE.SCAN_PAY.getType())){
-					//添加支付扫码路径
-				}else if(type.equals(Inno72MachineInformation.ENUM_INNO72_MACHINE_INFORMATION_TYPE.SHIPMENT.getType())){
-					//添加出货 货道号 商品 出货数量
-				}else if(type.equals(Inno72MachineInformation.ENUM_INNO72_MACHINE_INFORMATION_TYPE.ORDER_GOODS.getType())){
-					//添加下单 订单号 三方订单号
-				}else if(type.equals(Inno72MachineInformation.ENUM_INNO72_MACHINE_INFORMATION_TYPE.ORDER_COUPON.getType())){
-					//添加优惠券 奖池ID 抽奖结果
-				}else if(type.equals(Inno72MachineInformation.ENUM_INNO72_MACHINE_INFORMATION_TYPE.PAY.getType())){
-					//添加商品订单支付 结果
-				}
-
+				buildElseInfo(sessionKey, info);
 				mongoOperations.save(info,"Inno72MachineInformation");
 			} catch (InterruptedException e) {
 				e.printStackTrace();
@@ -116,6 +101,29 @@ public class PointServiceImpl implements PointService {
 		}
 	}
 
+	private void buildElseInfo(UserSessionVo sessionKey, Inno72MachineInformation info){
+		String type = info.getType();
+		if (type.equals(Inno72MachineInformation.ENUM_INNO72_MACHINE_INFORMATION_TYPE.SCAN_LOGIN.getType())){
+			//添加登录扫码路径
+			buildScanLoginFromSession(sessionKey, info);
+		}else if(type.equals(Inno72MachineInformation.ENUM_INNO72_MACHINE_INFORMATION_TYPE.SCAN_PAY.getType())){
+			//添加支付扫码路径
+			buildScanPayFromSession(sessionKey, info);
+		}else if(type.equals(Inno72MachineInformation.ENUM_INNO72_MACHINE_INFORMATION_TYPE.SHIPMENT.getType())){
+			//添加出货 货道号 商品 出货数量
+			buildShipmentFromSession(sessionKey, info);
+		}else if(type.equals(Inno72MachineInformation.ENUM_INNO72_MACHINE_INFORMATION_TYPE.ORDER_GOODS.getType())){
+			//添加下单 订单号 三方订单号
+			buildOrderFromSession(sessionKey, info);
+		}else if(type.equals(Inno72MachineInformation.ENUM_INNO72_MACHINE_INFORMATION_TYPE.ORDER_COUPON.getType())){
+			//添加优惠券 奖池ID 抽奖结果
+			buildCouponFromSession(sessionKey, info);
+		}else if(type.equals(Inno72MachineInformation.ENUM_INNO72_MACHINE_INFORMATION_TYPE.PAY.getType())){
+			//添加商品订单支付 结果
+			buildPayFromSession(sessionKey, info);
+		}
+
+	}
 
 	private void buildBaseInfoFromSession(UserSessionVo sessionKey, Inno72MachineInformation info) {
 
@@ -199,6 +207,12 @@ public class PointServiceImpl implements PointService {
 		info.setOrderId(inno72OrderId);
 		return Results.success(info);
 	}
+	private Result<Inno72MachineInformation> buildCouponFromSession(UserSessionVo sessionKey, Inno72MachineInformation info) {
+		info.setInteractId(sessionKey.getInteractId());
+		info.setOrderId(sessionKey.getInno72CouponOrderId());
+		return Results.success(info);
+	}
+
 	private Result<Inno72MachineInformation> buildOrderStatusFromSession(UserSessionVo sessionKey, Inno72MachineInformation info) {
 		String refOrderStatus = sessionKey.getRefOrderStatus();
 		info.setRefOrderStatus(refOrderStatus);
@@ -209,6 +223,20 @@ public class PointServiceImpl implements PointService {
 		info.setChannel(channelId);
 		String shipmentNum = sessionKey.getShipmentNum();
 		info.setShipmentNum(shipmentNum);
+		return Results.success(info);
+	}
+	private Result<Inno72MachineInformation> buildScanLoginFromSession(UserSessionVo sessionKey, Inno72MachineInformation info) {
+		info.setScanUrl(sessionKey.getScanLoginUrl());
+		return Results.success(info);
+	}
+	private Result<Inno72MachineInformation> buildScanPayFromSession(UserSessionVo sessionKey, Inno72MachineInformation info) {
+		info.setScanUrl(sessionKey.getScanPayUrl());
+		return Results.success(info);
+	}
+	private Result<Inno72MachineInformation> buildPayFromSession(UserSessionVo sessionKey, Inno72MachineInformation info) {
+		info.setScanUrl(sessionKey.getScanPayUrl());
+		info.setOrderId(sessionKey.getInno72OrderId());
+		info.setRefOrderStatus(sessionKey.getRefOrderStatus());
 		return Results.success(info);
 	}
 
