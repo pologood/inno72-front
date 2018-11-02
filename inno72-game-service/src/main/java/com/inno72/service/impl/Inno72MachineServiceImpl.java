@@ -238,6 +238,7 @@ public class Inno72MachineServiceImpl extends AbstractService<Inno72Machine> imp
 				inno72MachineVo.setActivityPlanId(interact.getId());
 				inno72MachineVo.setActivityType(Inno72MachineVo.ACTIVITYTYPE_PAIYANG);
 				inno72MachineVo.setPaiyangType(interact.getPaiyangType());
+				inno72MachineVo.setActivityName(interact.getName());
 			}else{
 				Inno72ActivityPlan inno72ActivityPlan = inno72ActivityPlans.get(0);
 				LOGGER.debug("活动计划详情 =====> {}", JSON.toJSONString(inno72ActivityPlan));
@@ -272,8 +273,17 @@ public class Inno72MachineServiceImpl extends AbstractService<Inno72Machine> imp
 				inno72MachineVo.setPrizeType(inno72ActivityPlan.getPrizeType());
 				inno72MachineVo.setPlanCode(inno72Activity.getCode());
 				inno72MachineVo.setActivityType(Inno72MachineVo.ACTIVITYTYPE_NOTPAIYANG);
+				inno72MachineVo.setActivityName(inno72Activity.getName());
 			}
 			inno72MachineVo.setReload(false);
+
+			//设置机器点位信息
+			Inno72AdminArea inno72AdminArea = inno72MachineMapper.findAreaByMachineCode(machineId);
+			inno72MachineVo.setProvence(inno72AdminArea.getProvince());
+			inno72MachineVo.setCity(inno72AdminArea.getCity());
+			inno72MachineVo.setDistrict(inno72AdminArea.getDistrict());
+			inno72MachineVo.setPoint(inno72AdminArea.getCircle());
+
 			redisUtil.set(CommonBean.REDIS_ACTIVITY_PLAN_CACHE_KEY +inno72MachineVo.getActivityPlanId()+":"+ machineId,
 					 JSON.toJSONString(inno72MachineVo));
 		}
