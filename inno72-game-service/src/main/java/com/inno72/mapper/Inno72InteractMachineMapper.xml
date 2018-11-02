@@ -19,4 +19,15 @@
       where interact.`status` = 1 and im.machine_code= #{machineCode}  and
       CURRENT_TIMESTAMP() BETWEEN imt.start_time and imt.end_time
   </select>
+
+  <select id="findMachineIdAndSellerId" resultType="com.inno72.vo.MachineSellerVo">
+    select im.machine_code as machineCode,m.merchant_code as sellerId from inno72_interact_machine im
+    join inno72_interact_machine_goods img on im.id=img.interact_machine_id
+    left join inno72_goods g on g.id=img.goods_id
+    left join inno72_merchant m on g.seller_id = m.id
+    where img.type = 0 and im.interact_id in
+    <foreach collection="array" item="id" index="index" open="(" close=")" separator=",">
+      #{id}
+    </foreach>
+  </select>
 </mapper>
