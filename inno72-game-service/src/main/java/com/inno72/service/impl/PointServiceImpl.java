@@ -27,6 +27,7 @@ import com.inno72.redis.IRedisUtil;
 import com.inno72.service.PointService;
 import com.inno72.vo.Inno72MachineInformation;
 import com.inno72.vo.Inno72MachineVo;
+import com.inno72.vo.Inno72TaoBaoCheckDataVo;
 import com.inno72.vo.RequestMachineInfoVo;
 import com.inno72.vo.UserSessionVo;
 
@@ -66,6 +67,61 @@ public class PointServiceImpl implements PointService {
 		LOGGER.info("innerPoint param : {}", session);
 		exec.execute(new Task(new Inno72MachineInformation(enumInno72MachineInformationType.getType(), session)));
 		return Results.success();
+	}
+
+	@Override
+	public Result<String> innerTaoBaoDataSyn(Inno72TaoBaoCheckDataVo vo) {
+		Result<String> valid = JSR303Util.valid(vo);
+		if (valid.getCode() == Result.FAILURE){
+			return valid;
+		}
+		exec.execute(() -> {
+			try {
+				semaphore.acquire();
+				String sessionUuid = vo.getSessionUuid();
+				UserSessionVo sessionKey = gameSessionRedisUtil.getSessionKey(sessionUuid);
+				Inno72TaoBaoCheckDataVo inno72TaoBaoCheckDataVo = buildTaoBaoSynBody(sessionKey, vo);
+
+				mongoOperations.save(inno72TaoBaoCheckDataVo, "Inno72TaoBaoCheckData");
+			} catch (InterruptedException e) {
+				e.printStackTrace();
+			} finally {
+				semaphore.release();
+			}
+		});
+		return Results.success();
+	}
+
+	private Inno72TaoBaoCheckDataVo buildTaoBaoSynBody(UserSessionVo sessionKey, Inno72TaoBaoCheckDataVo vo) {
+
+		String traceId = sessionKey.getTraceId();
+
+		String activityId = sessionKey.getActivityId();
+		String activityName = sessionKey.getInno72MachineVo().getActivityName();
+
+		String machineCode = sessionKey.getMachineCode();
+
+		String provence = sessionKey.getInno72MachineVo().getProvence();
+		String city = sessionKey.getInno72MachineVo().getCity();
+		String district = sessionKey.getInno72MachineVo().getDistrict();
+		String point = sessionKey.getInno72MachineVo().getPoint();
+		String playCode = sessionKey.getPlayCode();
+
+		String userNick = Optional.ofNullable(sessionKey.getUserNick()).orElse("");
+		String userId = Optional.ofNullable(sessionKey.getUserId()).orElse("");
+		String sellerId = Optional.ofNullable(sessionKey.getSellerId()).orElse("");
+		String sellerName = Optional.ofNullable(sessionKey.getSellerName()).orElse("");
+		String goodsCode = Optional.ofNullable(sessionKey.getGoodsCode()).orElse("");
+		String goodsName = Optional.ofNullable(sessionKey.getGoodsName()).orElse("");
+
+		//		String traceId, String activityId, String activityName, String provence, String city,
+		//		String district, String point, String userId, String nickName, String sellerId,
+		//		String sellerName, String goodsId, String goodsName, String playCode
+		Inno72TaoBaoCheckDataVo inno72TaoBaoCheckDataVo = vo
+				.buildBaseInformation(traceId, activityId, activityName, provence, city, district, point, userId,
+						userNick, sellerId, sellerName, goodsCode, goodsName, playCode, vo);
+		return inno72TaoBaoCheckDataVo;
+
 	}
 
 	private ExecutorService exec = Executors.newCachedThreadPool();
