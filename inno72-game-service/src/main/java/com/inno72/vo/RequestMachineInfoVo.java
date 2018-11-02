@@ -40,6 +40,8 @@ public class RequestMachineInfoVo {
 	@NotNull(message = "计划不能为空!")
 	private String planId;
 
+	private String desc;
+
 	/** 自动手动，默认是自动.页面跳转行为使用 0/1 */
 	private String clickType;
 
