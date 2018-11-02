@@ -286,10 +286,13 @@ public class Inno72AuthInfoServiceImpl implements Inno72AuthInfoService {
 			inno72GameUserMapper.insert(inno72GameUser);
 			LOGGER.info("插入游戏用户表 完成 ===> {}", JSON.toJSONString(inno72GameUser));
 			userChannel = new Inno72GameUserChannel(nickName, "", channelId, inno72GameUser.getId(),
-					inno72Channel.getChannelName(), userId);
+					inno72Channel.getChannelName(), userId, accessToken);
 			inno72GameUserChannelMapper.insert(userChannel);
 			LOGGER.info("插入游戏用户渠道表 完成 ===> {}", JSON.toJSONString(userChannel));
 
+		} else {
+			userChannel.setAccessToken(accessToken);
+			inno72GameUserChannelMapper.updateByPrimaryKey(userChannel);
 		}
 
 		this.checkGoodsId(sessionVo);
@@ -424,10 +427,12 @@ public class Inno72AuthInfoServiceImpl implements Inno72AuthInfoService {
 			inno72GameUserMapper.insert(inno72GameUser);
 			LOGGER.info("插入游戏用户表 完成 ===> {}", JSON.toJSONString(inno72GameUser));
 			userChannel = new Inno72GameUserChannel(nickName, "", channelId, inno72GameUser.getId(),
-					inno72Channel.getChannelName(), userId);
+					inno72Channel.getChannelName(), userId, accessToken);
 			inno72GameUserChannelMapper.insert(userChannel);
 			LOGGER.info("插入游戏用户渠道表 完成 ===> {}", JSON.toJSONString(userChannel));
-
+		} else {
+			userChannel.setAccessToken(accessToken);
+			inno72GameUserChannelMapper.updateByPrimaryKey(userChannel);
 		}
 
 //		UserSessionVo sessionVo = new UserSessionVo(mid, nickName, userId, accessToken, gameId, sessionUuid,

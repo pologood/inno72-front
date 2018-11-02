@@ -14,6 +14,7 @@
         <result column="channel_user_key" jdbcType="VARCHAR" property="channelUserKey"/>
         <result column="create_time" jdbcType="TIMESTAMP" property="createTime" javaType="java.time.LocalDateTime"
                 typeHandler="org.apache.ibatis.type.LocalDateTimeTypeHandler"/>
+        <result column="access_token" jdbcType="VARCHAR" property="accessToken"/>
     </resultMap>
     <select id="selectByChannelUserKey" resultMap="BaseResultMap">
       select * from inno72_game_user_channel
