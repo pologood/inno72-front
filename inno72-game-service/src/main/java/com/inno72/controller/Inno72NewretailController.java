@@ -3,31 +3,15 @@ package com.inno72.controller;
 import com.inno72.common.Inno72BizException;
 import com.inno72.common.Result;
 import com.inno72.common.Results;
-import com.inno72.common.json.JsonUtil;
-import com.inno72.common.util.FastJsonUtils;
 import com.inno72.common.util.excel.ExportExcel;
-import com.inno72.mapper.Inno72AdminAreaMapper;
-import com.inno72.mapper.Inno72InteractMachineMapper;
-import com.inno72.mapper.Inno72LocaleMapper;
-import com.inno72.mapper.Inno72MachineMapper;
+import com.inno72.mapper.*;
 import com.inno72.model.Inno72AdminArea;
 import com.inno72.model.Inno72Locale;
 import com.inno72.model.Inno72Machine;
 import com.inno72.service.Inno72NewretailService;
 import com.inno72.vo.DeviceVo;
 import com.inno72.vo.MachineSellerVo;
-import com.inno72.vo.MachineVo;
-import com.inno72.vo.UserSessionVo;
-import com.taobao.api.ApiException;
-import com.taobao.api.DefaultTaobaoClient;
-import com.taobao.api.TaobaoClient;
 import com.taobao.api.internal.util.StringUtils;
-import com.taobao.api.request.SmartstoreDeviceAddRequest;
-import com.taobao.api.request.SmartstoreDeviceQueryRequest;
-import com.taobao.api.request.SmartstoreStoresQueryRequest;
-import com.taobao.api.response.SmartstoreDeviceAddResponse;
-import com.taobao.api.response.SmartstoreDeviceQueryResponse;
-import com.taobao.api.response.SmartstoreStoresQueryResponse;
 import org.apache.poi.ss.usermodel.Row;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -41,7 +25,10 @@ import org.springframework.web.bind.annotation.RestController;
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 @RestController
 @RequestMapping("/newretail")
@@ -75,6 +62,9 @@ public class Inno72NewretailController {
 	@Resource
 	private Inno72AdminAreaMapper inno72AdminAreaMapper;
 
+    @Resource
+    private Inno72ActivityMapper inno72ActivityMapper;
+
 	@Value("${sell_session_key}")
 	private String sellSessionKey;
 
@@ -82,9 +72,9 @@ public class Inno72NewretailController {
      * 查找门店id
      */
     @RequestMapping(value = "/findStores")
-    public Result<Object> findStoreId(String sessionKey, String storeName) {
+    public Result<Object> findStoreId(String storeName) {
         try{
-            Long storeId = service.findStores(sessionKey,storeName);
+            Long storeId = service.findStores(sellSessionKey,storeName);
             return Results.success(storeId);
         }catch(Inno72BizException e){
             return Results.failure(e.getMessage());
@@ -176,60 +166,102 @@ public class Inno72NewretailController {
         }
     }
 
-//	@RequestMapping(value = "/exportShop")
-//	public void exportShop(String activityId,Integer activityType, HttpServletResponse response) throws Exception {
-//		if(ACTIVITYTYPE_PAIYANG == activityType){
-//			//派样
-//			List<MachineSellerVo> list = inno72InteractMachineMapper.findMachineIdAndSellerId(activityId);
-//		}else{
-//			//互动
-//
-//		}
-//	}
+	@RequestMapping(value = "/exportShop")
+	public void exportShop(String activityId,Integer activityType, HttpServletResponse response) throws Exception {
+        List<MachineSellerVo> list = null;
+        if(!StringUtils.isEmpty(activityId)){
+            if(ACTIVITYTYPE_PAIYANG == activityType){
+                //派样
+                list = inno72InteractMachineMapper.findMachineIdAndSellerId(activityId.split(","));
+            }else{
+                //互动
+                String[] activityIds = activityId.split(",");
+                list = new ArrayList<MachineSellerVo>();
+                for(String id:activityIds){
+                    List<String> machinelist = inno72ActivityMapper.selectMachineCodeByActivityId(activityId);
+                    List<String> sellerlist = inno72ActivityMapper.selectSellerIdByActivityId(activityId);
+                    List<MachineSellerVo> tmplist  = buildMachineSellerVoList(machinelist,sellerlist);
+                    if(tmplist!=null&&tmplist.size()>0){
+                        list.addAll(tmplist);
+                    }
+                }
+            }
+        }
+        exportShop(list,response);
+	}
 
-//	private void exportShop(List<MachineSellerVo> list, HttpServletResponse response) throws Exception {
-//    	if(list!=null && list.size()>0){
-//			List<String> headerList = buildHeaderList();
-//			ExportExcel excelShop = new ExportExcel("", headerList);
-//
-//    		for(MachineSellerVo machineSellerVo:list){
-//				Inno72Machine inno72Machine = inno72MachineMapper.selectByPrimaryKey(machineSellerVo.getMachineId());
-//				String localeId = inno72Machine.getLocaleId();
-//				Inno72Locale inno72Locale = inno72LocaleMapper.selectByPrimaryKey(localeId);
-//				String areaCode = inno72Locale.getAreaCode();
-//				Inno72AdminArea inno72AdminArea = inno72AdminAreaMapper.selectByPrimaryKey(areaCode);
-//
-//				String province = inno72AdminArea.getProvince();
-//				String city = inno72AdminArea.getCity();
-//				String locale = inno72Locale.getName();
-//
-//				String shopName = sellerId + "-" + inno72Machine.getMachineCode();
-//				Long storeid =null;
-//				try{
-//					storeid = service.findStores(sellSessionKey,shopName);
-//				}catch (Inno72BizException e){
-//					LOGGER.error("查找门店异常",e);
-//				}catch (Exception e){
-//					throw e;
-//				}
-//				if(storeid == null){
-//					Row row = excelShop.addRow();
-//					excelShop.addCell(row, 0, province); // 省
-//					excelShop.addCell(row, 1, city); // 市
-//					excelShop.addCell(row, 6, shopName); // 店名
-//					excelShop.addCell(row, 9, locale); // 地址
-//					excelShop.addCell(row, 10, getTel()); // 联系电话
-//					excelShop.addCell(row, 12, "https://img.alicdn.com/top/i1/TB1Xb0QXjfguuRjy1zewu20KFXa.png"); // 图片地址
-//					excelShop.addCell(row, 15, "09:00-22:00"); // 营业时间
-//				}
-//			}
-//			try {
-//				excelShop.write(response, "门店.xlsx").dispose();
-//			} catch (IOException e) {
-//				e.printStackTrace();
-//			}
-//		}
-//	}
+    private List<MachineSellerVo> buildMachineSellerVoList(List<String> machinelist, List<String> sellerlist) {
+        if(machinelist!=null&&machinelist.size()>0&&sellerlist!=null&&sellerlist.size()>0){
+            List<MachineSellerVo> list = new ArrayList<MachineSellerVo>();
+            for(String machineCode:machinelist){
+                for(String sellerId:sellerlist){
+                    if(!StringUtils.isEmpty(machineCode)&&!StringUtils.isEmpty(sellerId)){
+                        MachineSellerVo vo = new MachineSellerVo();
+                        vo.setMachineCode(machineCode);
+                        vo.setSellerId(sellerId);
+                        list.add(vo);
+                    }else{
+                        LOGGER.error("machineCode={},sellerId={}",machineCode,sellerId);
+                    }
+                }
+            }
+            return list;
+        }
+        return null;
+    }
+
+    private void exportShop(List<MachineSellerVo> list, HttpServletResponse response) throws Exception {
+
+			List<String> headerList = buildHeaderList();
+			ExportExcel excelShop = new ExportExcel("", headerList);
+        if(list!=null && list.size()>0){
+            Set<String> cacheSet = new HashSet();
+    		for(MachineSellerVo machineSellerVo:list){
+    		    if(!StringUtils.isEmpty(machineSellerVo.getMachineCode())&& !StringUtils.isEmpty(machineSellerVo.getSellerId())){
+                    String shopName = machineSellerVo.getSellerId() + "-" + machineSellerVo.getMachineCode();
+                    if(!cacheSet.contains(shopName)){
+                        Inno72Machine inno72Machine = inno72MachineMapper.findMachineByCode(machineSellerVo.getMachineCode());
+                        String localeId = inno72Machine.getLocaleId();
+                        Inno72Locale inno72Locale = inno72LocaleMapper.selectByPrimaryKey(localeId);
+                        String areaCode = inno72Locale.getAreaCode();
+                        Inno72AdminArea inno72AdminArea = inno72AdminAreaMapper.selectByPrimaryKey(areaCode);
+
+                        String province = inno72AdminArea.getProvince();
+                        String city = inno72AdminArea.getCity();
+                        String locale = inno72Locale.getName();
+
+                        Long storeid =null;
+                        try{
+                            storeid = service.findStores(sellSessionKey,shopName);
+                        }catch (Inno72BizException e){
+                            LOGGER.error("查找门店异常{}",e.getMessage());
+                        }catch (Exception e){
+                            throw e;
+                        }
+                        if(storeid == null){
+                            Row row = excelShop.addRow();
+                            excelShop.addCell(row, 0, province); // 省
+                            excelShop.addCell(row, 1, city); // 市
+                            excelShop.addCell(row, 6, shopName); // 店名
+                            excelShop.addCell(row, 9, locale); // 地址
+                            excelShop.addCell(row, 10, getTel()); // 联系电话
+                            excelShop.addCell(row, 12, "https://img.alicdn.com/top/i1/TB1Xb0QXjfguuRjy1zewu20KFXa.png"); // 图片地址
+                            excelShop.addCell(row, 15, "09:00-22:00"); // 营业时间
+                        }
+                        cacheSet.add(shopName);
+                    }
+                }else{
+    		        LOGGER.error("数据异常machineCode = {},sellerId= {}",machineSellerVo.getMachineCode(),machineSellerVo.getSellerId());
+                }
+
+			}
+        }
+        try {
+            excelShop.write(response, "门店.xlsx").dispose();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+	}
 
 	/**
 	 * 构建sheet表头
