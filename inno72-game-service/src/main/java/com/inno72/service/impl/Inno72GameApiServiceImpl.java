@@ -889,6 +889,8 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 			ref_order_id = FastJsonUtils.getString(respJson, "order_id");
 		}
 
+		userSessionVo = gameSessionRedisUtil.getSessionKey(sessionUuid);
+
 		userSessionVo.setRefOrderId(ref_order_id);
 		userSessionVo.setInno72OrderId(inno72OrderId);
 		userSessionVo.setNeedPay(needPay);
@@ -1026,7 +1028,7 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 
 			inno72Order.setMerchantId(inno72Goods.getSellerId());
 
-			userSessionVo.setGoodsId(goodsId);
+			userSessionVo.setGoodsId(inno72Goods.getId());
 			userSessionVo.setGoodsCode(inno72Goods.getCode());
 			userSessionVo.setGoodsName(inno72Goods.getName());
 
@@ -2214,7 +2216,7 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 			inno72Order.setShopsId(inno72Shops.getId());
 			inno72Order.setShopsName(inno72Shops.getShopName());
 
-			userSessionVo.setGoodsId(goodsId);
+			userSessionVo.setGoodsId(inno72Goods.getId());
 			userSessionVo.setGoodsName(goodsName);
 			userSessionVo.setGoodsCode(inno72Goods.getCode());
 
