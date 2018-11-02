@@ -58,11 +58,17 @@ public class Inno72GameUserChannel {
 	@Convert(converter = LocalDateConverter.class)
 	private LocalDateTime createTime;
 
+	/**
+	 * accessToken
+	 */
+	@Column(name = "access_token")
+	private String accessToken;
+
 	public Inno72GameUserChannel() {
 	}
 
 	public Inno72GameUserChannel(String userNick, String phone, String channelId, String gameUserId, String channelName,
-			String channelUserKey) {
+			String channelUserKey, String accessToken) {
 		this.userNick = userNick;
 		this.phone = phone;
 		this.channelId = channelId;
@@ -70,6 +76,7 @@ public class Inno72GameUserChannel {
 		this.channelName = channelName;
 		this.channelUserKey = channelUserKey;
 		this.createTime = LocalDateTime.now();
+		this.accessToken = accessToken;
 	}
 
 	/**
@@ -196,5 +203,13 @@ public class Inno72GameUserChannel {
 
 	public void setGameUserId(String gameUserId) {
 		this.gameUserId = gameUserId;
+	}
+
+	public String getAccessToken() {
+		return accessToken;
+	}
+
+	public void setAccessToken(String accessToken) {
+		this.accessToken = accessToken;
 	}
 }

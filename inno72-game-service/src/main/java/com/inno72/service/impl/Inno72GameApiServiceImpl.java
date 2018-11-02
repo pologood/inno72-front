@@ -1703,15 +1703,13 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 		Inno72Channel inno72Channel = inno72ChannelMapper.selectByPrimaryKey(channelId);
 
 		if (userChannel == null) {
-
 			Inno72GameUser inno72GameUser = new Inno72GameUser();
 			inno72GameUserMapper.insert(inno72GameUser);
 			LOGGER.info("插入游戏用户表 完成 ===> {}", JSON.toJSONString(inno72GameUser));
 			userChannel = new Inno72GameUserChannel(sessionUuid, "", channelId, inno72GameUser.getId(),
-					inno72Channel.getChannelName(), sessionUuid);
+					inno72Channel.getChannelName(), sessionUuid, "");
 			inno72GameUserChannelMapper.insert(userChannel);
 			LOGGER.info("插入游戏用户渠道表 完成 ===> {}", JSON.toJSONString(userChannel));
-
 		}
 
 		this.startGameLife(userChannel, inno72Activity, inno72ActivityPlan, inno72Game, inno72Machine, sessionUuid);
@@ -1757,11 +1755,11 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 				token, code, userId, itemId);
 
 		JSONObject parseTokenObject = JSON.parseObject(token);
-		String access_token = Optional.ofNullable(parseTokenObject.get("access_token")).map(Object::toString)
+		String accessToken = Optional.ofNullable(parseTokenObject.get("accessToken")).map(Object::toString)
 				.orElse("");
 
-		if (StringUtil.isEmpty(access_token)) {
-			return Results.failure("access_token 参数缺失！");
+		if (StringUtil.isEmpty(accessToken)) {
+			return Results.failure("accessToken 参数缺失！");
 		}
 
 		// 判断是否有他人登录以及二维码是否过期
@@ -1828,7 +1826,7 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 		Inno72Merchant inno72Merchant = inno72MerchantMapper.selectByPrimaryKey(sellerId);
 
 		Map<String, String> requestForm = new HashMap<>();
-		requestForm.put("accessToken", access_token);
+		requestForm.put("accessToken", accessToken);
 		requestForm.put("mid", inno72Machine.getMachineCode());
 		requestForm.put("sellerId", inno72Merchant.getMerchantCode());
 		requestForm.put("mixNick", userId); // 实际为taobao_user_nick
@@ -1861,10 +1859,13 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 			inno72GameUserMapper.insert(inno72GameUser);
 			LOGGER.info("插入游戏用户表 完成 ===> {}", JSON.toJSONString(inno72GameUser));
 			userChannel = new Inno72GameUserChannel(nickName, "", channelId, inno72GameUser.getId(),
-					inno72Channel.getChannelName(), userId);
+					inno72Channel.getChannelName(), userId, accessToken);
 			inno72GameUserChannelMapper.insert(userChannel);
 			LOGGER.info("插入游戏用户渠道表 完成 ===> {}", JSON.toJSONString(userChannel));
 
+		} else {
+			userChannel.setAccessToken(accessToken);
+			inno72GameUserChannelMapper.updateByPrimaryKey(userChannel);
 		}
 		// TODO 判断机器是否有商品
 		Map<String, String> params = new HashMap<>(2);
@@ -1882,7 +1883,7 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 			}
 		}
 
-		UserSessionVo sessionVo = new UserSessionVo(mid, nickName, userId, access_token, gameId, sessionUuid,
+		UserSessionVo sessionVo = new UserSessionVo(mid, nickName, userId, accessToken, gameId, sessionUuid,
 				inno72ActivityPlan.getId());
 		boolean b = inno72GameService.countSuccOrder(channelId, userId, inno72ActivityPlan.getId());
 		sessionVo.setCanOrder(b);
