@@ -27,4 +27,16 @@ public interface Inno72NewretailService {
      * 新增机器
      */
     void saveMachine(List<DeviceVo> list) throws Exception;
+
+    /**
+     * 调度中心调用淘宝定时回流
+     * @param tradeNo
+     * @param deviceCode
+     * @param itemId
+     * @param opTime
+     * @param userNick
+     * @param merchantName
+     * @param merchantCode
+     */
+    void feedBackOrder(String tradeNo, String deviceCode, String itemId, String opTime, String userNick, String merchantName, String merchantCode) throws ApiException;
 }

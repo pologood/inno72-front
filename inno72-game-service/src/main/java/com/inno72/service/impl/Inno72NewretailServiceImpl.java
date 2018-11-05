@@ -359,6 +359,22 @@ public class Inno72NewretailServiceImpl implements Inno72NewretailService {
         LOGGER.info("saveMachine use time  = {}s",(System.currentTimeMillis()-startTime)/1000);
     }
 
+    @Override
+    public void feedBackOrder(String tradeNo, String deviceCode, String itemId, String opTime, String userNick, String merchantName, String merchantCode) throws ApiException {
+        Inno72FeedBackLog inno72FeedBackLog = findInno72FeedBackLogByOrderId(tradeNo);
+        if(inno72FeedBackLog == null){
+            deviceVendorFeedback(sellSessionKey,tradeNo,deviceCode,itemId,opTime,userNick,merchantName,merchantCode);
+        }
+    }
+
+    private Inno72FeedBackLog findInno72FeedBackLogByOrderId(String orderId) {
+        Inno72FeedBackLog param = new Inno72FeedBackLog();
+        param.setOrderId(orderId);
+        List<Inno72FeedBackLog> list = inno72FeedBackLogMapper.select(param);
+        if(list.size()>0) return list.get(0);
+        return null;
+    }
+
     @Transactional(propagation=Propagation.REQUIRES_NEW)
     public void saveMachineDevice(Inno72MachineDevice inno72MachineDevice) {
         inno72MachineDeviceService.save(inno72MachineDevice);

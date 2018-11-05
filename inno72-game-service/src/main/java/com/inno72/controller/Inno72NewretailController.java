@@ -166,6 +166,19 @@ public class Inno72NewretailController {
         }
     }
 
+    @RequestMapping(value = "/feedBackOrder")
+    public Result<Object> feedBackOrder(String tradeNo,
+                                               String deviceCode,
+                                        String itemId ,String opTime, String userNick,String merchantName, String merchantCode) {
+        try{
+            service.feedBackOrder(tradeNo,deviceCode,itemId ,opTime,userNick,merchantName, merchantCode);
+            return Results.success();
+        }catch(Exception e){
+            LOGGER.error("feedBackOrder",e);
+            return Results.failure("系统异常");
+        }
+    }
+
 	@RequestMapping(value = "/exportShop")
 	public void exportShop(String activityId,Integer activityType, HttpServletResponse response) throws Exception {
         List<MachineSellerVo> list = null;
