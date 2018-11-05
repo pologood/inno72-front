@@ -9,6 +9,7 @@ import java.util.concurrent.Semaphore;
 
 import javax.annotation.Resource;
 
+import com.inno72.service.Inno72MachineService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
@@ -44,6 +45,9 @@ public class PointServiceImpl implements PointService {
 	@Resource
 	private MongoOperations mongoOperations;
 
+	@Resource
+	private Inno72MachineService inno72MachineService;
+
 	@Override
 	public Result<String> information(String request) {
 		LOGGER.info("information param : {}", request);
@@ -51,6 +55,20 @@ public class PointServiceImpl implements PointService {
 			return Results.failure("参数错误!");
 		}
 		RequestMachineInfoVo requestMachineInfoVo = JSON.parseObject(request, RequestMachineInfoVo.class);
+		String planId = requestMachineInfoVo.getPlanId();
+		String sessionUuid = requestMachineInfoVo.getSessionUuid();
+
+		String rVoJson = redisUtil.get(CommonBean.REDIS_ACTIVITY_PLAN_CACHE_KEY +  planId + ":" + sessionUuid);
+		if (StringUtil.isEmpty(rVoJson)) {
+			inno72MachineService.findGame(requestMachineInfoVo.getSessionUuid(), "-1", "", "");
+		}
+
+		Inno72MachineVo inno72MachineVo = JSON.parseObject(rVoJson, Inno72MachineVo.class);
+		if (inno72MachineVo != null) {
+			String activityId = inno72MachineVo.getActivityId();
+			requestMachineInfoVo.setActivityId(activityId);
+		}
+
 		Result<String> valid = JSR303Util.valid(requestMachineInfoVo);
 		if (valid.getCode() == Result.FAILURE){
 			return valid;

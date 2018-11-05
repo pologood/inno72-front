@@ -1474,6 +1474,7 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 		String planCode = FastJsonUtils.getString(rVoJson, "planCode");
 		if (!StringUtil.isEmpty(planCode)) {
 			userSessionVo.setPlanCode(planCode);
+			userSessionVo.setActivityId(inno72MachineVo.getActivityId());
 		}
 		LOGGER.debug("parse rVoJson string finish --> {}", inno72MachineVo);
 
@@ -1489,6 +1490,10 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 
 		// 设置15秒内二维码不能被扫
 		gameSessionRedisUtil.setSessionEx(sessionUuid + "qrCode", sessionUuid, 15);
+
+		if (StringUtil.isNotEmpty(userSessionVo.getGoodsId())) {
+			pointService.innerPoint(sessionUuid, Inno72MachineInformation.ENUM_INNO72_MACHINE_INFORMATION_TYPE.PRODUCT_CLICK);
+		}
 	}
 
 	/**
@@ -1587,6 +1592,9 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 				userSessionVo.setIsVip(isVip);
 			}
 			if (StringUtil.isNotEmpty(itemId)) {
+				Inno72Goods inno72Goods = inno72GoodsMapper.selectByPrimaryKey(itemId);
+				userSessionVo.setGoodsCode(inno72Goods.getCode());
+				userSessionVo.setGoodsName(inno72Goods.getName());
 				userSessionVo.setGoodsId(itemId);
 				merchant = inno72MerchantMapper.findByGoodsId(itemId);
 				if(merchant == null){
