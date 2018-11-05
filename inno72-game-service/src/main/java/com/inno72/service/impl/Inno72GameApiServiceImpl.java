@@ -16,6 +16,7 @@ import java.util.Optional;
 
 import javax.annotation.Resource;
 
+import com.inno72.mapper.*;
 import com.inno72.service.*;
 import com.inno72.vo.*;
 import org.apache.commons.lang.StringUtils;
@@ -47,24 +48,6 @@ import com.inno72.common.util.UuidUtil;
 import com.inno72.common.utils.StringUtil;
 import com.inno72.machine.vo.SupplyRequestVo;
 import com.inno72.model.*;
-import com.inno72.mapper.Inno72ActivityMapper;
-import com.inno72.mapper.Inno72ActivityPlanGameResultMapper;
-import com.inno72.mapper.Inno72ActivityPlanMapper;
-import com.inno72.mapper.Inno72ChannelMapper;
-import com.inno72.mapper.Inno72CouponMapper;
-import com.inno72.mapper.Inno72GameMapper;
-import com.inno72.mapper.Inno72GameUserChannelMapper;
-import com.inno72.mapper.Inno72GameUserLifeMapper;
-import com.inno72.mapper.Inno72GameUserMapper;
-import com.inno72.mapper.Inno72GoodsMapper;
-import com.inno72.mapper.Inno72LocaleMapper;
-import com.inno72.mapper.Inno72MachineMapper;
-import com.inno72.mapper.Inno72MerchantMapper;
-import com.inno72.mapper.Inno72OrderGoodsMapper;
-import com.inno72.mapper.Inno72OrderHistoryMapper;
-import com.inno72.mapper.Inno72OrderMapper;
-import com.inno72.mapper.Inno72ShopsMapper;
-import com.inno72.mapper.Inno72SupplyChannelMapper;
 import com.inno72.model.AlarmDetailBean;
 import com.inno72.model.Inno72Activity;
 import com.inno72.model.Inno72ActivityPlan;
@@ -173,6 +156,9 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 
 	@Resource
 	private Inno72MachineService inno72MachineService;
+
+	@Resource
+	private Inno72FeedbackErrorlogMapper inno72FeedbackErrorlogMapper;
 
 	@Resource
 	private PointService pointService;
@@ -1328,9 +1314,17 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 			if(!StringUtils.isEmpty(userNick)){
 				String orderTime = DateUtil.format(order.getOrderTime(),DateUtil.getDatePattern());
 				Inno72MachineDevice deviceCode = inno72MachineDeviceService.findByMachineCodeAndSellerId(machineCode,goods.getMerchantCode());
-				Inno72Merchant merchant = inno72MerchantMapper.selectByPrimaryKey(goods.getSellerId());
-				LOGGER.info("调用淘宝数据回流sessionKey={},orderId={},deviceCode={},goodsId={},orderTime={}",sellSessionKey,orderId,deviceCode.getDeviceCode(),goods.getCode(),orderTime);
-				inno72NewretailService.deviceVendorFeedback(sellSessionKey,orderId,deviceCode.getDeviceCode(),goods.getCode(),orderTime,userNick,merchant.getMerchantName(),merchant.getMerchantCode());
+				if(deviceCode!=null){
+					Inno72Merchant merchant = inno72MerchantMapper.selectByPrimaryKey(goods.getSellerId());
+					LOGGER.info("调用淘宝数据回流sessionKey={},orderId={},deviceCode={},goodsId={},orderTime={}",sellSessionKey,orderId,deviceCode.getDeviceCode(),goods.getCode(),orderTime);
+					inno72NewretailService.deviceVendorFeedback(sellSessionKey,orderId,deviceCode.getDeviceCode(),goods.getCode(),orderTime,userNick,merchant.getMerchantName(),merchant.getMerchantCode());
+				}else{
+					Inno72FeedbackErrorlog inno72FeedbackErrorlog = new Inno72FeedbackErrorlog();
+					inno72FeedbackErrorlog.setOrderId(orderId);
+					inno72FeedbackErrorlog.setCreateTime(new Date());
+					inno72FeedbackErrorlog.setMsg("deviceCode is null machineCode="+machineCode+",merchantCode="+goods.getMerchantCode());
+					inno72FeedbackErrorlogMapper.insert(inno72FeedbackErrorlog);
+				}
 			}else{
 				LOGGER.error("userNick is null 不回流数据 orderId = {}",order.getId());
 			}
