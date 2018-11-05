@@ -36,11 +36,13 @@ public class ActivityController {
 	/**
 	 * 登录回调接口
 	 */
-	@RequestMapping("/api/activity/{sessionUuid}/{taobaoUserId}")
+	@RequestMapping("/api/activity/{sessionUuid}/{taobaoUserId}/{env}")
 	public void activityIndex(HttpServletResponse response,
 			@PathVariable("sessionUuid") String sessionUuid,
 			String code,
-			@PathVariable("taobaoUserId") String taobaoUserId)
+			@PathVariable("taobaoUserId") String taobaoUserId,
+			@PathVariable("env") String env
+			)
 			throws Exception {
 		LOGGER.info("activity code is {}, sessionUuid is {}, taobaoUserId is {},", code, sessionUuid, taobaoUserId);
 		if (!StringUtils.isEmpty(code) && !StringUtils.isEmpty(sessionUuid)) {
@@ -57,9 +59,10 @@ public class ActivityController {
 			if (!StringUtils.isEmpty(taobaoUserId)) {
 				String original = Encodes.decodeBase64String(taobaoUserId);
 				if (original.equals(_taobaoUserId)) {
-					// todo 判断是同一个用户
+					LOGGER.info("是同一个用户");
 				} else {
 					// 否则不是同一个用户
+					LOGGER.info("不是同一个用户");
 				}
 			}
 

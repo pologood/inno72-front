@@ -5,16 +5,15 @@ import com.inno72.common.Inno72GameServiceProperties;
 import com.inno72.common.Result;
 import com.inno72.common.Results;
 import com.inno72.common.TopH5ErrorTypeEnum;
+import com.inno72.common.util.Encodes;
 import com.inno72.common.util.GameSessionRedisUtil;
 import com.inno72.common.util.UuidUtil;
+import com.inno72.common.utils.StringUtil;
 import com.inno72.mapper.Inno72ActivityPlanGameResultMapper;
 import com.inno72.mapper.Inno72GoodsMapper;
 import com.inno72.mapper.Inno72MachineMapper;
 import com.inno72.mapper.Inno72SupplyChannelMapper;
-import com.inno72.model.Inno72ActivityPlanGameResult;
-import com.inno72.model.Inno72Goods;
-import com.inno72.model.Inno72Order;
-import com.inno72.model.Inno72SupplyChannel;
+import com.inno72.model.*;
 import com.inno72.service.Inno72GameApiService;
 import com.inno72.service.PointService;
 import com.inno72.vo.GameResultVo;
@@ -127,21 +126,38 @@ public class Inno72ActivityController {
 		return Results.success(gameResultVoList);
 	}
 
-	@ResponseBody
-	@RequestMapping(value = "/createQrCode", method = {RequestMethod.GET})
-	private void createQrCode(String sessionUuid) {
-//		inno72GameApiService.createQrCode()
+	/**
+	 * 获得商品信息
+	 * @return
+	 */
+	@RequestMapping(value = "/createLoginQrCode", method = {RequestMethod.POST, RequestMethod.GET})
+	public Result createLoginQrCode(String sessionUuid) {
+		Inno72Machine inno72Machine = inno72MachineMapper.findMachineByCode(sessionUuid);
+		// 生成二维码流程
+		String redirect = inno72GameServiceProperties.get("activityLoginRedirect");
+		// 二维码存储在本地的路径
+		String localUrl = "activityLogin" + inno72Machine.getId() + sessionUuid + ".png";
+		String qrCode = inno72GameApiService.createQrCode(inno72Machine, redirect, localUrl);
+		return Results.success(qrCode);
 	}
+
 
 	/**
 	 * 登录跳转
 	 */
-	@ResponseBody
 	@RequestMapping(value = "/loginRedirect", method = {RequestMethod.GET})
 	public void loginRedirect(HttpServletResponse response, String sessionUuid, String env) {
 		LOGGER.info("loginRedirect sessionUuid is {}, env is {}", sessionUuid, env);
 		try {
-			String redirectUrl = String.format("%s%s/%s/%s", inno72GameServiceProperties.get("tmallActivityLoginUrl"), sessionUuid, env);
+			UserSessionVo sessionVo = gameSessionRedisUtil.getSessionKey(sessionUuid);
+			String userId = sessionVo.getUserId();
+			// userId = userId == null ? "" : userId;
+			String s = Encodes.encodeBase64("t01RdlAxzdwykvns%252F75%252Bx3n5hVj5NOU0m45xvsKUhE1Z00%253D");
+			userId = s;
+			// /api/activity/{sessionUuid}/{taobaoUserId}
+			// https://oauth.taobao.com/authorize?response_type=code&client_id=24952452&redirect_uri=http://inno72test.ews.m.jaeapp.com/api/activity/
+			// String redirectUrl = String.format("%s%s/%s/%s", inno72GameServiceProperties.get("tmallActivityLoginUrl"), sessionUuid, userId, env);
+			String redirectUrl = String.format("%s%s/%s", inno72GameServiceProperties.get("tmallActivityLoginUrl"), sessionUuid, userId);
 			LOGGER.info("loginRedirect redirectUrl is {} ", redirectUrl);
 			response.sendRedirect(redirectUrl);
 		} catch (IOException e) {

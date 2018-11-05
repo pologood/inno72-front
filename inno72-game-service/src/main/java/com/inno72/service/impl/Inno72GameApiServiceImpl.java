@@ -1440,10 +1440,9 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 		if (StandardPrepareLoginReqVo.OperTypeEnum.CREATE_QRCODE.getKey() == operType) {
 			// 生成二维码流程
 			String redirect = inno72GameServiceProperties.get("loginRedirect");
-			String url = buildUrl(inno72Machine, redirect);
 			// 二维码存储在本地的路径
 			String localUrl = "pre" + inno72Machine.getId() + sessionUuid + ".png";
-			returnUrl = this.createQrCode(inno72Machine, url, localUrl);
+			returnUrl = this.createQrCode(inno72Machine, redirect, localUrl);
 		}
 		// 开始会话流程
 		try {
@@ -1521,7 +1520,9 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 	 * 生成二维码
 	 * @return
 	 */
-	public String createQrCode(Inno72Machine inno72Machine, String url, String localUrl) {
+	public String createQrCode(Inno72Machine inno72Machine, String redirect, String localUrl) {
+
+		String url = buildUrl(inno72Machine, redirect);
 
 		LOGGER.info("二维码访问 url is {} ", url);
 
