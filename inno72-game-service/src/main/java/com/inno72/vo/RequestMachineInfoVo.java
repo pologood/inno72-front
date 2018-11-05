@@ -43,6 +43,9 @@ public class RequestMachineInfoVo {
 	/** 自动手动，默认是自动.页面跳转行为使用 0/1 */
 	private String clickType;
 
+	/** 活动id */
+	private String activityId;
+
 	public String getClientTime(){
 		try {
 			long l = Long.parseLong(this.clientTime);
