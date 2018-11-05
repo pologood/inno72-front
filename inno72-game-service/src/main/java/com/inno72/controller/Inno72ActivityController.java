@@ -1,23 +1,37 @@
 package com.inno72.controller;
 
+import com.alibaba.fastjson.JSON;
+import com.inno72.common.Inno72GameServiceProperties;
 import com.inno72.common.Result;
 import com.inno72.common.Results;
+import com.inno72.common.TopH5ErrorTypeEnum;
 import com.inno72.common.util.GameSessionRedisUtil;
+import com.inno72.common.util.UuidUtil;
 import com.inno72.mapper.Inno72ActivityPlanGameResultMapper;
 import com.inno72.mapper.Inno72GoodsMapper;
+import com.inno72.mapper.Inno72MachineMapper;
 import com.inno72.mapper.Inno72SupplyChannelMapper;
 import com.inno72.model.Inno72ActivityPlanGameResult;
 import com.inno72.model.Inno72Goods;
 import com.inno72.model.Inno72Order;
 import com.inno72.model.Inno72SupplyChannel;
+import com.inno72.service.Inno72GameApiService;
+import com.inno72.service.PointService;
 import com.inno72.vo.GameResultVo;
+import com.inno72.vo.Inno72MachineInformation;
 import com.inno72.vo.UserSessionVo;
 import org.apache.commons.collections.CollectionUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.annotation.Resource;
+import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -26,6 +40,8 @@ import java.util.Map;
 @RestController
 @RequestMapping(value = "/api/activity")
 public class Inno72ActivityController {
+
+	private Logger LOGGER = LoggerFactory.getLogger(this.getClass());
 
 	@Resource
 	private GameSessionRedisUtil gameSessionRedisUtil;
@@ -38,6 +54,18 @@ public class Inno72ActivityController {
 
 	@Resource
 	private Inno72SupplyChannelMapper inno72SupplyChannelMapper;
+
+	@Resource
+	private Inno72GameServiceProperties inno72GameServiceProperties;
+
+	@Resource
+	private Inno72GameApiService inno72GameApiService;
+
+	@Resource
+	private Inno72MachineMapper inno72MachineMapper;
+
+	@Value("${top_h5_err_url}")
+	private String topH5ErrUrl;
 
 	/**
 	 * 获得商品信息
@@ -98,4 +126,28 @@ public class Inno72ActivityController {
 		}
 		return Results.success(gameResultVoList);
 	}
+
+	@ResponseBody
+	@RequestMapping(value = "/createQrCode", method = {RequestMethod.GET})
+	private void createQrCode(String sessionUuid) {
+//		inno72GameApiService.createQrCode()
+	}
+
+	/**
+	 * 登录跳转
+	 */
+	@ResponseBody
+	@RequestMapping(value = "/loginRedirect", method = {RequestMethod.GET})
+	public void loginRedirect(HttpServletResponse response, String sessionUuid, String env) {
+		LOGGER.info("loginRedirect sessionUuid is {}, env is {}", sessionUuid, env);
+		try {
+			String redirectUrl = String.format("%s%s/%s/%s", inno72GameServiceProperties.get("tmallActivityLoginUrl"), sessionUuid, env);
+			LOGGER.info("loginRedirect redirectUrl is {} ", redirectUrl);
+			response.sendRedirect(redirectUrl);
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
+
+
 }
