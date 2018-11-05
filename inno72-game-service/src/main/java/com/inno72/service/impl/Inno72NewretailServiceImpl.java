@@ -261,6 +261,8 @@ public class Inno72NewretailServiceImpl implements Inno72NewretailService {
         LOGGER.debug("deviceVendorFeedback tradeNo={},tradeType={},deviceCode={},action={}," +
                         "itemId={},opTime={},response={}",
                 tradeNo,tradeType,deviceCode,action,itemId,opTime,rsp.getBody());
+        //成功删除错误日志
+        inno72FeedBackLogMapper.deleteFeedBackErrorLogByOrderId(tradeNo);
         //插入日志
         Inno72FeedBackLog log = new Inno72FeedBackLog();
         log.setGoodsId(itemId);
@@ -364,6 +366,9 @@ public class Inno72NewretailServiceImpl implements Inno72NewretailService {
         Inno72FeedBackLog inno72FeedBackLog = findInno72FeedBackLogByOrderId(tradeNo);
         if(inno72FeedBackLog == null){
             deviceVendorFeedback(sellSessionKey,tradeNo,deviceCode,itemId,opTime,userNick,merchantName,merchantCode);
+        }else{
+            //成功删除错误日志
+            inno72FeedBackLogMapper.deleteFeedBackErrorLogByOrderId(tradeNo);
         }
     }
 
