@@ -17,10 +17,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletResponse;
@@ -167,9 +164,13 @@ public class Inno72NewretailController {
     }
 
     @RequestMapping(value = "/feedBackOrder")
-    public Result<Object> feedBackOrder(String tradeNo,
-                                               String deviceCode,
-                                        String itemId ,String opTime, String userNick,String merchantName, String merchantCode) {
+    public Result<Object> feedBackOrder(@RequestParam("tradeNo")String tradeNo,
+                                        @RequestParam("deviceCode") String deviceCode,
+                                        @RequestParam("itemId") String itemId,
+                                        @RequestParam("opTime") String opTime,
+                                        @RequestParam("userNick") String userNick,
+                                        @RequestParam("merchantName") String merchantName,
+                                        @RequestParam("merchantCode") String merchantCode) {
         try{
             service.feedBackOrder(tradeNo,deviceCode,itemId ,opTime,userNick,merchantName, merchantCode);
             return Results.success();
