@@ -78,6 +78,7 @@ public class PointServiceImpl implements PointService {
 		exec.execute(() -> {
 			try {
 				semaphore.acquire();
+				vo.setRequestId(StringUtil.getUUID());
 				LOGGER.info("内部埋点传入vo参数: {}", JSON.toJSONString(vo));
 				String sessionUuid = vo.getSessionUuid();
 				UserSessionVo sessionKey = gameSessionRedisUtil.getSessionKey(sessionUuid);
