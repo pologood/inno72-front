@@ -69,6 +69,7 @@ public class Inno72MachineInformation {
 			try {
 				Long l = Long.parseLong(this.clientTime);
 				this.clientTime = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss SSS").format(new Date(l));
+				this.requestId = StringUtil.uuid();
 			}catch (Exception e){
 				System.out.println(this.clientTime);
 			}
@@ -164,6 +165,8 @@ public class Inno72MachineInformation {
 	private String interactId;
 
 	private String clickType;
+
+	private String requestId;
 
 	public Inno72MachineInformation(String type, String sessionUuid) {
 		this.sessionUuid = sessionUuid;

@@ -78,10 +78,11 @@ public class PointServiceImpl implements PointService {
 		exec.execute(() -> {
 			try {
 				semaphore.acquire();
+				LOGGER.info("内部埋点传入vo参数: {}", JSON.toJSONString(vo));
 				String sessionUuid = vo.getSessionUuid();
 				UserSessionVo sessionKey = gameSessionRedisUtil.getSessionKey(sessionUuid);
 				Inno72TaoBaoCheckDataVo inno72TaoBaoCheckDataVo = buildTaoBaoSynBody(sessionKey, vo);
-
+				LOGGER.info("内部埋点保存vo参数: {}", JSON.toJSONString(inno72TaoBaoCheckDataVo));
 				mongoOperations.save(inno72TaoBaoCheckDataVo, "Inno72TaoBaoCheckData");
 			} catch (InterruptedException e) {
 				e.printStackTrace();
