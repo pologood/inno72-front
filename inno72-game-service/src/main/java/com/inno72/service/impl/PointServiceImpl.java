@@ -241,8 +241,8 @@ public class PointServiceImpl implements PointService {
 		}
 
 		info.setPlayCode(playCode);
-		info.setActivityName(activityId);
-		info.setActivityId(activityName);
+		info.setActivityName(activityName);
+		info.setActivityId(activityId);
 		info.setPoint(point);
 		info.setCity(city);
 		info.setProvence(provence);

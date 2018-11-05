@@ -118,9 +118,9 @@ public class Inno72TaoBaoCheckDataVo {
 
 		vo.setTraceId(traceId);
 		vo.setActivityId(activityId);
-		vo.setActivityName(activityName );
-		vo.setProvence(provence );
-		vo.setCity(city );
+		vo.setActivityName(activityName);
+		vo.setProvence(provence);
+		vo.setCity(city);
 		vo.setDistrict(district );
 		vo.setPoint(point );
 		vo.setUserId(userId );
