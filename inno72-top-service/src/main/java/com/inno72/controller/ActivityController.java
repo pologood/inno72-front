@@ -8,6 +8,7 @@ import com.taobao.api.DefaultTaobaoClient;
 import com.taobao.api.TaobaoClient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -27,12 +28,20 @@ public class ActivityController {
 	@Resource
 	private PropertiesBean propertiesBean;
 
+	@Value("${h5_mobile_url}")
+	private String h5MobileUrl;
+
 	@PostConstruct
 	public void initClient() {
 		client = new DefaultTaobaoClient(propertiesBean.getUrl(), propertiesBean.getAppkey(),
 				propertiesBean.getSecret());
 	}
-	
+
+	public static final String SAME = "1"; // 是同一个人
+	public static final String NOT_SAME = "0"; // 不是同一个人
+
+	public static final String PLAYCODE_ZHS = "21";
+
 	/**
 	 * 登录回调接口
 	 */
@@ -56,16 +65,23 @@ public class ActivityController {
 			String _taobaoUserId = FastJsonUtils.getString(tokenResult, "taobao_user_nick");
 			LOGGER.info("activity taobaoUserId is {}", _taobaoUserId);
 
-			if (!StringUtils.isEmpty(taobaoUserId)) {
-				String original = Encodes.decodeBase64String(taobaoUserId);
-				if (original.equals(_taobaoUserId)) {
-					LOGGER.info("是同一个用户");
-				} else {
-					// 否则不是同一个用户
-					LOGGER.info("不是同一个用户");
-				}
+			String original = Encodes.decodeBase64String(taobaoUserId);
+
+			String isSame = "";
+			if (original.equals(_taobaoUserId)) {
+				LOGGER.info("是同一个用户");
+				isSame = SAME;
+			} else {
+				// 否则不是同一个用户
+				LOGGER.info("不是同一个用户");
+				isSame = NOT_SAME;
 			}
 
+			String formatUrl = String.format(h5MobileUrl, env, PLAYCODE_ZHS);
+
+			String url = formatUrl + "?uId="+taobaoUserId+"&mCode="+sessionUuid+"&isLeft="+isSame;
+			LOGGER.info("url is {}", url);
+			response.sendRedirect(url);
 		}
 	}
 
