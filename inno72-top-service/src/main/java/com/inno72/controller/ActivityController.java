@@ -79,7 +79,7 @@ public class ActivityController {
 
 			String formatUrl = String.format(h5MobileUrl, env, PLAYCODE_ZHS);
 
-			String url = formatUrl + "?uId="+taobaoUserId+"&mCode="+sessionUuid+"&isLeft="+isSame;
+			String url = formatUrl + "index2.html?uId="+taobaoUserId+"&mCode="+sessionUuid+"&isLeft="+isSame;
 			LOGGER.info("url is {}", url);
 			response.sendRedirect(url);
 		}
