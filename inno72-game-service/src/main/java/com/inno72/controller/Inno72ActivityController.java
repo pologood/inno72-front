@@ -138,7 +138,9 @@ public class Inno72ActivityController {
 		// 二维码存储在本地的路径
 		String localUrl = "activityLogin" + inno72Machine.getId() + sessionUuid + ".png";
 		String qrCode = inno72GameApiService.createQrCode(inno72Machine, redirect, localUrl);
-		return Results.success(qrCode);
+		Map<String, Object> map = new HashMap<String, Object>();
+		map.put("qrCodeUrl", qrCode);
+		return Results.success(map);
 	}
 
 
@@ -159,7 +161,7 @@ public class Inno72ActivityController {
 //			userId = s;
 			// /api/activity/{sessionUuid}/{taobaoUserId}
 			// https://oauth.taobao.com/authorize?response_type=code&client_id=24952452&redirect_uri=http://inno72test.ews.m.jaeapp.com/api/activity/
-			String redirectUrl = String.format("%s%s/%s/%s", inno72GameServiceProperties.get("tmallActivityLoginUrl"), sessionUuid, userId, env);
+			String redirectUrl = String.format("%s%s/%s/%s", inno72GameServiceProperties.get("tmallActivityLoginUrl"), sessionUuid, encodeUserId, env);
 			// String redirectUrl = String.format("%s%s/%s", inno72GameServiceProperties.get("tmallActivityLoginUrl"), sessionUuid, userId);
 			LOGGER.info("loginRedirect redirectUrl is {} ", redirectUrl);
 			response.sendRedirect(redirectUrl);
