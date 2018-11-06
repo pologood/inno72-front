@@ -23,6 +23,8 @@ public interface Inno72NewretailService {
 
     String deviceVendorFeedback(String sessionKey, String tradeNo, String deviceCode, String itemId, String opTime,String userNick,String merchantName,String merchantCode) throws ApiException;
 
+    void saveMachine(String merchantCode, String machineCode) throws ApiException;
+
     /**
      * 新增机器
      */
@@ -39,4 +41,9 @@ public interface Inno72NewretailService {
      * @param merchantCode
      */
     void feedBackOrder(String tradeNo, String deviceCode, String itemId, String opTime, String userNick, String merchantName, String merchantCode) throws ApiException;
+
+    /**
+     * 实时回流
+     */
+    void feedBackInTime(String inno72OrderId,String machineCode);
 }

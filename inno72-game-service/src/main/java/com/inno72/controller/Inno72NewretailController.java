@@ -93,6 +93,19 @@ public class Inno72NewretailController {
             return Results.failure("系统异常");
         }
     }
+
+    @RequestMapping(value = "/saveMachine4Task",method = RequestMethod.POST)
+    public Result<Object> saveMachine4Task(@RequestParam("merchantCode")String merchantCode,@RequestParam("machineCode") String machineCode) {
+        try{
+            service.saveMachine(merchantCode,machineCode);
+            return Results.success();
+        }catch(Inno72BizException e){
+            return Results.failure(e.getMessage());
+        }catch(Exception e){
+            LOGGER.error("saveMachine4Task",e);
+            return Results.failure("系统异常");
+        }
+    }
     /**
      * 新增机器
      * @param sessionKey
