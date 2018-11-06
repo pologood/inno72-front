@@ -280,8 +280,8 @@ public class Inno72NewretailServiceImpl implements Inno72NewretailService {
         return rsp.getBody();
     }
     @Override
-    public void saveMachine(String merchantCode,String machineCode) throws ApiException {
-
+    public void saveMachine(String merchantCode, String machineCode) throws ApiException {
+        LOGGER.info("saveMachine4Task invoked! merchantCode={},machineCode={}",merchantCode,machineCode);
         //检查数据库是否添加过
         Inno72MachineDevice inno72MachineDevice = inno72MachineDeviceService.findByMachineCodeAndSellerId(machineCode,merchantCode);
         if(inno72MachineDevice == null){
