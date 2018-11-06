@@ -151,13 +151,16 @@ public class Inno72ActivityController {
 		try {
 			UserSessionVo sessionVo = gameSessionRedisUtil.getSessionKey(sessionUuid);
 			String userId = sessionVo.getUserId();
-			// userId = userId == null ? "" : userId;
-			String s = Encodes.encodeBase64("t01RdlAxzdwykvns%252F75%252Bx3n5hVj5NOU0m45xvsKUhE1Z00%253D");
-			userId = s;
+			LOGGER.info("loginRedirect userId is {}", userId);
+			String encodeUserId = userId == null ? "" : Encodes.encodeBase64(userId);
+			LOGGER.info("loginRedirect encodeUserId is {}", encodeUserId);
+
+//			String s = Encodes.encodeBase64("t01RdlAxzdwykvns%252F75%252Bx3n5hVj5NOU0m45xvsKUhE1Z00%253D");
+//			userId = s;
 			// /api/activity/{sessionUuid}/{taobaoUserId}
 			// https://oauth.taobao.com/authorize?response_type=code&client_id=24952452&redirect_uri=http://inno72test.ews.m.jaeapp.com/api/activity/
-			// String redirectUrl = String.format("%s%s/%s/%s", inno72GameServiceProperties.get("tmallActivityLoginUrl"), sessionUuid, userId, env);
-			String redirectUrl = String.format("%s%s/%s", inno72GameServiceProperties.get("tmallActivityLoginUrl"), sessionUuid, userId);
+			String redirectUrl = String.format("%s%s/%s/%s", inno72GameServiceProperties.get("tmallActivityLoginUrl"), sessionUuid, userId, env);
+			// String redirectUrl = String.format("%s%s/%s", inno72GameServiceProperties.get("tmallActivityLoginUrl"), sessionUuid, userId);
 			LOGGER.info("loginRedirect redirectUrl is {} ", redirectUrl);
 			response.sendRedirect(redirectUrl);
 		} catch (IOException e) {
