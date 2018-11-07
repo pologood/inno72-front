@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.inno72.mapper.Inno72MerchantTotalCountByUserMapper">
+  <resultMap id="BaseResultMap" type="com.inno72.model.Inno72MerchantTotalCountByUser">
+    <!--
+      WARNING - @mbg.generated
+    -->
+    <id column="id" jdbcType="VARCHAR" property="id" />
+    <result column="date" jdbcType="VARCHAR" property="date" />
+    <result column="city" jdbcType="VARCHAR" property="city" />
+    <result column="concern_num" jdbcType="INTEGER" property="concernNum" />
+    <result column="uv" jdbcType="INTEGER" property="uv" />
+    <result column="merchant_id" jdbcType="VARCHAR" property="merchantId" />
+    <result column="seller_id" jdbcType="VARCHAR" property="sellerId" />
+  </resultMap>
+</mapper>

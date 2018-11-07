@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.inno72.mapper.Inno72MerchantTotalCountByOrderMapper">
+  <resultMap id="BaseResultMap" type="com.inno72.model.Inno72MerchantTotalCountByOrder">
+    <!--
+      WARNING - @mbg.generated
+    -->
+    <id column="id" jdbcType="VARCHAR" property="id" />
+    <result column="date" jdbcType="VARCHAR" property="date" />
+    <result column="city" jdbcType="VARCHAR" property="city" />
+    <result column="goods_id" jdbcType="VARCHAR" property="goodsId" />
+    <result column="goods_name" jdbcType="VARCHAR" property="goodsName" />
+    <result column="merchant_id" jdbcType="VARCHAR" property="merchantId" />
+    <result column="order_qty_total" jdbcType="INTEGER" property="orderQtyTotal" />
+    <result column="order_qty_succ" jdbcType="INTEGER" property="orderQtySucc" />
+    <result column="goods_num" jdbcType="INTEGER" property="goodsNum" />
+    <result column="coupon_num" jdbcType="INTEGER" property="couponNum" />
+    <result column="pv" jdbcType="INTEGER" property="pv" />
+    <result column="uv" jdbcType="INTEGER" property="uv" />
+    <result column="seller_id" jdbcType="VARCHAR" property="sellerId" />
+  </resultMap>
+</mapper>
