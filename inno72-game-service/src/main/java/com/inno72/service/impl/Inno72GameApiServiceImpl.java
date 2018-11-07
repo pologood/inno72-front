@@ -1587,9 +1587,6 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 				userSessionVo.setIsVip(isVip);
 			}
 			if (StringUtil.isNotEmpty(itemId)) {
-				Inno72Goods inno72Goods = inno72GoodsMapper.selectByPrimaryKey(itemId);
-				userSessionVo.setGoodsCode(inno72Goods.getCode());
-				userSessionVo.setGoodsName(inno72Goods.getName());
 				userSessionVo.setGoodsId(itemId);
 				merchant = inno72MerchantMapper.findByGoodsId(itemId);
 				if(merchant == null){
@@ -1598,6 +1595,10 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 						userSessionVo.setGoodsType(UserSessionVo.GOODSTYPE_COUPON);
 						userSessionVo.setSellerName(merchant.getMerchantName());
 					}
+				} else {
+					Inno72Goods inno72Goods = inno72GoodsMapper.selectByPrimaryKey(itemId);
+					userSessionVo.setGoodsCode(inno72Goods.getCode());
+					userSessionVo.setGoodsName(inno72Goods.getName());
 				}
 			}
 			if (StringUtil.isNotEmpty(sessionKey)) {
