@@ -1,7 +1,9 @@
 package com.inno72.service;
 
+import com.inno72.common.Result;
 import com.inno72.common.Service;
 import com.inno72.model.Inno72MerchantUser;
+import com.inno72.vo.UserSessionVo;
 
 
 /**
@@ -9,4 +11,9 @@ import com.inno72.model.Inno72MerchantUser;
  */
 public interface Inno72MerchantUserService extends Service<Inno72MerchantUser> {
 
+	Result<UserSessionVo> login(String userName, String password);
+
+	Result resetPwd(String id, String password, String confirm);
+
+	Result resetPhone(String id, String phone, String confirm);
 }

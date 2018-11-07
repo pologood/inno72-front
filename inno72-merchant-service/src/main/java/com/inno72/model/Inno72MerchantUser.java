@@ -9,7 +9,7 @@ import javax.persistence.Table;
 @Table(name = "inno72_merchant_user")
 public class Inno72MerchantUser {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.IDENTITY, generator = "SELECT REPLACE(UUID(),'-','')")
     private String id;
 
     /**

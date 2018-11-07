@@ -13,4 +13,9 @@
     <result column="seller_name" jdbcType="VARCHAR" property="sellerName" />
     <result column="phone" jdbcType="VARCHAR" property="phone" />
   </resultMap>
+    <select id="selectByNameAndPwd" resultMap="BaseResultMap" resultType="java.util.Map">
+        select * from inno72_merchant_user
+        where login_name = #{userName}
+        and password = #{pwd}
+    </select>
 </mapper>

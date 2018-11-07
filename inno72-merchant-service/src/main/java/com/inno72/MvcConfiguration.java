@@ -21,6 +21,8 @@ import org.springframework.web.servlet.view.ContentNegotiatingViewResolver;
 
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.inno72.common.interceptor.CheckMoblieCodeInterceptor;
+import com.inno72.common.interceptor.LoginInterceptor;
 import com.inno72.common.interceptor.PageListAttrHandlerInterceptor;
 import com.inno72.common.spring.JsonView;
 import com.inno72.redis.IRedisUtil;
@@ -87,9 +89,12 @@ public class MvcConfiguration extends WebMvcConfigurerAdapter {
 	@Override
 	public void addInterceptors(InterceptorRegistry registry) {
 		registry.addInterceptor(new PageListAttrHandlerInterceptor()).addPathPatterns("/**");
-		//        LogInterceptor logInterceptor = new LogInterceptor();
-		//        logInterceptor.setRedisUtil(redisUtil);
-		//        registry.addInterceptor(logInterceptor).addPathPatterns("/**");
+		LoginInterceptor logInterceptor = new LoginInterceptor();
+		logInterceptor.setRedisUtil(redisUtil);
+		CheckMoblieCodeInterceptor checkMoblieCodeInterceptor = new CheckMoblieCodeInterceptor();
+		checkMoblieCodeInterceptor.setRedisUtil(redisUtil);
+		registry.addInterceptor(logInterceptor).addPathPatterns("/**");
+		registry.addInterceptor(checkMoblieCodeInterceptor).addPathPatterns("/**");
 	}
 
 	@Override

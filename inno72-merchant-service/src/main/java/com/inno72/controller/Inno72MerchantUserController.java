@@ -20,40 +20,28 @@ import com.inno72.service.Inno72MerchantUserService;
  * Created by CodeGenerator on 2018/11/07.
  */
 @RestController
-@RequestMapping("/inno72/merchant/user")
-@SuppressWarnings({"rawtypes", "unchecked"})
 public class Inno72MerchantUserController {
 	@Resource
 	private Inno72MerchantUserService inno72MerchantUserService;
 
-	@RequestMapping(value = "/add", method = { RequestMethod.POST,  RequestMethod.GET})
-	public Result add(Inno72MerchantUser inno72MerchantUser) {
-		inno72MerchantUserService.save(inno72MerchantUser);
-		return ResultGenerator.genSuccessResult();
-	}
-	@RequestMapping(value = "/delete", method = { RequestMethod.POST,  RequestMethod.GET})
-	public Result delete(@RequestParam Integer id) {
-		inno72MerchantUserService.deleteById(id);
-		return ResultGenerator.genSuccessResult();
+
+
+	@RequestMapping(value = "/inno72/merchant/login", method = { RequestMethod.POST,  RequestMethod.GET})
+	public Result login(String userName, String password) {
+		return inno72MerchantUserService.login(userName, password);
 	}
 
-	@RequestMapping(value = "/update", method = { RequestMethod.POST,  RequestMethod.GET})
-	public Result update(Inno72MerchantUser inno72MerchantUser) {
-		inno72MerchantUserService.update(inno72MerchantUser);
-		return ResultGenerator.genSuccessResult();
+	@RequestMapping(value = "/inno72/merchant/resetPwd", method = { RequestMethod.POST,  RequestMethod.GET})
+	public Result resetPwd(String id, String password, String confirm) {
+		return inno72MerchantUserService.resetPwd(id, password, confirm);
 	}
-
-	@RequestMapping(value = "/detail", method = { RequestMethod.POST,  RequestMethod.GET})
+	@RequestMapping(value = "/inno72/merchant/resetPhone", method = { RequestMethod.POST,  RequestMethod.GET})
+	public Result resetPhone(String id, String phone, String confirm) {
+		return inno72MerchantUserService.resetPhone(id, phone, confirm);
+	}
+	@RequestMapping(value = "/inno72/merchant/user/detail", method = { RequestMethod.POST,  RequestMethod.GET})
 	public Result detail(@RequestParam Integer id) {
 		Inno72MerchantUser inno72MerchantUser = inno72MerchantUserService.findById(id);
 		return ResultGenerator.genSuccessResult(inno72MerchantUser);
-	}
-
-	@RequestMapping(value = "/list", method = { RequestMethod.POST,  RequestMethod.GET})
-	public Result list(@RequestParam(defaultValue = "0") Integer page, @RequestParam(defaultValue = "0") Integer size) {
-		PageHelper.startPage(page, size);
-		List<Inno72MerchantUser> list = inno72MerchantUserService.findAll();
-		PageInfo pageInfo = new PageInfo(list);
-		return ResultGenerator.genSuccessResult(pageInfo);
 	}
 }

@@ -1,4 +1,6 @@
 package com.inno72.vo;
 
-public class UserSessionVo {
+import com.inno72.model.Inno72MerchantUser;
+
+public class UserSessionVo extends Inno72MerchantUser {
 }
