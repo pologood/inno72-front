@@ -311,6 +311,8 @@ public class Inno72NewretailServiceImpl implements Inno72NewretailService {
                         saveMachineDevice(inno72MachineDevice);
                     }
                 }
+            }else{
+                LOGGER.error("saveMachine 无法找到storeID storeName={}",storeName);
             }
         }
 

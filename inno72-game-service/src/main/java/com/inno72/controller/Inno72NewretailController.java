@@ -8,6 +8,8 @@ import com.inno72.mapper.*;
 import com.inno72.model.Inno72AdminArea;
 import com.inno72.model.Inno72Locale;
 import com.inno72.model.Inno72Machine;
+import com.inno72.model.Inno72MachineDevice;
+import com.inno72.service.Inno72MachineDeviceService;
 import com.inno72.service.Inno72NewretailService;
 import com.inno72.vo.DeviceVo;
 import com.inno72.vo.MachineSellerVo;
@@ -55,6 +57,9 @@ public class Inno72NewretailController {
 
 	@Resource
 	private Inno72LocaleMapper inno72LocaleMapper;
+
+    @Resource
+    Inno72MachineDeviceService inno72MachineDeviceService;
 
 	@Resource
 	private Inno72AdminAreaMapper inno72AdminAreaMapper;
@@ -259,7 +264,13 @@ public class Inno72NewretailController {
 
                         Long storeid =null;
                         try{
-                            storeid = service.findStores(sellSessionKey,shopName);
+                            //查找本地
+                            Inno72MachineDevice device = inno72MachineDeviceService.findByMachineCodeAndSellerId(machineSellerVo.getMachineCode(),machineSellerVo.getSellerId());
+                            if(device!=null){
+                                storeid = device.getStoreId();
+                            }else{
+                                storeid = service.findStores(sellSessionKey,shopName);
+                            }
                         }catch (Inno72BizException e){
                             LOGGER.error("查找门店异常{}",e.getMessage());
                         }catch (Exception e){
