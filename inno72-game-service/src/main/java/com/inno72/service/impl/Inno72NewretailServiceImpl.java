@@ -295,7 +295,8 @@ public class Inno72NewretailServiceImpl implements Inno72NewretailService {
                 if(StringUtils.isEmpty(deviceCode)){
                     //调用淘宝接口
                     try {
-                        deviceCode = saveDevice(sellSessionKey, storeName, storeId, "ANDROID", storeName+"-"+System.currentTimeMillis());
+                        String deviceName = storeName+"-"+System.currentTimeMillis();
+                        deviceCode = saveDevice(sellSessionKey, deviceName, storeId, "ANDROID", deviceName);
                     }catch (Exception e){
                         LOGGER.error(e.getMessage());
                     }
