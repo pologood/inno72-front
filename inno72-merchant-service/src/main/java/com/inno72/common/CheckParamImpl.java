@@ -1,19 +1,15 @@
 package com.inno72.common;
 
 import javax.annotation.Resource;
-import javax.servlet.http.HttpServletRequest;
 
-import org.aspectj.lang.JoinPoint;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
-import org.aspectj.lang.annotation.Before;
 import org.aspectj.lang.annotation.Pointcut;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
-import com.inno72.common.utils.StringUtil;
 import com.inno72.redis.IRedisUtil;
 
 @Aspect
@@ -34,9 +30,9 @@ public class CheckParamImpl {
 		try {
 
 			Object[] args = proceedingJoinPoint.getArgs();
-			for (Object o : args){
-				if (o == null){
-					return  Results.failure("参数缺失!");
+			for (Object o : args) {
+				if (o == null) {
+					return Results.failure("参数缺失!");
 				}
 			}
 

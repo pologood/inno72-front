@@ -20,30 +20,30 @@ import org.apache.commons.collections.CollectionUtils;
  */
 /*
  * =========================== 维护日志 ===========================
- * 2015-01-28 09:28  gaoxingang 新建代码 
+ * 2015-01-28 09:28  gaoxingang 新建代码
  * =========================== 维护日志 ===========================
  */
 public class CollectionUtil {
 
-    private CollectionUtil() {
-        throw new UnsupportedOperationException();
-    }
+	private CollectionUtil() {
+		throw new UnsupportedOperationException();
+	}
 
-    /**
-     * 判断集合是否非空
-     * @param collection
-     * @return
-     */
-    public static boolean isNotEmpty(Collection<?> collection) {
-        return CollectionUtils.isNotEmpty(collection);
-    }
+	/**
+	 * 判断集合是否非空
+	 * @param collection
+	 * @return
+	 */
+	public static boolean isNotEmpty(Collection<?> collection) {
+		return CollectionUtils.isNotEmpty(collection);
+	}
 
-    /**
-     * 判断集合是否为空
-     * @param collection
-     * @return
-     */
-    public static boolean isEmpty(Collection<?> collection) {
-        return CollectionUtils.isEmpty(collection);
-    }
+	/**
+	 * 判断集合是否为空
+	 * @param collection
+	 * @return
+	 */
+	public static boolean isEmpty(Collection<?> collection) {
+		return CollectionUtils.isEmpty(collection);
+	}
 }

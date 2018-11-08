@@ -1,18 +1,18 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.inno72.mapper.Inno72MerchantUserMapper">
-  <resultMap id="BaseResultMap" type="com.inno72.model.Inno72MerchantUser">
-    <!--
-      WARNING - @mbg.generated
-    -->
-    <id column="id" jdbcType="VARCHAR" property="id" />
-    <result column="inno72_merchant_id" jdbcType="VARCHAR" property="inno72MerchantId" />
-    <result column="seller_id" jdbcType="VARCHAR" property="sellerId" />
-    <result column="login_name" jdbcType="VARCHAR" property="loginName" />
-    <result column="password" jdbcType="VARCHAR" property="password" />
-    <result column="seller_name" jdbcType="VARCHAR" property="sellerName" />
-    <result column="phone" jdbcType="VARCHAR" property="phone" />
-  </resultMap>
+    <resultMap id="BaseResultMap" type="com.inno72.model.Inno72MerchantUser">
+        <!--
+          WARNING - @mbg.generated
+        -->
+        <id column="id" jdbcType="VARCHAR" property="id"/>
+        <result column="inno72_merchant_id" jdbcType="VARCHAR" property="inno72MerchantId"/>
+        <result column="seller_id" jdbcType="VARCHAR" property="sellerId"/>
+        <result column="login_name" jdbcType="VARCHAR" property="loginName"/>
+        <result column="password" jdbcType="VARCHAR" property="password"/>
+        <result column="seller_name" jdbcType="VARCHAR" property="sellerName"/>
+        <result column="phone" jdbcType="VARCHAR" property="phone"/>
+    </resultMap>
     <select id="selectByNameAndPwd" resultMap="BaseResultMap" resultType="java.util.Map">
         select * from inno72_merchant_user
         where login_name = #{userName}

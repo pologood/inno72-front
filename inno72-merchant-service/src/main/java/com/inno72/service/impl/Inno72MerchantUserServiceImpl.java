@@ -30,20 +30,21 @@ import com.inno72.vo.UserSessionVo;
  */
 @Service
 @Transactional
-public class Inno72MerchantUserServiceImpl extends AbstractService<Inno72MerchantUser> implements Inno72MerchantUserService {
+public class Inno72MerchantUserServiceImpl extends AbstractService<Inno72MerchantUser>
+		implements Inno72MerchantUserService {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(Inno72MerchantUserServiceImpl.class);
 
-    @Resource
-    private Inno72MerchantUserMapper inno72MerchantUserMapper;
+	@Resource
+	private Inno72MerchantUserMapper inno72MerchantUserMapper;
 
-    @Resource
+	@Resource
 	private IRedisUtil redisUtil;
 
 	@Override
 	public Result<UserSessionVo> login(String userName, String password) {
 
-		if (StringUtil.isEmpty(userName) || StringUtil.isEmpty(password)){
+		if (StringUtil.isEmpty(userName) || StringUtil.isEmpty(password)) {
 			return Results.failure("用户名或密码为空!");
 		}
 
@@ -52,7 +53,7 @@ public class Inno72MerchantUserServiceImpl extends AbstractService<Inno72Merchan
 		param.put("pwd", CommonBean.pwd(password));
 
 		Inno72MerchantUser user = inno72MerchantUserMapper.selectByNameAndPwd(param);
-		if (user == null){
+		if (user == null) {
 			return Results.failure("用户名或密码错误!");
 		}
 		String token = StringUtil.getUUID();
@@ -69,11 +70,11 @@ public class Inno72MerchantUserServiceImpl extends AbstractService<Inno72Merchan
 	@Override
 	@CheckParams
 	public Result resetPwd(String id, String password, String confirm) {
-		if (!password.equals(confirm)){
+		if (!password.equals(confirm)) {
 			return Results.failure("确认密码不一致！");
 		}
 		Inno72MerchantUser user = inno72MerchantUserMapper.selectByPrimaryKey(id);
-		if (user == null){
+		if (user == null) {
 			return Results.failure("用户不存在!");
 		}
 		LOGGER.info("更新用户密码前 ===> {}", JSON.toJSONString(user));
@@ -86,11 +87,11 @@ public class Inno72MerchantUserServiceImpl extends AbstractService<Inno72Merchan
 	@Override
 	@CheckParams
 	public Result resetPhone(String id, String phone, String confirm) {
-		if (!phone.equals(confirm)){
+		if (!phone.equals(confirm)) {
 			return Results.failure("确认密码不一致！");
 		}
 		Inno72MerchantUser user = inno72MerchantUserMapper.selectByPrimaryKey(id);
-		if (user == null){
+		if (user == null) {
 			return Results.failure("用户不存在!");
 		}
 		LOGGER.info("更新用户手机号码前 ===> {}", JSON.toJSONString(user));

@@ -22,7 +22,7 @@ public class JSR303Util {
 		if (null == objects) {
 			return Results.failure("校验对象不能为空!");
 		}
-		for (Object obj:objects){
+		for (Object obj : objects) {
 			ValidatorFactory factory = Validation.buildDefaultValidatorFactory();
 			Validator validator = factory.getValidator();
 			Set<ConstraintViolation<Object>> validResult = validator.validate(obj);

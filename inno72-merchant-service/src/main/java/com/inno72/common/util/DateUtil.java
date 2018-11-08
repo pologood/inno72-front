@@ -129,8 +129,7 @@ public class DateUtil extends DateUtils {
 	public static String format(LocalDateTime date, String pattern) {
 		String returnValue = "";
 		if (date != null) {
-			DateTimeFormatter fomatter1 = DateTimeFormatter
-					.ofPattern(pattern);
+			DateTimeFormatter fomatter1 = DateTimeFormatter.ofPattern(pattern);
 			returnValue = date.format(fomatter1);
 		}
 		return returnValue;
@@ -614,9 +613,9 @@ public class DateUtil extends DateUtils {
 		return getTodayLocalDate().plusDays(1);
 	}
 
-    public static String getDateStringByYYYYMMDD() {
+	public static String getDateStringByYYYYMMDD() {
 		Calendar c = Calendar.getInstance();
-		String date = c.get(Calendar.YEAR)+"-"+c.get(Calendar.MONTH)+"-"+c.get(Calendar.DAY_OF_MONTH);
+		String date = c.get(Calendar.YEAR) + "-" + c.get(Calendar.MONTH) + "-" + c.get(Calendar.DAY_OF_MONTH);
 		return date;
-    }
+	}
 }

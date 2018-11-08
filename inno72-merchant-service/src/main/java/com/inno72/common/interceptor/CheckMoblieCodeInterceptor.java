@@ -22,8 +22,8 @@ public class CheckMoblieCodeInterceptor implements HandlerInterceptor {
 
 	private static final Logger logger = LoggerFactory.getLogger(CheckMoblieCodeInterceptor.class);
 
-	private static List<String> doNotCheckUs =Arrays.asList("/inno72/merchant/resetPhone","/inno72/merchant/resetPhone");
-
+	private static List<String> doNotCheckUs = Arrays
+			.asList("/inno72/merchant/resetPhone", "/inno72/merchant/resetPhone");
 
 
 	@Resource
@@ -33,18 +33,18 @@ public class CheckMoblieCodeInterceptor implements HandlerInterceptor {
 	public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler)
 			throws Exception {
 
-		if (doNotCheckUs.parallelStream().anyMatch(request.getServletPath()::contains)){
+		if (doNotCheckUs.parallelStream().anyMatch(request.getServletPath()::contains)) {
 			String code = request.getParameter("code");
 			String phone = request.getParameter("phone");
 			logger.info("验证信息 {}, {}", phone, code);
-			if (StringUtil.isEmpty(code) || StringUtil.isEmpty(phone)){
+			if (StringUtil.isEmpty(code) || StringUtil.isEmpty(phone)) {
 				response.getWriter().println(JSON.toJSONString(Results.failure("验证码失效!")));
 				response.getWriter().flush();
 				response.getWriter().close();
 				return false;
 			}
 			String cacheCode = redisUtil.get(CommonBean.REDIS_MERCHANT_MOBILE_CODE_RESET_PWD + phone);
-			if (StringUtil.isEmpty(cacheCode)){
+			if (StringUtil.isEmpty(cacheCode)) {
 				response.getWriter().println(JSON.toJSONString(Results.failure("验证码错误!")));
 				response.getWriter().flush();
 				response.getWriter().close();

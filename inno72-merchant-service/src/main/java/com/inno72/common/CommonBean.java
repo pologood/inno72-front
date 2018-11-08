@@ -60,9 +60,8 @@ public class CommonBean {
 	 *            msg[2] detail 详情
 	 */
 	public static void logger(String... msg) {
-		new PointLogContext(LogType.POINT).machineCode(msg[1])
-				.pointTime(LocalDateTimeUtil.transfer(LocalDateTime.now(),
-						DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")))
+		new PointLogContext(LogType.POINT).machineCode(msg[1]).pointTime(
+				LocalDateTimeUtil.transfer(LocalDateTime.now(), DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")))
 				.type(msg[0]).detail(msg[2]).tag(msg[3]).bulid();
 		LOGGER.info("记录埋点数据 [{}]", JSON.toJSONString(msg));
 	}

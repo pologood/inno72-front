@@ -24,6 +24,7 @@ public class DateUtil {
 	public static final DateTimeFormatter DF_FULL_S1 = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
 	public static final DateTimeFormatter DF_FULL_S2 = DateTimeFormatter.ofPattern("yyyyMMddHHmmss");
 	private static final String YMDHMSSSS = "yyyy-MM-dd HH:mm:ss SSS";
+
 	public static LocalDate toDate(String str, DateTimeFormatter dateTimeFormatter) {
 		try {
 			return LocalDate.parse(str, dateTimeFormatter);
@@ -32,10 +33,9 @@ public class DateUtil {
 		}
 	}
 
-	public static DateFormat getDateFormat()
-	{
+	public static DateFormat getDateFormat() {
 		SimpleDateFormat df = date_format.get();
-		if(df==null){
+		if (df == null) {
 			df = new SimpleDateFormat(YMDHMSSSS);
 			date_format.set(df);
 		}

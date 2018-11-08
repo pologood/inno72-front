@@ -30,7 +30,7 @@ public class Exceptions {
 	 * 将ErrorStack转化为String.
 	 */
 	public static String getStackTraceAsString(Throwable e) {
-		if (e == null){
+		if (e == null) {
 			return "";
 		}
 		StringWriter stringWriter = new StringWriter();
@@ -57,9 +57,9 @@ public class Exceptions {
 	/**
 	 * 在request中获取异常类
 	 * @param request
-	 * @return 
+	 * @return
 	 */
-	public static Throwable getThrowable(HttpServletRequest request){
+	public static Throwable getThrowable(HttpServletRequest request) {
 		Throwable ex = null;
 		if (request.getAttribute("exception") != null) {
 			ex = (Throwable) request.getAttribute("exception");
@@ -68,5 +68,5 @@ public class Exceptions {
 		}
 		return ex;
 	}
-	
+
 }

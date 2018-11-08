@@ -31,12 +31,12 @@ public class Inno72CommonController {
 	private IRedisUtil redisUtil;
 
 	@RequestMapping(value = "/common/code/{type}")
-	public Result<String> code(@PathVariable(value = "type") String type, String phone){
-		if (StringUtil.isEmpty(type)){
+	public Result<String> code(@PathVariable(value = "type") String type, String phone) {
+		if (StringUtil.isEmpty(type)) {
 			return Results.failure("无发送类型!");
 		}
 		String code = "";
-		switch (type){
+		switch (type) {
 			case "1":
 				code = CommonBean.PHONE_CODE.ALTER_PHONE;
 				break;
@@ -47,19 +47,19 @@ public class Inno72CommonController {
 				code = CommonBean.PHONE_CODE.REST_PASSWORD;
 				break;
 			default:
-				return 	Results.failure("确认发送类型!");
+				return Results.failure("确认发送类型!");
 		}
 
 		String s = CommonBean.genCode(4);
 
-		String cacheCode = redisUtil.setex(
-				CommonBean.REDIS_MERCHANT_MOBILE_CODE_RESET_PWD + phone,
-				CommonBean.REDIS_MERCHANT_MOBILE_CODE_TIMEOUT,
-				s);
+		String cacheCode = redisUtil.setex(CommonBean.REDIS_MERCHANT_MOBILE_CODE_RESET_PWD + phone,
+				CommonBean.REDIS_MERCHANT_MOBILE_CODE_TIMEOUT, s);
 
 		Map<String, String> param = new HashMap<>(1);
 		param.put("code", s);
-		msgUtil.sendSMS(code, param, phone, CommonBean.APP_NAME );
+		LOGGER.info("发送信息 code -> {}, param -> {}, phone -> {}, AppName -> {}", code, param, phone,
+				CommonBean.APP_NAME);
+		msgUtil.sendSMS(code, param, phone, CommonBean.APP_NAME);
 
 		return Results.success();
 	}

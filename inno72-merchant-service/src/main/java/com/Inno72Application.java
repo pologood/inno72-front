@@ -19,6 +19,7 @@ import com.inno72.springboot.web.SpringBootServletInitializer;
 public class Inno72Application extends SpringBootServletInitializer {
 
 	public static SpringApplication application;
+
 	/**
 	 * 内嵌Tomcat入口
 	 *
@@ -27,7 +28,8 @@ public class Inno72Application extends SpringBootServletInitializer {
 	 * @Author gaoxingang
 	 */
 	public static void main(String[] args) {
-		SpringApplicationBuilder sb = new SpringApplicationBuilder(Inno72Application.class, "inno72-merchant-service", args);
+		SpringApplicationBuilder sb = new SpringApplicationBuilder(Inno72Application.class, "inno72-merchant-service",
+				args);
 		application = sb.application();
 	}
 

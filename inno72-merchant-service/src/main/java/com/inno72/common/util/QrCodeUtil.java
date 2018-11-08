@@ -92,8 +92,8 @@ public class QrCodeUtil {
 	/**
 	 * 读二维码并输出携带的信息
 	 */
-	public static String readQrCode(String  url) throws IOException {
-		try(InputStream is = parseUrl(url)){
+	public static String readQrCode(String url) throws IOException {
+		try (InputStream is = parseUrl(url)) {
 			String result = readQrCode(is);
 			return result;
 		}
@@ -104,7 +104,7 @@ public class QrCodeUtil {
 		HttpURLConnection conn = (HttpURLConnection) url.openConnection();//利用HttpURLConnection对象,我们可以从网络中获取网页数据.
 		conn.setDoInput(true);
 		conn.connect();
-		InputStream is = conn.getInputStream();	//得到网络返回的输入流
+		InputStream is = conn.getInputStream();    //得到网络返回的输入流
 		return is;
 	}
 

@@ -16,8 +16,9 @@ import com.inno72.service.Inno72MerchantTotalCountService;
  */
 @Service
 @Transactional
-public class Inno72MerchantTotalCountServiceImpl extends AbstractService<Inno72MerchantTotalCount> implements Inno72MerchantTotalCountService {
-    @Resource
-    private Inno72MerchantTotalCountMapper inno72MerchantTotalCountMapper;
+public class Inno72MerchantTotalCountServiceImpl extends AbstractService<Inno72MerchantTotalCount>
+		implements Inno72MerchantTotalCountService {
+	@Resource
+	private Inno72MerchantTotalCountMapper inno72MerchantTotalCountMapper;
 
 }
