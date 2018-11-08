@@ -86,6 +86,22 @@ public class Inno72NewretailController {
         }
     }
 
+    /**
+     * 查找门店id
+     */
+    @RequestMapping(value = "/findDeviceCode")
+    public Result<Object> findDeviceCode(String storeName) {
+        try{
+            String deviceCode = service.findDeviceByStoreId(sellSessionKey,null,storeName);
+            return Results.success(deviceCode);
+        }catch(Inno72BizException e){
+            return Results.failure(e.getMessage());
+        }catch(Exception e){
+            LOGGER.error("findStoreId",e);
+            return Results.failure("系统异常");
+        }
+    }
+
     @RequestMapping(value = "/saveMachine",method = RequestMethod.POST)
     public Result<Object> saveMachine(@RequestBody List<DeviceVo> vo) {
         try{

@@ -14,6 +14,8 @@ public interface Inno72NewretailService {
 
     String saveDevice(String sessionKey, String deviceName, Long storeId, String osType, String outerCode) throws Exception;
 
+    String findDeviceByStoreId(String sessionKey, Long storeId, String outerCode) throws ApiException;
+
     Boolean getMemberIdentity(String sessionKey, String mixNick) throws ApiException;
 
     String getStoreMemberurl(String sessionKey, String deviceCode, String callbackUrl) throws ApiException;

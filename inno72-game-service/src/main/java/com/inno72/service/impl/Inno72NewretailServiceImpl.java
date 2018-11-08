@@ -144,11 +144,13 @@ public class Inno72NewretailServiceImpl implements Inno72NewretailService {
      * @param storeId
      * @throws ApiException
      */
-    public String findDeviceByStoreId(String sessionKey,Long storeId) throws ApiException {
+    @Override
+    public String findDeviceByStoreId(String sessionKey, Long storeId, String outerCode) throws ApiException {
         SmartstoreDeviceQueryRequest req = new SmartstoreDeviceQueryRequest();
         req.setStoreId(storeId);
         req.setPageNum(1L);
         req.setPageSize(20L);
+        req.setOuterCode(outerCode);
         SmartstoreDeviceQueryResponse rsp = client.execute(req, sessionKey);
         if(rsp.getDeviceInfoList()!=null&&rsp.getDeviceInfoList().size()>0){
             return rsp.getDeviceInfoList().get(0).getDeviceCode();
@@ -289,11 +291,11 @@ public class Inno72NewretailServiceImpl implements Inno72NewretailService {
             Long storeId = findStores(storeName);
             if(storeId!=null){
                 //根据storeId查找deviceCode;
-                String deviceCode = findDeviceByStoreId(sellSessionKey,storeId);
+                String deviceCode = findDeviceByStoreId(sellSessionKey,storeId,null);
                 if(StringUtils.isEmpty(deviceCode)){
                     //调用淘宝接口
                     try {
-                        deviceCode = saveDevice(sellSessionKey, storeName, storeId, "ANDROID", storeName);
+                        deviceCode = saveDevice(sellSessionKey, storeName, storeId, "ANDROID", storeName+"-"+System.currentTimeMillis());
                     }catch (Exception e){
                         LOGGER.error(e.getMessage());
                     }
@@ -373,7 +375,7 @@ public class Inno72NewretailServiceImpl implements Inno72NewretailService {
                             }
                             if(storeId!=null){
                                 //根据storeId查找deviceCode;
-                                String deviceCode = findDeviceByStoreId(sellSessionKey,storeId);
+                                String deviceCode = findDeviceByStoreId(sellSessionKey,storeId,null);
                                 if(StringUtils.isEmpty(deviceCode)){
                                     //调用淘宝接口
                                     try {
