@@ -1292,7 +1292,7 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 		}
 
 		if (StringUtil.isNotEmpty(orderId)) {
-			new Thread(new DeliveryRecord(machineCode, channelId, userSessionVo)).run();
+			new Thread(new DeliveryRecord(channelId, machineCode, userSessionVo)).run();
 		} else {
 			LOGGER.info("调用出货无orderId 请求参数=>{}", JSON.toJSONString(vo));
 		}
