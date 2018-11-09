@@ -146,13 +146,4 @@ public class Encodes {
 			throw Exceptions.unchecked(e);
 		}
 	}
-
-	public static void main(String[] args) {
-
-		String s = Encodes.encodeBase64("t01RdlAxzdwykvns%252F75%252Bx3n5hVj5NOU0m45xvsKUhE1Z00%253D");
-		System.out.println(s);
-		String s1 = Encodes.decodeBase64String(s);
-		System.out.println(s1);
-
-	}
 }
