@@ -159,7 +159,7 @@ public class Inno72ActivityController {
 			String encodeUserId = userId == null ? "" : Encodes.encodeBase64(userId);
 			LOGGER.info("loginRedirect encodeUserId is {}", encodeUserId);
 
-			String redirectUrl = String.format("%s%s/%s/%s/%s", inno72GameServiceProperties.get("tmallActivityLoginUrl"), sessionUuid, encodeUserId, env, planCode);
+			String redirectUrl = String.format("%s%s/%s/%s/%s", inno72GameServiceProperties.get("tmallActivityLoginUrl"), sessionUuid, encodeUserId, planCode, env);
 			LOGGER.info("loginRedirect redirectUrl is {} ", redirectUrl);
 			response.sendRedirect(redirectUrl);
 		} catch (IOException e) {

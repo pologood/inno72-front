@@ -45,13 +45,13 @@ public class ActivityController {
 	/**
 	 * 登录回调接口
 	 */
-	@RequestMapping("/api/activity/{sessionUuid}/{taobaoUserId}/{env}/{planCode}")
+	@RequestMapping("/api/activity/{sessionUuid}/{taobaoUserId}/{planCode}/{env}")
 	public void activityIndex(HttpServletResponse response,
 			@PathVariable("sessionUuid") String sessionUuid,
 			String code,
 			@PathVariable("taobaoUserId") String taobaoUserId,
-			@PathVariable("env") String env,
-			@PathVariable("planCode") String planCode
+			@PathVariable("planCode") String planCode,
+			@PathVariable("env") String env
 			)
 			throws Exception {
 		LOGGER.info("activity code is {}, sessionUuid is {}, taobaoUserId is {}, planCode is {}", code, sessionUuid, taobaoUserId, planCode);
