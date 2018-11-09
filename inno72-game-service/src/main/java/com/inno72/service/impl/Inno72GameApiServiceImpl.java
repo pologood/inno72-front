@@ -1219,16 +1219,11 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 		}
 
 		String failChannelIds = vo.getFailChannelIds();
+
 		if (StringUtil.isNotEmpty(failChannelIds)) {
-
-			List<String> describtion = vo.getDescribtion();
-			LOGGER.info("describtion is {} ", JsonUtil.toJson(describtion));
-
-			for (String failChannelId : failChannelIds.split(",")) {
-				Result<String> failChannelResult = this.shipmentFail(machineCode, failChannelId, "");
-				LOGGER.info("machineCode is {}, failChannelId is {}, code is {} ", machineCode, failChannelId,
-						failChannelResult.getCode());
-			}
+			Result<String> failChannelResult = this.shipmentFail(machineCode, failChannelIds, "");
+			LOGGER.info("machineCode is {}, failChannelIds is {}, code is {} ", machineCode, failChannelIds,
+					failChannelResult.getCode());
 		}
 
 		return Results.success();
@@ -1297,7 +1292,7 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 		}
 
 		if (StringUtil.isNotEmpty(orderId)) {
-			new Thread(new DeliveryRecord(machineCode, channelId, userSessionVo)).run();
+			new Thread(new DeliveryRecord(channelId, machineCode, userSessionVo)).run();
 		} else {
 			LOGGER.info("调用出货无orderId 请求参数=>{}", JSON.toJSONString(vo));
 		}
@@ -1567,9 +1562,6 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 				userSessionVo.setIsVip(isVip);
 			}
 			if (StringUtil.isNotEmpty(itemId)) {
-				Inno72Goods inno72Goods = inno72GoodsMapper.selectByPrimaryKey(itemId);
-				userSessionVo.setGoodsCode(inno72Goods.getCode());
-				userSessionVo.setGoodsName(inno72Goods.getName());
 				userSessionVo.setGoodsId(itemId);
 				merchant = inno72MerchantMapper.findByGoodsId(itemId);
 				if(merchant == null){
@@ -1578,6 +1570,10 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 						userSessionVo.setGoodsType(UserSessionVo.GOODSTYPE_COUPON);
 						userSessionVo.setSellerName(merchant.getMerchantName());
 					}
+				} else {
+					Inno72Goods inno72Goods = inno72GoodsMapper.selectByPrimaryKey(itemId);
+					userSessionVo.setGoodsCode(inno72Goods.getCode());
+					userSessionVo.setGoodsName(inno72Goods.getName());
 				}
 			}
 			if (StringUtil.isNotEmpty(sessionKey)) {
