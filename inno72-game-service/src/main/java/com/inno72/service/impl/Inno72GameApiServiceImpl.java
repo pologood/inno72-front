@@ -1464,7 +1464,7 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 		// 设置15秒内二维码不能被扫
 		gameSessionRedisUtil.setSessionEx(sessionUuid + "qrCode", sessionUuid, 15);
 
-		LOGGER.info("gxg userSessionVo {}", JsonUtil.toJson(userSessionVo));
+		LOGGER.info("goodsId {}, sellerId {}", userSessionVo.getGoodsId(), userSessionVo.getSellerId());
 		if (StringUtil.isNotEmpty(userSessionVo.getGoodsId())) {
 			pointService.innerPoint(sessionUuid, Inno72MachineInformation.ENUM_INNO72_MACHINE_INFORMATION_TYPE.PRODUCT_CLICK);
 		} else if (StringUtil.isNotEmpty(userSessionVo.getSellerId())) {
@@ -1592,7 +1592,7 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 					Inno72Merchant param = new Inno72Merchant();
 					param.setMerchantCode(sellerId);
 					merchant = inno72MerchantMapper.selectOne(param);
-					userSessionVo.setSellerName(merchant.getMerchantName());
+					// userSessionVo.setSellerName(merchant.getMerchantName());
 				}
 			}
 			if(merchant!=null){
