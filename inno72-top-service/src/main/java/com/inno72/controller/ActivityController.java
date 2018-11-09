@@ -45,15 +45,16 @@ public class ActivityController {
 	/**
 	 * 登录回调接口
 	 */
-	@RequestMapping("/api/activity/{sessionUuid}/{taobaoUserId}/{env}")
+	@RequestMapping("/api/activity/{sessionUuid}/{taobaoUserId}/{env}/{planCode}")
 	public void activityIndex(HttpServletResponse response,
 			@PathVariable("sessionUuid") String sessionUuid,
 			String code,
 			@PathVariable("taobaoUserId") String taobaoUserId,
-			@PathVariable("env") String env
+			@PathVariable("env") String env,
+			@PathVariable("planCode") String planCode
 			)
 			throws Exception {
-		LOGGER.info("activity code is {}, sessionUuid is {}, taobaoUserId is {},", code, sessionUuid, taobaoUserId);
+		LOGGER.info("activity code is {}, sessionUuid is {}, taobaoUserId is {}, planCode is {}", code, sessionUuid, taobaoUserId, planCode);
 		if (!StringUtils.isEmpty(code) && !StringUtils.isEmpty(sessionUuid)) {
 
 			String authInfo = TaobaoSdkUtils.getAuthInfo(client, code);
@@ -77,7 +78,7 @@ public class ActivityController {
 				isSame = NOT_SAME;
 			}
 
-			String formatUrl = String.format(h5MobileUrl, env, PLAYCODE_ZHS);
+			String formatUrl = String.format(h5MobileUrl, env, planCode);
 
 			String url = formatUrl + "index2.html?uId="+taobaoUserId+"&mCode="+sessionUuid+"&isLeft="+isSame;
 			LOGGER.info("url is {}", url);
