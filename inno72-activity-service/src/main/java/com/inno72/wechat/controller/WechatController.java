@@ -1,7 +1,11 @@
 package com.inno72.wechat.controller;
 
 import com.google.gson.Gson;
+import com.inno72.common.Result;
+import com.inno72.common.Results;
 import com.inno72.wechat.service.TeamService;
+import com.inno72.wechat.util.WeinXinUtil;
+import com.inno72.wechat.util.WinXinEntity;
 import lombok.extern.slf4j.Slf4j;
 import me.chanjar.weixin.common.api.WxConsts;
 import me.chanjar.weixin.common.exception.WxErrorException;
@@ -78,5 +82,20 @@ public class WechatController {
     public String userInfo(String userId) throws Exception {
         log.info("【helloworld】userId={}", userId);
         return userId;
+    }
+
+
+    @Autowired
+    private WeinXinUtil util;
+    @RequestMapping
+    @ResponseBody public Result getWeChat(String url){
+        try{
+            log.info("url={}",url);
+            WinXinEntity wx = util.getWinXinEntity(url);
+            return Results.success(wx);
+        }catch(Exception e){
+            LOGGER.error("getWeChat",e);
+            return Results.failure(e.getMessage());
+        }
     }
 }
