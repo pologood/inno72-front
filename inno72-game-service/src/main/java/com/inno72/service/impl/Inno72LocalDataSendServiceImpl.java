@@ -119,9 +119,9 @@ public class Inno72LocalDataSendServiceImpl implements Inno72LocalDataSendServic
             Inno72MachineDevice device = new Inno72MachineDevice();
             device.setSellerId(sellerId);
             device.setMachineCode(machineCode);
-            device = inno72MachineDeviceMapper.selectOne(device);
-            if(device == null) return null;
-            deviceCode = device.getDeviceCode();
+            List<Inno72MachineDevice> list  = inno72MachineDeviceMapper.select(device);
+            if(list.size() == 0) return null;
+            deviceCode = list.get(0).getDeviceCode();
             deviceCodeMap.put(key,deviceCode);
         }
         return deviceCode;

@@ -9,6 +9,7 @@ import java.util.concurrent.Semaphore;
 
 import javax.annotation.Resource;
 
+import com.inno72.service.Inno72MachineService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
@@ -44,6 +45,9 @@ public class PointServiceImpl implements PointService {
 	@Resource
 	private MongoOperations mongoOperations;
 
+	@Resource
+	private Inno72MachineService inno72MachineService;
+
 	@Override
 	public Result<String> information(String request) {
 		LOGGER.info("information param : {}", request);
@@ -51,6 +55,20 @@ public class PointServiceImpl implements PointService {
 			return Results.failure("参数错误!");
 		}
 		RequestMachineInfoVo requestMachineInfoVo = JSON.parseObject(request, RequestMachineInfoVo.class);
+		String planId = requestMachineInfoVo.getPlanId();
+		String sessionUuid = requestMachineInfoVo.getSessionUuid();
+
+		String rVoJson = redisUtil.get(CommonBean.REDIS_ACTIVITY_PLAN_CACHE_KEY +  planId + ":" + sessionUuid);
+		if (StringUtil.isEmpty(rVoJson)) {
+			inno72MachineService.findGame(requestMachineInfoVo.getSessionUuid(), "-1", "", "");
+		}
+
+		Inno72MachineVo inno72MachineVo = JSON.parseObject(rVoJson, Inno72MachineVo.class);
+		if (inno72MachineVo != null) {
+			String activityId = inno72MachineVo.getActivityId();
+			requestMachineInfoVo.setActivityId(activityId);
+		}
+
 		Result<String> valid = JSR303Util.valid(requestMachineInfoVo);
 		if (valid.getCode() == Result.FAILURE){
 			return valid;
@@ -78,10 +96,12 @@ public class PointServiceImpl implements PointService {
 		exec.execute(() -> {
 			try {
 				semaphore.acquire();
+				vo.setRequestId(StringUtil.getUUID());
+				LOGGER.info("内部埋点传入vo参数: {}", JSON.toJSONString(vo));
 				String sessionUuid = vo.getSessionUuid();
 				UserSessionVo sessionKey = gameSessionRedisUtil.getSessionKey(sessionUuid);
 				Inno72TaoBaoCheckDataVo inno72TaoBaoCheckDataVo = buildTaoBaoSynBody(sessionKey, vo);
-
+				LOGGER.info("内部埋点保存vo参数: {}", JSON.toJSONString(inno72TaoBaoCheckDataVo));
 				mongoOperations.save(inno72TaoBaoCheckDataVo, "Inno72TaoBaoCheckData");
 			} catch (InterruptedException e) {
 				e.printStackTrace();
@@ -144,6 +164,8 @@ public class PointServiceImpl implements PointService {
 				UserSessionVo sessionKey = gameSessionRedisUtil.getSessionKey(sessionUuid);
 				buildBaseInfoFromSession(sessionKey, info);
 				buildElseInfo(sessionKey, info);
+
+				LOGGER.info("保存前的数据: {}", JSON.toJSONString(info));
 				mongoOperations.save(info,"Inno72MachineInformation");
 			} catch (InterruptedException e) {
 				e.printStackTrace();
@@ -199,6 +221,7 @@ public class PointServiceImpl implements PointService {
 				Results.failure("失败");
 				return;
 			}
+			LOGGER.info("vo 缓存: {}", inno72MachineVoStr);
 
 			Inno72MachineVo inno72MachineVo = JSON.parseObject(inno72MachineVoStr, Inno72MachineVo.class);
 			activityName = inno72MachineVo.getActivityName();
@@ -211,6 +234,9 @@ public class PointServiceImpl implements PointService {
 			playCode = inno72MachineVo.getPlayCode();
 
 		}else{
+
+			LOGGER.info("session 缓存: {}", JSON.toJSONString(sessionKey));
+
 			String traceId = sessionKey.getTraceId();
 			info.setTraceId(traceId);
 
@@ -241,8 +267,8 @@ public class PointServiceImpl implements PointService {
 		}
 
 		info.setPlayCode(playCode);
-		info.setActivityName(activityId);
-		info.setActivityId(activityName);
+		info.setActivityName(activityName);
+		info.setActivityId(activityId);
 		info.setPoint(point);
 		info.setCity(city);
 		info.setProvence(provence);
@@ -251,6 +277,7 @@ public class PointServiceImpl implements PointService {
 		info.setServiceTime(LocalDateTimeUtil
 				.transfer(LocalDateTime.now(), DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss SSS")));
 
+		LOGGER.info("拼装结果: {}", JSON.toJSONString(info));
 		Results.success(info);
 	}
 

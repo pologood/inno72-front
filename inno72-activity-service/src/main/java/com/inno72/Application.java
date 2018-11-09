@@ -3,10 +3,12 @@ package com.inno72;
 import com.inno72.common.Inno72GameServiceProperties;
 import com.inno72.springboot.web.SpringApplicationBuilder;
 import com.inno72.springboot.web.SpringBootServletInitializer;
+import com.inno72.wechat.controller.MyServlet;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.boot.web.servlet.FilterRegistrationBean;
+import org.springframework.boot.web.servlet.ServletRegistrationBean;
 import org.springframework.cloud.client.circuitbreaker.EnableCircuitBreaker;
 import org.springframework.cloud.netflix.eureka.EnableEurekaClient;
 import org.springframework.cloud.netflix.feign.EnableFeignClients;
@@ -63,4 +65,9 @@ public class Application extends SpringBootServletInitializer {
 		registration.setOrder(1);
 		return registration;
 	}
+	@Bean
+	public ServletRegistrationBean MyServlet1(){
+		return new ServletRegistrationBean(new MyServlet(),"/wechatqr/callBack");
+	}
+
 }

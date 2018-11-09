@@ -1,6 +1,5 @@
 package com.inno72.vo;
 
-import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 
@@ -58,6 +57,7 @@ public class Inno72TaoBaoCheckDataVo {
 	@Length(max = 6, min = 6, message = "非法类型")
 	private String type;
 
+
 	public static enum ENUM_INNO72_TAOBAO_CHECK_DATA_VO_TYPE{
 		LOGIN("001001","登录"),
 		ORDER("002001","下单"),
@@ -96,6 +96,8 @@ public class Inno72TaoBaoCheckDataVo {
 	/** playCode */
 	private String playCode;
 
+	private String requestId;
+
 	private String reqBody;
 	private Map<String, Object> reqBodyObject;
 
@@ -118,9 +120,9 @@ public class Inno72TaoBaoCheckDataVo {
 
 		vo.setTraceId(traceId);
 		vo.setActivityId(activityId);
-		vo.setActivityName(activityName );
-		vo.setProvence(provence );
-		vo.setCity(city );
+		vo.setActivityName(activityName);
+		vo.setProvence(provence);
+		vo.setCity(city);
 		vo.setDistrict(district );
 		vo.setPoint(point );
 		vo.setUserId(userId );

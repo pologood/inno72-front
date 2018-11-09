@@ -69,6 +69,7 @@ public class Inno72MachineInformation {
 			try {
 				Long l = Long.parseLong(this.clientTime);
 				this.clientTime = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss SSS").format(new Date(l));
+				this.requestId = StringUtil.uuid();
 			}catch (Exception e){
 				System.out.println(this.clientTime);
 			}
@@ -90,6 +91,7 @@ public class Inno72MachineInformation {
 		SCAN_PAY("009002","扫码"),
 		JUMP("010001","跳转"),
 		PAY("011002 ","订单支付"),
+		PRODUCT_CLICK("100100","商品点击"),
 		;
 		private String type;
 		private String desc;
@@ -164,6 +166,8 @@ public class Inno72MachineInformation {
 	private String interactId;
 
 	private String clickType;
+
+	private String requestId;
 
 	public Inno72MachineInformation(String type, String sessionUuid) {
 		this.sessionUuid = sessionUuid;

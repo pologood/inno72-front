@@ -16,6 +16,7 @@ import java.util.Optional;
 
 import javax.annotation.Resource;
 
+import com.inno72.mapper.*;
 import com.inno72.service.*;
 import com.inno72.vo.*;
 import org.apache.commons.lang.StringUtils;
@@ -47,24 +48,6 @@ import com.inno72.common.util.UuidUtil;
 import com.inno72.common.utils.StringUtil;
 import com.inno72.machine.vo.SupplyRequestVo;
 import com.inno72.model.*;
-import com.inno72.mapper.Inno72ActivityMapper;
-import com.inno72.mapper.Inno72ActivityPlanGameResultMapper;
-import com.inno72.mapper.Inno72ActivityPlanMapper;
-import com.inno72.mapper.Inno72ChannelMapper;
-import com.inno72.mapper.Inno72CouponMapper;
-import com.inno72.mapper.Inno72GameMapper;
-import com.inno72.mapper.Inno72GameUserChannelMapper;
-import com.inno72.mapper.Inno72GameUserLifeMapper;
-import com.inno72.mapper.Inno72GameUserMapper;
-import com.inno72.mapper.Inno72GoodsMapper;
-import com.inno72.mapper.Inno72LocaleMapper;
-import com.inno72.mapper.Inno72MachineMapper;
-import com.inno72.mapper.Inno72MerchantMapper;
-import com.inno72.mapper.Inno72OrderGoodsMapper;
-import com.inno72.mapper.Inno72OrderHistoryMapper;
-import com.inno72.mapper.Inno72OrderMapper;
-import com.inno72.mapper.Inno72ShopsMapper;
-import com.inno72.mapper.Inno72SupplyChannelMapper;
 import com.inno72.model.AlarmDetailBean;
 import com.inno72.model.Inno72Activity;
 import com.inno72.model.Inno72ActivityPlan;
@@ -173,6 +156,9 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 
 	@Resource
 	private Inno72MachineService inno72MachineService;
+
+	@Resource
+	private Inno72FeedbackErrorlogMapper inno72FeedbackErrorlogMapper;
 
 	@Resource
 	private PointService pointService;
@@ -1233,16 +1219,11 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 		}
 
 		String failChannelIds = vo.getFailChannelIds();
+
 		if (StringUtil.isNotEmpty(failChannelIds)) {
-
-			List<String> describtion = vo.getDescribtion();
-			LOGGER.info("describtion is {} ", JsonUtil.toJson(describtion));
-
-			for (String failChannelId : failChannelIds.split(",")) {
-				Result<String> failChannelResult = this.shipmentFail(machineCode, failChannelId, "");
-				LOGGER.info("machineCode is {}, failChannelId is {}, code is {} ", machineCode, failChannelId,
-						failChannelResult.getCode());
-			}
+			Result<String> failChannelResult = this.shipmentFail(machineCode, failChannelIds, "");
+			LOGGER.info("machineCode is {}, failChannelIds is {}, code is {} ", machineCode, failChannelIds,
+					failChannelResult.getCode());
 		}
 
 		return Results.success();
@@ -1311,32 +1292,15 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 		}
 
 		if (StringUtil.isNotEmpty(orderId)) {
-			new Thread(new DeliveryRecord(machineCode, channelId, userSessionVo)).run();
+			new Thread(new DeliveryRecord(channelId, machineCode, userSessionVo)).run();
 		} else {
 			LOGGER.info("调用出货无orderId 请求参数=>{}", JSON.toJSONString(vo));
 		}
 
 		Inno72Goods inno72Goods = inno72GoodsMapper.selectByChannelId(inno72SupplyChannel.getId());
 
-
-		//调用淘宝数据回流接口回流数据
-		try {
-			//查找goodsId信息
-			Inno72Goods goods = inno72GoodsMapper.selectByOrderId(userSessionVo.getInno72OrderId());
-			Inno72Order order = inno72OrderMapper.selectByPrimaryKey(userSessionVo.getInno72OrderId());
-			String userNick = inno72GameUserChannelMapper.selectUserNickByGameUserId(order.getUserId());
-			if(!StringUtils.isEmpty(userNick)){
-				String orderTime = DateUtil.format(order.getOrderTime(),DateUtil.getDatePattern());
-				Inno72MachineDevice deviceCode = inno72MachineDeviceService.findByMachineCodeAndSellerId(machineCode,goods.getMerchantCode());
-				Inno72Merchant merchant = inno72MerchantMapper.selectByPrimaryKey(goods.getSellerId());
-				LOGGER.info("调用淘宝数据回流sessionKey={},orderId={},deviceCode={},goodsId={},orderTime={}",sellSessionKey,orderId,deviceCode.getDeviceCode(),goods.getCode(),orderTime);
-				inno72NewretailService.deviceVendorFeedback(sellSessionKey,orderId,deviceCode.getDeviceCode(),goods.getCode(),orderTime,userNick,merchant.getMerchantName(),merchant.getMerchantCode());
-			}else{
-				LOGGER.error("userNick is null 不回流数据 orderId = {}",order.getId());
-			}
-		} catch (Exception e) {
-			LOGGER.error("淘宝回流失败",e);
-		}
+		//淘宝回流业务
+		inno72NewretailService.feedBackInTime(userSessionVo.getInno72OrderId(),machineCode);
 
 		pointService.innerPoint(sessionUuid, Inno72MachineInformation.ENUM_INNO72_MACHINE_INFORMATION_TYPE.SHIPMENT);
 
@@ -1483,6 +1447,7 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 		String planCode = FastJsonUtils.getString(rVoJson, "planCode");
 		if (!StringUtil.isEmpty(planCode)) {
 			userSessionVo.setPlanCode(planCode);
+			userSessionVo.setActivityId(inno72MachineVo.getActivityId());
 		}
 		LOGGER.debug("parse rVoJson string finish --> {}", inno72MachineVo);
 
@@ -1498,6 +1463,10 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 
 		// 设置15秒内二维码不能被扫
 		gameSessionRedisUtil.setSessionEx(sessionUuid + "qrCode", sessionUuid, 15);
+
+		if (StringUtil.isNotEmpty(userSessionVo.getGoodsId())) {
+			pointService.innerPoint(sessionUuid, Inno72MachineInformation.ENUM_INNO72_MACHINE_INFORMATION_TYPE.PRODUCT_CLICK);
+		}
 	}
 
 	/**
@@ -1601,6 +1570,10 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 						userSessionVo.setGoodsType(UserSessionVo.GOODSTYPE_COUPON);
 						userSessionVo.setSellerName(merchant.getMerchantName());
 					}
+				} else {
+					Inno72Goods inno72Goods = inno72GoodsMapper.selectByPrimaryKey(itemId);
+					userSessionVo.setGoodsCode(inno72Goods.getCode());
+					userSessionVo.setGoodsName(inno72Goods.getName());
 				}
 			}
 			if (StringUtil.isNotEmpty(sessionKey)) {
