@@ -14,7 +14,7 @@ public interface Service<T> {
 
 	void save(List<T> models);//批量持久化
 
-	void deleteById(Integer id);//通过主鍵刪除
+	void deleteById(String id);//通过主鍵刪除
 
 	void deleteByIds(String ids);//批量刪除 eg：ids -> “1,2,3,4”
 

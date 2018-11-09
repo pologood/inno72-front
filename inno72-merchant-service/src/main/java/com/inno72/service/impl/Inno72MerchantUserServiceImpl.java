@@ -86,10 +86,7 @@ public class Inno72MerchantUserServiceImpl extends AbstractService<Inno72Merchan
 
 	@Override
 	@CheckParams
-	public Result resetPhone(String id, String phone, String confirm) {
-		if (!phone.equals(confirm)) {
-			return Results.failure("确认密码不一致！");
-		}
+	public Result resetPhone(String id, String phone) {
 		Inno72MerchantUser user = inno72MerchantUserMapper.selectByPrimaryKey(id);
 		if (user == null) {
 			return Results.failure("用户不存在!");

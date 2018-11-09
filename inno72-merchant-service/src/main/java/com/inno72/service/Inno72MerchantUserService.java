@@ -15,5 +15,5 @@ public interface Inno72MerchantUserService extends Service<Inno72MerchantUser> {
 
 	Result resetPwd(String id, String password, String confirm);
 
-	Result resetPhone(String id, String phone, String confirm);
+	Result resetPhone(String id, String phone);
 }

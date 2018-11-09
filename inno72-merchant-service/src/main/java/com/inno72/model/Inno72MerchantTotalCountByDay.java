@@ -1,5 +1,7 @@
 package com.inno72.model;
 
+import java.time.LocalDateTime;
+
 import javax.persistence.Column;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -8,6 +10,7 @@ import javax.persistence.Table;
 
 @Table(name = "inno72_merchant_total_count_by_day")
 public class Inno72MerchantTotalCountByDay {
+
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private String id;
@@ -70,6 +73,9 @@ public class Inno72MerchantTotalCountByDay {
 	 */
 	@Column(name = "seller_id")
 	private String sellerId;
+
+	@Column(name = "last_update_time")
+	private LocalDateTime lastUpdateTime;
 
 	/**
 	 * @return id
@@ -297,5 +303,13 @@ public class Inno72MerchantTotalCountByDay {
 	 */
 	public void setSellerId(String sellerId) {
 		this.sellerId = sellerId;
+	}
+
+	public LocalDateTime getLastUpdateTime() {
+		return lastUpdateTime;
+	}
+
+	public void setLastUpdateTime(LocalDateTime lastUpdateTime) {
+		this.lastUpdateTime = lastUpdateTime;
 	}
 }

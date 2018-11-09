@@ -26,18 +26,6 @@ public class Inno72MerchantTotalCountController {
 	@Resource
 	private Inno72MerchantTotalCountService inno72MerchantTotalCountService;
 
-	@RequestMapping(value = "/add", method = {RequestMethod.POST, RequestMethod.GET})
-	public Result add(Inno72MerchantTotalCount inno72MerchantTotalCount) {
-		inno72MerchantTotalCountService.save(inno72MerchantTotalCount);
-		return ResultGenerator.genSuccessResult();
-	}
-
-	@RequestMapping(value = "/delete", method = {RequestMethod.POST, RequestMethod.GET})
-	public Result delete(@RequestParam Integer id) {
-		inno72MerchantTotalCountService.deleteById(id);
-		return ResultGenerator.genSuccessResult();
-	}
-
 	@RequestMapping(value = "/update", method = {RequestMethod.POST, RequestMethod.GET})
 	public Result update(Inno72MerchantTotalCount inno72MerchantTotalCount) {
 		inno72MerchantTotalCountService.update(inno72MerchantTotalCount);
@@ -45,16 +33,17 @@ public class Inno72MerchantTotalCountController {
 	}
 
 	@RequestMapping(value = "/detail", method = {RequestMethod.POST, RequestMethod.GET})
-	public Result detail(@RequestParam Integer id) {
+	public Result detail(@RequestParam String id) {
 		Inno72MerchantTotalCount inno72MerchantTotalCount = inno72MerchantTotalCountService.findById(id);
 		return ResultGenerator.genSuccessResult(inno72MerchantTotalCount);
 	}
 
 	@RequestMapping(value = "/list", method = {RequestMethod.POST, RequestMethod.GET})
-	public Result list(@RequestParam(defaultValue = "0") Integer page, @RequestParam(defaultValue = "0") Integer size) {
-		PageHelper.startPage(page, size);
-		List<Inno72MerchantTotalCount> list = inno72MerchantTotalCountService.findAll();
-		PageInfo pageInfo = new PageInfo(list);
-		return ResultGenerator.genSuccessResult(pageInfo);
+	public Result<List<Inno72MerchantTotalCount>> list(String id) {
+		return inno72MerchantTotalCountService.findAllById(id);
+	}
+	@RequestMapping(value = "/totle", method = {RequestMethod.POST, RequestMethod.GET})
+	public Result<Object> totle(String id) {
+		return inno72MerchantTotalCountService.totle(id);
 	}
 }

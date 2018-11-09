@@ -19,4 +19,9 @@
         <result column="machant_id" jdbcType="VARCHAR" property="machantId"/>
         <result column="seller_id" jdbcType="VARCHAR" property="sellerId"/>
     </resultMap>
+    <select id="selectByMerchantId" resultMap="BaseResultMap" parameterType="string">
+
+        select * from inno72_merchant_total_count where machant_id = #{machantId}
+
+    </select>
 </mapper>

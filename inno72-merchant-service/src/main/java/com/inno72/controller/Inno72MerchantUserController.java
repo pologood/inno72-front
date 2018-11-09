@@ -17,9 +17,9 @@ import com.inno72.service.Inno72MerchantUserService;
  */
 @RestController
 public class Inno72MerchantUserController {
+
 	@Resource
 	private Inno72MerchantUserService inno72MerchantUserService;
-
 
 	@RequestMapping(value = "/inno72/merchant/login", method = {RequestMethod.POST, RequestMethod.GET})
 	public Result login(String userName, String password) {
@@ -32,8 +32,8 @@ public class Inno72MerchantUserController {
 	}
 
 	@RequestMapping(value = "/inno72/merchant/resetPhone", method = {RequestMethod.POST, RequestMethod.GET})
-	public Result resetPhone(String id, String phone, String confirm) {
-		return inno72MerchantUserService.resetPhone(id, phone, confirm);
+	public Result resetPhone(String id, String phone) {
+		return inno72MerchantUserService.resetPhone(id, phone);
 	}
 
 	@RequestMapping(value = "/inno72/merchant/user/detail", method = {RequestMethod.POST, RequestMethod.GET})
@@ -41,4 +41,5 @@ public class Inno72MerchantUserController {
 		Inno72MerchantUser inno72MerchantUser = inno72MerchantUserService.findById(id);
 		return ResultGenerator.genSuccessResult(inno72MerchantUser);
 	}
+
 }

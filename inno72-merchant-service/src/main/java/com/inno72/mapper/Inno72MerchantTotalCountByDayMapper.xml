@@ -19,5 +19,7 @@
         <result column="pv" jdbcType="INTEGER" property="pv"/>
         <result column="uv" jdbcType="INTEGER" property="uv"/>
         <result column="seller_id" jdbcType="VARCHAR" property="sellerId"/>
+        <result column="last_update_time" jdbcType="TIMESTAMP" property="lastUpdateTime" javaType="java.time.LocalDateTime"
+                typeHandler="org.apache.ibatis.type.LocalDateTimeTypeHandler"/>
     </resultMap>
 </mapper>

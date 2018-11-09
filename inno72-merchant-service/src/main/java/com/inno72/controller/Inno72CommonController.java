@@ -9,6 +9,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.inno72.common.CommonBean;
@@ -30,9 +31,9 @@ public class Inno72CommonController {
 	@Resource
 	private IRedisUtil redisUtil;
 
-	@RequestMapping(value = "/common/code/{type}")
+	@RequestMapping(value = "/common/code/{type}", method = {RequestMethod.POST, RequestMethod.GET})
 	public Result<String> code(@PathVariable(value = "type") String type, String phone) {
-		if (StringUtil.isEmpty(type)) {
+		if (StringUtil.isEmpty(type) || StringUtil.isEmpty(phone)) {
 			return Results.failure("无发送类型!");
 		}
 		String code = "";

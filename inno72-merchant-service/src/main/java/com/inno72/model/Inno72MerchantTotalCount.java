@@ -54,6 +54,11 @@ public class Inno72MerchantTotalCount {
 	private String sellerId;
 
 	/**
+	 * 购买人数
+	 */
+	private Integer buyer;
+
+	/**
 	 * @return id
 	 */
 	public String getId() {
@@ -245,5 +250,13 @@ public class Inno72MerchantTotalCount {
 	 */
 	public void setSellerId(String sellerId) {
 		this.sellerId = sellerId;
+	}
+
+	public Integer getBuyer() {
+		return buyer;
+	}
+
+	public void setBuyer(Integer buyer) {
+		this.buyer = buyer;
 	}
 }
