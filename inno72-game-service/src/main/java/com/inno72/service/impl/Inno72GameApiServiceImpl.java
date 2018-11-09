@@ -1591,6 +1591,7 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 				if(merchant == null)  {
 					Inno72Merchant param = new Inno72Merchant();
 					param.setMerchantCode(sellerId);
+					param.setIsDelete(0);
 					merchant = inno72MerchantMapper.selectOne(param);
 					// userSessionVo.setSellerName(merchant.getMerchantName());
 				}
