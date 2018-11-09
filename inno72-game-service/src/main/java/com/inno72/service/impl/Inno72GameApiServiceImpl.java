@@ -1299,33 +1299,8 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 
 		Inno72Goods inno72Goods = inno72GoodsMapper.selectByChannelId(inno72SupplyChannel.getId());
 
-
-		//调用淘宝数据回流接口回流数据
-		try {
-			//查找goodsId信息
-			Inno72Goods goods = inno72GoodsMapper.selectByOrderId(userSessionVo.getInno72OrderId());
-			Inno72Order order = inno72OrderMapper.selectByPrimaryKey(userSessionVo.getInno72OrderId());
-			String userNick = inno72GameUserChannelMapper.selectUserNickByGameUserId(order.getUserId());
-			if(!StringUtils.isEmpty(userNick)){
-				String orderTime = DateUtil.format(order.getOrderTime(),DateUtil.getDatePattern());
-				Inno72MachineDevice deviceCode = inno72MachineDeviceService.findByMachineCodeAndSellerId(machineCode,goods.getMerchantCode());
-				if(deviceCode!=null){
-					Inno72Merchant merchant = inno72MerchantMapper.selectByPrimaryKey(goods.getSellerId());
-					LOGGER.info("调用淘宝数据回流sessionKey={},orderId={},deviceCode={},goodsId={},orderTime={}",sellSessionKey,orderId,deviceCode.getDeviceCode(),goods.getCode(),orderTime);
-					inno72NewretailService.deviceVendorFeedback(sellSessionKey,orderId,deviceCode.getDeviceCode(),goods.getCode(),orderTime,userNick,merchant.getMerchantName(),merchant.getMerchantCode());
-				}else{
-					Inno72FeedbackErrorlog inno72FeedbackErrorlog = new Inno72FeedbackErrorlog();
-					inno72FeedbackErrorlog.setOrderId(orderId);
-					inno72FeedbackErrorlog.setCreateTime(new Date());
-					inno72FeedbackErrorlog.setMsg("deviceCode is null machineCode="+machineCode+",merchantCode="+goods.getMerchantCode());
-					inno72FeedbackErrorlogMapper.insert(inno72FeedbackErrorlog);
-				}
-			}else{
-				LOGGER.error("userNick is null 不回流数据 orderId = {}",order.getId());
-			}
-		} catch (Exception e) {
-			LOGGER.error("淘宝回流失败",e);
-		}
+		//淘宝回流业务
+		inno72NewretailService.feedBackInTime(userSessionVo.getInno72OrderId(),machineCode);
 
 		pointService.innerPoint(sessionUuid, Inno72MachineInformation.ENUM_INNO72_MACHINE_INFORMATION_TYPE.SHIPMENT);
 

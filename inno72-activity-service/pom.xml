@@ -26,7 +26,11 @@
     </properties>
 
     <dependencies>
-
+        <dependency>
+            <groupId>com.inno72</groupId>
+            <artifactId>inno72-http</artifactId>
+            <version>${plugin.version}</version>
+        </dependency>
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-web</artifactId>
@@ -184,6 +188,12 @@
             <artifactId>weixin-java-mp</artifactId>
             <version>2.9.0</version>
         </dependency>
+        <!--<dependency>-->
+            <!--<groupId>dom4j</groupId>-->
+            <!--<artifactId>dom4j</artifactId>-->
+            <!--<version>RELEASE</version>-->
+            <!--<scope>compile</scope>-->
+        <!--</dependency>-->
     </dependencies>
 
     <!-- 配置插件的仓库地址 -->

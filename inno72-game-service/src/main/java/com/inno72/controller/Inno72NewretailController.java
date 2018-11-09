@@ -8,6 +8,8 @@ import com.inno72.mapper.*;
 import com.inno72.model.Inno72AdminArea;
 import com.inno72.model.Inno72Locale;
 import com.inno72.model.Inno72Machine;
+import com.inno72.model.Inno72MachineDevice;
+import com.inno72.service.Inno72MachineDeviceService;
 import com.inno72.service.Inno72NewretailService;
 import com.inno72.vo.DeviceVo;
 import com.inno72.vo.MachineSellerVo;
@@ -56,6 +58,9 @@ public class Inno72NewretailController {
 	@Resource
 	private Inno72LocaleMapper inno72LocaleMapper;
 
+    @Resource
+    Inno72MachineDeviceService inno72MachineDeviceService;
+
 	@Resource
 	private Inno72AdminAreaMapper inno72AdminAreaMapper;
 
@@ -81,6 +86,22 @@ public class Inno72NewretailController {
         }
     }
 
+    /**
+     * 查找门店id
+     */
+    @RequestMapping(value = "/findDeviceCode")
+    public Result<Object> findDeviceCode(String storeName) {
+        try{
+            String deviceCode = service.findDeviceByStoreId(sellSessionKey,null,storeName);
+            return Results.success(deviceCode);
+        }catch(Inno72BizException e){
+            return Results.failure(e.getMessage());
+        }catch(Exception e){
+            LOGGER.error("findStoreId",e);
+            return Results.failure("系统异常");
+        }
+    }
+
     @RequestMapping(value = "/saveMachine",method = RequestMethod.POST)
     public Result<Object> saveMachine(@RequestBody List<DeviceVo> vo) {
         try{
@@ -90,6 +111,19 @@ public class Inno72NewretailController {
             return Results.failure(e.getMessage());
         }catch(Exception e){
             LOGGER.error("saveMachine",e);
+            return Results.failure("系统异常");
+        }
+    }
+
+    @RequestMapping(value = "/saveMachine4Task",method = RequestMethod.POST)
+    public Result<Object> saveMachine4Task(@RequestParam("merchantCode")String merchantCode,@RequestParam("machineCode") String machineCode) {
+        try{
+            service.saveMachine(merchantCode,machineCode);
+            return Results.success();
+        }catch(Inno72BizException e){
+            return Results.failure(e.getMessage());
+        }catch(Exception e){
+            LOGGER.error("saveMachine4Task",e);
             return Results.failure("系统异常");
         }
     }
@@ -246,7 +280,13 @@ public class Inno72NewretailController {
 
                         Long storeid =null;
                         try{
-                            storeid = service.findStores(sellSessionKey,shopName);
+                            //查找本地
+                            Inno72MachineDevice device = inno72MachineDeviceService.findByMachineCodeAndSellerId(machineSellerVo.getMachineCode(),machineSellerVo.getSellerId());
+                            if(device!=null){
+                                storeid = device.getStoreId();
+                            }else{
+                                storeid = service.findStores(sellSessionKey,shopName);
+                            }
                         }catch (Inno72BizException e){
                             LOGGER.error("查找门店异常{}",e.getMessage());
                         }catch (Exception e){

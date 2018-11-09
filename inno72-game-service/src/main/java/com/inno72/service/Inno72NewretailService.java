@@ -14,6 +14,8 @@ public interface Inno72NewretailService {
 
     String saveDevice(String sessionKey, String deviceName, Long storeId, String osType, String outerCode) throws Exception;
 
+    String findDeviceByStoreId(String sessionKey, Long storeId, String outerCode) throws ApiException;
+
     Boolean getMemberIdentity(String sessionKey, String mixNick) throws ApiException;
 
     String getStoreMemberurl(String sessionKey, String deviceCode, String callbackUrl) throws ApiException;
@@ -22,6 +24,8 @@ public interface Inno72NewretailService {
             , String itemId, String couponId, String userNick, String outerBizId, String opTime, String outerUser) throws ApiException;
 
     String deviceVendorFeedback(String sessionKey, String tradeNo, String deviceCode, String itemId, String opTime,String userNick,String merchantName,String merchantCode) throws ApiException;
+
+    void saveMachine(String merchantCode, String machineCode) throws ApiException;
 
     /**
      * 新增机器
@@ -39,4 +43,9 @@ public interface Inno72NewretailService {
      * @param merchantCode
      */
     void feedBackOrder(String tradeNo, String deviceCode, String itemId, String opTime, String userNick, String merchantName, String merchantCode) throws ApiException;
+
+    /**
+     * 实时回流
+     */
+    void feedBackInTime(String inno72OrderId,String machineCode);
 }
