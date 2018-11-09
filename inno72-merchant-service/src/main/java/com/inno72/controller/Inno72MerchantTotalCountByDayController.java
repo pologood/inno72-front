@@ -4,6 +4,7 @@ import java.util.List;
 
 import javax.annotation.Resource;
 
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -20,40 +21,15 @@ import com.inno72.service.Inno72MerchantTotalCountByDayService;
  * Created by CodeGenerator on 2018/11/08.
  */
 @RestController
-@RequestMapping("/inno72/merchant/total/count/by/day")
+@RequestMapping("ab")
 public class Inno72MerchantTotalCountByDayController {
 	@Resource
 	private Inno72MerchantTotalCountByDayService inno72MerchantTotalCountByDayService;
 
-	@RequestMapping(value = "/add", method = {RequestMethod.POST, RequestMethod.GET})
-	public Result add(Inno72MerchantTotalCountByDay inno72MerchantTotalCountByDay) {
-		inno72MerchantTotalCountByDayService.save(inno72MerchantTotalCountByDay);
-		return ResultGenerator.genSuccessResult();
+	@RequestMapping(value = "/search/{label}", method = {RequestMethod.POST, RequestMethod.GET})
+	public Result searchData(@PathVariable(value = "label") String label, String activityId, String city, String startDate, String endDate) {
+		return inno72MerchantTotalCountByDayService
+				.searchData(label, activityId, city, startDate, endDate);
 	}
 
-	@RequestMapping(value = "/delete", method = {RequestMethod.POST, RequestMethod.GET})
-	public Result delete(@RequestParam Integer id) {
-		inno72MerchantTotalCountByDayService.deleteById(id);
-		return ResultGenerator.genSuccessResult();
-	}
-
-	@RequestMapping(value = "/update", method = {RequestMethod.POST, RequestMethod.GET})
-	public Result update(Inno72MerchantTotalCountByDay inno72MerchantTotalCountByDay) {
-		inno72MerchantTotalCountByDayService.update(inno72MerchantTotalCountByDay);
-		return ResultGenerator.genSuccessResult();
-	}
-
-	@RequestMapping(value = "/detail", method = {RequestMethod.POST, RequestMethod.GET})
-	public Result detail(@RequestParam Integer id) {
-		Inno72MerchantTotalCountByDay inno72MerchantTotalCountByDay = inno72MerchantTotalCountByDayService.findById(id);
-		return ResultGenerator.genSuccessResult(inno72MerchantTotalCountByDay);
-	}
-
-	@RequestMapping(value = "/list", method = {RequestMethod.POST, RequestMethod.GET})
-	public Result list(@RequestParam(defaultValue = "0") Integer page, @RequestParam(defaultValue = "0") Integer size) {
-		PageHelper.startPage(page, size);
-		List<Inno72MerchantTotalCountByDay> list = inno72MerchantTotalCountByDayService.findAll();
-		PageInfo pageInfo = new PageInfo(list);
-		return ResultGenerator.genSuccessResult(pageInfo);
-	}
 }
