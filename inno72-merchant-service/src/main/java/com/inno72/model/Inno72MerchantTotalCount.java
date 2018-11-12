@@ -36,8 +36,8 @@ public class Inno72MerchantTotalCount {
 	/**
 	 * 停留用户数(最多的点击数量)
 	 */
-	@Column(name = "stayUser")
-	private Integer stayuser;
+	@Column(name = "stay_user")
+	private Integer stayUser;
 
 	private Integer pv;
 
@@ -155,8 +155,8 @@ public class Inno72MerchantTotalCount {
 	 *
 	 * @return stayUser - 停留用户数(最多的点击数量)
 	 */
-	public Integer getStayuser() {
-		return stayuser;
+	public Integer getStayUser() {
+		return stayUser;
 	}
 
 	/**
@@ -164,8 +164,8 @@ public class Inno72MerchantTotalCount {
 	 *
 	 * @param stayuser 停留用户数(最多的点击数量)
 	 */
-	public void setStayuser(Integer stayuser) {
-		this.stayuser = stayuser;
+	public void setStayUser(Integer stayuser) {
+		this.stayUser = stayuser;
 	}
 
 	/**
