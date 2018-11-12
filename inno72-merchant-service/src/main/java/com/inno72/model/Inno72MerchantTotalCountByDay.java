@@ -29,6 +29,24 @@ public class Inno72MerchantTotalCountByDay {
 	private String goodsName;
 
 	/**
+	 * 活动Id
+	 */
+	@Column(name = "activity_id")
+	private String activityId;
+
+	/**
+	 * 活动Name
+	 */
+	@Column(name = "activity_name")
+	private String activityName;
+
+	/**
+	 * 停留用户数
+	 */
+	@Column(name = "stay_num")
+	private Integer stayNum;
+
+	/**
 	 * 商户ID主键
 	 */
 	@Column(name = "merchant_id")
@@ -311,5 +329,29 @@ public class Inno72MerchantTotalCountByDay {
 
 	public void setLastUpdateTime(LocalDateTime lastUpdateTime) {
 		this.lastUpdateTime = lastUpdateTime;
+	}
+
+	public String getActivityId() {
+		return activityId;
+	}
+
+	public void setActivityId(String activityId) {
+		this.activityId = activityId;
+	}
+
+	public String getActivityName() {
+		return activityName;
+	}
+
+	public void setActivityName(String activityName) {
+		this.activityName = activityName;
+	}
+
+	public Integer getStayNum() {
+		return stayNum;
+	}
+
+	public void setStayNum(Integer stayNum) {
+		this.stayNum = stayNum;
 	}
 }

@@ -22,4 +22,15 @@
         <result column="last_update_time" jdbcType="TIMESTAMP" property="lastUpdateTime" javaType="java.time.LocalDateTime"
                 typeHandler="org.apache.ibatis.type.LocalDateTimeTypeHandler"/>
     </resultMap>
+    <select id="selectList" resultMap="BaseResultMap">
+      select  * from inno72_merchant_total_count_by_day
+      where activity_id = #{activityId}
+      <if test="city != null and city != ''">
+          and city = #{city}
+      </if>
+      <if test="date != null and date != ''">
+          and `date` between #{startDate} and #{endDate}
+      </if>
+        order by `date`, city
+    </select>
 </mapper>
