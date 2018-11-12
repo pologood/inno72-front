@@ -60,6 +60,7 @@ public class Inno72MerchantUserServiceImpl extends AbstractService<Inno72Merchan
 
 		UserSessionVo vo = new UserSessionVo();
 		BeanUtils.copyProperties(user, vo);
+		vo.setToken(token);
 
 		redisUtil.setex(CommonBean.REDIS_MERCHANT_LOGIN_SESSION_KEY + token,
 				CommonBean.REDIS_MERCHANT_LOGIN_SESSION_KEY_TIMES, JSON.toJSONString(vo));
