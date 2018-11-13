@@ -16,6 +16,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.alibaba.fastjson.JSON;
 import com.inno72.common.AbstractService;
 import com.inno72.common.Result;
 import com.inno72.common.Results;
@@ -153,7 +154,7 @@ public class Inno72MerchantTotalCountByDayServiceImpl extends AbstractService<In
 		Map<String, Object> result = new HashMap<>(2);
 		Map<String, List<Inno72MerchantTotalCountByDay>> map = new HashMap<>();
 		this.groupByCityAndDate(days, map);
-
+		LOGGER.info("分组后的map -> {}", JSON.toJSONString(map));
 		List<Map<String, String>> list = new ArrayList<>();
 		for (Map.Entry<String, List<Inno72MerchantTotalCountByDay>> entry : map.entrySet()){
 			List<Inno72MerchantTotalCountByDay> value = entry.getValue();
