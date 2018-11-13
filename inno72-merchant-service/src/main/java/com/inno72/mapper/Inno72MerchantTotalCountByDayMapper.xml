@@ -8,9 +8,12 @@
         <id column="id" jdbcType="VARCHAR" property="id"/>
         <result column="date" jdbcType="VARCHAR" property="date"/>
         <result column="city" jdbcType="VARCHAR" property="city"/>
+        <result column="activity_id" jdbcType="VARCHAR" property="activityId"/>
+        <result column="activity_name" jdbcType="VARCHAR" property="activityName"/>
         <result column="goods_id" jdbcType="VARCHAR" property="goodsId"/>
         <result column="goods_name" jdbcType="VARCHAR" property="goodsName"/>
         <result column="merchant_id" jdbcType="VARCHAR" property="merchantId"/>
+        <result column="stay_name" jdbcType="INTEGER" property="stayNum"/>
         <result column="order_qty_total" jdbcType="INTEGER" property="orderQtyTotal"/>
         <result column="order_qty_succ" jdbcType="INTEGER" property="orderQtySucc"/>
         <result column="goods_num" jdbcType="INTEGER" property="goodsNum"/>

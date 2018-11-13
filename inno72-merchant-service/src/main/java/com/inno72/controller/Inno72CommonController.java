@@ -18,6 +18,7 @@ import com.inno72.common.Results;
 import com.inno72.common.utils.StringUtil;
 import com.inno72.msg.MsgUtil;
 import com.inno72.redis.IRedisUtil;
+import com.inno72.service.CommonService;
 
 
 @RestController
@@ -68,5 +69,15 @@ public class Inno72CommonController {
 
 		return Results.success();
 	}
+
+	@Resource
+	private CommonService commonService;
+
+	@RequestMapping(value = "/common/api/{type}", method = {RequestMethod.POST, RequestMethod.GET})
+	public Result baseApi(@PathVariable(value = "type") String type, String merchantId){
+		return Results.success(commonService.baseApi(type, merchantId));
+	}
+
+
 
 }
