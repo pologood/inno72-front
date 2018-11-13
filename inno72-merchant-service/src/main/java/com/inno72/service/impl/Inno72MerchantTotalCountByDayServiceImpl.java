@@ -114,34 +114,21 @@ public class Inno72MerchantTotalCountByDayServiceImpl extends AbstractService<In
 					startDateLocal, orderQtyTotalS, orderQtySuccS,goodsNumS, uvS, pvS, couponNumS);
 		}
 
+		// 日期不足，补充0直到到结束日期
 		while (orderQtyTotalS.size() < (endDateLocal.getDayOfYear() - startDateLocal.getDayOfYear())){
 			orderQtyTotalS.add(0);
-		}
-		y.put("orderQtyTotalS", orderQtyTotalS);
-
-		while (orderQtySuccS.size() < (endDateLocal.getDayOfYear() - startDateLocal.getDayOfYear())){
+			goodsNumS.add(0);
+			pvS.add(0);
+			couponNumS.add(0);
+			uvS.add(0);
 			orderQtySuccS.add(0);
 		}
+
+		y.put("orderQtyTotalS", orderQtyTotalS);
 		y.put("orderQtySuccS", orderQtySuccS);
-
-		while (goodsNumS.size() < (endDateLocal.getDayOfYear() - startDateLocal.getDayOfYear())){
-			goodsNumS.add(0);
-		}
 		y.put("goodsNumS", goodsNumS);
-
-		while (uvS.size() < (endDateLocal.getDayOfYear() - startDateLocal.getDayOfYear())){
-			uvS.add(0);
-		}
 		y.put("uvS", uvS);
-
-		while (pvS.size() < (endDateLocal.getDayOfYear() - startDateLocal.getDayOfYear())){
-			pvS.add(0);
-		}
 		y.put("pvS", pvS);
-
-		while (couponNumS.size() < (endDateLocal.getDayOfYear() - startDateLocal.getDayOfYear())){
-			couponNumS.add(0);
-		}
 		y.put("couponNumS", couponNumS);
 
 		result.put("chart", y);
@@ -201,28 +188,24 @@ public class Inno72MerchantTotalCountByDayServiceImpl extends AbstractService<In
 			}
 			startDateLocal = startDateLocal.plusDays(1);
 
-			String experience = stringMap.get("experience");
-			String concern = stringMap.get("concern");
-			String percent = stringMap.get("percent");
-			experienceS.add(Integer.parseInt(experience));
-			concernS.add(Integer.parseInt(concern));
-			percentS.add(Integer.parseInt(percent));
+			experienceS.add(Integer.parseInt(stringMap.get("experience")));
+
+			concernS.add(Integer.parseInt(stringMap.get("concern")));
+
+			percentS.add(Integer.parseInt(stringMap.get("percent")));
 
 		}
-		Map<String,List<Integer>> ys = new HashMap<>();
 
+		// 日期不足，补充0直到到结束日期
 		while (experienceS.size() < (endDateLocal.getDayOfYear() - startDateLocal.getDayOfYear())){
 			experienceS.add(0);
-		}
-		while (concernS.size() < (endDateLocal.getDayOfYear() - startDateLocal.getDayOfYear())){
 			concernS.add(0);
-		}
-		while (percentS.size() < (endDateLocal.getDayOfYear() - startDateLocal.getDayOfYear())){
 			percentS.add(0);
 		}
+
+		Map<String,List<Integer>> ys = new HashMap<>();
 		ys.put("experienceS", experienceS);
 		ys.put("percentS", percentS);
-
 		ys.put("concernS", concernS);
 		result.put("chart", ys);
 
@@ -311,6 +294,7 @@ public class Inno72MerchantTotalCountByDayServiceImpl extends AbstractService<In
 				LOGGER.info("商品维度 日期 - {}, num - {}", curLocalDate, num);
 			}
 
+			// 日期不足，补充0直到到结束日期
 			while (num.size() < (endDateLocal.getDayOfYear() - startDateLocal.getDayOfYear())){
 				num.add(0);
 			}
