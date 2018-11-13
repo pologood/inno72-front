@@ -13,7 +13,7 @@
         <result column="goods_id" jdbcType="VARCHAR" property="goodsId"/>
         <result column="goods_name" jdbcType="VARCHAR" property="goodsName"/>
         <result column="merchant_id" jdbcType="VARCHAR" property="merchantId"/>
-        <result column="stay_name" jdbcType="INTEGER" property="stayNum"/>
+        <result column="stay_num" jdbcType="INTEGER" property="stayNum"/>
         <result column="order_qty_total" jdbcType="INTEGER" property="orderQtyTotal"/>
         <result column="order_qty_succ" jdbcType="INTEGER" property="orderQtySucc"/>
         <result column="goods_num" jdbcType="INTEGER" property="goodsNum"/>
