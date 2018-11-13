@@ -37,15 +37,19 @@ public class Inno72CommonController {
 			return Results.failure("无发送类型!");
 		}
 		String code = "";
+		String redisHost = "" ;
 		switch (type) {
 			case "1":
 				code = CommonBean.PHONE_CODE.ALTER_PHONE;
+				redisHost = CommonBean.REDIS_MERCHANT_MOBILE_CODE_ALTER_PHONE;
 				break;
 			case "2":
 				code = CommonBean.PHONE_CODE.BINDING_PHONE;
+				redisHost = CommonBean.REDIS_MERCHANT_MOBILE_CODE_BINDING_PHONE;
 				break;
 			case "3":
 				code = CommonBean.PHONE_CODE.REST_PASSWORD;
+				redisHost = CommonBean.REDIS_MERCHANT_MOBILE_CODE_RESET_PWD;
 				break;
 			default:
 				return Results.failure("确认发送类型!");
@@ -53,7 +57,7 @@ public class Inno72CommonController {
 
 		String s = CommonBean.genCode(4);
 
-		String cacheCode = redisUtil.setex(CommonBean.REDIS_MERCHANT_MOBILE_CODE_RESET_PWD + phone,
+		String cacheCode = redisUtil.setex(redisHost + phone,
 				CommonBean.REDIS_MERCHANT_MOBILE_CODE_TIMEOUT, s);
 
 		Map<String, String> param = new HashMap<>(1);

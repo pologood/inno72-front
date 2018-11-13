@@ -36,14 +36,27 @@ public class CheckMoblieCodeInterceptor implements HandlerInterceptor {
 		if (doNotCheckUs.parallelStream().anyMatch(request.getServletPath()::contains)) {
 			String code = request.getParameter("code");
 			String phone = request.getParameter("phone");
-			logger.info("验证信息 {}, {}", phone, code);
+			String type = request.getParameter("type");
+			logger.info("验证信息 {}, {}, type - {}", phone, code, type);
 			if (StringUtil.isEmpty(code) || StringUtil.isEmpty(phone)) {
 				response.getWriter().println(JSON.toJSONString(Results.failure("验证码失效!")));
 				response.getWriter().flush();
 				response.getWriter().close();
 				return false;
 			}
-			String cacheCode = redisUtil.get(CommonBean.REDIS_MERCHANT_MOBILE_CODE_RESET_PWD + phone);
+			String redisHost = "";
+			switch (type) {
+				case "1":
+					redisHost = CommonBean.REDIS_MERCHANT_MOBILE_CODE_ALTER_PHONE;
+					break;
+				case "2":
+					redisHost = CommonBean.REDIS_MERCHANT_MOBILE_CODE_BINDING_PHONE;
+					break;
+				case "3":
+					redisHost = CommonBean.REDIS_MERCHANT_MOBILE_CODE_RESET_PWD;
+					break;
+			}
+			String cacheCode = redisUtil.get(redisHost + phone);
 			if (StringUtil.isEmpty(cacheCode)) {
 				response.getWriter().println(JSON.toJSONString(Results.failure("验证码错误!")));
 				response.getWriter().flush();
