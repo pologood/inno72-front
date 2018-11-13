@@ -187,6 +187,7 @@ public class Inno72MerchantTotalCountByDayServiceImpl extends AbstractService<In
 
 		List<Integer> experienceS = new ArrayList<>();
 		List<Integer> concernS = new ArrayList<>();
+		List<Integer> percentS = new ArrayList<>();
 		for (Map<String, String> stringMap : list){
 
 			String date = stringMap.get("date");
@@ -202,9 +203,10 @@ public class Inno72MerchantTotalCountByDayServiceImpl extends AbstractService<In
 
 			String experience = stringMap.get("experience");
 			String concern = stringMap.get("concern");
+			String percent = stringMap.get("percent");
 			experienceS.add(Integer.parseInt(experience));
 			concernS.add(Integer.parseInt(concern));
-
+			percentS.add(Integer.parseInt(percent));
 
 		}
 		Map<String,List<Integer>> ys = new HashMap<>();
@@ -215,8 +217,11 @@ public class Inno72MerchantTotalCountByDayServiceImpl extends AbstractService<In
 		while (concernS.size() < (endDateLocal.getDayOfYear() - startDateLocal.getDayOfYear())){
 			concernS.add(0);
 		}
-
+		while (percentS.size() < (endDateLocal.getDayOfYear() - startDateLocal.getDayOfYear())){
+			percentS.add(0);
+		}
 		ys.put("experienceS", experienceS);
+		ys.put("percentS", percentS);
 
 		ys.put("concernS", concernS);
 		result.put("chart", ys);
