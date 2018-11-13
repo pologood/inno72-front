@@ -8,6 +8,8 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
 
+import org.springframework.format.annotation.DateTimeFormat;
+
 @Table(name = "inno72_merchant_total_count_by_day")
 public class Inno72MerchantTotalCountByDay {
 
@@ -93,6 +95,7 @@ public class Inno72MerchantTotalCountByDay {
 	private String sellerId;
 
 	@Column(name = "last_update_time")
+	@DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
 	private LocalDateTime lastUpdateTime;
 
 	/**
