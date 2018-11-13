@@ -113,17 +113,41 @@ public class Inno72MerchantTotalCountByDayServiceImpl extends AbstractService<In
 					startDateLocal, orderQtyTotalS, orderQtySuccS,goodsNumS, uvS, pvS, couponNumS);
 		}
 
+		while (orderQtyTotalS.size() < (endDateLocal.getDayOfYear() - startDateLocal.getDayOfYear())){
+			orderQtyTotalS.add(0);
+		}
 		y.put("orderQtyTotalS", orderQtyTotalS);
+
+		while (orderQtySuccS.size() < (endDateLocal.getDayOfYear() - startDateLocal.getDayOfYear())){
+			orderQtySuccS.add(0);
+		}
 		y.put("orderQtySuccS", orderQtySuccS);
+
+		while (goodsNumS.size() < (endDateLocal.getDayOfYear() - startDateLocal.getDayOfYear())){
+			goodsNumS.add(0);
+		}
 		y.put("goodsNumS", goodsNumS);
+
+		while (uvS.size() < (endDateLocal.getDayOfYear() - startDateLocal.getDayOfYear())){
+			uvS.add(0);
+		}
 		y.put("uvS", uvS);
+
+		while (pvS.size() < (endDateLocal.getDayOfYear() - startDateLocal.getDayOfYear())){
+			pvS.add(0);
+		}
 		y.put("pvS", pvS);
+
+		while (couponNumS.size() < (endDateLocal.getDayOfYear() - startDateLocal.getDayOfYear())){
+			couponNumS.add(0);
+		}
 		y.put("couponNumS", couponNumS);
 
 		result.put("chart", y);
 
 		return result;
 	}
+
 
 	private Map<String, Object> buildUser(List<Inno72MerchantTotalCountByDay> days, LocalDate startDateLocal, LocalDate endDateLocal) {
 		Map<String, Object> result = new HashMap<>(2);
@@ -183,7 +207,16 @@ public class Inno72MerchantTotalCountByDayServiceImpl extends AbstractService<In
 
 		}
 		Map<String,List<Integer>> ys = new HashMap<>();
+
+		while (experienceS.size() < (endDateLocal.getDayOfYear() - startDateLocal.getDayOfYear())){
+			experienceS.add(0);
+		}
+		while (concernS.size() < (endDateLocal.getDayOfYear() - startDateLocal.getDayOfYear())){
+			concernS.add(0);
+		}
+
 		ys.put("experienceS", experienceS);
+
 		ys.put("concernS", concernS);
 		result.put("chart", ys);
 
@@ -270,6 +303,10 @@ public class Inno72MerchantTotalCountByDayServiceImpl extends AbstractService<In
 				num.add(inno72MerchantTotalCountByDay.getGoodsNum());
 				curLocalDate = curLocalDate.plusDays(1);
 				LOGGER.info("商品维度 日期 - {}, num - {}", curLocalDate, num);
+			}
+
+			while (num.size() < (endDateLocal.getDayOfYear() - startDateLocal.getDayOfYear())){
+				num.add(0);
 			}
 			nums.add(num);
 		}
