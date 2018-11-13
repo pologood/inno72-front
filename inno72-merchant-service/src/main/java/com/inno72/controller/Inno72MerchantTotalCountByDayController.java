@@ -21,7 +21,7 @@ import com.inno72.service.Inno72MerchantTotalCountByDayService;
  * Created by CodeGenerator on 2018/11/08.
  */
 @RestController
-@RequestMapping("ab")
+@RequestMapping("/inno72/merchant/total/count/by/day")
 public class Inno72MerchantTotalCountByDayController {
 	@Resource
 	private Inno72MerchantTotalCountByDayService inno72MerchantTotalCountByDayService;
