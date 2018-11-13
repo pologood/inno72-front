@@ -28,7 +28,7 @@
       <if test="city != null and city != ''">
           and city = #{city}
       </if>
-      <if test="startDate != null and startDate != '' and endDate != '' and endDate != ''">
+      <if test="startDate != null and startDate != '' and endDate != null and endDate != ''">
           and `date` between #{startDate} and #{endDate}
       </if>
         order by `date`, city
