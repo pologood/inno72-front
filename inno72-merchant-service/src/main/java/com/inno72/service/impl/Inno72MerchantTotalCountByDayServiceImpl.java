@@ -88,7 +88,7 @@ public class Inno72MerchantTotalCountByDayServiceImpl extends AbstractService<In
 		switch (body){
 			case "table":
 				return this.getTable(data.get("list"), label);
-			case "charts":
+			case "chart":
 				return this.getCharts(data.get("chart"), label);
 		}
 
@@ -529,7 +529,7 @@ public class Inno72MerchantTotalCountByDayServiceImpl extends AbstractService<In
 		nums.add(pvs);
 		nums.add(uvs);
 		charts.put("num", nums);
-		result.put("charts", charts);
+		result.put("chart", charts);
 		return result;
 	}
 
