@@ -4,6 +4,7 @@ import java.util.List;
 
 import javax.annotation.Resource;
 
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -22,6 +23,7 @@ import com.inno72.service.Inno72MerchantTotalCountByDayService;
  */
 @RestController
 @RequestMapping("/inno72/merchant/total/count/by/day")
+@CrossOrigin
 public class Inno72MerchantTotalCountByDayController {
 	@Resource
 	private Inno72MerchantTotalCountByDayService inno72MerchantTotalCountByDayService;

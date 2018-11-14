@@ -4,6 +4,7 @@ import java.util.List;
 
 import javax.annotation.Resource;
 
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -21,6 +22,7 @@ import com.inno72.service.Inno72MerchantTotalCountService;
  */
 @RestController
 @RequestMapping("/inno72/merchant/total/count")
+@CrossOrigin
 @SuppressWarnings({"rawtypes", "unchecked"})
 public class Inno72MerchantTotalCountController {
 	@Resource
