@@ -24,6 +24,7 @@ import com.inno72.service.CommonService;
 
 @RestController
 @CrossOrigin
+@RequestMapping(method = {RequestMethod.POST, RequestMethod.GET, RequestMethod.OPTIONS})
 public class Inno72CommonController {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(Inno72CommonController.class);
@@ -34,7 +35,7 @@ public class Inno72CommonController {
 	@Resource
 	private IRedisUtil redisUtil;
 
-	@RequestMapping(value = "/common/code/{type}", method = {RequestMethod.POST, RequestMethod.GET})
+	@RequestMapping(value = "/common/code/{type}")
 	public Result<String> code(@PathVariable(value = "type") String type, String phone) {
 		if (StringUtil.isEmpty(type) || StringUtil.isEmpty(phone)) {
 			return Results.failure("无发送类型!");
@@ -75,7 +76,7 @@ public class Inno72CommonController {
 	@Resource
 	private CommonService commonService;
 
-	@RequestMapping(value = "/common/api/{type}", method = {RequestMethod.POST, RequestMethod.GET})
+	@RequestMapping(value = "/common/api/{type}")
 	public Result baseApi(@PathVariable(value = "type") String type, String sellerId){
 		return Results.success(commonService.baseApi(type, sellerId));
 	}

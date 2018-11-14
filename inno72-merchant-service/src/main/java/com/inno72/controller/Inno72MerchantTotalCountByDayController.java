@@ -22,13 +22,13 @@ import com.inno72.service.Inno72MerchantTotalCountByDayService;
  * Created by CodeGenerator on 2018/11/08.
  */
 @RestController
-@RequestMapping("/inno72/merchant/total/count/by/day")
+@RequestMapping(value = "/inno72/merchant/total/count/by/day", method = {RequestMethod.POST, RequestMethod.GET, RequestMethod.OPTIONS})
 @CrossOrigin
 public class Inno72MerchantTotalCountByDayController {
 	@Resource
 	private Inno72MerchantTotalCountByDayService inno72MerchantTotalCountByDayService;
 
-	@RequestMapping(value = "/search/{label}", method = {RequestMethod.POST, RequestMethod.GET})
+	@RequestMapping(value = "/search/{label}")
 	public Result searchData(@PathVariable(value = "label") String label, String activityId, String city, String startDate, String endDate) {
 		return inno72MerchantTotalCountByDayService
 				.searchData(label, activityId, city, startDate, endDate);
