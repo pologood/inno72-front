@@ -1,6 +1,7 @@
 package com.inno72.service.impl;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import javax.annotation.Resource;
@@ -70,27 +71,29 @@ public class Inno72MerchantUserServiceImpl extends AbstractService<Inno72Merchan
 
 	@Override
 	@CheckParams
-	public Result resetPwd(String id, String password, String confirm, String oPassword) {
-		if (!password.equals(confirm)) {
-			return Results.failure("确认密码不一致！");
+	public Result resetPwd(String password, String userName, String phone, String code) {
+		String s = redisUtil.get(CommonBean.REDIS_MERCHANT_RESET_PWD_KEY + userName);
+		if (!s.equals(code)){
+			return Results.failure("请求异常！");
 		}
-		Inno72MerchantUser user = inno72MerchantUserMapper.selectByPrimaryKey(id);
-		if (user == null) {
+
+		List<Inno72MerchantUser> user = inno72MerchantUserMapper.selectByMobile(phone);
+		if (user.size() == 0) {
 			return Results.failure("用户不存在!");
 		}
-		if (CommonBean.pwd(oPassword).equals(user.getPassword())){
-			return Results.failure("原密码输入错误!");
-		}
 		LOGGER.info("更新用户密码前 ===> {}", JSON.toJSONString(user));
-		user.setPassword(CommonBean.pwd(password));
-		int i = inno72MerchantUserMapper.updateByPrimaryKeySelective(user);
+		Inno72MerchantUser newUser = new Inno72MerchantUser();
+		newUser.setPassword(CommonBean.pwd(password));
+		newUser.setPhone(CommonBean.pwd(phone));
+		int i = inno72MerchantUserMapper.updatePwdByPhone(newUser);
 		LOGGER.info("更新用户密码完成 ===> {}", JSON.toJSONString(user));
 		return Results.success();
 	}
 
+
 	@Override
 	@CheckParams
-	public Result resetPhone(String id, String phone) {
+	public Result resetPhone(String id, String phone, String mobile, String token) {
 		Inno72MerchantUser user = inno72MerchantUserMapper.selectByPrimaryKey(id);
 		if (user == null) {
 			return Results.failure("用户不存在!");
@@ -100,5 +103,47 @@ public class Inno72MerchantUserServiceImpl extends AbstractService<Inno72Merchan
 		int i = inno72MerchantUserMapper.updateByPrimaryKeySelective(user);
 		LOGGER.info("更新用户手机号码完成 ===> {}", JSON.toJSONString(user));
 		return Results.success();
+	}
+
+	@Override
+	public Result alterPwd(String id, String password, String oPassword) {
+		Inno72MerchantUser user = inno72MerchantUserMapper.selectByPrimaryKey(id);
+		if (user == null) {
+			return Results.failure("用户不存在!");
+		}
+		if(!user.getPassword().equals(CommonBean.pwd(oPassword))){
+			return Results.failure("原用户密码错误!");
+		}
+		user.setPassword(CommonBean.pwd(password));
+		int i = inno72MerchantUserMapper.updateByPrimaryKeySelective(user);
+		LOGGER.info("更新用户密码完成 ===> {}", JSON.toJSONString(user));
+		return Results.success();
+	}
+
+	@Override
+	public Result<String> checkMerchant(String phone, String userName) {
+
+		Inno72MerchantUser user = inno72MerchantUserMapper.selectByLoginNameAndPhone(phone, userName);
+
+		if (user == null){
+			return Results.failure("用户不存在!");
+		}
+		String uuid = StringUtil.uuid();
+		redisUtil.setex(CommonBean.REDIS_MERCHANT_RESET_PWD_KEY + userName, 60 * 3, uuid);
+
+		return Results.success(uuid);
+	}
+
+	@Override
+	public Result checkPhone(String phone, String code) {
+
+		if (StringUtil.isEmpty(phone) || StringUtil.isEmpty(code)){
+			return Results.failure("参数为空 !");
+		}
+		String uuid = StringUtil.uuid();
+
+		redisUtil.setex(CommonBean.REDIS_MERCHANT_RESET_MOBILE_KEY + phone, 60 * 3, uuid);
+
+		return Results.success(uuid);
 	}
 }

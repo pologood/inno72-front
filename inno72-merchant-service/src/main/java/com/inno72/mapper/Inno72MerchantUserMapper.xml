@@ -13,9 +13,21 @@
         <result column="seller_name" jdbcType="VARCHAR" property="sellerName"/>
         <result column="phone" jdbcType="VARCHAR" property="phone"/>
     </resultMap>
-    <select id="selectByNameAndPwd" resultMap="BaseResultMap" resultType="java.util.Map">
+    <update id="updatePwdByPhone" parameterType="com.inno72.model.Inno72MerchantUser">
+      update inno72_merchant_user set pwd = #{password} where phone = #{phone}
+    </update>
+    <select id="selectByNameAndPwd" resultMap="BaseResultMap">
         select * from inno72_merchant_user
         where login_name = #{userName}
         and password = #{pwd}
+    </select>
+    <select id="selectByMobile" resultMap="BaseResultMap">
+          select * from inno72_merchant_user
+          where phone = #{phone}
+    </select>
+    <select id="selectByLoginNameAndPhone" resultMap="BaseResultMap">
+          select * from inno72_merchant_user
+          where phone = #{phone}
+          and login_name = #{loginName}
     </select>
 </mapper>

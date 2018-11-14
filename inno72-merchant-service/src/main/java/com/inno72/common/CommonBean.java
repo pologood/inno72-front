@@ -27,6 +27,8 @@ public class CommonBean {
 	 * 商户登录session
 	 */
 	public static final String REDIS_MERCHANT_LOGIN_SESSION_KEY = "inno72_merchant_service:session:";
+	public static final String REDIS_MERCHANT_RESET_PWD_KEY = "inno72_merchant_service:reset_password:";
+	public static final String REDIS_MERCHANT_RESET_MOBILE_KEY = "inno72_merchant_service:reset_mobile:";
 	public static final int REDIS_MERCHANT_LOGIN_SESSION_KEY_TIMES = 60 * 60 * 10;
 
 

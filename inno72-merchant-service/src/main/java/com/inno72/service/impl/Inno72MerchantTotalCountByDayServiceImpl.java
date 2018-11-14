@@ -1,5 +1,7 @@
 package com.inno72.service.impl;
 
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
@@ -11,6 +13,10 @@ import java.util.TreeMap;
 
 import javax.annotation.Resource;
 
+import org.apache.poi.ss.usermodel.Row;
+import org.apache.poi.ss.usermodel.Sheet;
+import org.apache.poi.ss.usermodel.Workbook;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -21,6 +27,7 @@ import com.inno72.common.AbstractService;
 import com.inno72.common.Result;
 import com.inno72.common.Results;
 import com.inno72.common.datetime.LocalDateUtil;
+import com.inno72.common.util.ExportExcelUtils;
 import com.inno72.common.utils.StringUtil;
 import com.inno72.mapper.Inno72MerchantTotalCountByDayMapper;
 import com.inno72.model.Inno72MerchantTotalCountByDay;
@@ -70,6 +77,40 @@ public class Inno72MerchantTotalCountByDayServiceImpl extends AbstractService<In
 				return Results.failure("无查询类型!");
 		}
 		return Results.success(result);
+	}
+
+	@Override
+	public byte[] getBytes(Map<String, Object> data, String body, String label) {
+
+		switch (body){
+			case "table":
+				return this.getTable(data.get("list"), label);
+			case "charts":
+				return this.getCharts(data.get("chart"), label);
+		}
+
+		return new byte[0];
+	}
+
+	private byte[] getCharts(Object chart, String label) {
+		return new byte[0];
+	}
+
+	private byte[] getTable(Object list, String label) {
+
+		switch (label){
+			case "order":
+				return this.buildOrderExcel(list);
+			case "goods":
+				return this.buildGoodsExcel(list);
+			case "user":
+				return this.buildUserExcel(list);
+		}
+		return new byte[0];
+	}
+
+	private byte[] buildUserExcel(Object list) {
+		return new byte[0];
 	}
 
 	private Map<String, Object> buildOrder(List<Inno72MerchantTotalCountByDay> days, LocalDate startDateLocal, LocalDate endDateLocal) {
@@ -162,6 +203,38 @@ public class Inno72MerchantTotalCountByDayServiceImpl extends AbstractService<In
 		result.put("chart", y);
 
 		return result;
+	}
+
+	private byte[] buildOrderExcel(Object list) {
+		List<Inno72MerchantTotalCountByDay> days = (List<Inno72MerchantTotalCountByDay>)list;
+
+		List<List<Object>> data = new ArrayList<>();
+		List<Object> totelRow = new ArrayList<>();
+		totelRow.add("日期");
+		totelRow.add("地区");
+		totelRow.add("商品名称");
+		totelRow.add("互动次数");
+		totelRow.add("互动人数");
+		totelRow.add("订单数");
+		totelRow.add("支付成功数");
+		totelRow.add("派发商品数");
+		totelRow.add("派发优惠券数");
+		data.add(totelRow);
+		for (Inno72MerchantTotalCountByDay day : days){
+			List<Object> row = new ArrayList<>();
+
+			row.add(day.getDate());
+			row.add(day.getCity());
+			row.add(day.getGoodsName());
+			row.add(day.getPv());
+			row.add(day.getUv());
+			row.add(day.getOrderQtyTotal());
+			row.add(day.getOrderQtySucc());
+			row.add(day.getGoodsNum());
+			row.add(day.getCouponNum());
+			data.add(row);
+		}
+		return buildExcel(data);
 	}
 
 	private Map<String, List<Inno72MerchantTotalCountByDay>> kk(List<Inno72MerchantTotalCountByDay> days, LocalDate startDate, LocalDate endDate){
@@ -454,5 +527,56 @@ public class Inno72MerchantTotalCountByDayServiceImpl extends AbstractService<In
 		charts.put("num", nums);
 		result.put("charts", charts);
 		return result;
+	}
+
+	private byte[] buildGoodsExcel(Object list) {
+		List<Inno72MerchantTotalCountByDay> days = (List<Inno72MerchantTotalCountByDay>)list;
+
+		Map<String, List<Inno72MerchantTotalCountByDay>> dayAndCityAndGoods = new HashMap<>();
+		for (Inno72MerchantTotalCountByDay day: days){
+			String date = day.getDate();
+			String city = day.getCity();
+			String key = date + city;
+			List<Inno72MerchantTotalCountByDay> days1 = dayAndCityAndGoods.get(key);
+			if (days1 == null){
+				days1 = new ArrayList<>();
+			}
+			days1.add(day);
+		}
+
+
+		for (Map.Entry<String, List<Inno72MerchantTotalCountByDay>> m : dayAndCityAndGoods.entrySet()){
+
+			List<Inno72MerchantTotalCountByDay> value = m.getValue();
+
+		}
+
+
+		return new byte[0];
+	}
+
+
+
+	private byte[] buildExcel(List<List<Object>> values) {
+		try {
+			Workbook wb = new XSSFWorkbook();
+			ByteArrayOutputStream out = new ByteArrayOutputStream();
+
+			Sheet sheet = wb.createSheet("new sheet");
+			for (int i = 0; i < values.size(); i++) {
+				Row row = sheet.createRow((short) i);
+				List<Object> rowValues = values.get(i);
+				for (int j = 0; j < rowValues.size(); j++) {
+					row.createCell(j).setCellValue(rowValues.get(j) == null ? "" : rowValues.get(j).toString());
+				}
+			}
+			wb.write(out);
+			byte[] a = out.toByteArray();
+			out.close();
+			return a;
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		return null;
 	}
 }

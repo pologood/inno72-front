@@ -1,8 +1,11 @@
 package com.inno72.controller;
 
+import java.io.IOException;
 import java.util.List;
+import java.util.Map;
 
 import javax.annotation.Resource;
+import javax.servlet.http.HttpServletResponse;
 
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -15,6 +18,7 @@ import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import com.inno72.common.Result;
 import com.inno72.common.ResultGenerator;
+import com.inno72.common.Results;
 import com.inno72.model.Inno72MerchantTotalCountByDay;
 import com.inno72.service.Inno72MerchantTotalCountByDayService;
 
@@ -32,6 +36,27 @@ public class Inno72MerchantTotalCountByDayController {
 	public Result searchData(@PathVariable(value = "label") String label, String activityId, String city, String startDate, String endDate, String goods) {
 		return inno72MerchantTotalCountByDayService
 				.searchData(label, activityId, city, startDate, endDate, goods);
+	}
+	@RequestMapping(value = "/search/export")
+	public Result searchDataExport(String label, String body,
+			String activityId, String city, String startDate,
+			String endDate, String goods,
+			HttpServletResponse response) {
+		Result<Object> objectResult = inno72MerchantTotalCountByDayService
+				.searchData(label, activityId, city, startDate, endDate, goods);
+
+		byte [] bytes = inno72MerchantTotalCountByDayService.getBytes((Map<String, Object>)objectResult.getData(), body, label);
+
+		response.setContentType("application/x-msdownload");
+		response.setContentLength(bytes.length);
+		try {
+			response.getOutputStream().write(bytes);
+			response.getOutputStream().flush();
+			response.getOutputStream().close();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		return Results.success();
 	}
 
 }

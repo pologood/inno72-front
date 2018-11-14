@@ -13,7 +13,13 @@ public interface Inno72MerchantUserService extends Service<Inno72MerchantUser> {
 
 	Result<UserSessionVo> login(String userName, String password);
 
-	Result resetPwd(String id, String password, String confirm, String oPassword);
+	Result resetPwd(String password, String userName, String phone, String code);
 
-	Result resetPhone(String id, String phone);
+	Result resetPhone(String id, String phone, String mobile, String code);
+
+	Result alterPwd(String id, String password, String oPassword);
+
+	Result<String> checkMerchant(String phone, String userName);
+
+	Result checkPhone(String phone, String code);
 }
