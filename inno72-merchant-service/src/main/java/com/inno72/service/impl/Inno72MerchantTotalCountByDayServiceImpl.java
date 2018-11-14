@@ -7,9 +7,12 @@ import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.TreeMap;
+import java.util.TreeSet;
 
 import javax.annotation.Resource;
 
@@ -109,9 +112,6 @@ public class Inno72MerchantTotalCountByDayServiceImpl extends AbstractService<In
 		return new byte[0];
 	}
 
-	private byte[] buildUserExcel(Object list) {
-		return new byte[0];
-	}
 
 	private Map<String, Object> buildOrder(List<Inno72MerchantTotalCountByDay> days, LocalDate startDateLocal, LocalDate endDateLocal) {
 		Map<String, Object> result = new HashMap<>(2);
@@ -335,34 +335,6 @@ public class Inno72MerchantTotalCountByDayServiceImpl extends AbstractService<In
 			concernS.add(0);
 			percentS.add(0);
 		}
-//
-//		for (Map<String, String> stringMap : list){
-//
-//			String date = stringMap.get("date");
-//			LocalDate thisDate = LocalDateUtil.transfer(date, DateTimeFormatter.ofPattern("yyyy-MM-dd"));
-//			while (startDateLocal.plusDays(1).isBefore(thisDate)){
-//				startDateLocal = startDateLocal.plusDays(1);
-//				experienceS.add(0);
-//				concernS.add(0);
-//				LOGGER.info("构建订单数据 日期 {}",
-//						startDateLocal);
-//			}
-//			startDateLocal = startDateLocal.plusDays(1);
-//
-//			experienceS.add(Integer.parseInt(stringMap.get("experience")));
-//
-//			concernS.add(Integer.parseInt(stringMap.get("concern")));
-//
-//			percentS.add(Integer.parseInt(stringMap.get("percent")));
-//
-//		}
-//
-//		// 日期不足，补充0直到到结束日期
-//		while (experienceS.size() < (endDateLocal.getDayOfYear() - startDateLocal.getDayOfYear())){
-//			experienceS.add(0);
-//			concernS.add(0);
-//			percentS.add(0);
-//		}
 
 		Map<String,List<Integer>> ys = new HashMap<>();
 		ys.put("experienceS", experienceS);
@@ -372,6 +344,38 @@ public class Inno72MerchantTotalCountByDayServiceImpl extends AbstractService<In
 
 		return result;
 	}
+
+	private byte[] buildUserExcel(Object object) {
+		List<Map<String, String>> list = (List<Map<String, String>>)object;
+		List<List<Object>> result = new ArrayList<>();
+		List<Object> r = new ArrayList<>();
+		r.add("日期");
+		r.add("城市");
+		r.add("体验用户数");
+		r.add("关注人数");
+		r.add("百分比");
+		result.add(r);
+		for (Map<String, String> map : list){
+
+			String date =  map.get("date");
+			String city =  map.get("city");
+			String experience =  map.get("experience");
+			String concern =  map.get("concern");
+			String percent =  map.get("percent");
+			List<Object> rs = new ArrayList<>();
+			rs.add(date);
+			rs.add(city);
+			rs.add(experience);
+			rs.add(concern);
+			rs.add(percent);
+			result.add(rs);
+
+		}
+
+
+		return buildExcel(result);
+	}
+
 
 	private Map<String,List<Map<String,String>>> kku(List<Map<String,String>> list, LocalDate startDateLocal, LocalDate endDateLocal) {
 		list.sort(Comparator.comparing( (v) -> v.get("date")));
@@ -545,14 +549,51 @@ public class Inno72MerchantTotalCountByDayServiceImpl extends AbstractService<In
 		}
 
 
+		Set<String> goodsIds = new TreeSet<>();
+		Set<String> goodsNames = new TreeSet<>();
+		List<List<Object>> numss = new ArrayList<>();
+		goodsNames.add("日期");
+		goodsNames.add("城市");
+		goodsNames.add("互动次数");
+		goodsNames.add("互动人数");
 		for (Map.Entry<String, List<Inno72MerchantTotalCountByDay>> m : dayAndCityAndGoods.entrySet()){
 
 			List<Inno72MerchantTotalCountByDay> value = m.getValue();
 
+			Map<String, Integer> goods = new HashMap<>();
+			Inno72MerchantTotalCountByDay day = value.get(0);
+
+			String city = day.getCity();
+			String date = day.getDate();
+			Integer pv = day.getPv();
+			Integer uv = day.getUv();
+
+			for (Inno72MerchantTotalCountByDay byDay : value){
+				String goodsId = byDay.getGoodsId();
+				Integer goodsNum = byDay.getGoodsNum();
+				goodsIds.add(goodsId);
+				goodsNames.add(byDay.getGoodsName());
+				goods.put(goodsId, goodsNum);
+			}
+
+
+			List<Object> nums = new ArrayList<>();
+			nums.add(date);
+			nums.add(city);
+			nums.add(pv);
+			nums.add(uv);
+			for (String goodsId : goodsIds){
+				Integer num = goods.get(goodsId);
+				nums.add(num);
+			}
+			numss.add(nums);
 		}
 
+		List<List<Object>> re = new ArrayList<>();
+		re.add(new ArrayList<>(goodsNames));
+		re.addAll(numss);
 
-		return new byte[0];
+		return  buildExcel(re);
 	}
 
 
