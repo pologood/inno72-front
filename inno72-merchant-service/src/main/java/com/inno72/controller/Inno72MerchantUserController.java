@@ -30,8 +30,8 @@ public class Inno72MerchantUserController {
 	}
 
 	@RequestMapping(value = "/inno72/merchant/resetPwd")
-	public Result resetPwd(String id, String password, String confirm) {
-		return inno72MerchantUserService.resetPwd(id, password, confirm);
+	public Result resetPwd(String id, String password, String confirm, String oPassword) {
+		return inno72MerchantUserService.resetPwd(id, password, confirm, oPassword);
 	}
 
 	@RequestMapping(value = "/inno72/merchant/resetPhone")

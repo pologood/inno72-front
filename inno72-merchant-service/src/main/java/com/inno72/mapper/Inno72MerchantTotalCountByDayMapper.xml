@@ -31,6 +31,9 @@
       <if test="city != null and city != ''">
           and city = #{city}
       </if>
+      <if test="goods != null and goods != ''">
+          and goods_id = #{goods}
+      </if>
       <if test="startDate != null and startDate != '' and endDate != null and endDate != ''">
           and `date` between #{startDate} and #{endDate}
       </if>

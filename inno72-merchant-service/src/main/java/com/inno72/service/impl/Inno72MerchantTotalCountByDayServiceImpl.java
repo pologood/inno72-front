@@ -40,20 +40,21 @@ public class Inno72MerchantTotalCountByDayServiceImpl extends AbstractService<In
 	private Inno72MerchantTotalCountByDayMapper inno72MerchantTotalCountByDayMapper;
 
 	@Override
-	public Result<Object> searchData(String label, String activityId, String city, String startDate, String endDate) {
+	public Result<Object> searchData(String label, String activityId, String city, String startDate, String endDate,
+			String goods) {
 
 		if (StringUtil.isEmpty(activityId) && StringUtil.isEmpty(startDate) && StringUtil.isEmpty(endDate)){
 			return Results.failure("参数缺失!");
 		}
-		LOGGER.info("查询列表 -> label - {}, activityId - {}, city - {}, startDate - {}, endDate - {}"
-		,label, activityId, city, startDate, endDate);
+		LOGGER.info("查询列表 -> label - {}, activityId - {}, city - {}, startDate - {}, endDate - {}, goods - {}"
+		,label, activityId, city, startDate, endDate, goods);
 		LocalDate startDateLocal = LocalDateUtil.transfer(startDate, DateTimeFormatter.ofPattern("yyyy-MM-dd"));
 		LocalDate endDateLocal = LocalDateUtil.transfer(endDate, DateTimeFormatter.ofPattern("yyyy-MM-dd"));
 		if (endDateLocal.getDayOfYear() - startDateLocal.getDayOfYear() > 90){
 			return Results.failure("不能大于三个月!");
 		}
 
-		List<Inno72MerchantTotalCountByDay> days = inno72MerchantTotalCountByDayMapper.selectList(activityId, city, startDate, endDate);
+		List<Inno72MerchantTotalCountByDay> days = inno72MerchantTotalCountByDayMapper.selectList(activityId, city, startDate, endDate, goods);
 		Map<String, Object> result;
 		switch (label){
 			case "order":
@@ -78,10 +79,13 @@ public class Inno72MerchantTotalCountByDayServiceImpl extends AbstractService<In
 
 		days.sort(Comparator.comparing(Inno72MerchantTotalCountByDay::getDate));
 
+		//处理charts部分数据
 
+		//按日期分组所有数据 key = 日期 ； value 分组的数据
 		Map<String, List<Inno72MerchantTotalCountByDay>> kk = kk(days, startDateLocal, endDateLocal);
 
 		LocalDate thisDate = startDateLocal;
+
 		Map<String, Object> y = new HashMap<>(6);
 		List<Integer> orderQtyTotalS = new ArrayList<>(); // 数量
 		List<Integer> orderQtySuccS = new ArrayList<>(); // 数量
@@ -90,8 +94,7 @@ public class Inno72MerchantTotalCountByDayServiceImpl extends AbstractService<In
 		List<Integer> pvS = new ArrayList<>(); // 数量
 		List<Integer> couponNumS = new ArrayList<>(); // 数量
 
-
-
+		//统计单日下所有数量的总和
 		for (Map.Entry<String, List<Inno72MerchantTotalCountByDay>> k : kk.entrySet()){
 
 			if (StringUtil.isEmpty(k.getKey())){
@@ -107,22 +110,16 @@ public class Inno72MerchantTotalCountByDayServiceImpl extends AbstractService<In
 			int orderQtySucc = 0;
 			for (Inno72MerchantTotalCountByDay day:value){
 
-				Integer goodsNum1 = day.getGoodsNum();
-				goodsNum += goodsNum1;
-				Integer orderQtyTotal1 = day.getOrderQtyTotal();
-				orderQtyTotal += orderQtyTotal1;
-				Integer orderQtySucc1 = day.getOrderQtySucc();
-				orderQtySucc += orderQtySucc1;
-				Integer pv1 = day.getPv();
-				pv += pv1;
-				Integer uv1 = day.getUv();
-				uv += uv1;
-				Integer couponNum1 = day.getCouponNum();
-				couponNum += couponNum1;
+				goodsNum += day.getGoodsNum();
+				orderQtyTotal += day.getOrderQtyTotal();
+				orderQtySucc += day.getOrderQtySucc();
+				pv += day.getPv();
+				uv += day.getUv();
+				couponNum += day.getCouponNum();
 			}
 
 			LocalDate cDate = LocalDateUtil.transfer(k.getKey(), DateTimeFormatter.ofPattern("yyyy-MM-dd"));
-
+			//计算日差，如果当前日期数据小于传入的开始日期。补充0的数据到数组
 			while (thisDate.plusDays(1).isBefore(cDate)) {
 				orderQtyTotalS.add(0);
 				orderQtySuccS.add(0);
@@ -132,8 +129,10 @@ public class Inno72MerchantTotalCountByDayServiceImpl extends AbstractService<In
 				couponNumS.add(0);
 				thisDate = thisDate.plusDays(1);
 			}
+			//指针日期加一天
 			thisDate = thisDate.plusDays(1);
 
+			//归类数据
 			orderQtyTotalS.add(orderQtyTotal);
 			orderQtySuccS.add(orderQtySucc);
 			goodsNumS.add(goodsNum);
@@ -142,6 +141,17 @@ public class Inno72MerchantTotalCountByDayServiceImpl extends AbstractService<In
 			couponNumS.add(couponNum);
 
 		}
+
+		// 日期不足，补充0直到到结束日期
+		while (orderQtyTotalS.size() < (endDateLocal.getDayOfYear() - startDateLocal.getDayOfYear())){
+			orderQtyTotalS.add(0);
+			orderQtySuccS.add(0);
+			goodsNumS.add(0);
+			uvS.add(0);
+			pvS.add(0);
+			couponNumS.add(0);
+		}
+
 		y.put("orderQtyTotalS", orderQtyTotalS);
 		y.put("orderQtySuccS", orderQtySuccS);
 		y.put("goodsNumS", goodsNumS);
@@ -203,29 +213,46 @@ public class Inno72MerchantTotalCountByDayServiceImpl extends AbstractService<In
 
 		result.put("list", list);
 
-		list.sort(Comparator.comparing(o -> o.get("date")));
+		Map<String, List<Map<String, String>>> kk = kku(list, startDateLocal, endDateLocal);
 
 		List<Integer> experienceS = new ArrayList<>();
 		List<Integer> concernS = new ArrayList<>();
 		List<Integer> percentS = new ArrayList<>();
-		for (Map<String, String> stringMap : list){
 
-			String date = stringMap.get("date");
-			LocalDate thisDate = LocalDateUtil.transfer(date, DateTimeFormatter.ofPattern("yyyy-MM-dd"));
-			while (startDateLocal.plusDays(1).isBefore(thisDate)){
-				startDateLocal = startDateLocal.plusDays(1);
+		LocalDate thisDate = startDateLocal;
+		//统计单日下所有数量的总和
+		for (Map.Entry k : kk.entrySet()){
+
+			if (StringUtil.isEmpty(k.getKey())){
+				continue;
+			}
+			List<Map<String, String>> value = (List<Map<String, String>>) k.getValue();
+
+			int experience = 0;
+			int concern = 0;
+			int percent = 0;
+
+			for (Map<String, String> day:value){
+
+				experience += Integer.parseInt(day.get("experience"));
+				concern += Integer.parseInt(day.get("concern"));
+				percent += Integer.parseInt(day.get("percent"));
+			}
+			LocalDate cDate = LocalDateUtil.transfer((String) k.getKey(), DateTimeFormatter.ofPattern("yyyy-MM-dd"));
+			//计算日差，如果当前日期数据小于传入的开始日期。补充0的数据到数组
+			while (thisDate.plusDays(1).isBefore(cDate)) {
 				experienceS.add(0);
 				concernS.add(0);
-				LOGGER.info("构建订单数据 日期 {}",
-						startDateLocal);
+				percentS.add(0);
+				thisDate = thisDate.plusDays(1);
 			}
-			startDateLocal = startDateLocal.plusDays(1);
+			//指针日期加一天
+			thisDate = thisDate.plusDays(1);
 
-			experienceS.add(Integer.parseInt(stringMap.get("experience")));
-
-			concernS.add(Integer.parseInt(stringMap.get("concern")));
-
-			percentS.add(Integer.parseInt(stringMap.get("percent")));
+			//归类数据
+			experienceS.add(experience);
+			concernS.add(concern);
+			percentS.add(percent);
 
 		}
 
@@ -235,6 +262,34 @@ public class Inno72MerchantTotalCountByDayServiceImpl extends AbstractService<In
 			concernS.add(0);
 			percentS.add(0);
 		}
+//
+//		for (Map<String, String> stringMap : list){
+//
+//			String date = stringMap.get("date");
+//			LocalDate thisDate = LocalDateUtil.transfer(date, DateTimeFormatter.ofPattern("yyyy-MM-dd"));
+//			while (startDateLocal.plusDays(1).isBefore(thisDate)){
+//				startDateLocal = startDateLocal.plusDays(1);
+//				experienceS.add(0);
+//				concernS.add(0);
+//				LOGGER.info("构建订单数据 日期 {}",
+//						startDateLocal);
+//			}
+//			startDateLocal = startDateLocal.plusDays(1);
+//
+//			experienceS.add(Integer.parseInt(stringMap.get("experience")));
+//
+//			concernS.add(Integer.parseInt(stringMap.get("concern")));
+//
+//			percentS.add(Integer.parseInt(stringMap.get("percent")));
+//
+//		}
+//
+//		// 日期不足，补充0直到到结束日期
+//		while (experienceS.size() < (endDateLocal.getDayOfYear() - startDateLocal.getDayOfYear())){
+//			experienceS.add(0);
+//			concernS.add(0);
+//			percentS.add(0);
+//		}
 
 		Map<String,List<Integer>> ys = new HashMap<>();
 		ys.put("experienceS", experienceS);
@@ -243,6 +298,22 @@ public class Inno72MerchantTotalCountByDayServiceImpl extends AbstractService<In
 		result.put("chart", ys);
 
 		return result;
+	}
+
+	private Map<String,List<Map<String,String>>> kku(List<Map<String,String>> list, LocalDate startDateLocal, LocalDate endDateLocal) {
+		list.sort(Comparator.comparing( (v) -> v.get("date")));
+
+		Map<String, List<Map<String,String>>> map = new TreeMap<>();
+		for (Map<String,String> day : list){
+			String date = day.get("date");
+			List<Map<String,String>> byDays = map.get(date);
+			if (byDays == null){
+				byDays = new ArrayList<>();
+			}
+			byDays.add(day);
+			map.put(date, byDays);
+		}
+		return map;
 	}
 
 	private void groupByCityAndDate(List<Inno72MerchantTotalCountByDay> days,

@@ -29,9 +29,9 @@ public class Inno72MerchantTotalCountByDayController {
 	private Inno72MerchantTotalCountByDayService inno72MerchantTotalCountByDayService;
 
 	@RequestMapping(value = "/search/{label}")
-	public Result searchData(@PathVariable(value = "label") String label, String activityId, String city, String startDate, String endDate) {
+	public Result searchData(@PathVariable(value = "label") String label, String activityId, String city, String startDate, String endDate, String goods) {
 		return inno72MerchantTotalCountByDayService
-				.searchData(label, activityId, city, startDate, endDate);
+				.searchData(label, activityId, city, startDate, endDate, goods);
 	}
 
 }

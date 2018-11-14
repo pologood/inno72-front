@@ -70,13 +70,16 @@ public class Inno72MerchantUserServiceImpl extends AbstractService<Inno72Merchan
 
 	@Override
 	@CheckParams
-	public Result resetPwd(String id, String password, String confirm) {
+	public Result resetPwd(String id, String password, String confirm, String oPassword) {
 		if (!password.equals(confirm)) {
 			return Results.failure("确认密码不一致！");
 		}
 		Inno72MerchantUser user = inno72MerchantUserMapper.selectByPrimaryKey(id);
 		if (user == null) {
 			return Results.failure("用户不存在!");
+		}
+		if (CommonBean.pwd(oPassword).equals(user.getPassword())){
+			return Results.failure("原密码输入错误!");
 		}
 		LOGGER.info("更新用户密码前 ===> {}", JSON.toJSONString(user));
 		user.setPassword(CommonBean.pwd(password));
