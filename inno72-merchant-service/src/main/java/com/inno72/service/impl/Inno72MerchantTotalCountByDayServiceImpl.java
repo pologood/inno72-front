@@ -78,6 +78,10 @@ public class Inno72MerchantTotalCountByDayServiceImpl extends AbstractService<In
 
 		days.sort(Comparator.comparing(Inno72MerchantTotalCountByDay::getDate));
 
+
+		Map<String, List<Inno72MerchantTotalCountByDay>> kk = kk(days, startDateLocal, endDateLocal);
+
+		LocalDate thisDate = startDateLocal;
 		Map<String, Object> y = new HashMap<>(6);
 		List<Integer> orderQtyTotalS = new ArrayList<>(); // 数量
 		List<Integer> orderQtySuccS = new ArrayList<>(); // 数量
@@ -86,44 +90,58 @@ public class Inno72MerchantTotalCountByDayServiceImpl extends AbstractService<In
 		List<Integer> pvS = new ArrayList<>(); // 数量
 		List<Integer> couponNumS = new ArrayList<>(); // 数量
 
-		for (Inno72MerchantTotalCountByDay day : days){
 
-			String date = day.getDate();
-			LocalDate thisDate = LocalDateUtil.transfer(date, DateTimeFormatter.ofPattern("yyyy-MM-dd"));
-			while (startDateLocal.plusDays(1).isBefore(thisDate)){
-				startDateLocal = startDateLocal.plusDays(1);
+
+		for (Map.Entry<String, List<Inno72MerchantTotalCountByDay>> k : kk.entrySet()){
+
+			if (StringUtil.isEmpty(k.getKey())){
+				continue;
+			}
+
+			List<Inno72MerchantTotalCountByDay> value = k.getValue();
+			int orderQtyTotal = 0;
+			int goodsNum = 0;
+			int pv = 0;
+			int couponNum = 0;
+			int uv = 0;
+			int orderQtySucc = 0;
+			for (Inno72MerchantTotalCountByDay day:value){
+
+				Integer goodsNum1 = day.getGoodsNum();
+				goodsNum += goodsNum1;
+				Integer orderQtyTotal1 = day.getOrderQtyTotal();
+				orderQtyTotal += orderQtyTotal1;
+				Integer orderQtySucc1 = day.getOrderQtySucc();
+				orderQtySucc += orderQtySucc1;
+				Integer pv1 = day.getPv();
+				pv += pv1;
+				Integer uv1 = day.getUv();
+				uv += uv1;
+				Integer couponNum1 = day.getCouponNum();
+				couponNum += couponNum1;
+			}
+
+			LocalDate cDate = LocalDateUtil.transfer(k.getKey(), DateTimeFormatter.ofPattern("yyyy-MM-dd"));
+
+			while (thisDate.plusDays(1).isBefore(cDate)) {
 				orderQtyTotalS.add(0);
 				orderQtySuccS.add(0);
 				goodsNumS.add(0);
 				uvS.add(0);
 				pvS.add(0);
 				couponNumS.add(0);
-				LOGGER.info("构建订单数据 日期 {}, orderQtyTotalS - {}, orderQtySuccS - {}, "
-								+ "goodsNumS - {}, uvS - {}, pvS - {}, couponNumS - {}",
-						startDateLocal, orderQtyTotalS, orderQtySuccS,goodsNumS, uvS, pvS, couponNumS);
+				thisDate = thisDate.plusDays(1);
 			}
-			startDateLocal = startDateLocal.plusDays(1);
-			orderQtyTotalS.add(day.getOrderQtyTotal());
-			orderQtySuccS.add(day.getOrderQtySucc());
-			goodsNumS.add(day.getGoodsNum());
-			uvS.add(day.getUv());
-			pvS.add(day.getPv());
-			couponNumS.add(day.getCouponNum());
-			LOGGER.info("构建订单数据 日期 {}, orderQtyTotalS - {}, orderQtySuccS - {}, "
-							+ "goodsNumS - {}, uvS - {}, pvS - {}, couponNumS - {}",
-					startDateLocal, orderQtyTotalS, orderQtySuccS,goodsNumS, uvS, pvS, couponNumS);
-		}
+			thisDate = thisDate.plusDays(1);
 
-		// 日期不足，补充0直到到结束日期
-		while (orderQtyTotalS.size() < (endDateLocal.getDayOfYear() - startDateLocal.getDayOfYear())){
-			orderQtyTotalS.add(0);
-			goodsNumS.add(0);
-			pvS.add(0);
-			couponNumS.add(0);
-			uvS.add(0);
-			orderQtySuccS.add(0);
-		}
+			orderQtyTotalS.add(orderQtyTotal);
+			orderQtySuccS.add(orderQtySucc);
+			goodsNumS.add(goodsNum);
+			uvS.add(uv);
+			pvS.add(pv);
+			couponNumS.add(couponNum);
 
+		}
 		y.put("orderQtyTotalS", orderQtyTotalS);
 		y.put("orderQtySuccS", orderQtySuccS);
 		y.put("goodsNumS", goodsNumS);
@@ -134,6 +152,21 @@ public class Inno72MerchantTotalCountByDayServiceImpl extends AbstractService<In
 		result.put("chart", y);
 
 		return result;
+	}
+
+	private Map<String, List<Inno72MerchantTotalCountByDay>> kk(List<Inno72MerchantTotalCountByDay> days, LocalDate startDate, LocalDate endDate){
+		days.sort(Comparator.comparing(Inno72MerchantTotalCountByDay::getDate));
+		Map<String, List<Inno72MerchantTotalCountByDay>> map = new TreeMap<>();
+		for (Inno72MerchantTotalCountByDay day : days){
+			String date = day.getDate();
+			List<Inno72MerchantTotalCountByDay> byDays = map.get(date);
+			if (byDays == null){
+				byDays = new ArrayList<>();
+			}
+			byDays.add(day);
+			map.put(date, byDays);
+		}
+		return map;
 	}
 
 
