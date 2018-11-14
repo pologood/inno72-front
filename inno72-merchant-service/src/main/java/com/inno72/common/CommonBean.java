@@ -42,15 +42,7 @@ public class CommonBean {
 		/**
 		 * 修改手机号
 		 */
-		public static final String ALTER_PHONE = "INNO72_MERCHANT_ALTER_PHONE_CODE";
-		/**
-		 * 绑定手机号
-		 */
-		public static final String BINDING_PHONE = "INNO72_MERCHANT_BINDING_PHONE_CODE";
-		/**
-		 * 重置密码
-		 */
-		public static final String REST_PASSWORD = "INNO72_MERCHANT_RESET_PWD_CODE";
+		public static final String MOBILE_CODE = "INNO72_MERCHANT_MOBILE_CODE";
 	}
 
 	/**

@@ -42,18 +42,22 @@ public class Inno72CommonController {
 		}
 		String code = "";
 		String redisHost = "" ;
+		String msg = "";
 		switch (type) {
 			case "1":
-				code = CommonBean.PHONE_CODE.ALTER_PHONE;
+				code = CommonBean.PHONE_CODE.MOBILE_CODE;
 				redisHost = CommonBean.REDIS_MERCHANT_MOBILE_CODE_ALTER_PHONE;
+				msg = "修改手机号码";
 				break;
 			case "2":
-				code = CommonBean.PHONE_CODE.BINDING_PHONE;
+				code = CommonBean.PHONE_CODE.MOBILE_CODE;
 				redisHost = CommonBean.REDIS_MERCHANT_MOBILE_CODE_BINDING_PHONE;
+				msg = "绑定新手机号码";
 				break;
 			case "3":
-				code = CommonBean.PHONE_CODE.REST_PASSWORD;
+				code = CommonBean.PHONE_CODE.MOBILE_CODE;
 				redisHost = CommonBean.REDIS_MERCHANT_MOBILE_CODE_RESET_PWD;
+				msg = "找回密码";
 				break;
 			default:
 				return Results.failure("确认发送类型!");
@@ -66,6 +70,7 @@ public class Inno72CommonController {
 
 		Map<String, String> param = new HashMap<>(1);
 		param.put("code", s);
+		param.put("msg", msg);
 		LOGGER.info("发送信息 code -> {}, param -> {}, phone -> {}, AppName -> {}", code, param, phone,
 				CommonBean.APP_NAME);
 		msgUtil.sendSMS(code, param, phone, CommonBean.APP_NAME);
