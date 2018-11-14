@@ -266,12 +266,12 @@ public class Inno72MerchantTotalCountByDayServiceImpl extends AbstractService<In
 
 		List<Integer> pvs = new ArrayList<>();
 		List<Integer> uvs = new ArrayList<>();
+		LocalDate addDateLocal = startDateLocal;
 		for (Map<String, String> e : pvuvMap){
 			String pv = e.get("pv");
 			String uv = e.get("uv");
 			String date = e.get("date");
 			LocalDate thisDate = LocalDateUtil.transfer(date, DateTimeFormatter.ofPattern("yyyy-MM-dd"));
-			LocalDate addDateLocal = startDateLocal;
 			while (addDateLocal.plusDays(1).isBefore(thisDate)){
 				pvs.add(0);
 				uvs.add(0);
@@ -314,8 +314,6 @@ public class Inno72MerchantTotalCountByDayServiceImpl extends AbstractService<In
 			List<Integer> num = new ArrayList<>();
 
 			LocalDate curLocalDate = startDateLocal;
-			Integer pv = 0;
-			Integer uv = 0;
 			for (Inno72MerchantTotalCountByDay inno72MerchantTotalCountByDay : value){
 				String date = inno72MerchantTotalCountByDay.getDate();
 				LocalDate thisDate = LocalDateUtil.transfer(date, DateTimeFormatter.ofPattern("yyyy-MM-dd"));
@@ -326,8 +324,6 @@ public class Inno72MerchantTotalCountByDayServiceImpl extends AbstractService<In
 				}
 
 				num.add(inno72MerchantTotalCountByDay.getGoodsNum());
-				pv += inno72MerchantTotalCountByDay.getPv();
-				uv += inno72MerchantTotalCountByDay.getUv();
 				curLocalDate = curLocalDate.plusDays(1);
 				LOGGER.info("商品维度 日期 - {}, num - {}", curLocalDate, num);
 			}
@@ -337,8 +333,6 @@ public class Inno72MerchantTotalCountByDayServiceImpl extends AbstractService<In
 				num.add(0);
 			}
 			nums.add(num);
-			pvs.add(pv);
-			uvs.add(uv);
 		}
 
 		Map<String, Object> charts = new HashMap<>();
