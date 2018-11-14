@@ -23,7 +23,8 @@ public class CheckMoblieCodeInterceptor implements HandlerInterceptor {
 	private static final Logger logger = LoggerFactory.getLogger(CheckMoblieCodeInterceptor.class);
 
 	private static List<String> doNotCheckUs = Arrays
-			.asList("/inno72/merchant/resetPhone", "/inno72/merchant/checkPhone");
+			.asList("/inno72/merchant/resetPhone", "/inno72/merchant/checkPhone",
+					"/inno72/merchant/checkMerchant");
 
 
 	@Resource
