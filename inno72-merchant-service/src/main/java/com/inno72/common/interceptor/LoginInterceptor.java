@@ -20,7 +20,10 @@ public class LoginInterceptor extends HandlerInterceptorAdapter {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(LoggerFactory.class);
 
-	private static List<String> doNotCheckUs = Arrays.asList("/inno72/merchant/login","/inno72/merchant/resetPhone", "/inno72/merchant/resetPhone");
+	private static List<String> doNotCheckUs = Arrays.asList("/inno72/merchant/login",
+			"/inno72/merchant/resetPhone",
+			"/inno72/merchant/resetPhone",
+			"/common/code/");
 
 	@Resource
 	private IRedisUtil redisUtil;
