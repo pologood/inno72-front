@@ -41,4 +41,9 @@
         from inno72_merchant_total_count_by_day
         where seller_id = #{sellerId}
     </select>
+    <select id="findActivityBySellerId" resultType="java.util.Map" parameterType="string">
+        select distinct activity_id as activityId, activity_name as activityName
+        from inno72_merchant_total_count_by_day
+        where seller_id = #{sellerId}
+    </select>
 </mapper>

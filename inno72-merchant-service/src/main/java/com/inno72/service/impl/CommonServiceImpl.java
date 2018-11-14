@@ -63,7 +63,7 @@ public class CommonServiceImpl implements CommonService {
 	}
 
 	private List<Map<String, String>> getActivity(String sellerId) {
-		return inno72MerchantTotalCountMapper.findActivityByMerchantId(sellerId);
+		return inno72MerchantTotalCountByDayMapper.findActivityBySellerId(sellerId);
 	}
 
 	@Resource
