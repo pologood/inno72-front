@@ -27,7 +27,6 @@ import com.inno72.service.Inno72MerchantTotalCountByDayService;
  */
 @RestController
 @RequestMapping(value = "/inno72/merchant/total/count/by/day", method = {RequestMethod.POST, RequestMethod.GET, RequestMethod.OPTIONS})
-@CrossOrigin
 public class Inno72MerchantTotalCountByDayController {
 	@Resource
 	private Inno72MerchantTotalCountByDayService inno72MerchantTotalCountByDayService;

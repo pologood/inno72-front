@@ -22,8 +22,6 @@ import com.inno72.service.Inno72MerchantTotalCountService;
  */
 @RestController
 @RequestMapping(value = "/inno72/merchant/total/count", method = {RequestMethod.POST, RequestMethod.GET, RequestMethod.OPTIONS})
-@CrossOrigin
-@SuppressWarnings({"rawtypes", "unchecked"})
 public class Inno72MerchantTotalCountController {
 	@Resource
 	private Inno72MerchantTotalCountService inno72MerchantTotalCountService;

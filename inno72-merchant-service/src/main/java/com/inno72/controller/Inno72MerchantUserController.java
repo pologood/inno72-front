@@ -18,7 +18,6 @@ import com.inno72.service.Inno72MerchantUserService;
  * Created by CodeGenerator on 2018/11/07.
  */
 @RestController
-@CrossOrigin
 @RequestMapping(method = {RequestMethod.POST, RequestMethod.GET, RequestMethod.OPTIONS})
 public class Inno72MerchantUserController {
 

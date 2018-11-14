@@ -23,7 +23,6 @@ import com.inno72.service.CommonService;
 
 
 @RestController
-@CrossOrigin
 @RequestMapping(method = {RequestMethod.POST, RequestMethod.GET, RequestMethod.OPTIONS})
 public class Inno72CommonController {
 
