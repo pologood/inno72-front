@@ -47,6 +47,7 @@ public class Inno72MerchantTotalCountByDayController {
 		byte [] bytes = inno72MerchantTotalCountByDayService.getBytes((Map<String, Object>)objectResult.getData(), body, label);
 
 		response.setContentType("application/x-msdownload");
+		response.setHeader("Content-Disposition", "attachment;filename=" + label + ".xls");
 		response.setContentLength(bytes.length);
 		try {
 			response.getOutputStream().write(bytes);

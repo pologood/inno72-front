@@ -12,7 +12,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.handler.HandlerInterceptorAdapter;
 
-import com.alibaba.fastjson.JSON;
 import com.inno72.common.CommonBean;
 import com.inno72.common.Results;
 import com.inno72.common.utils.StringUtil;
