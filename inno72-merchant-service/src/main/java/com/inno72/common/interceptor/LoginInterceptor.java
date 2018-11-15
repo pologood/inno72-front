@@ -12,7 +12,9 @@ import org.slf4j.LoggerFactory;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.handler.HandlerInterceptorAdapter;
 
+import com.alibaba.fastjson.JSON;
 import com.inno72.common.CommonBean;
+import com.inno72.common.Results;
 import com.inno72.common.utils.StringUtil;
 import com.inno72.redis.IRedisUtil;
 
@@ -52,6 +54,11 @@ public class LoginInterceptor extends HandlerInterceptorAdapter {
 
 		if (StringUtil.isEmpty(session)) {
 			LOGGER.info("未登录请求 {} ", request);
+
+			response.getWriter().println(JSON.toJSONString(Results.warn("登录超时", 999)));
+			response.getWriter().flush();
+			response.getWriter().close();
+
 			return false;
 		}
 
