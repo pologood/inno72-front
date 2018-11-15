@@ -55,7 +55,7 @@ public class Inno72MerchantUserController {
 	}
 
 	@RequestMapping(value = "/inno72/merchant/checkCode")
-	public Result checkPhone(String phone, String code){
+	public Result checkCode(String phone, String code){
 
 		return inno72MerchantUserService.checkPhone(phone, code);
 	}

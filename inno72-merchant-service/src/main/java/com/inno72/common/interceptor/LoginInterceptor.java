@@ -55,7 +55,7 @@ public class LoginInterceptor extends HandlerInterceptorAdapter {
 		if (StringUtil.isEmpty(session)) {
 			LOGGER.info("未登录请求 {} ", request);
 
-			response.getWriter().println(JSON.toJSONString(Results.warn("登录超时", 999)));
+			response.getWriter().println(Results.warn("登录超时", 999));
 			response.getWriter().flush();
 			response.getWriter().close();
 
