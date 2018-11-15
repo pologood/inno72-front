@@ -59,6 +59,8 @@ public class CheckMoblieCodeInterceptor implements HandlerInterceptor {
 			}
 			String cacheCode = redisUtil.get(redisHost + phone);
 			if (StringUtil.isEmpty(cacheCode) || !cacheCode.equals(code)) {
+				response.setCharacterEncoding("utf-8");
+				response.setContentType("text/html;charset=utf-8");
 				response.getWriter().println(JSON.toJSONString(Results.failure("验证码错误!")));
 				response.getWriter().flush();
 				response.getWriter().close();

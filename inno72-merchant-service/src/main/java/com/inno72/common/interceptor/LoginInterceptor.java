@@ -54,11 +54,11 @@ public class LoginInterceptor extends HandlerInterceptorAdapter {
 
 		if (StringUtil.isEmpty(session)) {
 			LOGGER.info("未登录请求 {} ", request);
-
+			response.setCharacterEncoding("utf-8");
+			response.setContentType("text/html;charset=utf-8");
 			response.getWriter().println(Results.warn("登录超时", 999));
 			response.getWriter().flush();
 			response.getWriter().close();
-
 			return false;
 		}
 
