@@ -10,4 +10,6 @@ public interface Inno72MerchantTotalCountMapper extends Mapper<Inno72MerchantTot
 	List<Inno72MerchantTotalCount> selectByMerchantId(String machantId);
 
 	List<Map<String,String>> findActivityByMerchantId(String sellerId);
+
+	List<Inno72MerchantTotalCount> selectBySellerId(String sellerId);
 }

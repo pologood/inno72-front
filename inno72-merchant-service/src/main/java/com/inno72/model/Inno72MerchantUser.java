@@ -15,8 +15,8 @@ public class Inno72MerchantUser {
 	/**
 	 * 商户表主键id
 	 */
-	@Column(name = "inno72_merchant_id")
-	private String inno72MerchantId;
+	@Column(name = "merchant_id")
+	private String merchantId;
 
 	/**
 	 * 商户id
@@ -38,8 +38,8 @@ public class Inno72MerchantUser {
 	/**
 	 * 商户名称
 	 */
-	@Column(name = "seller_name")
-	private String sellerName;
+	@Column(name = "merchant_name")
+	private String merchantName;
 
 	/**
 	 * 验证手机号
@@ -65,17 +65,17 @@ public class Inno72MerchantUser {
 	 *
 	 * @return inno72_merchant_id - 商户表主键id
 	 */
-	public String getInno72MerchantId() {
-		return inno72MerchantId;
+	public String getMerchantId() {
+		return merchantId;
 	}
 
 	/**
 	 * 设置商户表主键id
 	 *
-	 * @param inno72MerchantId 商户表主键id
+	 * @param merchantId 商户表主键id
 	 */
-	public void setInno72MerchantId(String inno72MerchantId) {
-		this.inno72MerchantId = inno72MerchantId;
+	public void setMerchantId(String merchantId) {
+		this.merchantId = merchantId;
 	}
 
 	/**
@@ -137,17 +137,17 @@ public class Inno72MerchantUser {
 	 *
 	 * @return seller_name - 商户名称
 	 */
-	public String getSellerName() {
-		return sellerName;
+	public String getMerchantName() {
+		return merchantName;
 	}
 
 	/**
 	 * 设置商户名称
 	 *
-	 * @param sellerName 商户名称
+	 * @param merchantName 商户名称
 	 */
-	public void setSellerName(String sellerName) {
-		this.sellerName = sellerName;
+	public void setMerchantName(String merchantName) {
+		this.merchantName = merchantName;
 	}
 
 	/**

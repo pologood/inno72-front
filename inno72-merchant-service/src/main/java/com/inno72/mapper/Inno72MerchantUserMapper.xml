@@ -6,11 +6,11 @@
           WARNING - @mbg.generated
         -->
         <id column="id" jdbcType="VARCHAR" property="id"/>
-        <result column="inno72_merchant_id" jdbcType="VARCHAR" property="inno72MerchantId"/>
+        <result column="merchant_id" jdbcType="VARCHAR" property="merchantId"/>
         <result column="seller_id" jdbcType="VARCHAR" property="sellerId"/>
         <result column="login_name" jdbcType="VARCHAR" property="loginName"/>
         <result column="password" jdbcType="VARCHAR" property="password"/>
-        <result column="seller_name" jdbcType="VARCHAR" property="sellerName"/>
+        <result column="merchant_name" jdbcType="VARCHAR" property="merchantName"/>
         <result column="phone" jdbcType="VARCHAR" property="phone"/>
     </resultMap>
     <update id="updatePwdByPhone" parameterType="com.inno72.model.Inno72MerchantUser">

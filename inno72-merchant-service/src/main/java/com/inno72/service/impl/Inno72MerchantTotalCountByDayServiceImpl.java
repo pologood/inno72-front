@@ -182,7 +182,7 @@ public class Inno72MerchantTotalCountByDayServiceImpl extends AbstractService<In
 		}
 
 		// 日期不足，补充0直到到结束日期
-		while (orderQtyTotalS.size() < (endDateLocal.getDayOfYear() - startDateLocal.getDayOfYear())){
+		while (orderQtyTotalS.size() <= (endDateLocal.getDayOfYear() - startDateLocal.getDayOfYear())){
 			orderQtyTotalS.add(0);
 			orderQtySuccS.add(0);
 			goodsNumS.add(0);
@@ -328,7 +328,7 @@ public class Inno72MerchantTotalCountByDayServiceImpl extends AbstractService<In
 		}
 
 		// 日期不足，补充0直到到结束日期
-		while (experienceS.size() < (endDateLocal.getDayOfYear() - startDateLocal.getDayOfYear())){
+		while (experienceS.size() <= (endDateLocal.getDayOfYear() - startDateLocal.getDayOfYear())){
 			experienceS.add(0);
 			concernS.add(0);
 			percentS.add(0);
@@ -461,7 +461,7 @@ public class Inno72MerchantTotalCountByDayServiceImpl extends AbstractService<In
 			uvs.add(Integer.parseInt(uv));
 			addDateLocal = addDateLocal.plusDays(1);
 		}
-		while (pvs.size() < (endDateLocal.getDayOfYear() - startDateLocal.getDayOfYear())){
+		while (pvs.size() <= (endDateLocal.getDayOfYear() - startDateLocal.getDayOfYear())){
 			pvs.add(0);
 			uvs.add(0);
 		}
@@ -508,7 +508,7 @@ public class Inno72MerchantTotalCountByDayServiceImpl extends AbstractService<In
 			}
 
 			// 日期不足，补充0直到到结束日期
-			while (num.size() < (endDateLocal.getDayOfYear() - startDateLocal.getDayOfYear())){
+			while (num.size() <= (endDateLocal.getDayOfYear() - startDateLocal.getDayOfYear())){
 				num.add(0);
 			}
 			nums.add(num);
