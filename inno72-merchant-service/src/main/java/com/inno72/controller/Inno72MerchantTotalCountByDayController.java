@@ -44,6 +44,9 @@ public class Inno72MerchantTotalCountByDayController {
 		Result<Object> objectResult = inno72MerchantTotalCountByDayService
 				.searchData(label, activityId, city, startDate, endDate, goods, sellerId);
 
+		if (objectResult.getCode() == Result.FAILURE){
+			return objectResult;
+		}
 		byte [] bytes = inno72MerchantTotalCountByDayService.getBytes((Map<String, Object>)objectResult.getData(), body, label);
 
 		response.setHeader("Content-Disposition", "attachment;filename=" + label + ".xls");
