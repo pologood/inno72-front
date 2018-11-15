@@ -73,7 +73,7 @@ public class Inno72MerchantUserServiceImpl extends AbstractService<Inno72Merchan
 	@CheckParams
 	public Result resetPwd(String password, String userName, String phone, String code) {
 		String s = redisUtil.get(CommonBean.REDIS_MERCHANT_RESET_PWD_KEY + userName);
-		if (!s.equals(code)){
+		if (s == null || !s.equals(code)){
 			return Results.failure("请求异常！");
 		}
 

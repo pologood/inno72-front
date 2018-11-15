@@ -24,7 +24,8 @@ public class CheckMoblieCodeInterceptor implements HandlerInterceptor {
 
 	private static List<String> doNotCheckUs = Arrays
 			.asList("/inno72/merchant/resetPhone", "/inno72/merchant/checkPhone",
-					"/inno72/merchant/checkMerchant", "/inno72/merchant/checkCode");
+					"/inno72/merchant/checkMerchant", "/inno72/merchant/checkCode",
+					"/inno72/merchant/resetPwd");
 
 
 	@Resource
