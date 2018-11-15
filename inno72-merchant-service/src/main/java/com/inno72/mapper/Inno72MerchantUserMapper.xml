@@ -14,7 +14,7 @@
         <result column="phone" jdbcType="VARCHAR" property="phone"/>
     </resultMap>
     <update id="updatePwdByPhone" parameterType="com.inno72.model.Inno72MerchantUser">
-      update inno72_merchant_user set pwd = #{password} where phone = #{phone}
+      update inno72_merchant_user set password = #{password} where phone = #{phone}
     </update>
     <select id="selectByNameAndPwd" resultMap="BaseResultMap">
         select * from inno72_merchant_user
