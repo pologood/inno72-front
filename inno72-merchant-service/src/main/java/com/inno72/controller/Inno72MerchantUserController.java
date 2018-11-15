@@ -34,8 +34,8 @@ public class Inno72MerchantUserController {
 	 * @return 结果
 	 */
 	@RequestMapping(value = "/inno72/merchant/resetPwd")
-	public Result resetPwd(String password, String userName, String phone, String code) {
-		return inno72MerchantUserService.resetPwd(password, userName, phone, code);
+	public Result resetPwd(String password, String userName, String phone, String token) {
+		return inno72MerchantUserService.resetPwd(password, userName, phone, token);
 	}
 
 	@RequestMapping(value = "/inno72/merchant/alterPwd")
