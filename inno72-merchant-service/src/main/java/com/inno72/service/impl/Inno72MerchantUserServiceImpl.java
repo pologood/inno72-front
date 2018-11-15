@@ -84,7 +84,7 @@ public class Inno72MerchantUserServiceImpl extends AbstractService<Inno72Merchan
 		LOGGER.info("更新用户密码前 ===> {}", JSON.toJSONString(user));
 		Inno72MerchantUser newUser = new Inno72MerchantUser();
 		newUser.setPassword(CommonBean.pwd(password));
-		newUser.setPhone(CommonBean.pwd(phone));
+		newUser.setPhone(phone);
 		int i = inno72MerchantUserMapper.updatePwdByPhone(newUser);
 		LOGGER.info("更新用户密码完成 ===> {}", JSON.toJSONString(user));
 		return Results.success();

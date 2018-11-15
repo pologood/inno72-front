@@ -72,7 +72,7 @@ public class Inno72CommonController {
 		param.put("msg", msg);
 		LOGGER.info("发送信息 code -> {}, param -> {}, phone -> {}, AppName -> {}", code, param, phone,
 				CommonBean.APP_NAME);
-		msgUtil.sendSMS(code, param, phone, CommonBean.APP_NAME);
+//		msgUtil.sendSMS(code, param, phone, CommonBean.APP_NAME);
 
 		return Results.success();
 	}
