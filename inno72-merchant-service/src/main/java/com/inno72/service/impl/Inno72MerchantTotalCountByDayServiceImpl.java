@@ -85,9 +85,9 @@ public class Inno72MerchantTotalCountByDayServiceImpl extends AbstractService<In
 
 		switch (body){
 			case "table":
-				return this.getTable(data.get("list"), label);
+				return this.getTable(data.get("list") == null ? new byte[0]: data.get("list"), label);
 			case "chart":
-				return this.getCharts(data.get("chart"), label);
+				return this.getCharts(data.get("chart") == null ? new byte[0]: data.get("chart"), label);
 		}
 
 		return new byte[0];
