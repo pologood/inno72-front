@@ -2,7 +2,6 @@ package com.inno72.controller;
 
 import javax.annotation.Resource;
 
-import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -10,7 +9,6 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.inno72.common.Result;
 import com.inno72.common.ResultGenerator;
-import com.inno72.common.Results;
 import com.inno72.model.Inno72MerchantUser;
 import com.inno72.service.Inno72MerchantUserService;
 

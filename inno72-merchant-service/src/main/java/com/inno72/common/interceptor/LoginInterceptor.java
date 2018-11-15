@@ -24,7 +24,8 @@ public class LoginInterceptor extends HandlerInterceptorAdapter {
 			"/inno72/merchant/resetPhone",
 			"/inno72/merchant/resetPhone",
 			"/common/code/",
-			"/inno72/merchant/resetPwd");
+			"/inno72/merchant/resetPwd",
+			"/inno72/merchant/checkMerchant");
 
 	@Resource
 	private IRedisUtil redisUtil;
