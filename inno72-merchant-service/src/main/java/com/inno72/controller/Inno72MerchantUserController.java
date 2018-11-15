@@ -44,8 +44,8 @@ public class Inno72MerchantUserController {
 	}
 
 	@RequestMapping(value = "/inno72/merchant/resetPhone")
-	public Result resetPhone(String id, String newMobile, String mobile, String token) {
-		return inno72MerchantUserService.resetPhone(id, newMobile, mobile, token);
+	public Result resetPhone(String id, String newMobile, String token) {
+		return inno72MerchantUserService.resetPhone(id, newMobile, token);
 	}
 
 	@RequestMapping(value = "/inno72/merchant/user/detail")

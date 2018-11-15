@@ -93,7 +93,7 @@ public class Inno72MerchantUserServiceImpl extends AbstractService<Inno72Merchan
 
 	@Override
 	@CheckParams
-	public Result resetPhone(String id, String phone, String mobile, String token) {
+	public Result resetPhone(String id, String phone, String token) {
 		Inno72MerchantUser user = inno72MerchantUserMapper.selectByPrimaryKey(id);
 		if (user == null) {
 			return Results.failure("用户不存在!");
