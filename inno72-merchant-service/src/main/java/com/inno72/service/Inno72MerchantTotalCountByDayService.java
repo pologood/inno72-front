@@ -13,7 +13,7 @@ import com.inno72.model.Inno72MerchantTotalCountByDay;
 public interface Inno72MerchantTotalCountByDayService extends Service<Inno72MerchantTotalCountByDay> {
 
 	Result<Object> searchData(String label, String activityId, String city, String startDate, String endDate,
-			String goods);
+			String goods, String sellerId);
 
 	byte[] getBytes(Map<String, Object> data, String body, String label);
 }

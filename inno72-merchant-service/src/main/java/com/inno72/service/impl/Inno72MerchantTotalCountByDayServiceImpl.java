@@ -7,7 +7,6 @@ import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -30,7 +29,6 @@ import com.inno72.common.AbstractService;
 import com.inno72.common.Result;
 import com.inno72.common.Results;
 import com.inno72.common.datetime.LocalDateUtil;
-import com.inno72.common.util.ExportExcelUtils;
 import com.inno72.common.utils.StringUtil;
 import com.inno72.mapper.Inno72MerchantTotalCountByDayMapper;
 import com.inno72.model.Inno72MerchantTotalCountByDay;
@@ -51,9 +49,9 @@ public class Inno72MerchantTotalCountByDayServiceImpl extends AbstractService<In
 
 	@Override
 	public Result<Object> searchData(String label, String activityId, String city, String startDate, String endDate,
-			String goods) {
+			String goods, String sellerId) {
 
-		if (StringUtil.isEmpty(activityId) && StringUtil.isEmpty(startDate) && StringUtil.isEmpty(endDate)){
+		if (StringUtil.isEmpty(activityId) || StringUtil.isEmpty(startDate) || StringUtil.isEmpty(endDate) || StringUtil.isEmpty(sellerId)){
 			return Results.failure("参数缺失!");
 		}
 		LOGGER.info("查询列表 -> label - {}, activityId - {}, city - {}, startDate - {}, endDate - {}, goods - {}"
@@ -64,7 +62,7 @@ public class Inno72MerchantTotalCountByDayServiceImpl extends AbstractService<In
 			return Results.failure("不能大于三个月!");
 		}
 
-		List<Inno72MerchantTotalCountByDay> days = inno72MerchantTotalCountByDayMapper.selectList(activityId, city, startDate, endDate, goods);
+		List<Inno72MerchantTotalCountByDay> days = inno72MerchantTotalCountByDayMapper.selectList(activityId, city, startDate, endDate, goods, sellerId);
 		Map<String, Object> result;
 		switch (label){
 			case "order":

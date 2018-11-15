@@ -27,7 +27,7 @@
     </resultMap>
     <select id="selectList" resultMap="BaseResultMap">
       select  * from inno72_merchant_total_count_by_day
-      where activity_id = #{activityId}
+      where activity_id = #{activityId} and seller_id = #{sellerId}
       <if test="city != null and city != ''">
           and city = #{city}
       </if>
