@@ -1,6 +1,11 @@
 package com.inno72.controller;
 
+import java.io.IOException;
+
 import javax.annotation.Resource;
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -52,6 +57,19 @@ public class Inno72MerchantUserController {
 	public Result detail(@RequestParam Integer id) {
 		Inno72MerchantUser inno72MerchantUser = inno72MerchantUserService.findById(id);
 		return ResultGenerator.genSuccessResult(inno72MerchantUser);
+	}
+
+	@RequestMapping(value = "/inno72/merchant/checkUser")
+	public Result checkUser(String phone, String userName, HttpServletRequest request, HttpServletResponse response){
+		Result result = inno72MerchantUserService.checkUser(phone, userName);
+		if (result.getCode() == Result.SUCCESS){
+			try {
+				request.getRequestDispatcher("/common/code/3?phone="+phone).forward(request, response);
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+		}
+		return result;
 	}
 
 	@RequestMapping(value = "/inno72/merchant/checkCode")

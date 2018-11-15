@@ -22,4 +22,6 @@ public interface Inno72MerchantUserService extends Service<Inno72MerchantUser> {
 	Result<String> checkMerchant(String phone, String userName);
 
 	Result checkPhone(String phone, String code);
+
+	Result checkUser(String phone, String userName);
 }

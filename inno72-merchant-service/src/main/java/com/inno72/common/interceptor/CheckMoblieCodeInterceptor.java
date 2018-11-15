@@ -35,57 +35,52 @@ public class CheckMoblieCodeInterceptor implements HandlerInterceptor {
 	public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler)
 			throws Exception {
 
+		if (doNotCheckUs.parallelStream().anyMatch(request.getServletPath()::contains)) {
+			String code = request.getParameter("code");
+			String phone = request.getParameter("phone");
+			String type = request.getParameter("type");
+			logger.info("验证信息 {}, {}, type - {}", phone, code, type);
+			if (StringUtil.isEmpty(code) || StringUtil.isEmpty(phone)) {
+				response.getWriter().println(JSON.toJSONString(Results.failure("验证码失效!")));
+				response.getWriter().flush();
+				response.getWriter().close();
+				return false;
+			}
+			String redisHost = "";
+			switch (type) {
+				case "1":
+					redisHost = CommonBean.REDIS_MERCHANT_MOBILE_CODE_ALTER_PHONE;
+					break;
+				case "2":
+					redisHost = CommonBean.REDIS_MERCHANT_MOBILE_CODE_BINDING_PHONE;
+					break;
+				case "3":
+					redisHost = CommonBean.REDIS_MERCHANT_MOBILE_CODE_RESET_PWD;
+					break;
+			}
+			String cacheCode = redisUtil.get(redisHost + phone);
+			if (StringUtil.isEmpty(cacheCode) || !cacheCode.equals(code)) {
+				response.setCharacterEncoding("utf-8");
+				response.setContentType("text/html;charset=utf-8");
+				response.getWriter().println(JSON.toJSONString(Results.failure("验证码错误!")));
+				response.getWriter().flush();
+				response.getWriter().close();
+				return false;
+			}
+		}
 		return true;
-//		if (doNotCheckUs.parallelStream().anyMatch(request.getServletPath()::contains)) {
-//			String code = request.getParameter("code");
-//			String phone = request.getParameter("phone");
-//			String type = request.getParameter("type");
-//			logger.info("验证信息 {}, {}, type - {}", phone, code, type);
-//			if (StringUtil.isEmpty(code) || StringUtil.isEmpty(phone)) {
-//				response.getWriter().println(JSON.toJSONString(Results.failure("验证码失效!")));
-//				response.getWriter().flush();
-//				response.getWriter().close();
-//				return false;
-//			}
-//			String redisHost = "";
-//			switch (type) {
-//				case "1":
-//					redisHost = CommonBean.REDIS_MERCHANT_MOBILE_CODE_ALTER_PHONE;
-//					break;
-//				case "2":
-//					redisHost = CommonBean.REDIS_MERCHANT_MOBILE_CODE_BINDING_PHONE;
-//					break;
-//				case "3":
-//					redisHost = CommonBean.REDIS_MERCHANT_MOBILE_CODE_RESET_PWD;
-//					break;
-//			}
-//			String cacheCode = redisUtil.get(redisHost + phone);
-//			if (StringUtil.isEmpty(cacheCode) || !cacheCode.equals(code)) {
-//				response.setCharacterEncoding("utf-8");
-//				response.setContentType("text/html;charset=utf-8");
-//				response.getWriter().println(JSON.toJSONString(Results.failure("验证码错误!")));
-//				response.getWriter().flush();
-//				response.getWriter().close();
-//				return false;
-//			}
-//		}
-//		return true;
 	}
 
 	@Override
 	public void postHandle(HttpServletRequest request, HttpServletResponse response, Object handler,
-			ModelAndView modelAndView) throws Exception {
+			ModelAndView modelAndView){
 
 	}
 
 	@Override
 	public void afterCompletion(HttpServletRequest request, HttpServletResponse response, Object handler, Exception ex)
-			throws Exception {
+			 {
 
-	}
-
-	public IRedisUtil getRedisUtil() {
-		return redisUtil;
 	}
 
 	public void setRedisUtil(IRedisUtil redisUtil) {

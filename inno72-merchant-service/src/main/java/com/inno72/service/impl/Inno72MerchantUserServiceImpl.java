@@ -146,4 +146,13 @@ public class Inno72MerchantUserServiceImpl extends AbstractService<Inno72Merchan
 
 		return Results.success(uuid);
 	}
+
+	@Override
+	public Result checkUser(String phone, String userName) {
+		Inno72MerchantUser user = inno72MerchantUserMapper.selectByLoginNameAndPhone(userName, phone);
+		if (user == null){
+			return Results.failure("用户不存在!");
+		}
+		return Results.success();
+	}
 }
