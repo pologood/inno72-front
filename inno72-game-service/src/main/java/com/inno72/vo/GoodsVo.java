@@ -6,6 +6,9 @@ import java.util.List;
 public class GoodsVo {
 
 	private String goodsId;
+	private String goodsImg;
+	private String goodsBanner;
+	private String goodsCode;
 	private int goodsNum;
 	private String goodsName;
 	private int goodsCount;
@@ -71,5 +74,29 @@ public class GoodsVo {
 
 	public void setChannelIds(List<String> channelId) {
 		this.channelIds = channelId;
+	}
+
+	public String getGoodsImg() {
+		return goodsImg;
+	}
+
+	public void setGoodsImg(String goodsImg) {
+		this.goodsImg = goodsImg;
+	}
+
+	public String getGoodsBanner() {
+		return goodsBanner;
+	}
+
+	public void setGoodsBanner(String goodsBanner) {
+		this.goodsBanner = goodsBanner;
+	}
+
+	public String getGoodsCode() {
+		return goodsCode;
+	}
+
+	public void setGoodsCode(String goodsCode) {
+		this.goodsCode = goodsCode;
 	}
 }

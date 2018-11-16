@@ -1,8 +1,10 @@
 package com.inno72.common;
 
+import com.inno72.vo.StandardPrepareLoginReqVo;
+
 public enum StandardLoginTypeEnum {
 
-	ALIBABA(0, "阿里巴巴"), NOLOGIN(1, "无需登陆");
+	ALIBABA(0, "ALI"), NOLOGIN(1, "无需登陆") ,WEIXIN(2, "WEIXIN");
 
 	Integer value;
 	String name;
@@ -26,5 +28,15 @@ public enum StandardLoginTypeEnum {
 			return true;
 		}
 		return false;
+	}
+
+	public static String getValue(Integer value) {
+		StandardLoginTypeEnum[] operTypeEnums = values();
+		for (StandardLoginTypeEnum operTypeEnum : operTypeEnums) {
+			if (operTypeEnum.getValue() == value) {
+				return operTypeEnum.getName();
+			}
+		}
+		return null;
 	}
 }

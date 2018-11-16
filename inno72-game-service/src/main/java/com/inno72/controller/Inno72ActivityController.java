@@ -1,10 +1,7 @@
 package com.inno72.controller;
 
 import com.alibaba.fastjson.JSON;
-import com.inno72.common.Inno72GameServiceProperties;
-import com.inno72.common.Result;
-import com.inno72.common.Results;
-import com.inno72.common.TopH5ErrorTypeEnum;
+import com.inno72.common.*;
 import com.inno72.common.util.Encodes;
 import com.inno72.common.util.GameSessionRedisUtil;
 import com.inno72.common.util.UuidUtil;
@@ -14,6 +11,7 @@ import com.inno72.mapper.Inno72GoodsMapper;
 import com.inno72.mapper.Inno72MachineMapper;
 import com.inno72.mapper.Inno72SupplyChannelMapper;
 import com.inno72.model.*;
+import com.inno72.service.Inno72ChannelService;
 import com.inno72.service.Inno72GameApiService;
 import com.inno72.service.PointService;
 import com.inno72.vo.GameResultVo;
@@ -137,7 +135,9 @@ public class Inno72ActivityController {
 		String redirect = inno72GameServiceProperties.get("activityLoginRedirect");
 		// 二维码存储在本地的路径
 		String localUrl = "activityLogin" + inno72Machine.getId() + sessionUuid + ".png";
-		String qrCode = inno72GameApiService.createQrCode(inno72Machine, redirect, localUrl);
+		Inno72ChannelService channelService = (Inno72ChannelService)ApplicationContextHandle.getBean(StandardLoginTypeEnum.ALIBABA.getName());
+		String qrCOntent = channelService.buildQrContent(inno72Machine,sessionUuid);
+		String qrCode = inno72GameApiService.createQrCode(qrCOntent, localUrl);
 		Map<String, Object> map = new HashMap<String, Object>();
 		map.put("qrCodeUrl", qrCode);
 		return Results.success(map);

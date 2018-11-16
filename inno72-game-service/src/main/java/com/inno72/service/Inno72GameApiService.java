@@ -54,10 +54,9 @@ public interface Inno72GameApiService {
 
 	/**
 	 * 生成二维码
-	 * @param inno72Machine
-	 * @param url 二维码中埋入的url
+	 * @param qrContent 二维码中埋入的url
 	 * @param localUrl 本地路径
 	 * @return
 	 */
-    String createQrCode(Inno72Machine inno72Machine, String url, String localUrl);
+    String createQrCode(String qrContent, String localUrl);
 }

@@ -86,5 +86,8 @@
         left join inno72_merchant m on s.seller_id = m.id
         where ias.activity_id = #{activityId} limit 0,1
     </select>
-
+    <select id="findByMerchantCode" resultMap="BaseResultMap" parameterType="string">
+      select * from inno72_merchant m
+      where m.merchant_code = #{merchantCode} and m.is_delete = 0
+    </select>
 </mapper>

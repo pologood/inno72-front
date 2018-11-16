@@ -118,4 +118,27 @@
 		WHERE
 		    supply_channel_id = #{channelId} and is_delete=0
     </select>
+
+    <select id="findGoodsInfoByMerchantIdAndMachineId" resultType="com.inno72.vo.GoodsVo"  parameterType="java.lang.String">
+        SELECT
+	goods.id as goodsId,
+	goods.`name` as goodsName,
+	goods.img as goodsImg,
+	goods.banner as goodsBanner,
+	goods.`code` as goodsCode,
+	sum(supply_channel.goods_count) as goodsCount
+    FROM
+        inno72_supply_channel supply_channel
+    LEFT JOIN inno72_supply_channel_goods supply_channel_goods ON supply_channel_goods.supply_channel_id = supply_channel.id
+    JOIN inno72_goods goods ON supply_channel_goods.goods_id = goods.id
+    WHERE
+        goods.seller_id = #{merchantId}
+    AND supply_channel.machine_id = #{machineId}
+    AND supply_channel.is_delete = 0
+    GROUP by goods.id,
+     goods.`name`,
+     goods.img,
+     goods.banner,
+     goods.`code`
+    </select>
 </mapper>

@@ -49,6 +49,7 @@ public class UserSessionVo {
 	private boolean canOrder;
 	private boolean canGame;
 	private String channelId;
+	private Integer channelType;
 	private String machineId;
 	private String activityId;
 	private String machineCode;

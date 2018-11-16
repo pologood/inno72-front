@@ -9,6 +9,7 @@ import java.util.List;
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 
 import com.inno72.common.CommonBean;
 import com.inno72.mapper.Inno72CouponMapper;
@@ -101,14 +102,10 @@ public class Inno72StandardController {
 			return Results.failure("登陆类型错误");
 		}
 
-		if (StandardLoginTypeEnum.ALIBABA.getValue().equals(req.getLoginType())) {
-
-			return inno72GameApiService.prepareLoginQrCode(req);
-
-		} else {
-
+		if (StandardLoginTypeEnum.NOLOGIN.getValue().equals(req.getLoginType())) {
 			return inno72GameApiService.prepareLoginNologin(req.getMachineCode());
-
+		} else {
+			return inno72GameApiService.prepareLoginQrCode(req);
 		}
 	}
 
@@ -193,7 +190,7 @@ public class Inno72StandardController {
 	@ResponseBody
 	@RequestMapping(value = "/findActivity", method = {RequestMethod.POST})
 	public Result findActivity(@RequestParam(name = "machineId") String mid, String planId, String version,
-			String versionInno72) {
+							   String versionInno72, HttpSession session) {
 		return inno72MachineService.findGame(mid, planId, version, versionInno72);
 	}
 
@@ -229,7 +226,6 @@ public class Inno72StandardController {
 		boolean result = inno72AuthInfoService.setLogged(sessionUuid);
 		LOGGER.info("setLogged result is {}", result);
 		if (result) {
-			pointService.innerPoint(sessionUuid, Inno72MachineInformation.ENUM_INNO72_MACHINE_INFORMATION_TYPE.LOGIN);
 			return Results.success();
 		} else {
 			return Results.failure("登录失败");
@@ -242,7 +238,14 @@ public class Inno72StandardController {
 	@ResponseBody
 	@RequestMapping(value = "/processBeforeLogged", method = {RequestMethod.POST})
 	public Result<Object> processBeforeLogged(String sessionUuid, String authInfo, String traceId) {
-		Result<Object> result = inno72AuthInfoService.processBeforeLogged(sessionUuid, authInfo, traceId);
+
+		Result<Object> result = null;
+		try {
+			result = inno72AuthInfoService.processBeforeLogged(sessionUuid, authInfo, traceId);
+		}catch (Exception e){
+			LOGGER.error("processBeforeLogged error ",e);
+			result = Results.failure(e.getMessage());
+		}
 		return result;
 	}
 
