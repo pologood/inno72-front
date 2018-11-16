@@ -206,6 +206,12 @@ public class Inno72AuthInfoServiceImpl implements Inno72AuthInfoService {
 			return Results.failure("authInfo 不能为空！");
 		}
 
+		String channelType = FastJsonUtils.getString(authInfo, "channelType");
+
+		if (StringUtil.isEmpty(channelType)) {
+			channelType = "0";
+		}
+		sessionVo.setChannelType(Integer.parseInt(channelType));
         if(inno72MachineVo.getActivityType() == Inno72MachineVo.ACTIVITYTYPE_PAIYANG){
             return paiYangProcessBeforeLogged(sessionUuid,sessionVo,authInfo,traceId);
         }
@@ -369,13 +375,7 @@ public class Inno72AuthInfoServiceImpl implements Inno72AuthInfoService {
 
 	private Result<Object> paiYangProcessBeforeLogged(String sessionUuid, UserSessionVo sessionVo, String authInfo,String traceId) {
 
-		String channelType = FastJsonUtils.getString(authInfo, "channelType");
-
-		if (StringUtil.isEmpty(channelType)) {
-			channelType = "0";
-		}
-		sessionVo.setChannelType(Integer.parseInt(channelType));
-		Inno72ChannelService channelService = (Inno72ChannelService)ApplicationContextHandle.getBean(StandardLoginTypeEnum.getValue(Integer.parseInt(channelType)));
+		Inno72ChannelService channelService = (Inno72ChannelService)ApplicationContextHandle.getBean(StandardLoginTypeEnum.getValue(sessionVo.getChannelType()));
 		return channelService.paiYangProcessBeforeLogged(sessionUuid,sessionVo,authInfo,traceId);
 	}
 	/**
