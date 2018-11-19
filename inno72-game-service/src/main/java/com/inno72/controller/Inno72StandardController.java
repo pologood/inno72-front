@@ -254,8 +254,9 @@ public class Inno72StandardController {
 	 */
 	@ResponseBody
 	@RequestMapping(value = "/loginRedirect", method = {RequestMethod.GET})
-	public void loginRedirect(HttpServletResponse response, String sessionUuid, String env) {
+	public Result loginRedirect(HttpServletResponse response, String sessionUuid, String env,Integer channelType) {
 		LOGGER.info("loginRedirect sessionUuid is {}, env is {}", sessionUuid, env);
+		Result result = null;
 		try {
 			synchronized (this) {
 				String redirectUrl = "";
@@ -287,13 +288,17 @@ public class Inno72StandardController {
 						pointService.innerPoint(sessionUuid, Inno72MachineInformation.ENUM_INNO72_MACHINE_INFORMATION_TYPE.SCAN_LOGIN);
 						redirectUrl = String.format("%s%s/%s/%s", inno72GameServiceProperties.get("tmallUrl"), sessionUuid, env, traceId);
 					}
+					result = Results.success(sessionVo.getIsScanned());
 				}
 				LOGGER.info("loginRedirect redirectUrl is {} ", redirectUrl);
-				response.sendRedirect(redirectUrl);
+				if(StandardLoginTypeEnum.ALIBABA.getValue()==channelType){
+					response.sendRedirect(redirectUrl);
+				}
 			}
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
+		return result;
 	}
 
 	/**
