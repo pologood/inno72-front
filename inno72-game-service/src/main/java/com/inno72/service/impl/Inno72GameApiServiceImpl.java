@@ -1288,7 +1288,7 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 		try {
 			findLockGoodsPush(machineId, inno72SupplyChannel.getId());
 		} catch (Exception e) {
-			LOGGER.info("调用findLockGoodsPush异常", e);
+			LOGGER.info("调用 saveLackGoodsBean 异常", e);
 		}
 
 		if (StringUtil.isNotEmpty(orderId)) {
@@ -1319,20 +1319,19 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 	}
 
 	private Result findLockGoodsPush(String machineId, String channelId) {
-		LOGGER.info("findLockGoodsPush invoked! machineId={},channelId={}", machineId, channelId);
+		LOGGER.info("saveLackGoodsBean invoked! machineId={},channelId={}", machineId, channelId);
 		// 获取商品id
 		String goodsId = inno72SupplyChannelMapper.findGoodsIdByChannelId(channelId);
 		if (StringUtils.isEmpty(goodsId)) {
-			LOGGER.info("findLockGoodsPush 根据channelId={}无法查到goodsId", channelId);
+			LOGGER.info("saveLackGoodsBean 根据channelId={}无法查到goodsId", channelId);
 			return Results.failure("数据异常");
 		}
-		// 实时发送缺货报警
-		LOGGER.info("实时发送缺货报警machineId={},channelId={}", machineId, channelId);
-		SupplyRequestVo vo = new SupplyRequestVo();
-		vo.setGoodsId(goodsId);
-		vo.setMachineId(machineId);
-		HttpClient.post(machinecheckappbackendUri + FINDLOCKGOODSPUSH_URL, new Gson().toJson(vo));
-		// machineCheckBackendFeignClient.findLockGoodsPush(vo);
+
+		AlarmLackGoodsBean alarmLackGoodsBean = new AlarmLackGoodsBean();
+		alarmLackGoodsBean.setGoodsId(goodsId);
+		alarmLackGoodsBean.setMachineCode(machineId);
+		alarmUtil.saveLackGoodsBean(alarmLackGoodsBean);
+
 		return Results.success();
 	}
 
@@ -1990,21 +1989,18 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 	@Override
 	public Result<String> shipmentFail(String machineId, String channelCode, String describtion) {
 
-		AlarmMessageBean<Object> alarmMessageBean = new AlarmMessageBean<>();
-		MachineDropGoodsBean machineDropGoodsBean = new MachineDropGoodsBean();
 		LOGGER.info("掉货失败参数 => machineId:{}; channelCode:{}; describtion:{}", machineId, channelCode, describtion);
 		Inno72Machine inno72Machine = inno72MachineMapper.findMachineByCode(machineId);
 		if (inno72Machine == null) {
 			return Results.failure("机器号错误");
 		}
+
 		// todo 暂时注释掉 inno72Machine.getOpenStatus() == 0
 		if (inno72Machine.getMachineStatus() == 4) {
-			machineDropGoodsBean.setMachineCode(machineId); // 实际为code
-			machineDropGoodsBean.setChannelNum(channelCode);
-			alarmMessageBean.setSystem("machineDropGoods");
-			alarmMessageBean.setType("machineDropGoodsException");
-			alarmMessageBean.setData(machineDropGoodsBean);
-			redisUtil.publish("moniterAlarm", JSONObject.toJSONString(alarmMessageBean));
+			AlarmDropGoodsBean alarmDropGoodsBean = new AlarmDropGoodsBean();
+			alarmDropGoodsBean.setChannelNum(channelCode);
+			alarmDropGoodsBean.setMachineCode(machineId);
+			alarmUtil.saveDropGoodsBean(alarmDropGoodsBean);
 		}
 
 		return Results.success();
