@@ -272,7 +272,7 @@ public class Inno72StandardController {
 					if (!qrCode) {
 						sessionVo.setIsScanned(false);
 					}
-
+					result = Results.success(sessionVo.getIsScanned());
 					if (sessionVo.getIsScanned()) {
 						LOGGER.info("loginRedirect 二维码已经被扫描");
 						redirectUrl = String.format(topH5ErrUrl, env) + "/?status="+ TopH5ErrorTypeEnum.IS_SCANNED.getValue();
@@ -288,7 +288,6 @@ public class Inno72StandardController {
 						pointService.innerPoint(sessionUuid, Inno72MachineInformation.ENUM_INNO72_MACHINE_INFORMATION_TYPE.SCAN_LOGIN);
 						redirectUrl = String.format("%s%s/%s/%s", inno72GameServiceProperties.get("tmallUrl"), sessionUuid, env, traceId);
 					}
-					result = Results.success(sessionVo.getIsScanned());
 				}
 				LOGGER.info("loginRedirect redirectUrl is {} ", redirectUrl);
 				if(StandardLoginTypeEnum.ALIBABA.getValue()==channelType){
