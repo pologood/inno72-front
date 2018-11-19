@@ -186,6 +186,7 @@ public class Inno72ALiChannelServiceImpl implements Inno72ChannelService {
         Integer goodsCount = inno72MachineService.getMachineGoodsCount(sessionVo.getGoodsId(),inno72Machine.getId());
         sessionVo.setUserNick(nickName);
         sessionVo.setUserId(userId);
+        sessionVo.setGameUserId(userChannel.getGameUserId());
         sessionVo.setAccessToken(accessToken);
         sessionVo.setGameId(gameId);
         sessionVo.setSessionUuid(sessionUuid);

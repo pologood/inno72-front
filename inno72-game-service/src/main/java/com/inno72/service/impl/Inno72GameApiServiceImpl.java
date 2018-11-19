@@ -101,6 +101,9 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 	private Inno72ActivityPlanGameResultMapper inno72ActivityPlanGameResultMapper;
 	@Resource
 	private Inno72GameUserChannelMapper inno72GameUserChannelMapper;
+
+	@Resource
+	private Inno72GameUserChannelService inno72GameUserChannelService;
 	@Resource
 	private Inno72ActivityPlanMapper inno72ActivityPlanMapper;
 	@Resource
@@ -803,7 +806,7 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 		String inno72OrderId = null;
 		if(paiyangflag){
 			// 下单 inno72_Order TODO 商品下单 itemId 对应的类型？
-			inno72OrderId = genPaiyangInno72Order(sessionUuid, userSessionVo.getCanOrder(),channelId, activityPlanId, machineId, goodsId, userSessionVo.getUserId(),
+			inno72OrderId = genPaiyangInno72Order(userSessionVo,sessionUuid, userSessionVo.getCanOrder(),channelId, activityPlanId, machineId, goodsId, userSessionVo.getUserId(),
 					Inno72Order.INNO72ORDER_GOODSTYPE.PRODUCT);
 		}else{
 			// 下单 inno72_Order TODO 商品下单 itemId 对应的类型？
@@ -875,14 +878,8 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 		return returnUrl;
 	}
 
-	private String genPaiyangInno72Order(String sessionUuid, boolean canOrder ,String channelId, String activityPlanId, String machineId, String goodsId, String channelUserKey, Inno72Order.INNO72ORDER_GOODSTYPE product) {
-        Inno72GameUserChannel userChannel = inno72GameUserChannelMapper.selectByPrimaryKey(channelUserKey);
-        if(userChannel == null){
-            Map<String, String> paramsChannel = new HashMap<>();
-            paramsChannel.put("channelId", channelId);
-            paramsChannel.put("channelUserKey", channelUserKey);
-            userChannel = inno72GameUserChannelMapper.selectByChannelUserKey(paramsChannel);
-        }
+	private String genPaiyangInno72Order(UserSessionVo userSessionVo,String sessionUuid, boolean canOrder ,String channelId, String activityPlanId, String machineId, String goodsId, String channelUserKey, Inno72Order.INNO72ORDER_GOODSTYPE product) {
+		Inno72GameUserChannel userChannel =  inno72GameUserChannelService.findInno72GameUserChannel(channelId,channelUserKey,userSessionVo.getSellerId());
 		String gameUserId = userChannel.getGameUserId();
 
 //		// 活动计划
@@ -931,8 +928,6 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 		Inno72OrderGoods orderGoods = new Inno72OrderGoods();
 
 		String goodsName = "";
-
-		UserSessionVo userSessionVo = gameSessionRedisUtil.getSessionKey(sessionUuid);
 
 		if (product.getKey().equals(Inno72Order.INNO72ORDER_GOODSTYPE.PRODUCT.getKey())) {
 			Inno72Goods inno72Goods = inno72GoodsMapper.selectByPrimaryKey(goodsId);
@@ -1063,7 +1058,7 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 		try {
 		    if(vo.findPaiyangFlag()){
 
-                orderId = this.genPaiyangInno72Order(sessionUuid, vo.getCanOrder(),channelId, activityPlanId, _machineId, inno72Coupon.getId(), vo.getUserId(),
+                orderId = this.genPaiyangInno72Order(vo,sessionUuid, vo.getCanOrder(),channelId, activityPlanId, _machineId, inno72Coupon.getId(), vo.getUserId(),
                         Inno72Order.INNO72ORDER_GOODSTYPE.COUPON);
             }else{
                 orderId = this.genInno72Order(sessionUuid, channelId, activityPlanId, _machineId, inno72Coupon.getId(), vo.getUserId(),
@@ -1138,13 +1133,13 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 		if(paiyangflag){
 			String date = DateUtil.getDateStringByYYYYMMDD();
 			//每个商品每个用户每天可派发数
-			String key = String.format(RedisConstants.PAIYANG_GOODS_ORDER_TIMES,userSessionVo.getActivityId(),userSessionVo.getGoodsId(),date,userSessionVo.getUserId());
+			String key = String.format(RedisConstants.PAIYANG_GOODS_ORDER_TIMES,userSessionVo.getActivityId(),userSessionVo.getGoodsId(),date,userSessionVo.getGameUserId());
 			redisUtil.incr(key);
 			//用户获得商品次数
-			key = String.format(RedisConstants.PAIYANG_ORDER_TIMES,userSessionVo.getActivityId(),userSessionVo.getUserId());
+			key = String.format(RedisConstants.PAIYANG_ORDER_TIMES,userSessionVo.getActivityId(),userSessionVo.getGameUserId());
 			redisUtil.incr(key);
 			//用户每天获得商品次数
-			key = String.format(RedisConstants.PAIYANG_DAY_ORDER_TIMES,userSessionVo.getActivityId(),date,userSessionVo.getUserId());
+			key = String.format(RedisConstants.PAIYANG_DAY_ORDER_TIMES,userSessionVo.getActivityId(),date,userSessionVo.getGameUserId());
 			redisUtil.incr(key);
 			//此商品总掉货数量(获取展示商品时候剩余数量用)
 			key = String.format(RedisConstants.PAIYANG_MACHINE_GOODS,userSessionVo.getActivityId(),userSessionVo.getMachineId(),userSessionVo.getGoodsId());

@@ -17,7 +17,7 @@ public class UserSessionVo {
 	private String scanLoginUrl;//TODO 扫码登录url
 	private String scanPayUrl;//TODO 暂时没有
 	private String interactId;//TODO 奖池ID
-
+	private String gameUserId;
 	private String mid;
 	private String userNick;
 	private String userId;

@@ -134,7 +134,7 @@ public class Inno72WeiXinChannelServiceImpl implements Inno72ChannelService {
         Inno72Interact interact = inno72InteractService.findById(sessionVo.getInno72MachineVo().getActivityId());
         Inno72Merchant inno72Merchant = inno72MerchantMapper.findByMerchantCode(appId);
         sessionVo.setUserNick(nickname);
-        sessionVo.setUserId(gameUserChannel.getId());
+        sessionVo.setUserId(openId);
         sessionVo.setGameId(gameId);
         sessionVo.setSessionUuid(sessionUuid);
         sessionVo.setActivityPlanId(interact.getId());
@@ -145,6 +145,7 @@ public class Inno72WeiXinChannelServiceImpl implements Inno72ChannelService {
         sessionVo.setCanOrder(canOrder);
         sessionVo.setChannelId(channel.getId());
         sessionVo.setActivityId(interact.getId());
+        sessionVo.setGameUserId(gameUserChannel.getGameUserId());
         /**
          * 获取此商户的货到商品数量
          */
