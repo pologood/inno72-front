@@ -108,6 +108,7 @@ public class Inno72WeiXinChannelServiceImpl implements Inno72ChannelService {
         gameUserChannel.setUserNick(nickname);
         if(resultList.size()>0){
             gameUserChannel.setId(resultList.get(0).getId());
+            gameUserChannel.setGameUserId(resultList.get(0).getGameUserId());
             inno72GameUserChannelMapper.updateByPrimaryKeySelective(gameUserChannel);
         }else{
             Inno72GameUser inno72GameUser = new Inno72GameUser();
