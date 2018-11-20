@@ -159,7 +159,7 @@ public class Inno72TopServiceImpl implements Inno72TopService {
 		String jstUrl = inno72GameServiceProperties.get("jstUrl");
 		Map<String, String> requestForm = new HashMap<>();
 		requestForm.put("value1", machineCode); // 机器code
-		requestForm.put("value2", reqrest.getValue2());
+		requestForm.put("value2", !StringUtil.isEmpty(reqrest.getValue2()) ? reqrest.getValue2() : "");
 		requestForm.put("sellerId", reqrest.getSellerId().toString());
 		requestForm.put("type", reqrest.getType());
 		requestForm.put("accessToken", accessToken);

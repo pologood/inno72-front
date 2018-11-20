@@ -3,6 +3,7 @@ package com.inno72.service;
 import java.util.List;
 
 import com.inno72.common.Result;
+import com.inno72.model.Inno72Machine;
 import com.inno72.vo.Inno72SamplingGoods;
 import com.inno72.vo.MachineApiVo;
 import com.inno72.vo.StandardPrepareLoginReqVo;
@@ -50,4 +51,13 @@ public interface Inno72GameApiService {
 	 * @return
 	 */
     Result<Object> newRetailmemberJoin(String sessionUuid, String sellSessionKey, String taobaoUserId, String meberJoinCallBackUrl);
+
+	/**
+	 * 生成二维码
+	 * @param inno72Machine
+	 * @param url 二维码中埋入的url
+	 * @param localUrl 本地路径
+	 * @return
+	 */
+    String createQrCode(Inno72Machine inno72Machine, String url, String localUrl);
 }

@@ -1403,12 +1403,15 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 
 		if (StandardPrepareLoginReqVo.OperTypeEnum.CREATE_QRCODE.getKey() == operType) {
 			// 生成二维码流程
-			returnUrl = this.createQrCode(inno72Machine, machineCode);
+			String redirect = inno72GameServiceProperties.get("loginRedirect");
+			// 二维码存储在本地的路径
+			String localUrl = "pre" + inno72Machine.getId() + sessionUuid + ".png";
+			returnUrl = this.createQrCode(inno72Machine, redirect, localUrl);
 		}
 		// 开始会话流程
 		try {
 			this.startSession(inno72Machine, ext, sessionUuid);
-		}catch(Exception e){
+		} catch(Exception e){
 			LOGGER.error("prepareLoginQrCode",e);
 			return Results.failure("系统异常");
 		}
@@ -1461,7 +1464,10 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 		// 设置15秒内二维码不能被扫
 		gameSessionRedisUtil.setSessionEx(sessionUuid + "qrCode", sessionUuid, 15);
 
+		LOGGER.info("goodsId {}, sellerId {}", userSessionVo.getGoodsId(), userSessionVo.getSellerId());
 		if (StringUtil.isNotEmpty(userSessionVo.getGoodsId())) {
+			pointService.innerPoint(sessionUuid, Inno72MachineInformation.ENUM_INNO72_MACHINE_INFORMATION_TYPE.PRODUCT_CLICK);
+		} else if (StringUtil.isNotEmpty(userSessionVo.getSellerId())) {
 			pointService.innerPoint(sessionUuid, Inno72MachineInformation.ENUM_INNO72_MACHINE_INFORMATION_TYPE.PRODUCT_CLICK);
 		}
 	}
@@ -1486,41 +1492,11 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 	 * 生成二维码
 	 * @return
 	 */
-	private String createQrCode(Inno72Machine inno72Machine, String machineCode) {
+	public String createQrCode(Inno72Machine inno72Machine, String redirect, String localUrl) {
 
-		// 在machine库查询bluetooth地址 "6893a2ada9dd4f7eb8dc33adfc6eda73"
-		String bluetoothAdd = "";
-		String bluetoothAddAes = "";
-		String _machineId = "";
-		if (inno72Machine != null) {
-			bluetoothAdd = inno72Machine.getBluetoothAddress();
-			if (!StringUtil.isEmpty(bluetoothAdd)) {
-				bluetoothAddAes = AesUtils.encrypt(bluetoothAdd);
-			}
-			_machineId = inno72Machine.getId();
-		}
-		String _machineCode = "";
-		if (!StringUtil.isEmpty(machineCode)) {
-			_machineCode = AesUtils.encrypt(machineCode);
-		}
-
-		LOGGER.info("Mac蓝牙地址 {} ", bluetoothAddAes);
-
-		// 生成sessionUuid
-		//		String sessionUuid = UuidUtil.getUUID32();
-		String sessionUuid = machineCode;
-
-
-		String loginRedirect = "";
-
-		String url = String.format(
-				"%s/?sessionUuid=%s&env=%s&bluetoothAddAes=%s&machineCode=%s",
-				inno72GameServiceProperties.get("loginRedirect"), sessionUuid, env, bluetoothAddAes, machineCode);
+		String url = buildUrl(inno72Machine, redirect);
 
 		LOGGER.info("二维码访问 url is {} ", url);
-
-		// 二维码存储在本地的路径
-		String localUrl = "pre" + _machineId + sessionUuid + ".png";
 
 		// 存储在阿里云上的文件名
 		String objectName = "qrcode/" + localUrl;
@@ -1542,6 +1518,33 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 
 		return returnUrl;
 	}
+
+	/**
+	 *
+	 * @return
+	 */
+	private String buildUrl(Inno72Machine inno72Machine, String redirect){
+		String bluetoothAdd = "";
+		String bluetoothAddAes = "";
+		if (inno72Machine != null) {
+			bluetoothAdd = inno72Machine.getBluetoothAddress();
+			if (!StringUtil.isEmpty(bluetoothAdd)) {
+				bluetoothAddAes = AesUtils.encrypt(bluetoothAdd);
+			}
+		}
+
+		LOGGER.info("Mac蓝牙地址 {} ", bluetoothAddAes);
+
+		String sessionUuid = inno72Machine.getMachineCode();
+
+		String url = String.format(
+				"%s/?sessionUuid=%s&env=%s&bluetoothAddAes=%s&machineCode=%s",
+				redirect, sessionUuid, env, bluetoothAddAes, inno72Machine.getMachineCode());
+
+
+		return url;
+	}
+
 
 	/**
 	 * 解析ext
@@ -1588,8 +1591,9 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 				if(merchant == null)  {
 					Inno72Merchant param = new Inno72Merchant();
 					param.setMerchantCode(sellerId);
+					param.setIsDelete(0);
 					merchant = inno72MerchantMapper.selectOne(param);
-					userSessionVo.setSellerName(merchant.getMerchantName());
+					// userSessionVo.setSellerName(merchant.getMerchantName());
 				}
 			}
 			if(merchant!=null){
