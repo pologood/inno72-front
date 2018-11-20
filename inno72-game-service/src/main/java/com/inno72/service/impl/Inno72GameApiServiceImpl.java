@@ -500,15 +500,15 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 		LOGGER.debug("下单 userSessionVo ==> {}", JSON.toJSONString(userSessionVo));
 		//计算canorder
 		Inno72ChannelService channelService = (Inno72ChannelService)ApplicationContextHandle.getBean(StandardLoginTypeEnum.getValue(userSessionVo.getChannelType()));
+		if(!StringUtils.isEmpty(vo.getItemId())){
+            userSessionVo.setGoodsId(vo.getItemId());
+        }
 		Map<String, Object> result = new HashMap<>();
 		boolean canOrder = channelService.getCanOrder(userSessionVo);
 		if(!canOrder){
 			result.put("orderResult", CANORDER_FALSE);
 			result.put("errorMsg","您已经玩过此游戏");
 		}
-		if(!StringUtils.isEmpty(vo.getItemId())){
-            userSessionVo.setGoodsId(vo.getItemId());
-        }
         String goodsId = userSessionVo.getGoodsId();
 		String interactId = userSessionVo.getActivityId();
         LOGGER.info("paiyangOrder goodsId={},interactId={}",goodsId,interactId);
