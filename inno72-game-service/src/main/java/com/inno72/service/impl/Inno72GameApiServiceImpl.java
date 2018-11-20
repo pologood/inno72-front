@@ -176,6 +176,7 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 	private static final String QRSTATUS_EXIST_USER = "-2"; // 存在用户登录
 
 	public static final Integer PRODUCT_NO_EXIST = -1; // 商品不存在
+	public static final Integer CANORDER_FALSE = -2; // 限制下单
 	private static final Integer SAMPLING_TYPE = 1; // 类型（派样）
 	@Value("${sell_session_key}")
 	private String sellSessionKey;
@@ -497,7 +498,14 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 	private Result<Object> paiyangOrder(UserSessionVo userSessionVo, MachineApiVo vo) {
 
 		LOGGER.debug("下单 userSessionVo ==> {}", JSON.toJSONString(userSessionVo));
-
+		//计算canorder
+		Inno72ChannelService channelService = (Inno72ChannelService)ApplicationContextHandle.getBean(StandardLoginTypeEnum.getValue(userSessionVo.getChannelType()));
+		Map<String, Object> result = new HashMap<>();
+		boolean canOrder = channelService.getCanOrder(userSessionVo);
+		if(!canOrder){
+			result.put("orderResult", CANORDER_FALSE);
+			result.put("errorMsg","您已经玩过此游戏");
+		}
 		if(!StringUtils.isEmpty(vo.getItemId())){
             userSessionVo.setGoodsId(vo.getItemId());
         }
@@ -551,7 +559,6 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 			orderCode = PRODUCT_NO_EXIST;
 		}
 
-		Map<String, Object> result = new HashMap<>();
 		if(resultGoodsId!=null&&resultGoodsId.size()>0){
 			this.setChannelInfo(userSessionVo, result, resultGoodsId);
 		}

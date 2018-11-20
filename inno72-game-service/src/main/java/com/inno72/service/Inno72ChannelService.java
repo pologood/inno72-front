@@ -13,4 +13,11 @@ public interface Inno72ChannelService {
 
     default void feedBackInTime(String inno72OrderId, String machineCode){
     }
+
+    /**
+     * 计算canorder
+     */
+    default boolean getCanOrder(UserSessionVo userSessionVo){
+        return true;
+    }
 }

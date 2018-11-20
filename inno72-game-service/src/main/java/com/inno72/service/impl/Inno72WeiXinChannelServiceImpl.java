@@ -212,4 +212,13 @@ public class Inno72WeiXinChannelServiceImpl implements Inno72ChannelService {
         LOGGER.info("微信机器二维码内容为:{}",sb.toString());
         return sb.toString();
     }
+
+    @Override
+    public boolean getCanOrder(UserSessionVo sessionVo) {
+        Inno72Interact interact = inno72InteractService.findById(sessionVo.getInno72MachineVo().getActivityId());
+        Inno72GameUserChannel gameUserChannel = new Inno72GameUserChannel();
+        gameUserChannel.setGameUserId(sessionVo.getGameUserId());
+        gameUserChannel =inno72GameUserChannelMapper.selectOne(gameUserChannel);
+        return inno72AuthInfoService.findCanOrder(interact,sessionVo,gameUserChannel.getId());
+    }
 }
