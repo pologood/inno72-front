@@ -336,7 +336,7 @@ public class Inno72StandardController {
                     }
                 }
                 LOGGER.info("loginRedirect redirectUrl is {} ", redirectUrl);
-                if(StandardLoginTypeEnum.ALIBABA.getValue()==channelType){
+                if(channelType == null){
                     response.sendRedirect(redirectUrl);
                     return null;
                 }
