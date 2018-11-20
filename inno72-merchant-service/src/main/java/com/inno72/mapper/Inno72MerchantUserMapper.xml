@@ -23,7 +23,7 @@
     <select id="selectByNameAndPwd" resultMap="BaseResultMap">
         select * from inno72_merchant_user
         where login_name = #{userName}
-        and password = #{pwd}
+        and password = #{pwd} and login_status = 1
     </select>
     <select id="selectByMobile" resultMap="BaseResultMap">
           select * from inno72_merchant_user
