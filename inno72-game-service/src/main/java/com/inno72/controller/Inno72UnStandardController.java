@@ -1,5 +1,6 @@
 package com.inno72.controller;
 
+import com.google.gson.Gson;
 import com.inno72.common.Result;
 import com.inno72.common.Results;
 import com.inno72.service.Inno72WeChatService;
@@ -36,4 +37,18 @@ public class Inno72UnStandardController {
             return Results.failure(e.getMessage());
         }
     }
+
+
+
+    @RequestMapping(value = "/getWeChat")
+    public String getWeChat(String url,String code,String appid){
+        try{
+            //
+            return inno72WeChatService.findWeChatUserInfo(url,code,appid);
+        }catch(Exception e){
+            e.printStackTrace();
+            return null;
+        }
+    }
+
 }

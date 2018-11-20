@@ -141,7 +141,8 @@ public class Inno72WeiXinChannelServiceImpl implements Inno72ChannelService {
         sessionVo.setSellerId(inno72Merchant.getMerchantCode());
         sessionVo.setSellerName(inno72Merchant.getMerchantName());
         sessionVo.setMerchantName(inno72Merchant.getMerchantName());
-        boolean canOrder = inno72AuthInfoService.findCanOrder(interact,sessionVo,gameUserChannel.getId());
+//        boolean canOrder = inno72AuthInfoService.findCanOrder(interact,sessionVo,gameUserChannel.getId());
+        boolean canOrder = true;
         sessionVo.setCanOrder(canOrder);
         sessionVo.setChannelId(channel.getId());
         sessionVo.setActivityId(interact.getId());
