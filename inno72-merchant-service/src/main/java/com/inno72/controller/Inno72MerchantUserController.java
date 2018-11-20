@@ -60,11 +60,11 @@ public class Inno72MerchantUserController {
 	}
 
 	@RequestMapping(value = "/inno72/merchant/checkUser")
-	public Result checkUser(String phone, String userName, HttpServletRequest request, HttpServletResponse response){
+	public Result checkUser(String phone, String userName, HttpServletRequest request, HttpServletResponse response) {
 		Result result = inno72MerchantUserService.checkUser(phone, userName);
-		if (result.getCode() == Result.SUCCESS){
+		if (result.getCode() == Result.SUCCESS) {
 			try {
-				request.getRequestDispatcher("/common/code/3?phone="+phone).forward(request, response);
+				request.getRequestDispatcher("/common/code/3?phone=" + phone).forward(request, response);
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
@@ -73,12 +73,13 @@ public class Inno72MerchantUserController {
 	}
 
 	@RequestMapping(value = "/inno72/merchant/checkCode")
-	public Result checkCode(String phone, String code){
+	public Result checkCode(String phone, String code) {
 
 		return inno72MerchantUserService.checkPhone(phone, code);
 	}
+
 	@RequestMapping(value = "/inno72/merchant/checkMerchant")
-	public Result checkMerchant(String phone, String userName){
+	public Result checkMerchant(String phone, String userName) {
 		return inno72MerchantUserService.checkMerchant(phone, userName);
 	}
 }

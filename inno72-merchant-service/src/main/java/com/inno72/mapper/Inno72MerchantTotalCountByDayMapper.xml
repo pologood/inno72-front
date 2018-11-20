@@ -22,21 +22,22 @@
         <result column="pv" jdbcType="INTEGER" property="pv"/>
         <result column="uv" jdbcType="INTEGER" property="uv"/>
         <result column="seller_id" jdbcType="VARCHAR" property="sellerId"/>
-        <result column="last_update_time" jdbcType="TIMESTAMP" property="lastUpdateTime" javaType="java.time.LocalDateTime"
+        <result column="last_update_time" jdbcType="TIMESTAMP" property="lastUpdateTime"
+                javaType="java.time.LocalDateTime"
                 typeHandler="org.apache.ibatis.type.LocalDateTimeTypeHandler"/>
     </resultMap>
     <select id="selectList" resultMap="BaseResultMap">
-      select  * from inno72_merchant_total_count_by_day
-      where activity_id = #{activityId} and seller_id = #{sellerId}
-      <if test="city != null and city != ''">
-          and city = #{city}
-      </if>
-      <if test="goods != null and goods != ''">
-          and goods_id = #{goods}
-      </if>
-      <if test="startDate != null and startDate != '' and endDate != null and endDate != ''">
-          and `date` between #{startDate} and #{endDate}
-      </if>
+        select * from inno72_merchant_total_count_by_day
+        where activity_id = #{activityId} and seller_id = #{sellerId}
+        <if test="city != null and city != ''">
+            and city = #{city}
+        </if>
+        <if test="goods != null and goods != ''">
+            and goods_id = #{goods}
+        </if>
+        <if test="startDate != null and startDate != '' and endDate != null and endDate != ''">
+            and `date` between #{startDate} and #{endDate}
+        </if>
         order by `date`, city
     </select>
     <select id="findGoodsBySellerId" resultType="java.util.Map" parameterType="string">

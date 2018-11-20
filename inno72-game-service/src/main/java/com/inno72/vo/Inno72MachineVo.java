@@ -4,6 +4,9 @@ import com.inno72.model.Inno72ActivityPlan;
 import com.inno72.model.Inno72Game;
 import com.inno72.model.Inno72Machine;
 
+import lombok.Data;
+
+@Data
 public class Inno72MachineVo extends Inno72Machine {
 	/**
 	 * 活动类型，1派样，0普通
@@ -27,17 +30,37 @@ public class Inno72MachineVo extends Inno72Machine {
 	/** playCode */
 	private String playCode;
 	/** 市 */
-	private String city;//TODO 新
+	private String city;
 
 	/** 区 */
-	private String district;//TODO 新
+	private String district;
 
 	/** 点位 */
-	private String point;//TODO 新
+	private String point;
 	/**
 	 * 活动名称
 	 */
-	private String activityName;//TODO 新
+	private String activityName;
+
+	/**
+	 * 商户总ID - table -> inno72_merchant_user.merchant_id
+	 */
+	private String merchantId;// TODO 新
+
+	/**
+	 * 商户总名称 - table -> inno72_merchant_user.merchant_name
+	 */
+	private String merchantName;// TODO 新
+
+	/**
+	 * 渠道商家ID - table -> inno72_merchant.id
+	 */
+	private String channelMerchantId;//TODO 新
+
+	/**
+	 * 渠道商家ID - table -> inno72_merchant.name
+	 */
+	private String channelMerchantName;//TODO 新
 
 	/**
 	 * 商户名称
@@ -57,9 +80,13 @@ public class Inno72MachineVo extends Inno72Machine {
 	 */
 	private String activityId;
 	/**
-	 * 渠道ID
+	 * 渠道ID //TODO, 修改为渠道商家channelId - table -> inno72_merchant.channel_id
 	 */
 	private String channelId;
+	/**
+	 * 渠道ID //TODO, 修改为渠道商家channelName - table -> inno72_merchant.channel_name
+	 */
+	private String channelName;
 
 	/**
 	 * 活动计划详情
@@ -75,139 +102,4 @@ public class Inno72MachineVo extends Inno72Machine {
 	 */
 	private String prizeType;
 
-	public String getPrizeType() {
-		return prizeType;
-	}
-
-	public void setPrizeType(String prizeType) {
-		this.prizeType = prizeType;
-	}
-
-	public String getBrandName() {
-		return brandName;
-	}
-
-	public void setBrandName(String brandName) {
-		this.brandName = brandName;
-	}
-
-	public boolean isReload() {
-		return isReload;
-	}
-
-	public void setReload(boolean isReload) {
-		this.isReload = isReload;
-	}
-
-	public Inno72Game getInno72Games() {
-		return inno72Games;
-	}
-
-	public void setInno72Games(Inno72Game inno72Games) {
-		this.inno72Games = inno72Games;
-	}
-
-	public String getActivityPlanId() {
-		return activityPlanId;
-	}
-
-	public void setActivityPlanId(String activityPlanId) {
-		this.activityPlanId = activityPlanId;
-	}
-
-	public void setInno72ActivityPlan(Inno72ActivityPlan inno72ActivityPlan) {
-		this.inno72ActivityPlan = inno72ActivityPlan;
-	}
-
-	public String getActivityId() {
-		return activityId;
-	}
-
-	public void setActivityId(String activityId) {
-		this.activityId = activityId;
-	}
-
-	public Inno72ActivityPlan getInno72ActivityPlan() {
-		return inno72ActivityPlan;
-	}
-
-	public String getChannelId() {
-		return channelId;
-	}
-
-	public void setChannelId(String channelId) {
-		this.channelId = channelId;
-	}
-
-	public String getPlanCode() {
-		return planCode;
-	}
-
-	public void setPlanCode(String planCode) {
-		this.planCode = planCode;
-	}
-
-	public Integer getActivityType() {
-		return activityType;
-	}
-
-	public void setActivityType(Integer activityType) {
-		this.activityType = activityType;
-	}
-
-	public Integer getPaiyangType() {
-		return paiyangType;
-	}
-
-	public void setPaiyangType(Integer paiyangType) {
-		this.paiyangType = paiyangType;
-	}
-
-	public String getCity() {
-		return city;
-	}
-
-	public void setCity(String city) {
-		this.city = city;
-	}
-
-	public String getDistrict() {
-		return district;
-	}
-
-	public void setDistrict(String district) {
-		this.district = district;
-	}
-
-	public String getPoint() {
-		return point;
-	}
-
-	public void setPoint(String point) {
-		this.point = point;
-	}
-
-	public String getActivityName() {
-		return activityName;
-	}
-
-	public void setActivityName(String activityName) {
-		this.activityName = activityName;
-	}
-
-	public String getProvence() {
-		return provence;
-	}
-
-	public void setProvence(String provence) {
-		this.provence = provence;
-	}
-
-	public String getPlayCode() {
-		return playCode;
-	}
-
-	public void setPlayCode(String playCode) {
-		this.playCode = playCode;
-	}
 }

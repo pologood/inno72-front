@@ -73,7 +73,7 @@ public class Inno72MerchantUserServiceImpl extends AbstractService<Inno72Merchan
 	@CheckParams
 	public Result resetPwd(String password, String userName, String phone, String code) {
 		String s = redisUtil.get(CommonBean.REDIS_MERCHANT_RESET_PWD_KEY + userName);
-		if (s == null || !s.equals(code)){
+		if (s == null || !s.equals(code)) {
 			return Results.failure("请求异常！");
 		}
 
@@ -111,7 +111,7 @@ public class Inno72MerchantUserServiceImpl extends AbstractService<Inno72Merchan
 		if (user == null) {
 			return Results.failure("用户不存在!");
 		}
-		if(!user.getPassword().equals(CommonBean.pwd(oPassword))){
+		if (!user.getPassword().equals(CommonBean.pwd(oPassword))) {
 			return Results.failure("原用户密码错误!");
 		}
 		user.setPassword(CommonBean.pwd(password));
@@ -125,7 +125,7 @@ public class Inno72MerchantUserServiceImpl extends AbstractService<Inno72Merchan
 
 		Inno72MerchantUser user = inno72MerchantUserMapper.selectByLoginNameAndPhone(phone, userName);
 
-		if (user == null){
+		if (user == null) {
 			return Results.failure("用户不存在!");
 		}
 		String uuid = StringUtil.uuid();
@@ -137,7 +137,7 @@ public class Inno72MerchantUserServiceImpl extends AbstractService<Inno72Merchan
 	@Override
 	public Result checkPhone(String phone, String code) {
 
-		if (StringUtil.isEmpty(phone) || StringUtil.isEmpty(code)){
+		if (StringUtil.isEmpty(phone) || StringUtil.isEmpty(code)) {
 			return Results.failure("参数为空 !");
 		}
 		String uuid = StringUtil.uuid();
@@ -150,7 +150,7 @@ public class Inno72MerchantUserServiceImpl extends AbstractService<Inno72Merchan
 	@Override
 	public Result checkUser(String phone, String userName) {
 		Inno72MerchantUser user = inno72MerchantUserMapper.selectByLoginNameAndPhone(userName, phone);
-		if (user == null){
+		if (user == null) {
 			return Results.failure("用户不存在!");
 		}
 		return Results.success();

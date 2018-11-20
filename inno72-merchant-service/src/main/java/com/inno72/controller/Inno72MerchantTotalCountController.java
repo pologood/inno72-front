@@ -21,7 +21,8 @@ import com.inno72.service.Inno72MerchantTotalCountService;
  * Created by CodeGenerator on 2018/11/07.
  */
 @RestController
-@RequestMapping(value = "/inno72/merchant/total/count", method = {RequestMethod.POST, RequestMethod.GET, RequestMethod.OPTIONS})
+@RequestMapping(value = "/inno72/merchant/total/count", method = {RequestMethod.POST, RequestMethod.GET,
+		RequestMethod.OPTIONS})
 public class Inno72MerchantTotalCountController {
 	@Resource
 	private Inno72MerchantTotalCountService inno72MerchantTotalCountService;
@@ -42,6 +43,7 @@ public class Inno72MerchantTotalCountController {
 	public Result<List<Inno72MerchantTotalCount>> list(String id) {
 		return inno72MerchantTotalCountService.findAllById(id);
 	}
+
 	@RequestMapping(value = "/totle")
 	public Result<Object> totle(String id) {
 		return inno72MerchantTotalCountService.totle(id);

@@ -8,15 +8,15 @@ import lombok.Data;
 public class UserSessionVo {
 
 	private String traceId;
-	private String planCode;//TODO
-	private String sellerName;//TODO 品牌名称
-	private String shipmentNum;//TODO 出货数量
-	private String scanUrl;//TODO 扫码路径
-	private String goodsName;//TODO 商品名称
-	private String refOrderStatus;//TODO 订单状态
-	private String scanLoginUrl;//TODO 扫码登录url
-	private String scanPayUrl;//TODO 暂时没有
-	private String interactId;//TODO 奖池ID
+	private String planCode;
+	private String sellerName;
+	private String shipmentNum;
+	private String scanUrl;
+	private String goodsName;
+	private String refOrderStatus;
+	private String scanLoginUrl;
+	private String scanPayUrl;
+	private String interactId;
 
 	private String mid;
 	private String userNick;

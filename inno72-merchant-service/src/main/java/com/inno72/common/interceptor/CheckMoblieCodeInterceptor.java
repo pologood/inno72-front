@@ -23,9 +23,8 @@ public class CheckMoblieCodeInterceptor implements HandlerInterceptor {
 	private static final Logger logger = LoggerFactory.getLogger(CheckMoblieCodeInterceptor.class);
 
 	private static List<String> doNotCheckUs = Arrays
-			.asList("/inno72/merchant/resetPhone", "/inno72/merchant/checkPhone",
-					"/inno72/merchant/checkMerchant", "/inno72/merchant/checkCode",
-					"/inno72/merchant/resetPwd");
+			.asList("/inno72/merchant/resetPhone", "/inno72/merchant/checkPhone", "/inno72/merchant/checkMerchant",
+					"/inno72/merchant/checkCode", "/inno72/merchant/resetPwd");
 
 
 	@Resource
@@ -73,13 +72,13 @@ public class CheckMoblieCodeInterceptor implements HandlerInterceptor {
 
 	@Override
 	public void postHandle(HttpServletRequest request, HttpServletResponse response, Object handler,
-			ModelAndView modelAndView){
+			ModelAndView modelAndView) {
 
 	}
 
 	@Override
-	public void afterCompletion(HttpServletRequest request, HttpServletResponse response, Object handler, Exception ex)
-			 {
+	public void afterCompletion(HttpServletRequest request, HttpServletResponse response, Object handler,
+			Exception ex) {
 
 	}
 

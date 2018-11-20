@@ -19,7 +19,6 @@ import com.inno72.service.Inno72AdminAreaService;
 public class CommonServiceImpl implements CommonService {
 
 
-
 	/**
 	 *
 	 * @param type city
@@ -32,7 +31,7 @@ public class CommonServiceImpl implements CommonService {
 	public Map<String, Object> baseApi(String type, String sellerId) {
 
 		Map<String, Object> resultMap = new HashMap<>(3);
-		switch (type){
+		switch (type) {
 			case "city":
 				resultMap.put("city", this.getCity(sellerId));
 				break;
@@ -68,6 +67,7 @@ public class CommonServiceImpl implements CommonService {
 
 	@Resource
 	private Inno72AdminAreaService inno72AdminAreaService;
+
 	public List<Inno72AdminArea> getCity(String sellerId) {
 		return inno72AdminAreaService.findCity();
 	}

@@ -7,11 +7,15 @@
         -->
         <id column="id" jdbcType="VARCHAR" property="id"/>
         <result column="merchant_id" jdbcType="VARCHAR" property="merchantId"/>
-        <result column="seller_id" jdbcType="VARCHAR" property="sellerId"/>
         <result column="login_name" jdbcType="VARCHAR" property="loginName"/>
         <result column="password" jdbcType="VARCHAR" property="password"/>
         <result column="merchant_name" jdbcType="VARCHAR" property="merchantName"/>
         <result column="phone" jdbcType="VARCHAR" property="phone"/>
+        <result column="login_status" jdbcType="VARCHAR" property="loginStatus"/>
+        <result column="create_time" jdbcType="TIMESTAMP" property="createTime"/>
+        <result column="creator" jdbcType="VARCHAR" property="creator"/>
+        <result column="last_update_time" jdbcType="TIMESTAMP" property="lastUpdateTime"/>
+        <result column="last_updator" jdbcType="VARCHAR" property="lastUpdator"/>
     </resultMap>
     <update id="updatePwdByPhone" parameterType="com.inno72.model.Inno72MerchantUser">
       update inno72_merchant_user set password = #{password} where phone = #{phone}

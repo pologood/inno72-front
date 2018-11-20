@@ -40,7 +40,7 @@ public class Inno72CommonController {
 			return Results.failure("无发送类型!");
 		}
 		String code = "";
-		String redisHost = "" ;
+		String redisHost = "";
 		String msg = "";
 		switch (type) {
 			case "1":
@@ -64,8 +64,7 @@ public class Inno72CommonController {
 
 		String s = CommonBean.genCode(4);
 
-		String cacheCode = redisUtil.setex(redisHost + phone,
-				CommonBean.REDIS_MERCHANT_MOBILE_CODE_TIMEOUT, s);
+		String cacheCode = redisUtil.setex(redisHost + phone, CommonBean.REDIS_MERCHANT_MOBILE_CODE_TIMEOUT, s);
 
 		Map<String, String> param = new HashMap<>(1);
 		param.put("code", s);
@@ -81,10 +80,9 @@ public class Inno72CommonController {
 	private CommonService commonService;
 
 	@RequestMapping(value = "/common/api/{type}")
-	public Result baseApi(@PathVariable(value = "type") String type, String sellerId){
+	public Result baseApi(@PathVariable(value = "type") String type, String sellerId) {
 		return Results.success(commonService.baseApi(type, sellerId));
 	}
-
 
 
 }
