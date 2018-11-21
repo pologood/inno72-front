@@ -1286,7 +1286,7 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 		// LOGGER.info("减货 参数 ===》 【machineId=>{}，channelId=>{}】;结果 ==> {}", machineId, channelId, i);
 
 		try {
-			findLockGoodsPush(machineId, inno72SupplyChannel.getId());
+			findLockGoodsPush(machineCode, inno72SupplyChannel.getId());
 		} catch (Exception e) {
 			LOGGER.info("调用 saveLackGoodsBean 异常", e);
 		}
@@ -1318,8 +1318,8 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 		return Results.success();
 	}
 
-	private Result findLockGoodsPush(String machineId, String channelId) {
-		LOGGER.info("saveLackGoodsBean invoked! machineId={},channelId={}", machineId, channelId);
+	private Result findLockGoodsPush(String machineCode, String channelId) {
+		LOGGER.info("saveLackGoodsBean invoked! machineCode={},channelId={}", machineCode, channelId);
 		// 获取商品id
 		String goodsId = inno72SupplyChannelMapper.findGoodsIdByChannelId(channelId);
 		if (StringUtils.isEmpty(goodsId)) {
@@ -1329,7 +1329,7 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 
 		AlarmLackGoodsBean alarmLackGoodsBean = new AlarmLackGoodsBean();
 		alarmLackGoodsBean.setGoodsId(goodsId);
-		alarmLackGoodsBean.setMachineCode(machineId);
+		alarmLackGoodsBean.setMachineCode(machineCode);
 		alarmUtil.saveLackGoodsBean(alarmLackGoodsBean);
 
 		return Results.success();
