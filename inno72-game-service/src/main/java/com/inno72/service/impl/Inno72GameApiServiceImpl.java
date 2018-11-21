@@ -508,6 +508,7 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 		if(!canOrder){
 			result.put("orderResult", CANORDER_FALSE);
 			result.put("errorMsg","您已经玩过此游戏");
+			return Results.success(result);
 		}
         String goodsId = userSessionVo.getGoodsId();
 		String interactId = userSessionVo.getActivityId();

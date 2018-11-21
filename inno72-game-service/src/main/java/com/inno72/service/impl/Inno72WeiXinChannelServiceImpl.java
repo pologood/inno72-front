@@ -220,6 +220,6 @@ public class Inno72WeiXinChannelServiceImpl implements Inno72ChannelService {
         Inno72GameUserChannel gameUserChannel = new Inno72GameUserChannel();
         gameUserChannel.setGameUserId(sessionVo.getGameUserId());
         gameUserChannel =inno72GameUserChannelMapper.selectOne(gameUserChannel);
-        return inno72AuthInfoService.findCanOrder(interact,sessionVo,gameUserChannel.getId());
+        return inno72AuthInfoService.findCanOrder(interact,sessionVo,gameUserChannel.getGameUserId());
     }
 }

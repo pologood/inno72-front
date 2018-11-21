@@ -30,6 +30,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -94,6 +95,9 @@ public class Inno72AuthInfoServiceImpl implements Inno72AuthInfoService {
 
 	@Resource
 	private GameSessionRedisUtil gameSessionRedisUtil;
+
+    @Resource
+    private IRedisUtil redisUtil;
 	@Resource
 	private Inno72GameServiceProperties inno72GameServiceProperties;
 	@Resource
@@ -114,8 +118,6 @@ public class Inno72AuthInfoServiceImpl implements Inno72AuthInfoService {
 	private Inno72ActivityMapper inno72ActivityMapper;
 	@Resource
 	private Inno72ChannelMapper inno72ChannelMapper;
-	@Resource
-	private IRedisUtil redisUtil;
 	@Resource
 	private Inno72GameService inno72GameService;
 	@Resource
@@ -138,6 +140,8 @@ public class Inno72AuthInfoServiceImpl implements Inno72AuthInfoService {
 	private Inno72ShopsMapper inno72ShopsMapper;
 	@Resource
 	private Inno72CouponMapper inno72CouponMapper;
+	@Resource
+	private RedisTemplate redisTemplate;
 
 	@Resource
 	private PointService pointService;
@@ -404,7 +408,7 @@ public class Inno72AuthInfoServiceImpl implements Inno72AuthInfoService {
 		Integer timesTmp = 0;
 		if(times!=null&&times!=-1){
 			key = String.format(RedisConstants.PAIYANG_ORDER_TIMES,interact.getId(),userId);
-			if(gameSessionRedisUtil.exists(key)){
+			if(redisUtil.exists(key)){
 				Integer mytimes = Integer.parseInt(redisUtil.get(key));
 				timesTmp = times*goodsSize;
 				if(mytimes >= timesTmp){
@@ -416,7 +420,7 @@ public class Inno72AuthInfoServiceImpl implements Inno72AuthInfoService {
 		String date = DateUtil.getDateStringByYYYYMMDD();
 		if(dayTimes!=null&&dayTimes!=-1){
 			key = String.format(RedisConstants.PAIYANG_DAY_ORDER_TIMES,interact.getId(),date,userId);
-			if(gameSessionRedisUtil.exists(key)){
+			if(redisUtil.exists(key)){
 				timesTmp = dayTimes*goodsSize;
 				Integer mydayTimes = Integer.parseInt(redisUtil.get(key));
 				if(mydayTimes >= timesTmp){
@@ -430,7 +434,7 @@ public class Inno72AuthInfoServiceImpl implements Inno72AuthInfoService {
 
 		if(number!=null&&number!=-1){
 			key = String.format(RedisConstants.PAIYANG_ORDER_TIMES,interact.getId(),userId);
-			if(gameSessionRedisUtil.exists(key)){
+			if(redisUtil.exists(key)){
 				Integer mytimes = Integer.parseInt(redisUtil.get(key));
 				if(mytimes >= number){
 					LOGGER.info("限制：interact.getNumber={},myNumber={}",number,mytimes);
@@ -440,7 +444,7 @@ public class Inno72AuthInfoServiceImpl implements Inno72AuthInfoService {
 		}
 
 		if(dayNumber!=null&&dayNumber != -1){
-			if(gameSessionRedisUtil.exists(String.format(RedisConstants.PAIYANG_DAY_ORDER_TIMES,interact.getId(),date,userId))){
+			if(redisUtil.exists(String.format(RedisConstants.PAIYANG_DAY_ORDER_TIMES,interact.getId(),date,userId))){
 				Integer mydayTimes = Integer.parseInt(redisUtil.get(String.format(RedisConstants.PAIYANG_DAY_ORDER_TIMES,interact.getId(),date,userId)));
 				if(mydayTimes >= dayNumber){
 					LOGGER.info("限制：dayNumber={},myDayNumber={}",dayNumber,mydayTimes);
@@ -451,7 +455,7 @@ public class Inno72AuthInfoServiceImpl implements Inno72AuthInfoService {
 
 		if(userDayNumber!=null&&userDayNumber!=-1){
 			key = String.format(RedisConstants.PAIYANG_GOODS_ORDER_TIMES,interact.getId(),sessionVo.getGoodsId(),date,userId);
-			if(gameSessionRedisUtil.exists(key)){
+			if(redisUtil.exists(key)){
 				Integer mydayTimes = Integer.parseInt(redisUtil.get(key));
 				if(mydayTimes >= userDayNumber){
 					LOGGER.info("限制：userDayNumber={},myUserDayNumber={}",userDayNumber,mydayTimes);
