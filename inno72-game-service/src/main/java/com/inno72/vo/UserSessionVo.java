@@ -31,6 +31,26 @@ public class UserSessionVo {
 	private String merchantName;
 	private Inno72MachineVo inno72MachineVo;
 
+	/**
+	 * 商户总ID - table -> inno72_merchant_user.merchant_id
+	 */
+	private String merchantAccountId;// TODO 新
+
+	/**
+	 * 商户总名称 - table -> inno72_merchant_user.merchant_name
+	 */
+	private String merchantAccountName;// TODO 新
+
+	/**
+	 * 渠道商家ID - table -> inno72_merchant.id
+	 */
+	private String channelMerchantId;//TODO 新
+
+	/**
+	 * 渠道ID //TODO, 修改为渠道商家channelName - table -> inno72_merchant.channel_name
+	 */
+	private String channelName;
+
 
 	/**
 	 * 查询游戏结果对应的货道时存入

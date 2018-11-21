@@ -169,6 +169,30 @@ public class Inno72MachineInformation {
 
 	private String requestId;
 
+
+	/**
+	 * 商户总ID - table -> inno72_merchant_user.merchant_id
+	 */
+	private String merchantId;// TODO 新
+
+	/**
+	 * 商户总名称 - table -> inno72_merchant_user.merchant_name
+	 */
+	private String merchantName;// TODO 新
+
+	/**
+	 * 渠道商家ID - table -> inno72_merchant.id
+	 */
+	private String channelMerchantId;//TODO 新
+	/**
+	 * 渠道ID - table -> inno72_merchant.channel_id
+	 */
+	private String channelId;//TODO 新
+	/**
+	 * 渠道名称 - table -> inno72_merchant.channel_name
+	 */
+	private String channelName;//TODO 新
+
 	public Inno72MachineInformation(String type, String sessionUuid) {
 		this.sessionUuid = sessionUuid;
 		this.type = type;

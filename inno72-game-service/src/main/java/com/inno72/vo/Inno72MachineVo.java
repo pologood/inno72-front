@@ -43,26 +43,6 @@ public class Inno72MachineVo extends Inno72Machine {
 	private String activityName;
 
 	/**
-	 * 商户总ID - table -> inno72_merchant_user.merchant_id
-	 */
-	private String merchantId;// TODO 新
-
-	/**
-	 * 商户总名称 - table -> inno72_merchant_user.merchant_name
-	 */
-	private String merchantName;// TODO 新
-
-	/**
-	 * 渠道商家ID - table -> inno72_merchant.id
-	 */
-	private String channelMerchantId;//TODO 新
-
-	/**
-	 * 渠道商家ID - table -> inno72_merchant.name
-	 */
-	private String channelMerchantName;//TODO 新
-
-	/**
 	 * 商户名称
 	 */
 	private String brandName;
@@ -80,13 +60,9 @@ public class Inno72MachineVo extends Inno72Machine {
 	 */
 	private String activityId;
 	/**
-	 * 渠道ID //TODO, 修改为渠道商家channelId - table -> inno72_merchant.channel_id
+	 * 渠道ID
 	 */
 	private String channelId;
-	/**
-	 * 渠道ID //TODO, 修改为渠道商家channelName - table -> inno72_merchant.channel_name
-	 */
-	private String channelName;
 
 	/**
 	 * 活动计划详情

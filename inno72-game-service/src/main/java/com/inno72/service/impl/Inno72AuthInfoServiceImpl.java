@@ -255,7 +255,7 @@ public class Inno72AuthInfoServiceImpl implements Inno72AuthInfoService {
 
 		Inno72Activity inno72Activity = inno72ActivityMapper.selectByPrimaryKey(inno72ActivityPlan.getActivityId());
 
-		Inno72Merchant inno72Merchant = null;
+		Inno72Merchant inno72Merchant;
 		String merchantCode = sessionVo.getSellerId();
 		if (!StringUtil.isEmpty(merchantCode)) {
 			Map<String, Object> params = new HashMap<>();
@@ -266,6 +266,12 @@ public class Inno72AuthInfoServiceImpl implements Inno72AuthInfoService {
 			inno72Merchant = inno72MerchantMapper.findMerchantByActivityId(inno72Activity.getId());
 			sessionVo.setSellerId(inno72Merchant.getMerchantCode());
 		}
+
+		sessionVo.setMerchantAccountId(inno72Merchant.getMerchantAccountId());
+		sessionVo.setMerchantAccountName(inno72Merchant.getMerchantAccountName());
+		sessionVo.setChannelMerchantId(inno72Merchant.getId());
+		sessionVo.setChannelId(inno72Merchant.getChannelId());
+		sessionVo.setChannelName(inno72Merchant.getChannelName());
 
 		playCode = inno72Activity.getCode();
 		LOGGER.info("sessionRedirect layCode is {}", playCode);

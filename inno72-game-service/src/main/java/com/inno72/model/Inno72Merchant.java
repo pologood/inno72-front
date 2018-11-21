@@ -15,6 +15,17 @@ public class Inno72Merchant {
 	private String id;
 
 	/**
+	 * 商户主键
+	 */
+	@Column(name = "merchant_account_id")
+	private String merchantAccountId;
+	/**
+	 * 商户主键
+	 */
+	@Column(name = "merchant_account_name")
+	private String merchantAccountName;
+
+	/**
 	 * 商户号
 	 */
 	@Column(name = "merchant_code")
@@ -43,6 +54,18 @@ public class Inno72Merchant {
 	 */
 	@Column(name = "channel_id")
 	private String channelId;
+
+	/**
+	 * 商户所属渠道
+	 */
+	@Column(name = "channel_name")
+	private String channelName;
+
+	/**
+	 * 微信公众号二维码
+	 */
+	@Column(name = "wechat_qrcode_url")
+	private String wechatQrcodeUrl;
 
 	/**
 	 * 商户可用状态0:可用，1:不可用
@@ -280,5 +303,41 @@ public class Inno72Merchant {
 
 	public void setSellSessionKey(String sellSessionKey) {
 		this.sellSessionKey = sellSessionKey;
+	}
+
+	public String getMerchantAccountId() {
+		return merchantAccountId;
+	}
+
+	public void setMerchantAccountId(String merchantAccountId) {
+		this.merchantAccountId = merchantAccountId;
+	}
+
+	public String getMerchantAccountName() {
+		return merchantAccountName;
+	}
+
+	public void setMerchantAccountName(String merchantAccountName) {
+		this.merchantAccountName = merchantAccountName;
+	}
+
+	public String getChannelName() {
+		return channelName;
+	}
+
+	public void setChannelName(String channelName) {
+		this.channelName = channelName;
+	}
+
+	public String getWechatQrcodeUrl() {
+		return wechatQrcodeUrl;
+	}
+
+	public void setWechatQrcodeUrl(String wechatQrcodeUrl) {
+		this.wechatQrcodeUrl = wechatQrcodeUrl;
+	}
+
+	public String getSellSessionKey() {
+		return sellSessionKey;
 	}
 }

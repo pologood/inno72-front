@@ -1600,6 +1600,11 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 				userSessionVo.setSellerId(merchant.getMerchantCode());
 				userSessionVo.setMerchantName(merchant.getMerchantName());
 				userSessionVo.setSellerName(merchant.getMerchantName());
+				userSessionVo.setChannelName(merchant.getChannelName());
+				userSessionVo.setChannelId(merchant.getChannelId());
+				userSessionVo.setMerchantAccountName(merchant.getMerchantAccountName());
+				userSessionVo.setMerchantAccountId(merchant.getMerchantAccountId());
+				userSessionVo.setChannelMerchantId(merchant.getId());
 			}
 
 		}

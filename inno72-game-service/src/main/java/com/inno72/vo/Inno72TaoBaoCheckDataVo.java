@@ -27,6 +27,12 @@ public class Inno72TaoBaoCheckDataVo {
 	/** 活动名称 */
 	private String activityName;
 
+	String merchantId;
+	String merchantName;
+	String channelMerchantId;
+	String channelId;
+	String channelName;
+
 	/** 机器ID */
 	private String machineCode;
 	public String getMachineCode(){
@@ -115,23 +121,29 @@ public class Inno72TaoBaoCheckDataVo {
 	}
 
 	public Inno72TaoBaoCheckDataVo buildBaseInformation(String traceId, String activityId, String activityName, String provence, String city,
-			String district, String point, String userId, String nickName, String sellerId,
-			String sellerName, String goodsId, String goodsName, String playCode, Inno72TaoBaoCheckDataVo vo) {
+			String district, String point, String userId, String nickName, String sellerId, String sellerName, String goodsId, String goodsName, String playCode,
+			Inno72TaoBaoCheckDataVo vo, String merchantId, String merchantName, String channelMerchantId,
+			String channelId, String channelName) {
+		vo.setMerchantId(merchantId);
+		vo.setMerchantName(merchantName);
+		vo.setChannelMerchantId(channelMerchantId);
+		vo.setChannelId(channelId);
+		vo.setChannelName(channelName);
 
 		vo.setTraceId(traceId);
 		vo.setActivityId(activityId);
 		vo.setActivityName(activityName);
 		vo.setProvence(provence);
 		vo.setCity(city);
-		vo.setDistrict(district );
-		vo.setPoint(point );
-		vo.setUserId(userId );
-		vo.setNickName(nickName );
-		vo.setSellerId(sellerId );
-		vo.setSellerName(sellerName );
-		vo.setGoodsId(goodsId );
-		vo.setGoodsName(goodsName );
-		vo.setPlayCode(playCode );
+		vo.setDistrict(district);
+		vo.setPoint(point);
+		vo.setUserId(userId);
+		vo.setNickName(nickName);
+		vo.setSellerId(sellerId);
+		vo.setSellerName(sellerName);
+		vo.setGoodsId(goodsId);
+		vo.setGoodsName(goodsName);
+		vo.setPlayCode(playCode);
 		vo.setMachineCode(vo.getSessionUuid());
 		vo.setReqBodyObject(JSON.parseObject(Optional.ofNullable(vo.getReqBody()).orElse("")));
 		vo.setRspBodyObject(JSON.parseObject(Optional.ofNullable(vo.getRspBody()).orElse("")));

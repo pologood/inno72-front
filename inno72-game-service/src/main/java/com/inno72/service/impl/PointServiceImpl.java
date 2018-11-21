@@ -80,6 +80,13 @@ public class PointServiceImpl implements PointService {
 		return Results.success();
 	}
 
+	/**
+	 * 内部埋点接口
+	 *
+	 * @param session 必传
+	 * @param enumInno72MachineInformationType 类型
+	 * @return
+	 */
 	@Override
 	public Result<String> innerPoint(String session, Inno72MachineInformation.ENUM_INNO72_MACHINE_INFORMATION_TYPE enumInno72MachineInformationType) {
 		LOGGER.info("innerPoint param : {}", session);
@@ -87,6 +94,13 @@ public class PointServiceImpl implements PointService {
 		return Results.success();
 	}
 
+	/**
+	 * 服务内部调用接口
+	 * 保存淘宝调用日志
+	 *
+	 * @param vo 请求对象
+	 * @return
+	 */
 	@Override
 	public Result<String> innerTaoBaoDataSyn(Inno72TaoBaoCheckDataVo vo) {
 		Result<String> valid = JSR303Util.valid(vo);
@@ -124,6 +138,12 @@ public class PointServiceImpl implements PointService {
 		String district = sessionKey.getInno72MachineVo().getDistrict();
 		String point = sessionKey.getInno72MachineVo().getPoint();
 		String playCode = sessionKey.getPlanCode();
+		//TODO
+		String merchantId = sessionKey.getMerchantAccountId();
+		String merchantName = sessionKey.getMerchantAccountName();
+		String channelMerchantId = sessionKey.getChannelMerchantId();
+		String channelId = sessionKey.getChannelId();
+		String channelName = sessionKey.getChannelName();
 
 		String userNick = Optional.ofNullable(sessionKey.getUserNick()).orElse("");
 		String userId = Optional.ofNullable(sessionKey.getUserId()).orElse("");
@@ -137,7 +157,8 @@ public class PointServiceImpl implements PointService {
 		//		String sellerName, String goodsId, String goodsName, String playCode
 		return vo
 				.buildBaseInformation(traceId, activityId, activityName, provence, city, district, point, userId,
-						userNick, sellerId, sellerName, goodsCode, goodsName, playCode, vo);
+						userNick, sellerId, sellerName, goodsCode, goodsName, playCode, vo, merchantId, merchantName,
+						channelMerchantId, channelId, channelName);
 
 	}
 
@@ -214,6 +235,13 @@ public class PointServiceImpl implements PointService {
 		String district;
 		String playCode;
 
+		String merchantId = "";
+		String merchantName = "";
+		String channelMerchantId = "";
+		String channelId = "";
+		String channelName = "";
+
+
 		if ( sessionKey == null ){
 			String inno72MachineVoStr = redisUtil
 					.get(CommonBean.REDIS_ACTIVITY_PLAN_CACHE_KEY + info.getPlanId() + ":" + info.getSessionUuid());
@@ -233,6 +261,7 @@ public class PointServiceImpl implements PointService {
 			machineCode = inno72MachineVo.getMachineCode();
 			playCode = inno72MachineVo.getPlayCode();
 
+
 		}else{
 
 			LOGGER.info("session 缓存: {}", JSON.toJSONString(sessionKey));
@@ -249,6 +278,14 @@ public class PointServiceImpl implements PointService {
 			city = sessionKey.getInno72MachineVo().getCity();
 			district = sessionKey.getInno72MachineVo().getDistrict();
 			point = sessionKey.getInno72MachineVo().getPoint();
+
+			merchantId = sessionKey.getMerchantAccountId();
+			merchantName = sessionKey.getMerchantAccountName();
+			channelMerchantId = sessionKey.getChannelMerchantId();
+			channelId = sessionKey.getChannelId();
+			channelName = sessionKey.getChannelName();
+
+
 			playCode = sessionKey.getPlanCode();
 
 			String userNick = Optional.ofNullable(sessionKey.getUserNick()).orElse("");
@@ -266,6 +303,11 @@ public class PointServiceImpl implements PointService {
 
 		}
 
+		info.setChannelId(channelId);
+		info.setChannelName(channelName);
+		info.setMerchantId(merchantId);
+		info.setMerchantName(merchantName);
+		info.setChannelMerchantId(channelMerchantId);
 		info.setPlayCode(playCode);
 		info.setActivityName(activityName);
 		info.setActivityId(activityId);
