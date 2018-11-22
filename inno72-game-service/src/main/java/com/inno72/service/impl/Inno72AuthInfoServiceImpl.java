@@ -783,10 +783,24 @@ public class Inno72AuthInfoServiceImpl implements Inno72AuthInfoService {
 				logged = true;
 			}
 		} catch (Exception e) {
-			e.printStackTrace();
 			LOGGER.error(e.getMessage(), e);
 		}
 		return logged;
+	}
+
+	@Override
+	public void setFollowed(String sessionUuid) {
+		try {
+			boolean hasKey = gameSessionRedisUtil.hasKey(sessionUuid);
+			LOGGER.info("setFollowed hasKey is {}, sessionUuid is {}", hasKey, sessionUuid);
+			if (hasKey) {
+				UserSessionVo userSessionVo = gameSessionRedisUtil.getSessionKey(sessionUuid);
+				userSessionVo.setFllowed(true);
+				gameSessionRedisUtil.setSession(userSessionVo.getSessionUuid(), JSON.toJSONString(userSessionVo));
+			}
+		} catch (Exception e) {
+			LOGGER.error(e.getMessage(), e);
+		}
 	}
 
 }

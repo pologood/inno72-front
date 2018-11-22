@@ -119,6 +119,12 @@ public class UserSessionVo {
 	 */
 	private Integer activityType = 0;
 
+
+	/**
+	 * 是否关注 true 已关注 false 未关注
+	 */
+	private boolean fllowed;
+
 	public UserSessionVo(String mid, String userNick, String userId, String access_token, String gameId,
 			String sessionUuid, String planId) {
 		super();
