@@ -78,6 +78,14 @@ public class Inno72Locale {
 	@Column(name = "update_time")
 	private Date updateTime;
 
+
+	/**
+	 * 监控：0开启，1不开启
+	 */
+	@Column(name = "monitor")
+	private Integer monitor;
+
+
 	/**
 	 * 获取点位ID
 	 *
@@ -292,5 +300,13 @@ public class Inno72Locale {
 	 */
 	public void setUpdateTime(Date updateTime) {
 		this.updateTime = updateTime;
+	}
+
+	public Integer getMonitor() {
+		return monitor;
+	}
+
+	public void setMonitor(Integer monitor) {
+		this.monitor = monitor;
 	}
 }

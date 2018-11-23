@@ -23,4 +23,9 @@ public interface Inno72AuthInfoService {
 	 * 设置用户已经登录
 	 */
 	boolean setLogged(String sessionUuid);
+
+	/**
+	 * 设置用户已关注店铺
+	 */
+	void setFollowed(String sessionUuid);
 }

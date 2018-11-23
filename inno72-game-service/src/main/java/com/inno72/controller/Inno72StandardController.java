@@ -411,6 +411,9 @@ public class Inno72StandardController {
                         sessionKey.getActivityId()
                 );
             }
+
+			inno72AuthInfoService.setFollowed(sessionUuid);
+
             response.sendRedirect(URLDecoder.decode(redirectUrl, java.nio.charset.StandardCharsets.UTF_8.toString()));
         } catch (IOException e) {
             LOGGER.error("关注店铺回调异常 {}, {}",e.getMessage(), e);

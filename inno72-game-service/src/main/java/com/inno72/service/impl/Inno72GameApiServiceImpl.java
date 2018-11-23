@@ -1227,9 +1227,9 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 		// LOGGER.info("减货 参数 ===》 【machineId=>{}，channelId=>{}】;结果 ==> {}", machineId, channelId, i);
 
 		try {
-			findLockGoodsPush(machineId, inno72SupplyChannel.getId());
+			findLockGoodsPush(machineCode, inno72SupplyChannel.getId());
 		} catch (Exception e) {
-			LOGGER.info("调用findLockGoodsPush异常", e);
+			LOGGER.info("调用 saveLackGoodsBean 异常", e);
 		}
 
 		if (StringUtil.isNotEmpty(orderId)) {
@@ -1258,21 +1258,20 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 		return Results.success();
 	}
 
-	private Result findLockGoodsPush(String machineId, String channelId) {
-		LOGGER.info("findLockGoodsPush invoked! machineId={},channelId={}", machineId, channelId);
+	private Result findLockGoodsPush(String machineCode, String channelId) {
+		LOGGER.info("saveLackGoodsBean invoked! machineCode={},channelId={}", machineCode, channelId);
 		// 获取商品id
 		String goodsId = inno72SupplyChannelMapper.findGoodsIdByChannelId(channelId);
 		if (StringUtils.isEmpty(goodsId)) {
-			LOGGER.info("findLockGoodsPush 根据channelId={}无法查到goodsId", channelId);
+			LOGGER.info("saveLackGoodsBean 根据channelId={}无法查到goodsId", channelId);
 			return Results.failure("数据异常");
 		}
-		// 实时发送缺货报警
-		LOGGER.info("实时发送缺货报警machineId={},channelId={}", machineId, channelId);
-		SupplyRequestVo vo = new SupplyRequestVo();
-		vo.setGoodsId(goodsId);
-		vo.setMachineId(machineId);
-		HttpClient.post(machinecheckappbackendUri + FINDLOCKGOODSPUSH_URL, new Gson().toJson(vo));
-		// machineCheckBackendFeignClient.findLockGoodsPush(vo);
+
+		AlarmLackGoodsBean alarmLackGoodsBean = new AlarmLackGoodsBean();
+		alarmLackGoodsBean.setGoodsId(goodsId);
+		alarmLackGoodsBean.setMachineCode(machineCode);
+		alarmUtil.saveLackGoodsBean(alarmLackGoodsBean);
+
 		return Results.success();
 	}
 
@@ -1405,7 +1404,10 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 		// 设置15秒内二维码不能被扫
 		gameSessionRedisUtil.setSessionEx(sessionUuid + "qrCode", sessionUuid, 15);
 
+		LOGGER.info("goodsId {}, sellerId {}", userSessionVo.getGoodsId(), userSessionVo.getSellerId());
 		if (StringUtil.isNotEmpty(userSessionVo.getGoodsId())) {
+			pointService.innerPoint(sessionUuid, Inno72MachineInformation.ENUM_INNO72_MACHINE_INFORMATION_TYPE.PRODUCT_CLICK);
+		} else if (StringUtil.isNotEmpty(userSessionVo.getSellerId())) {
 			pointService.innerPoint(sessionUuid, Inno72MachineInformation.ENUM_INNO72_MACHINE_INFORMATION_TYPE.PRODUCT_CLICK);
 		}
 	}
@@ -1500,8 +1502,9 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 				if(merchant == null)  {
 					Inno72Merchant param = new Inno72Merchant();
 					param.setMerchantCode(sellerId);
+					param.setIsDelete(0);
 					merchant = inno72MerchantMapper.selectOne(param);
-					userSessionVo.setSellerName(merchant.getMerchantName());
+					// userSessionVo.setSellerName(merchant.getMerchantName());
 				}
 			}
 			if(merchant!=null){
@@ -1898,21 +1901,18 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 	@Override
 	public Result<String> shipmentFail(String machineId, String channelCode, String describtion) {
 
-		AlarmMessageBean<Object> alarmMessageBean = new AlarmMessageBean<>();
-		MachineDropGoodsBean machineDropGoodsBean = new MachineDropGoodsBean();
 		LOGGER.info("掉货失败参数 => machineId:{}; channelCode:{}; describtion:{}", machineId, channelCode, describtion);
 		Inno72Machine inno72Machine = inno72MachineMapper.findMachineByCode(machineId);
 		if (inno72Machine == null) {
 			return Results.failure("机器号错误");
 		}
+
 		// todo 暂时注释掉 inno72Machine.getOpenStatus() == 0
 		if (inno72Machine.getMachineStatus() == 4) {
-			machineDropGoodsBean.setMachineCode(machineId); // 实际为code
-			machineDropGoodsBean.setChannelNum(channelCode);
-			alarmMessageBean.setSystem("machineDropGoods");
-			alarmMessageBean.setType("machineDropGoodsException");
-			alarmMessageBean.setData(machineDropGoodsBean);
-			redisUtil.publish("moniterAlarm", JSONObject.toJSONString(alarmMessageBean));
+			AlarmDropGoodsBean alarmDropGoodsBean = new AlarmDropGoodsBean();
+			alarmDropGoodsBean.setChannelNum(channelCode);
+			alarmDropGoodsBean.setMachineCode(machineId);
+			alarmUtil.saveDropGoodsBean(alarmDropGoodsBean);
 		}
 
 		return Results.success();
@@ -2336,8 +2336,12 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 			return Results.failure("机器状态不正常");
 		}
 
-		if (inno72Machine.getOpenStatus() == null || !(inno72Machine.getOpenStatus() == 0)) { // 0 表示接受报警
-			LOGGER.debug("setHeartbeat 当前机器不接收报警 machineCode is {}", machineCode);
+		String localeId = inno72Machine.getLocaleId();
+		Inno72Locale inno72Locale = inno72LocaleMapper.selectByPrimaryKey(localeId);
+		Integer monitor = inno72Locale.getMonitor();
+
+		if (monitor == 1) {
+			LOGGER.debug("setHeartbeat 当前机器不接收报警 monitor is {}", monitor);
 			return Results.failure("当前机器不接收报警");
 		}
 
