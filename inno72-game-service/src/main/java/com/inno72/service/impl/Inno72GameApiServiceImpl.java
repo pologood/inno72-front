@@ -215,6 +215,8 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 		requestForm.put("accessToken", accessToken);
 		requestForm.put("orderId", orderId);
 
+		LOGGER.info("调用聚石塔接口【下单支付状态】 orderId {}, machineCode {} , 参数 {}", orderId, userSessionVo.getMachineCode(), JSON.toJSONString(requestForm));
+
 		String respJson = HttpClient.form(CommonBean.TopUrl.ORDER_POLLING, requestForm, null);
 		if (StringUtil.isEmpty(respJson)) {
 			return Results.failure("聚石塔无返回数据!");
@@ -266,7 +268,7 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 				setChannelInfo(userSessionVo, result, goodsIds);
 			}
 			result.put("model", model);
-			LOGGER.info("orderPolling 返回结果 orderId {}, machineCode {} , result {}", orderId, userSessionVo.getMachineCode(), JsonUtil.toJson(result));
+			LOGGER.info("orderPolling 返回结果 orderId {}, machineCode {} , result {}", orderId, userSessionVo.getMachineCode(), JSON.toJSONString(result));
 			return Results.success(result);
 
 		} catch (Exception e) {
