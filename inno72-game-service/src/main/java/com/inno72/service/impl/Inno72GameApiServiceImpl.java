@@ -998,6 +998,10 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 		inno72OrderHistoryMapper.insert(new Inno72OrderHistory(inno72Order.getId(), inno72Order.getOrderNum(),
 				JSON.toJSONString(inno72Order), "初始化插入订单!"));
 
+		Inno72GameUserLife userLife = inno72GameUserLifeMapper.selectByUserChannelIdLast(userSessionVo.getUserId());
+		userLife.setOrderId(inno72Order.getId());
+		inno72GameUserLifeMapper.updateByPrimaryKeySelective(userLife);
+
 		gameSessionRedisUtil.setSession(sessionUuid, JSON.toJSONString(userSessionVo));
 		return rep == 0 ? rep + "" : inno72Order.getId();
 	}
