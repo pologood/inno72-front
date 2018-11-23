@@ -220,7 +220,7 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 			return Results.failure("聚石塔无返回数据!");
 		}
 
-		LOGGER.info("调用聚石塔接口  【下单支付状态】返回 ===> {}", JSON.toJSONString(respJson));
+		LOGGER.info("调用聚石塔接口【下单支付状态】 orderId {}, machineCode {} , 返回 {}", orderId, userSessionVo.getMachineCode(), JSON.toJSONString(respJson));
 
 		try {
 			String msg_code = FastJsonUtils.getString(respJson, "msg_code");
@@ -266,6 +266,7 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 				setChannelInfo(userSessionVo, result, goodsIds);
 			}
 			result.put("model", model);
+			LOGGER.info("orderPolling 返回结果 orderId {}, machineCode {} , result {}", orderId, userSessionVo.getMachineCode(), JsonUtil.toJson(result));
 			return Results.success(result);
 
 		} catch (Exception e) {
