@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.inno72.mapper.Inno72WechatUserAnalyseMapper">
+  <resultMap id="BaseResultMap" type="com.inno72.model.Inno72WechatUserAnalyse">
+    <!--
+      WARNING - @mbg.generated
+    -->
+    <result column="id" jdbcType="VARCHAR" property="id" />
+    <result column="seller_id" jdbcType="VARCHAR" property="sellerId" />
+    <result column="game_user_channel_id" jdbcType="VARCHAR" property="gameUserChannelId" />
+    <result column="activity_id" jdbcType="VARCHAR" property="activityId" />
+    <result column="open_id" jdbcType="VARCHAR" property="openId" />
+    <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
+  </resultMap>
+</mapper>

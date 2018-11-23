@@ -14,4 +14,9 @@
         <result column="update_time" jdbcType="TIMESTAMP" property="updateTime"/>
         <result column="is_delete" jdbcType="INTEGER" property="isDelete"/>
     </resultMap>
+
+    <select id="findChannelBySellerId" resultMap="BaseResultMap">
+      select c.* from inno72_channel c join inno72_merchant m
+        on c.id = m.channel_id where m.merchant_code=#{sellerId}
+    </select>
 </mapper>

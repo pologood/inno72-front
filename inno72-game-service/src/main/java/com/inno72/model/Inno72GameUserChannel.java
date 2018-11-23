@@ -64,6 +64,11 @@ public class Inno72GameUserChannel {
 	@Column(name = "access_token")
 	private String accessToken;
 
+	@Column(name = "seller_id")
+	private String sellerId;
+
+	private String ext;
+
 	public Inno72GameUserChannel() {
 	}
 
@@ -211,5 +216,21 @@ public class Inno72GameUserChannel {
 
 	public void setAccessToken(String accessToken) {
 		this.accessToken = accessToken;
+	}
+
+	public String getSellerId() {
+		return sellerId;
+	}
+
+	public void setSellerId(String sellerId) {
+		this.sellerId = sellerId;
+	}
+
+	public String getExt() {
+		return ext;
+	}
+
+	public void setExt(String ext) {
+		this.ext = ext;
 	}
 }

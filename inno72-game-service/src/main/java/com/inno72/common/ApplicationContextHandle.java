@@ -35,4 +35,14 @@ public class ApplicationContextHandle implements ApplicationContextAware {
 		return applicationContext.getBean(name);
 	}
 
+	/**
+	 *
+	 * @param requiredType
+	 * @return
+	 * @throws BeansException
+	 */
+	public static <T> T getBean(Class<T> requiredType) throws BeansException {
+		return applicationContext.getBean(requiredType);
+	}
+
 }

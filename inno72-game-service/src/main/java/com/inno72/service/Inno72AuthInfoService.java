@@ -1,6 +1,7 @@
 package com.inno72.service;
 
 import com.inno72.common.Result;
+import com.inno72.model.Inno72Interact;
 import com.inno72.vo.UserSessionVo;
 
 /**
@@ -16,7 +17,9 @@ public interface Inno72AuthInfoService {
 	 */
 	Result<Object> processBeforeLogged(String sessionUuid, String authInfo, String traceId);
 
-	/**
+    boolean findCanOrder(Inno72Interact interact, UserSessionVo sessionVo, String userId);
+
+    /**
 	 * 设置用户已经登录
 	 */
 	boolean setLogged(String sessionUuid);

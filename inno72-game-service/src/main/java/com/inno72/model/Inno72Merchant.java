@@ -81,6 +81,18 @@ public class Inno72Merchant {
 	private String sellSessionKey;
 
 	/**
+	 * 微信二维码url
+	 */
+	@Column(name = "wechat_qrcode_url")
+	private String wechatQrcodeUrl;
+
+	/**
+	 * 微信二维码url
+	 */
+	@Column(name = "wechat_user_api_url")
+	private String wechatUserApiUrl;
+
+	/**
 	 * @return id
 	 */
 	public String getId() {
@@ -280,5 +292,25 @@ public class Inno72Merchant {
 
 	public void setSellSessionKey(String sellSessionKey) {
 		this.sellSessionKey = sellSessionKey;
+	}
+
+	public String getSellSessionKey() {
+		return sellSessionKey;
+	}
+
+	public String getWechatQrcodeUrl() {
+		return wechatQrcodeUrl;
+	}
+
+	public void setWechatQrcodeUrl(String wechatQrcodeUrl) {
+		this.wechatQrcodeUrl = wechatQrcodeUrl;
+	}
+
+	public String getWechatUserApiUrl() {
+		return wechatUserApiUrl;
+	}
+
+	public void setWechatUserApiUrl(String wechatUserApiUrl) {
+		this.wechatUserApiUrl = wechatUserApiUrl;
 	}
 }
