@@ -2424,6 +2424,15 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 			return Results.failure("机器状态不正常");
 		}
 
+		String localeId = inno72Machine.getLocaleId();
+		Inno72Locale inno72Locale = inno72LocaleMapper.selectByPrimaryKey(localeId);
+		Integer monitor = inno72Locale.getMonitor();
+
+		if (monitor == 1) {
+			LOGGER.debug("setHeartbeat 当前机器不接收报警 monitor is {}", monitor);
+			return Results.failure("当前机器不接收报警");
+		}
+
 		Map<String, String> remarkMap = new HashMap<>();
 		remarkMap.put("planCode", planCode);
 		remarkMap.put("activity", activity);
