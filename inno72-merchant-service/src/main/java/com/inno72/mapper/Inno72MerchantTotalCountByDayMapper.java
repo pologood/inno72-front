@@ -11,10 +11,10 @@ import com.inno72.model.Inno72MerchantTotalCountByDay;
 public interface Inno72MerchantTotalCountByDayMapper extends Mapper<Inno72MerchantTotalCountByDay> {
 	List<Inno72MerchantTotalCountByDay> selectList(@Param("activityId") String activityId, @Param("city") String city,
 			@Param("startDate") String startDate, @Param("endDate") String endDate, @Param("goods") String goods,
-			@Param("sellerId") String sellerId);
+			@Param("sellerId") String merchantId);
 
-	List<Map<String, String>> findGoodsBySellerId(String sellerId);
+	List<Map<String, String>> findGoodsByMerchantId(String merchantId);
 
-	List<Map<String, String>> findActivityBySellerId(String sellerId);
+	List<Map<String, String>> findActivityByMerchantId(String merchantId);
 
 }

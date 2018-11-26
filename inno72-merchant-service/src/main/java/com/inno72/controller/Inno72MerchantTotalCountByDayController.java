@@ -33,17 +33,17 @@ public class Inno72MerchantTotalCountByDayController {
 	private Inno72MerchantTotalCountByDayService inno72MerchantTotalCountByDayService;
 
 	@RequestMapping(value = "/search/{label}")
-	public Result searchData(@PathVariable(value = "label") String label, String sellerId, String activityId,
+	public Result searchData(@PathVariable(value = "label") String label, String merchantId, String activityId,
 			String city, String startDate, String endDate, String goods) {
 		return inno72MerchantTotalCountByDayService
-				.searchData(label, activityId, city, startDate, endDate, goods, sellerId);
+				.searchData(label, activityId, city, startDate, endDate, goods, merchantId);
 	}
 
 	@RequestMapping(value = "/search/export")
 	public Result searchDataExport(String label, String body, String activityId, String city, String startDate,
-			String endDate, String goods, String sellerId, HttpServletResponse response) {
+			String endDate, String goods, String merchantId, HttpServletResponse response) {
 		Result<Object> objectResult = inno72MerchantTotalCountByDayService
-				.searchData(label, activityId, city, startDate, endDate, goods, sellerId);
+				.searchData(label, activityId, city, startDate, endDate, goods, merchantId);
 
 		if (objectResult.getCode() == Result.FAILURE) {
 			return objectResult;

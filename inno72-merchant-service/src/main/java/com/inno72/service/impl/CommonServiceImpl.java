@@ -24,27 +24,27 @@ public class CommonServiceImpl implements CommonService {
 	 * @param type city
 	 *             activity
 	 *             goods
-	 * @param sellerId
+	 * @param merchantId
 	 * @return Object
 	 */
 	@Override
-	public Map<String, Object> baseApi(String type, String sellerId) {
+	public Map<String, Object> baseApi(String type, String merchantId) {
 
 		Map<String, Object> resultMap = new HashMap<>(3);
 		switch (type) {
 			case "city":
-				resultMap.put("city", this.getCity(sellerId));
+				resultMap.put("city", this.getCity(merchantId));
 				break;
 			case "activity":
-				resultMap.put("activity", this.getActivity(sellerId));
+				resultMap.put("activity", this.getActivity(merchantId));
 				break;
 			case "goods":
-				resultMap.put("goods", this.getGoods(sellerId));
+				resultMap.put("goods", this.getGoods(merchantId));
 				break;
 			default:
-				resultMap.put("city", this.getCity(sellerId));
-				resultMap.put("activity", this.getActivity(sellerId));
-				resultMap.put("goods", this.getGoods(sellerId));
+				resultMap.put("city", this.getCity(merchantId));
+				resultMap.put("activity", this.getActivity(merchantId));
+				resultMap.put("goods", this.getGoods(merchantId));
 				break;
 		}
 
@@ -57,12 +57,12 @@ public class CommonServiceImpl implements CommonService {
 	@Resource
 	private Inno72MerchantTotalCountByDayMapper inno72MerchantTotalCountByDayMapper;
 
-	private List<Map<String, String>> getGoods(String sellerId) {
-		return inno72MerchantTotalCountByDayMapper.findGoodsBySellerId(sellerId);
+	private List<Map<String, String>> getGoods(String merchantId) {
+		return inno72MerchantTotalCountByDayMapper.findGoodsByMerchantId(merchantId);
 	}
 
-	private List<Map<String, String>> getActivity(String sellerId) {
-		return inno72MerchantTotalCountByDayMapper.findActivityBySellerId(sellerId);
+	private List<Map<String, String>> getActivity(String merchantId) {
+		return inno72MerchantTotalCountByDayMapper.findActivityByMerchantId(merchantId);
 	}
 
 	@Resource

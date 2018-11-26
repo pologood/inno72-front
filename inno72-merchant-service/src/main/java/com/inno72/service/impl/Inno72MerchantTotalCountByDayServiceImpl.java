@@ -49,10 +49,10 @@ public class Inno72MerchantTotalCountByDayServiceImpl extends AbstractService<In
 
 	@Override
 	public Result<Object> searchData(String label, String activityId, String city, String startDate, String endDate,
-			String goods, String sellerId) {
+			String goods, String merchantId) {
 
 		if (StringUtil.isEmpty(activityId) || StringUtil.isEmpty(startDate) || StringUtil.isEmpty(endDate) || StringUtil
-				.isEmpty(sellerId)) {
+				.isEmpty(merchantId)) {
 			return Results.failure("参数缺失!");
 		}
 		LOGGER.info("查询列表 -> label - {}, activityId - {}, city - {}, startDate - {}, endDate - {}, goods - {}", label,
@@ -64,7 +64,7 @@ public class Inno72MerchantTotalCountByDayServiceImpl extends AbstractService<In
 		}
 
 		List<Inno72MerchantTotalCountByDay> days = inno72MerchantTotalCountByDayMapper
-				.selectList(activityId, city, startDate, endDate, goods, sellerId);
+				.selectList(activityId, city, startDate, endDate, goods, merchantId);
 		Map<String, Object> result;
 		switch (label) {
 			case "order":
