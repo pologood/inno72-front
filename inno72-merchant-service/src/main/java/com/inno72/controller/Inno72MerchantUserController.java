@@ -54,7 +54,7 @@ public class Inno72MerchantUserController {
 	}
 
 	@RequestMapping(value = "/inno72/merchant/user/detail")
-	public Result detail(@RequestParam Integer id) {
+	public Result detail(@RequestParam String id) {
 		Inno72MerchantUser inno72MerchantUser = inno72MerchantUserService.findById(id);
 		return ResultGenerator.genSuccessResult(inno72MerchantUser);
 	}
