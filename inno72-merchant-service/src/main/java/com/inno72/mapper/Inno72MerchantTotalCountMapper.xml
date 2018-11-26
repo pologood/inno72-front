@@ -19,12 +19,7 @@
         <result column="machant_id" jdbcType="VARCHAR" property="machantId"/>
         <result column="seller_id" jdbcType="VARCHAR" property="sellerId"/>
     </resultMap>
-    <select id="findActivityBySellerId" resultType="java.util.Map" parameterType="string">
-        select distinct activity_id as activityId, activity_name as activityName
-        from inno72_merchant_total_count
-        where seller_id = #{sellerId}
-    </select>
-    <select id="selectBySellerId" resultMap="BaseResultMap" parameterType="string">
-      select * from inno72_merchant_total_count where seller_id = #{sellerId}
+    <select id="selectByMerchantId" resultMap="BaseResultMap" parameterType="string">
+      select * from inno72_merchant_total_count where machant_id = #{merchantId}
     </select>
 </mapper>

@@ -8,7 +8,5 @@ import com.inno72.model.Inno72MerchantTotalCount;
 
 public interface Inno72MerchantTotalCountMapper extends Mapper<Inno72MerchantTotalCount> {
 
-	List<Map<String, String>> findActivityBySellerId(String sellerId);
-
-	List<Inno72MerchantTotalCount> selectBySellerId(String sellerId);
+	List<Inno72MerchantTotalCount> selectByMerchantId(String merchantId);
 }

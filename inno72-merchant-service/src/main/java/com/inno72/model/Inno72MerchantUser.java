@@ -27,12 +27,6 @@ public class Inno72MerchantUser {
 	private String merchantId;
 
 	/**
-	 * 商户id
-	 */
-	@Column(name = "seller_id")
-	private String sellerId;
-
-	/**
 	 * 登录名
 	 */
 	@Column(name = "login_name")
@@ -52,17 +46,11 @@ public class Inno72MerchantUser {
 	@Length(max = 50, message = "商户名称不成超过50个字!")
 	private String merchantName;
 
-
-	/**
-	 * 行业
-	 */
-	@Column(name = "industry")
-	private String industry;
-
 	/**
 	 * 验证手机号
 	 */
 	private String phone;
+
 
 	/**
 	 * 验证手机号
@@ -82,6 +70,20 @@ public class Inno72MerchantUser {
 	 */
 	@Column(name = "creator")
 	private String creator;
+
+	/**
+	 * 行业
+	 */
+	@Column(name = "industry")
+	private String industry;
+
+	/**
+	 * 行业
+	 */
+	@Column(name = "industry_code")
+	private String industryCode;
+
+
 
 	/**
 	 * 最后更新时间
@@ -126,24 +128,6 @@ public class Inno72MerchantUser {
 	 */
 	public void setMerchantId(String merchantId) {
 		this.merchantId = merchantId;
-	}
-
-	/**
-	 * 获取商户id
-	 *
-	 * @return seller_id - 商户id
-	 */
-	public String getSellerId() {
-		return sellerId;
-	}
-
-	/**
-	 * 设置商户id
-	 *
-	 * @param sellerId 商户id
-	 */
-	public void setSellerId(String sellerId) {
-		this.sellerId = sellerId;
 	}
 
 	/**
@@ -256,5 +240,21 @@ public class Inno72MerchantUser {
 
 	public void setLastUpdator(String lastUpdator) {
 		this.lastUpdator = lastUpdator;
+	}
+
+	public String getIndustry() {
+		return industry;
+	}
+
+	public void setIndustry(String industry) {
+		this.industry = industry;
+	}
+
+	public String getIndustryCode() {
+		return industryCode;
+	}
+
+	public void setIndustryCode(String industryCode) {
+		this.industryCode = industryCode;
 	}
 }

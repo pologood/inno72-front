@@ -14,6 +14,8 @@
         <result column="login_status" jdbcType="VARCHAR" property="loginStatus"/>
         <result column="create_time" jdbcType="TIMESTAMP" property="createTime"/>
         <result column="creator" jdbcType="VARCHAR" property="creator"/>
+        <result column="industry" jdbcType="VARCHAR" property="industry"/>
+        <result column="industry_code" jdbcType="VARCHAR" property="industryCode"/>
         <result column="last_update_time" jdbcType="TIMESTAMP" property="lastUpdateTime"/>
         <result column="last_updator" jdbcType="VARCHAR" property="lastUpdator"/>
     </resultMap>

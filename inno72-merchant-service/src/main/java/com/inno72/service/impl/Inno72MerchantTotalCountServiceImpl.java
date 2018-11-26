@@ -38,12 +38,12 @@ public class Inno72MerchantTotalCountServiceImpl extends AbstractService<Inno72M
 		if (user == null) {
 			return Results.failure("无商户用户!");
 		}
-		String sellerId = user.getSellerId();
-		if (StringUtils.isEmpty(sellerId)) {
+		String merchantId = user.getMerchantId();
+		if (StringUtils.isEmpty(merchantId)) {
 			return Results.failure("商户信息异常!");
 		}
 		List<Inno72MerchantTotalCount> inno72MerchantTotalCounts = inno72MerchantTotalCountMapper
-				.selectBySellerId(sellerId);
+				.selectByMerchantId(merchantId);
 		return Results.success(inno72MerchantTotalCounts);
 	}
 
