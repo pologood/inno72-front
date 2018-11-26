@@ -14,6 +14,7 @@ import javax.servlet.http.HttpSession;
 import com.inno72.common.CommonBean;
 import com.inno72.mapper.Inno72CouponMapper;
 import com.inno72.model.Inno72Coupon;
+import com.inno72.redis.IRedisUtil;
 import com.inno72.service.*;
 import com.alibaba.fastjson.JSON;
 import com.inno72.common.util.UuidUtil;
@@ -67,6 +68,9 @@ public class Inno72StandardController {
 	private Inno72PaiYangService inno72PaiYangService;
 
 	@Resource
+	private IRedisUtil iRedisUtil;
+
+	@Resource
 	private Inno72CouponMapper inno72CouponMapper;
 
 	@Resource
@@ -83,6 +87,8 @@ public class Inno72StandardController {
 
 	@Value("${env}")
 	private String env;
+
+	private final static String REPEAT_INVOKE_KEY ="REPEAT_INVOKE:";
 
 	/**
 	 * 登录（包括需要登录和非登录的场景）
@@ -139,7 +145,21 @@ public class Inno72StandardController {
 			return Results.failure("会话不存在!" + vo.toString());
 		}
 
+		//处理重复下单
+		boolean flag =  managRepeatOrder(userSessionVo.getMachineCode(),userSessionVo.getUserId());
+		if(!flag){
+			return Results.failure("重复下单");
+		}
 		return inno72GameApiService.standardOrder(vo);
+	}
+
+	private boolean managRepeatOrder(String machineCode, String userId) {
+		String key = REPEAT_INVOKE_KEY + machineCode +":"+userId;
+		if(iRedisUtil.exists(key)){
+			return false;
+		}
+		iRedisUtil.setex(key,10,"1");
+		return true;
 	}
 
 	/**
