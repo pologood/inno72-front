@@ -3,6 +3,7 @@ package com.inno72.controller;
 import java.util.List;
 
 import javax.annotation.Resource;
+import javax.servlet.http.HttpSession;
 
 import com.inno72.common.RedisConstants;
 import com.inno72.common.Results;
@@ -24,6 +25,10 @@ import com.inno72.service.Inno72GameApiService;
 import com.inno72.vo.Inno72SamplingGoods;
 import com.inno72.vo.MachineApiVo;
 
+import persist.RedisSessionDao;
+import session.ShareHttpSession;
+import utils.SessionUtils;
+
 @RestController
 @RequestMapping(value = "api")
 public class Inno72GameApiController {
@@ -35,8 +40,23 @@ public class Inno72GameApiController {
 
 	@Resource
 	private GameSessionRedisUtil gameSessionRedisUtil;
+
 	@Resource
 	private Inno72PaiYangService paiYangService;
+
+	@Resource
+	private RedisSessionDao redisSessionDao;
+
+	@RequestMapping(value = "/sessionTest", method = {RequestMethod.POST, RequestMethod.GET})
+	public Result<Object> test(String session){
+		ShareHttpSession shareHttpSession = redisSessionDao.get(session);
+		if (shareHttpSession == null){
+
+		}
+		HttpSession session1 = SessionUtils.getSession(session, true);
+		session1.setAttribute("sss","s1");
+		return Results.success(session1);
+	}
 
 	/**
 	 * @param sessionUuid sessionUuid

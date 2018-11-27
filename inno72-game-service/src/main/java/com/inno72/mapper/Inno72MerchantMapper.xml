@@ -15,6 +15,7 @@
         <result column="create_id" jdbcType="VARCHAR" property="createId"/>
         <result column="update_id" jdbcType="VARCHAR" property="updateId"/>
         <result column="sell_session_key" jdbcType="VARCHAR" property="sellSessionKey"/>
+        <result column="merchant_id" jdbcType="VARCHAR" property="merchantId"/>
         <result column="create_time" jdbcType="TIMESTAMP" property="createTime" javaType="java.time.LocalDateTime"
                 typeHandler="org.apache.ibatis.type.LocalDateTimeTypeHandler"/>
         <result column="update_time" jdbcType="TIMESTAMP" property="updateTime" javaType="java.time.LocalDateTime"
@@ -55,15 +56,17 @@
     </select>
 
     <select id="findByGoodsId" resultMap="BaseResultMap" parameterType="string">
-      select * from inno72_merchant m
+      select m.*, u.merchant_id as merchant_id from inno72_merchant m
        join inno72_goods g on g.seller_id = m.id
+       left join inno72_merchant_user u on u.id = m.merchant_account_id
       where g.id=#{goodsId} and m.is_delete = 0
     </select>
 
     <select id="findByCoupon" resultMap="BaseResultMap" parameterType="string">
-      select m.* from inno72_merchant m
+      select m.*,u.merchant_id as merchant_id from inno72_merchant m
          join inno72_shops shops on m.id = shops.seller_id
          join inno72_coupon c on c.shops_id = shops.id
+         left join inno72_merchant_user u on u.id = m.merchant_account_id
           where c.id=#{itemId} and c.is_delete = 0
     </select>
 
@@ -74,16 +77,18 @@
     </select>
 
     <select id="findMerchantByMap" parameterType="java.util.Map" resultMap="BaseResultMap">
-        select m.* from inno72_activity_shops ias
+        select m.*, u.merchant_id as merchant_id from inno72_activity_shops ias
         left join inno72_shops s on ias.shops_id = s.id
         left join inno72_merchant m on s.seller_id = m.id
+        left join inno72_merchant_user u on u.id = m.merchant_account_id
         where ias.activity_id = #{activityId} and m.merchant_code = #{merchantCode}
     </select>
 
     <select id="findMerchantByActivityId" parameterType="string" resultMap="BaseResultMap">
-        select m.* from inno72_activity_shops ias
+        select m.*, u.merchant_id as merchant_id from inno72_activity_shops ias
         left join inno72_shops s on ias.shops_id = s.id
         left join inno72_merchant m on s.seller_id = m.id
+         left join inno72_merchant_user u on u.id = m.merchant_account_id
         where ias.activity_id = #{activityId} limit 0,1
     </select>
 

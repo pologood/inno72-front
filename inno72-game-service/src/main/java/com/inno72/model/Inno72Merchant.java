@@ -103,6 +103,16 @@ public class Inno72Merchant {
 	@Column(name = "sell_session_key")
 	private String sellSessionKey;
 
+	private String merchantId;
+
+	public String getMerchantId() {
+		return merchantId;
+	}
+
+	public void setMerchantId(String merchantId) {
+		this.merchantId = merchantId;
+	}
+
 	/**
 	 * @return id
 	 */

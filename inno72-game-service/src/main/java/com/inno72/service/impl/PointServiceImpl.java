@@ -241,6 +241,7 @@ public class PointServiceImpl implements PointService {
 		String channelId = "";
 		String channelName = "";
 
+		LOGGER.info("埋点 session -> {}" , JSON.toJSONString(sessionKey));
 
 		if ( sessionKey == null ){
 			String inno72MachineVoStr = redisUtil
