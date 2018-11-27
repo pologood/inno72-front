@@ -158,7 +158,13 @@ public class Inno72StandardController {
 		if(iRedisUtil.exists(key)){
 			return false;
 		}
-		iRedisUtil.setex(key,10,"1");
+		synchronized (Inno72StandardController.class){
+			if(iRedisUtil.exists(key)){
+				return false;
+			}else{
+				iRedisUtil.setex(key,10,"1");
+			}
+		}
 		return true;
 	}
 
