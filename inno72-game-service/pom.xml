@@ -31,11 +31,11 @@
         <!-- frame -->
 
         <!-- session -->
-        <dependency>
-            <groupId>com.inno72</groupId>
-            <artifactId>inno72-sessionshare</artifactId>
-            <version>${plugin.version}</version>
-        </dependency>
+        <!--<dependency>-->
+            <!--<groupId>com.inno72</groupId>-->
+            <!--<artifactId>inno72-sessionshare</artifactId>-->
+            <!--<version>${plugin.version}</version>-->
+        <!--</dependency>-->
         <!-- session -->
 
         <!-- plugin -->
