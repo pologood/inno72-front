@@ -7,6 +7,7 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
+import javax.persistence.Transient;
 
 @Table(name = "inno72_merchant")
 public class Inno72Merchant {
@@ -103,6 +104,7 @@ public class Inno72Merchant {
 	@Column(name = "sell_session_key")
 	private String sellSessionKey;
 
+	@Transient
 	private String merchantId;
 
 	public String getMerchantId() {

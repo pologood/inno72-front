@@ -3,31 +3,21 @@ package com.inno72.controller;
 import java.util.List;
 
 import javax.annotation.Resource;
-import javax.servlet.http.HttpSession;
 
-import com.inno72.common.RedisConstants;
-import com.inno72.common.Results;
-import com.inno72.common.json.JsonUtil;
-import com.inno72.common.util.DateUtil;
-import com.inno72.common.util.GameSessionRedisUtil;
-import com.inno72.service.Inno72PaiYangService;
-import com.inno72.vo.UserSessionVo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.inno72.common.Result;
+import com.inno72.common.Results;
+import com.inno72.common.json.JsonUtil;
+import com.inno72.common.util.GameSessionRedisUtil;
 import com.inno72.service.Inno72GameApiService;
+import com.inno72.service.Inno72PaiYangService;
 import com.inno72.vo.Inno72SamplingGoods;
-import com.inno72.vo.MachineApiVo;
-
-import persist.RedisSessionDao;
-import session.ShareHttpSession;
-import utils.SessionUtils;
+import com.inno72.vo.UserSessionVo;
 
 @RestController
 @RequestMapping(value = "api")
@@ -44,19 +34,19 @@ public class Inno72GameApiController {
 	@Resource
 	private Inno72PaiYangService paiYangService;
 
-	@Resource
-	private RedisSessionDao redisSessionDao;
-
-	@RequestMapping(value = "/sessionTest", method = {RequestMethod.POST, RequestMethod.GET})
-	public Result<Object> test(String session){
-		ShareHttpSession shareHttpSession = redisSessionDao.get(session);
-		if (shareHttpSession == null){
-
-		}
-		HttpSession session1 = SessionUtils.getSession(session, true);
-		session1.setAttribute("sss","s1");
-		return Results.success(session1);
-	}
+//	@Resource
+//	private RedisSessionDao redisSessionDao;
+//
+//	@RequestMapping(value = "/sessionTest", method = {RequestMethod.POST, RequestMethod.GET})
+//	public Result<Object> test(String session){
+//		ShareHttpSession shareHttpSession = redisSessionDao.get(session);
+//		if (shareHttpSession == null){
+//
+//		}
+//		HttpSession session1 = SessionUtils.getSession(session, true);
+//		session1.setAttribute("sss","s1");
+//		return Results.success(session1);
+//	}
 
 	/**
 	 * @param sessionUuid sessionUuid
