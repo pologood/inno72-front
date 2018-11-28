@@ -20,6 +20,10 @@
         <result column="seller_id" jdbcType="VARCHAR" property="sellerId"/>
     </resultMap>
     <select id="selectByMerchantId" resultMap="BaseResultMap" parameterType="string">
-      select * from inno72_merchant_total_count where merchant_id = #{merchantId}
+      select * from
+      (select * from inno72_merchant_total_count where merchant_id is not null and merchant_id != '' order by last_update_time desc limit 100000) a
+       where merchant_id = #{merchantId}
+      group by merchant_id, activity_id
+      orde by id desc
     </select>
 </mapper>
