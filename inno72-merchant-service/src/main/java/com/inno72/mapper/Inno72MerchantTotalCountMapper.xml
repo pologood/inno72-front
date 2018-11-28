@@ -16,7 +16,7 @@
         <result column="uv" jdbcType="INTEGER" property="uv"/>
         <result column="order" jdbcType="INTEGER" property="order"/>
         <result column="shipment" jdbcType="INTEGER" property="shipment"/>
-        <result column="machant_id" jdbcType="VARCHAR" property="machantId"/>
+        <result column="merchant_id" jdbcType="VARCHAR" property="merchantId"/>
         <result column="seller_id" jdbcType="VARCHAR" property="sellerId"/>
     </resultMap>
     <select id="selectByMerchantId" resultMap="BaseResultMap" parameterType="string">

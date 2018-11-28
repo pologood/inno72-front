@@ -47,8 +47,8 @@ public class Inno72MerchantTotalCount {
 
 	private Integer shipment;
 
-	@Column(name = "machant_id")
-	private String machantId;
+	@Column(name = "merchant_id")
+	private String merchantId;
 
 	@Column(name = "seller_id")
 	private String sellerId;
@@ -227,15 +227,15 @@ public class Inno72MerchantTotalCount {
 	/**
 	 * @return machant_id
 	 */
-	public String getMachantId() {
-		return machantId;
+	public String getMerchantId() {
+		return merchantId;
 	}
 
 	/**
-	 * @param machantId
+	 * @param merchantId
 	 */
-	public void setMachantId(String machantId) {
-		this.machantId = machantId;
+	public void setMerchantId(String merchantId) {
+		this.merchantId = merchantId;
 	}
 
 	/**
