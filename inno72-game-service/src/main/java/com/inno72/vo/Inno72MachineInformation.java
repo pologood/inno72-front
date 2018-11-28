@@ -90,7 +90,7 @@ public class Inno72MachineInformation {
 		SCAN_LOGIN("009001","扫码"),
 		SCAN_PAY("009002","扫码"),
 		JUMP("010001","跳转"),
-		PAY("011002 ","订单支付"),
+		PAY("011002","订单支付"),
 		PRODUCT_CLICK("100100","商品点击"),
 		;
 		private String type;

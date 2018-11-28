@@ -253,7 +253,7 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 
 					userSessionVo.setRefOrderStatus(inno72Order.getRefOrderStatus());
 					pointService.innerPoint(sessionUuid, Inno72MachineInformation.ENUM_INNO72_MACHINE_INFORMATION_TYPE.PAY);
-					this.taoBaoDataSyn(sessionUuid, JSON.toJSONString(requestForm), JSON.toJSONString(respJson), Inno72TaoBaoCheckDataVo.ENUM_INNO72_TAOBAO_CHECK_DATA_VO_TYPE.ORDER);
+					this.taoBaoDataSyn(sessionUuid, JSON.toJSONString(requestForm), respJson, Inno72TaoBaoCheckDataVo.ENUM_INNO72_TAOBAO_CHECK_DATA_VO_TYPE.ORDER);
 				}
 			}
 
@@ -428,7 +428,7 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 		}
 
 		List<Inno72ActivityPlanGameResult> planGameResults = this.getGameResults(vo, userSessionVo);
-		LOGGER.info("获取游戏结果 {}", planGameResults);
+		LOGGER.info("获取游戏结果 {}", JsonUtil.toJson(planGameResults));
 
 		LOGGER.debug("下单 userSessionVo ==> {}", JSON.toJSONString(userSessionVo));
 
