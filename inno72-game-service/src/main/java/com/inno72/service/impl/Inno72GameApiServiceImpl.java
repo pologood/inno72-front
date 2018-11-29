@@ -1174,7 +1174,7 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 			userSessionVo.setFailChannelIds(failChannelIds);
 			gameSessionRedisUtil.setSession(sessionUuid, JSON.toJSONString(userSessionVo));
 
-			pointService.innerPoint(sessionUuid, Inno72MachineInformation.ENUM_INNO72_MACHINE_INFORMATION_TYPE.SHIPMENT);
+			pointService.innerPoint(sessionUuid, Inno72MachineInformation.ENUM_INNO72_MACHINE_INFORMATION_TYPE.LOCK_CHANNEL);
 
 			Result<String> failChannelResult = this.shipmentFail(machineCode, failChannelIds, "");
 			LOGGER.info("machineCode is {}, orderId is {}, failChannelIds is {}, code is {} ", machineCode, userSessionVo.getRefOrderId(), failChannelIds,
