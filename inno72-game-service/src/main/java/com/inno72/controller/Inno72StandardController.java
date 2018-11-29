@@ -344,7 +344,7 @@ public class Inno72StandardController {
                     if (!qrCode) {
                         sessionVo.setIsScanned(false);
                     }
-                    result = Results.success(sessionVo.getIsScanned());
+					result = Results.success(!sessionVo.getIsScanned());
                     if (sessionVo.getIsScanned()) {
                         LOGGER.info("loginRedirect 二维码已经被扫描");
                         redirectUrl = String.format(topH5ErrUrl, env) + "/?status="+ TopH5ErrorTypeEnum.IS_SCANNED.getValue();
