@@ -63,12 +63,6 @@ public class Inno72Merchant {
 	private String channelName;
 
 	/**
-	 * 微信公众号二维码
-	 */
-	@Column(name = "wechat_qrcode_url")
-	private String wechatQrcodeUrl;
-
-	/**
 	 * 商户可用状态0:可用，1:不可用
 	 */
 	@Column(name = "is_delete")
@@ -329,26 +323,6 @@ public class Inno72Merchant {
 		this.sellSessionKey = sellSessionKey;
 	}
 
-	public String getSellSessionKey() {
-		return sellSessionKey;
-	}
-
-	public String getWechatQrcodeUrl() {
-		return wechatQrcodeUrl;
-	}
-
-	public void setWechatQrcodeUrl(String wechatQrcodeUrl) {
-		this.wechatQrcodeUrl = wechatQrcodeUrl;
-	}
-
-	public String getWechatUserApiUrl() {
-		return wechatUserApiUrl;
-	}
-
-	public void setWechatUserApiUrl(String wechatUserApiUrl) {
-		this.wechatUserApiUrl = wechatUserApiUrl;
-	}
-
 	public String getMerchantAccountId() {
 		return merchantAccountId;
 	}
@@ -379,6 +353,14 @@ public class Inno72Merchant {
 
 	public void setWechatQrcodeUrl(String wechatQrcodeUrl) {
 		this.wechatQrcodeUrl = wechatQrcodeUrl;
+	}
+
+	public String getWechatUserApiUrl() {
+		return wechatUserApiUrl;
+	}
+
+	public void setWechatUserApiUrl(String wechatUserApiUrl) {
+		this.wechatUserApiUrl = wechatUserApiUrl;
 	}
 
 	public String getSellSessionKey() {
