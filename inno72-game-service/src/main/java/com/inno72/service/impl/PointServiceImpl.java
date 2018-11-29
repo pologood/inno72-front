@@ -307,7 +307,7 @@ public class PointServiceImpl implements PointService {
 		String refOrderId = Optional.ofNullable(sessionKey.getRefOrderId()).orElse("");
 		String inno72OrderId = Optional.ofNullable(sessionKey.getInno72OrderId()).orElse("");
 		String failChannelIds = Optional.ofNullable(sessionKey.getFailChannelIds()).orElse("");
-		String goodsId = Optional.ofNullable(sessionKey.getGoodsId()).orElse("");
+		String goodsCode = Optional.ofNullable(sessionKey.getGoodsCode()).orElse("");
 		String goodsName = Optional.ofNullable(sessionKey.getGoodsName()).orElse("");
 
 		info.setFailChannelIds(failChannelIds);
@@ -315,7 +315,7 @@ public class PointServiceImpl implements PointService {
 		info.setFailChannelIds(failChannelIds);
 		info.setRefOrderId(refOrderId);
 		info.setOrderId(inno72OrderId);
-		info.setGoodsId(goodsId);
+		info.setGoodsId(goodsCode);
 		info.setGoodsName(goodsName);
 	}
 
