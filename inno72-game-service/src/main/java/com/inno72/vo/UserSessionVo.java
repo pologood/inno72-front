@@ -8,16 +8,16 @@ import lombok.Data;
 public class UserSessionVo {
 
 	private String traceId;
-	private String planCode;
-	private String sellerName;
-	private String shipmentNum;
-	private String scanUrl;
-	private String goodsName;
-	private String refOrderStatus;
-	private String scanLoginUrl;
-	private String scanPayUrl;
-	private String interactId;
-
+	private String planCode;//TODO
+	private String sellerName;//TODO 品牌名称
+	private String shipmentNum;//TODO 出货数量
+	private String scanUrl;//TODO 扫码路径
+	private String goodsName;//TODO 商品名称
+	private String refOrderStatus;//TODO 订单状态
+	private String scanLoginUrl;//TODO 扫码登录url
+	private String scanPayUrl;//TODO 暂时没有
+	private String interactId;//TODO 奖池ID
+	private String gameUserId;
 	private String mid;
 	private String userNick;
 	private String userId;
@@ -69,6 +69,7 @@ public class UserSessionVo {
 	private boolean canOrder;
 	private boolean canGame;
 	private String channelId;
+	private Integer channelType;
 	private String machineId;
 	private String activityId;
 	private String machineCode;
@@ -138,6 +139,12 @@ public class UserSessionVo {
 	 * @see com.inno72.model.Inno72Activity.ActivityType
 	 */
 	private Integer activityType = 0;
+
+
+	/**
+	 * 是否关注 true 已关注 false 未关注
+	 */
+	private boolean fllowed;
 
 	public UserSessionVo(String mid, String userNick, String userId, String access_token, String gameId,
 			String sessionUuid, String planId) {

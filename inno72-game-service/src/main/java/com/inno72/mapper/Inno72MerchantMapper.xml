@@ -16,6 +16,8 @@
         <result column="update_id" jdbcType="VARCHAR" property="updateId"/>
         <result column="sell_session_key" jdbcType="VARCHAR" property="sellSessionKey"/>
         <result column="merchant_id" jdbcType="VARCHAR" property="merchantId"/>
+        <result column="wechat_qrcode_url" jdbcType="VARCHAR" property="wechatQrcodeUrl"/>
+        <result column="wechat_user_api_url" jdbcType="VARCHAR" property="wechatUserApiUrl"/>
         <result column="create_time" jdbcType="TIMESTAMP" property="createTime" javaType="java.time.LocalDateTime"
                 typeHandler="org.apache.ibatis.type.LocalDateTimeTypeHandler"/>
         <result column="update_time" jdbcType="TIMESTAMP" property="updateTime" javaType="java.time.LocalDateTime"
@@ -91,5 +93,8 @@
          left join inno72_merchant_user u on u.id = m.merchant_account_id
         where ias.activity_id = #{activityId} limit 0,1
     </select>
-
+    <select id="findByMerchantCode" resultMap="BaseResultMap" parameterType="string">
+      select * from inno72_merchant m
+      where m.merchant_code = #{merchantCode} and m.is_delete = 0
+    </select>
 </mapper>

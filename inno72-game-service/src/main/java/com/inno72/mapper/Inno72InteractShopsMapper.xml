@@ -18,4 +18,13 @@
 	WHERE
 	    interact_id=#{interactId} and shops_id=#{shopId}
   </select>
+    <select id="findWeChatQrCodes" resultType="string">
+       SELECT
+	    m.wechat_qrcode_url
+	FROM inno72_interact_shops interact_shops
+	left join inno72_shops shops on interact_shops.shops_id = shops.id
+   left join inno72_merchant m on shops.seller_id=m.id
+	WHERE
+	    interact_shops.interact_id=#{interactId}
+  </select>
 </mapper>

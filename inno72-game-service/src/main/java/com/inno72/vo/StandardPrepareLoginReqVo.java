@@ -50,6 +50,15 @@ public class StandardPrepareLoginReqVo {
 		public void setDesc(String desc) {
 			this.desc = desc;
 		}
+		public static String getValue(Integer key) {
+			OperTypeEnum[] operTypeEnums = values();
+			for (OperTypeEnum operTypeEnum : operTypeEnums) {
+				if (operTypeEnum.getKey() == key) {
+					return operTypeEnum.getDesc();
+				}
+			}
+			return null;
+		}
 	}
 
 	public String getMachineCode() {

@@ -94,6 +94,10 @@ public class SuperOpenServiceImpl implements SuperOpenService {
 		SET_HEARTBEAT("017", "setHeartbeat", "/api/setHeartbeat", "设置心跳", "1.0.0"),
 		/* 获取派样商品 */
 		GET_SAMPLINGNEW("018", "getSamplingNew", "/api/getSamplingNew", "获取派样商品", "1.0.0"),
+		/**
+		 * 登陆回调
+		 */
+		GET_PROCESSBEFORELOGGED("019", "processBeforeLogged", "/api/standard/processBeforeLogged", "登陆回调", "1.0.0"),
 
 
 

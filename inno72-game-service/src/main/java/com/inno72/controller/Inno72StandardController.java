@@ -9,10 +9,12 @@ import java.util.List;
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 
 import com.inno72.common.CommonBean;
 import com.inno72.mapper.Inno72CouponMapper;
 import com.inno72.model.Inno72Coupon;
+import com.inno72.redis.IRedisUtil;
 import com.inno72.service.*;
 import com.alibaba.fastjson.JSON;
 import com.inno72.common.util.UuidUtil;
@@ -66,6 +68,9 @@ public class Inno72StandardController {
 	private Inno72PaiYangService inno72PaiYangService;
 
 	@Resource
+	private IRedisUtil iRedisUtil;
+
+	@Resource
 	private Inno72CouponMapper inno72CouponMapper;
 
 	@Resource
@@ -82,6 +87,8 @@ public class Inno72StandardController {
 
 	@Value("${env}")
 	private String env;
+
+	private final static String REPEAT_INVOKE_KEY ="REPEAT_INVOKE:";
 
 	/**
 	 * 登录（包括需要登录和非登录的场景）
@@ -101,14 +108,10 @@ public class Inno72StandardController {
 			return Results.failure("登陆类型错误");
 		}
 
-		if (StandardLoginTypeEnum.ALIBABA.getValue().equals(req.getLoginType())) {
-
-			return inno72GameApiService.prepareLoginQrCode(req);
-
-		} else {
-
+		if (StandardLoginTypeEnum.NOLOGIN.getValue().equals(req.getLoginType())) {
 			return inno72GameApiService.prepareLoginNologin(req.getMachineCode());
-
+		} else {
+			return inno72GameApiService.prepareLoginQrCode(req);
 		}
 	}
 
@@ -142,7 +145,21 @@ public class Inno72StandardController {
 			return Results.failure("会话不存在!" + vo.toString());
 		}
 
+		//处理重复下单
+		boolean flag =  managRepeatOrder(userSessionVo.getMachineCode(),userSessionVo.getUserId());
+		if(!flag){
+			return Results.failure("重复下单");
+		}
 		return inno72GameApiService.standardOrder(vo);
+	}
+
+	private boolean managRepeatOrder(String machineCode, String userId) {
+		String key = REPEAT_INVOKE_KEY + machineCode +":"+userId;
+		if(iRedisUtil.exists(key)){
+			return false;
+		}
+		iRedisUtil.setex(key,10,"1");
+		return true;
 	}
 
 	/**
@@ -193,7 +210,7 @@ public class Inno72StandardController {
 	@ResponseBody
 	@RequestMapping(value = "/findActivity", method = {RequestMethod.POST})
 	public Result findActivity(@RequestParam(name = "machineId") String mid, String planId, String version,
-			String versionInno72) {
+							   String versionInno72, HttpSession session) {
 		return inno72MachineService.findGame(mid, planId, version, versionInno72);
 	}
 
@@ -229,7 +246,6 @@ public class Inno72StandardController {
 		boolean result = inno72AuthInfoService.setLogged(sessionUuid);
 		LOGGER.info("setLogged result is {}", result);
 		if (result) {
-			pointService.innerPoint(sessionUuid, Inno72MachineInformation.ENUM_INNO72_MACHINE_INFORMATION_TYPE.LOGIN);
 			return Results.success();
 		} else {
 			return Results.failure("登录失败");
@@ -242,56 +258,114 @@ public class Inno72StandardController {
 	@ResponseBody
 	@RequestMapping(value = "/processBeforeLogged", method = {RequestMethod.POST})
 	public Result<Object> processBeforeLogged(String sessionUuid, String authInfo, String traceId) {
-		Result<Object> result = inno72AuthInfoService.processBeforeLogged(sessionUuid, authInfo, traceId);
+
+		Result<Object> result = null;
+		try {
+			result = inno72AuthInfoService.processBeforeLogged(sessionUuid, authInfo, traceId);
+		}catch (Exception e){
+			LOGGER.error("processBeforeLogged error ",e);
+			result = Results.failure(e.getMessage());
+		}
 		return result;
 	}
 
 	/**
 	 * 登录跳转
 	 */
-	@ResponseBody
-	@RequestMapping(value = "/loginRedirect", method = {RequestMethod.GET})
-	public void loginRedirect(HttpServletResponse response, String sessionUuid, String env) {
-		LOGGER.info("loginRedirect sessionUuid is {}, env is {}", sessionUuid, env);
-		try {
-			synchronized (this) {
-				String redirectUrl = "";
-				// 判断是否已经有人扫过了，如果扫过 直接跳转
-				UserSessionVo sessionVo = gameSessionRedisUtil.getSessionKey(sessionUuid);
+//	@ResponseBody
+//	@RequestMapping(value = "/loginRedirect", method = {RequestMethod.GET})
+//	public void loginRedirect(HttpServletResponse response, String sessionUuid, String env) {
+//		LOGGER.info("loginRedirect sessionUuid is {}, env is {}", sessionUuid, env);
+//		try {
+//			synchronized (this) {
+//				String redirectUrl = "";
+//				// 判断是否已经有人扫过了，如果扫过 直接跳转
+//				UserSessionVo sessionVo = gameSessionRedisUtil.getSessionKey(sessionUuid);
+//
+//				if (sessionVo != null) {
+//					LOGGER.info("loginRedirect isScanned is {}", sessionVo.getIsScanned());
+//
+//					// 判断二维码是否已经超时, 恢复isScanned 状态 为false，允许二维码继续被扫
+//					boolean qrCode = gameSessionRedisUtil.exists(sessionUuid + "qrCode");
+//					LOGGER.info("loginRedirect qrCode is {}", qrCode);
+//					if (!qrCode) {
+//						sessionVo.setIsScanned(false);
+//					}
+//					if (sessionVo.getIsScanned()) {
+//						LOGGER.info("loginRedirect 二维码已经被扫描");
+//						redirectUrl = String.format(topH5ErrUrl, env) + "/?status="+ TopH5ErrorTypeEnum.IS_SCANNED.getValue();
+//					} else {
+//						sessionVo.setIsScanned(true);
+//						String traceId = UuidUtil.getUUID32();
+//						sessionVo.setTraceId(traceId);
+//						sessionVo.setScanUrl(redirectUrl);
+//						gameSessionRedisUtil.setSession(sessionUuid, JSON.toJSONString(sessionVo));
+//						// 设置15秒内二维码不能被扫
+//						gameSessionRedisUtil.setSessionEx(sessionUuid + "qrCode", sessionUuid, 15);
+//
+//						pointService.innerPoint(sessionUuid, Inno72MachineInformation.ENUM_INNO72_MACHINE_INFORMATION_TYPE.SCAN_LOGIN);
+//						redirectUrl = String.format("%s%s/%s/%s", inno72GameServiceProperties.get("tmallUrl"), sessionUuid, env, traceId);
+//					}
+//				}
+//				LOGGER.info("loginRedirect redirectUrl is {} ", redirectUrl);
+//				response.sendRedirect(redirectUrl);
+//			}
+//		} catch (IOException e) {
+//			e.printStackTrace();
+//		}
+//	}
 
-				if (sessionVo != null) {
-					LOGGER.info("loginRedirect isScanned is {}", sessionVo.getIsScanned());
+    /**
+     * 登录跳转
+     */
+    @ResponseBody
+    @RequestMapping(value = "/loginRedirect", method = {RequestMethod.GET})
+    public Result wechatloginRedirect(HttpServletResponse response, String sessionUuid, String env,Integer channelType) {
+        LOGGER.info("loginRedirect sessionUuid is {}, env is {}", sessionUuid, env);
+        Result result = null;
+        try {
+            synchronized (this) {
+                String redirectUrl = "";
+                // 判断是否已经有人扫过了，如果扫过 直接跳转
+                UserSessionVo sessionVo = gameSessionRedisUtil.getSessionKey(sessionUuid);
 
-					// 判断二维码是否已经超时, 恢复isScanned 状态 为false，允许二维码继续被扫
-					boolean qrCode = gameSessionRedisUtil.exists(sessionUuid + "qrCode");
-					LOGGER.info("loginRedirect qrCode is {}", qrCode);
-					if (!qrCode) {
-						sessionVo.setIsScanned(false);
-					}
+                if (sessionVo != null) {
+                    LOGGER.info("loginRedirect isScanned is {}", sessionVo.getIsScanned());
 
-					if (sessionVo.getIsScanned()) {
-						LOGGER.info("loginRedirect 二维码已经被扫描");
-						redirectUrl = String.format(topH5ErrUrl, env) + "/?status="+ TopH5ErrorTypeEnum.IS_SCANNED.getValue();
-					} else {
-						sessionVo.setIsScanned(true);
-						String traceId = UuidUtil.getUUID32();
-						sessionVo.setTraceId(traceId);
-						sessionVo.setScanUrl(redirectUrl);
-						gameSessionRedisUtil.setSession(sessionUuid, JSON.toJSONString(sessionVo));
-						// 设置15秒内二维码不能被扫
-						gameSessionRedisUtil.setSessionEx(sessionUuid + "qrCode", sessionUuid, 15);
+                    // 判断二维码是否已经超时, 恢复isScanned 状态 为false，允许二维码继续被扫
+                    boolean qrCode = gameSessionRedisUtil.exists(sessionUuid + "qrCode");
+                    LOGGER.info("loginRedirect qrCode is {}", qrCode);
+                    if (!qrCode) {
+                        sessionVo.setIsScanned(false);
+                    }
+                    result = Results.success(sessionVo.getIsScanned());
+                    if (sessionVo.getIsScanned()) {
+                        LOGGER.info("loginRedirect 二维码已经被扫描");
+                        redirectUrl = String.format(topH5ErrUrl, env) + "/?status="+ TopH5ErrorTypeEnum.IS_SCANNED.getValue();
+                    } else {
+                        sessionVo.setIsScanned(true);
+                        String traceId = UuidUtil.getUUID32();
+                        sessionVo.setTraceId(traceId);
+                        sessionVo.setScanUrl(redirectUrl);
+                        gameSessionRedisUtil.setSession(sessionUuid, JSON.toJSONString(sessionVo));
+                        // 设置15秒内二维码不能被扫
+                        gameSessionRedisUtil.setSessionEx(sessionUuid + "qrCode", sessionUuid, 15);
 
-						pointService.innerPoint(sessionUuid, Inno72MachineInformation.ENUM_INNO72_MACHINE_INFORMATION_TYPE.SCAN_LOGIN);
-						redirectUrl = String.format("%s%s/%s/%s", inno72GameServiceProperties.get("tmallUrl"), sessionUuid, env, traceId);
-					}
-				}
-				LOGGER.info("loginRedirect redirectUrl is {} ", redirectUrl);
-				response.sendRedirect(redirectUrl);
-			}
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-	}
+                        pointService.innerPoint(sessionUuid, Inno72MachineInformation.ENUM_INNO72_MACHINE_INFORMATION_TYPE.SCAN_LOGIN);
+                        redirectUrl = String.format("%s%s/%s/%s", inno72GameServiceProperties.get("tmallUrl"), sessionUuid, env, traceId);
+                    }
+                }
+                LOGGER.info("loginRedirect redirectUrl is {} ", redirectUrl);
+                if(channelType == null){
+                    response.sendRedirect(redirectUrl);
+                    return null;
+                }
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return result;
+    }
 
 	/**
 	 * 支付跳转
@@ -357,6 +431,9 @@ public class Inno72StandardController {
                         sessionKey.getActivityId()
                 );
             }
+
+			inno72AuthInfoService.setFollowed(sessionUuid);
+
             response.sendRedirect(URLDecoder.decode(redirectUrl, java.nio.charset.StandardCharsets.UTF_8.toString()));
         } catch (IOException e) {
             LOGGER.error("关注店铺回调异常 {}, {}",e.getMessage(), e);
