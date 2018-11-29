@@ -303,9 +303,20 @@ public class PointServiceImpl implements PointService {
 	}
 
 	private void buildLockChannelFromSession(UserSessionVo sessionKey, Inno72MachineInformation info) {
-		String channelId = sessionKey.getChannelId();
+		String channelId = Optional.ofNullable(sessionKey.getChannelId()).orElse("");
+		String refOrderId = Optional.ofNullable(sessionKey.getRefOrderId()).orElse("");
+		String inno72OrderId = Optional.ofNullable(sessionKey.getInno72OrderId()).orElse("");
+		String failChannelIds = Optional.ofNullable(sessionKey.getFailChannelIds()).orElse("");
+		String goodsId = Optional.ofNullable(sessionKey.getGoodsId()).orElse("");
+		String goodsName = Optional.ofNullable(sessionKey.getGoodsName()).orElse("");
+
+		info.setFailChannelIds(failChannelIds);
 		info.setChannel(channelId);
-		info.setFailChannelIds(sessionKey.getFailChannelIds());
+		info.setFailChannelIds(failChannelIds);
+		info.setRefOrderId(refOrderId);
+		info.setOrderId(inno72OrderId);
+		info.setGoodsId(goodsId);
+		info.setGoodsName(goodsName);
 	}
 
 	private void buildScanLoginFromSession(UserSessionVo sessionKey, Inno72MachineInformation info) {
