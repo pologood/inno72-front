@@ -1139,6 +1139,8 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 		LOGGER.info("shipmentReportV2 params vo is {} ", JsonUtil.toJson(vo));
 		String machineCode = vo.getMachineId();
 
+		String sessionUuid = vo.getSessionUuid();
+
 		if (StringUtil.isNotEmpty(vo.getChannelId())) {
 			Result<String> succChannelResult = shipmentReport(vo);
 			LOGGER.info("succChannelResult code is {} ", succChannelResult.getCode());
@@ -1169,8 +1171,13 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 		String failChannelIds = vo.getFailChannelIds();
 
 		if (StringUtil.isNotEmpty(failChannelIds)) {
+			userSessionVo.setFailChannelIds(failChannelIds);
+			gameSessionRedisUtil.setSession(sessionUuid, JSON.toJSONString(userSessionVo));
+
+			pointService.innerPoint(sessionUuid, Inno72MachineInformation.ENUM_INNO72_MACHINE_INFORMATION_TYPE.SHIPMENT);
+
 			Result<String> failChannelResult = this.shipmentFail(machineCode, failChannelIds, "");
-			LOGGER.info("machineCode is {}, failChannelIds is {}, code is {} ", machineCode, failChannelIds,
+			LOGGER.info("machineCode is {}, orderId is {}, failChannelIds is {}, code is {} ", machineCode, userSessionVo.getRefOrderId(), failChannelIds,
 					failChannelResult.getCode());
 		}
 

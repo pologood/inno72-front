@@ -87,6 +87,7 @@ public class Inno72MachineInformation {
 		ORDER_GOODS("007001","下单-商品"),
 		ORDER_COUPON("007002","下单-优惠券"),
 		SHIPMENT("008001","出货"),
+		LOCK_CHANNEL("008002","锁货道"),
 		SCAN_LOGIN("009001","扫码"),
 		SCAN_PAY("009002","扫码"),
 		JUMP("010001","跳转"),
@@ -142,6 +143,9 @@ public class Inno72MachineInformation {
 
 	/** 货道 */
 	private String channel;
+
+	/** 失败货道 */
+	private String failChannelIds;
 
 	/** 出货数量 */
 	private String shipmentNum;

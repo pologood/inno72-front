@@ -186,6 +186,9 @@ public class PointServiceImpl implements PointService {
 		}else if(type.equals(Inno72MachineInformation.ENUM_INNO72_MACHINE_INFORMATION_TYPE.SHIPMENT.getType())){
 			//添加出货 货道号 商品 出货数量
 			buildShipmentFromSession(sessionKey, info);
+		}else if(type.equals(Inno72MachineInformation.ENUM_INNO72_MACHINE_INFORMATION_TYPE.LOCK_CHANNEL.getType())){
+			//添加锁货道 货道号 失败货道号 商品
+			buildLockChannelFromSession(sessionKey, info);
 		}else if(type.equals(Inno72MachineInformation.ENUM_INNO72_MACHINE_INFORMATION_TYPE.ORDER_GOODS.getType())){
 			//添加下单 订单号 三方订单号
 			buildOrderFromSession(sessionKey, info);
@@ -298,6 +301,13 @@ public class PointServiceImpl implements PointService {
 		String shipmentNum = sessionKey.getShipmentNum();
 		info.setShipmentNum(shipmentNum);
 	}
+
+	private void buildLockChannelFromSession(UserSessionVo sessionKey, Inno72MachineInformation info) {
+		String channelId = sessionKey.getChannelId();
+		info.setChannel(channelId);
+		info.setFailChannelIds(sessionKey.getFailChannelIds());
+	}
+
 	private void buildScanLoginFromSession(UserSessionVo sessionKey, Inno72MachineInformation info) {
 		info.setScanUrl(sessionKey.getScanLoginUrl());
 	}
