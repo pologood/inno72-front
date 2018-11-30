@@ -1627,7 +1627,7 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 		// 保存用户游戏渠道 信息
 		this.saveGameUserChannel(sessionUuid, channelId, inno72Activity, inno72ActivityPlan, inno72Game, inno72Machine);
 
-		UserSessionVo sessionVo = new UserSessionVo(machineId, null, null, null, gameId, sessionUuid,
+		UserSessionVo sessionVo = new UserSessionVo(inno72Machine.getMachineCode(),machineId, null, null, null, gameId, sessionUuid,
 				inno72ActivityPlan.getId());
 
 		boolean canOrder = inno72GameService.countSuccOrder(channelId, sessionUuid, inno72ActivityPlan.getId());
@@ -1852,7 +1852,7 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 			}
 		}
 
-		UserSessionVo sessionVo = new UserSessionVo(mid, nickName, userId, accessToken, gameId, sessionUuid,
+		UserSessionVo sessionVo = new UserSessionVo(inno72Machine.getMachineCode(),mid, nickName, userId, accessToken, gameId, sessionUuid,
 				inno72ActivityPlan.getId());
 		boolean b = inno72GameService.countSuccOrder(channelId, userId, inno72ActivityPlan.getId());
 		sessionVo.setCanOrder(b);

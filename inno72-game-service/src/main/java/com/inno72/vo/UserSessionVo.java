@@ -2,11 +2,14 @@ package com.inno72.vo;
 
 import java.util.List;
 
+import com.inno72.common.SessionConstants;
+import com.inno72.sessionshare.utils.SessionUtils;
 import lombok.Data;
 
-@Data
-public class UserSessionVo {
+import javax.servlet.http.HttpSession;
 
+public class UserSessionVo {
+	private HttpSession httpSession;
 	private String traceId;
 	private String planCode;//TODO
 	private String sellerName;//TODO 品牌名称
@@ -124,7 +127,7 @@ public class UserSessionVo {
 	/**
 	 * 是否显示新零售入会码0不展示，1展示
 	 */
-	private Integer displayNewRetailMemberUrlFlag;
+//	private Integer displayNewRetailMemberUrlFlag;
 	/**
 	 * 商品类型：0商品，1优惠券
 	 */
@@ -146,9 +149,10 @@ public class UserSessionVo {
 	 */
 	private boolean fllowed;
 
-	public UserSessionVo(String mid, String userNick, String userId, String access_token, String gameId,
+	public UserSessionVo(String machineCode ,String mid, String userNick, String userId, String access_token, String gameId,
 			String sessionUuid, String planId) {
 		super();
+		this.machineCode = machineCode;
 		this.mid = mid;
 		this.userNick = userNick;
 		this.userId = userId;
@@ -156,86 +160,521 @@ public class UserSessionVo {
 		this.gameId = gameId;
 		this.sessionUuid = sessionUuid;
 		this.activityPlanId = planId;
+		httpSession = SessionUtils.getSession(machineCode,true);
+		httpSession.setAttribute(SessionConstants.MACHINECODE,machineCode);
+		httpSession.setAttribute(SessionConstants.MID,mid);
+		httpSession.setAttribute(SessionConstants.USERNICK,userNick);
+		httpSession.setAttribute(SessionConstants.USERID,userId);
+		httpSession.setAttribute(SessionConstants.ACCESSTOKEN,accessToken);
+		httpSession.setAttribute(SessionConstants.GAMEID,gameId);
+		httpSession.setAttribute(SessionConstants.SESSIONUUID,sessionUuid);
+		httpSession.setAttribute(SessionConstants.ACTIVITYPLANID,activityPlanId);
 	}
 
-	public UserSessionVo() {
+	public UserSessionVo(String machineCode) {
 		super();
+		httpSession = SessionUtils.getSession(machineCode,true);
 	}
 
 
 	public void setCanOrder(boolean canOrder) {
 		this.canOrder = canOrder;
+		httpSession.setAttribute(SessionConstants.CANORDER,canOrder);
 	}
 
 	public boolean getCanOrder() {
-		return canOrder;
+		return (Boolean) httpSession.getAttribute(SessionConstants.CANORDER);
 	}
 
 	public void setChannelId(String channelId) {
 		this.channelId = channelId;
+		httpSession.setAttribute(SessionConstants.CHANNELID,channelId);
 	}
 
 	public String getChannelId() {
-		return channelId;
+		return (String)httpSession.getAttribute(SessionConstants.CHANNELID);
 	}
 
 	public void setMachineId(String machineId) {
 		this.machineId = machineId;
+		httpSession.setAttribute(SessionConstants.MACHINEID,machineId);
 	}
 
 	public String getMachineId() {
-		return machineId;
+		return (String)httpSession.getAttribute(SessionConstants.MACHINEID);
 	}
 
 	public void setActivityId(String activityId) {
 		this.activityId = activityId;
+		httpSession.setAttribute(SessionConstants.ACTIVITYID,activityId);
 	}
 
 	public String getActivityId() {
-		return activityId;
+		return (String)httpSession.getAttribute(SessionConstants.ACTIVITYID);
 	}
 
 	public void setMachineCode(String machineCode) {
 		this.machineCode = machineCode;
+		httpSession.setAttribute(SessionConstants.MACHINECODE,machineCode);
 	}
 
 	public String getMachineCode() {
-		return machineCode;
+		return (String)httpSession.getAttribute(SessionConstants.MACHINECODE);
 	}
 
 	public void setCountGoods(boolean countGoods) {
 		this.countGoods = countGoods;
+		httpSession.setAttribute(SessionConstants.COUNTGOODS,countGoods);
 	}
 
 	public boolean getCountGoods() {
-		return countGoods;
+		return (Boolean)httpSession.getAttribute(SessionConstants.COUNTGOODS);
 	}
 
 	public void setLoginType(int loginType) {
 		this.loginType = loginType;
+		httpSession.setAttribute(SessionConstants.LOGINTYPE,loginType);
 	}
 
 	public int getLoginType() {
-		return loginType;
+		return (Integer)httpSession.getAttribute(SessionConstants.LOGINTYPE);
 	}
 
 	public boolean getNeedPay() {
-		return needPay;
+		return (Boolean)httpSession.getAttribute(SessionConstants.NEEDPAY);
 	}
 
 	public void setNeedPay(boolean needPay) {
 		this.needPay = needPay;
+		httpSession.setAttribute(SessionConstants.NEEDPAY,needPay);
 	}
 
 	public boolean getCanGame() {
-		return canGame;
+		return (Boolean)httpSession.getAttribute(SessionConstants.CANGAME);
 	}
 
 	public void setCanGame(boolean canGame) {
 		this.canGame = canGame;
+		httpSession.setAttribute(SessionConstants.CANGAME,canGame);
 	}
 
-    public boolean findPaiyangFlag() {
+	public boolean getIsScanned() {
+		return (Boolean)httpSession.getAttribute(SessionConstants.ISSCANNED);
+	}
+
+	public void setIsScanned(boolean isScanned) {
+		this.isScanned = isScanned;
+		httpSession.setAttribute(SessionConstants.ISSCANNED,isScanned);
+	}
+
+	public String getTraceId() {
+		return (String)httpSession.getAttribute(SessionConstants.TRACEID);
+	}
+
+	public void setTraceId(String traceId) {
+		this.traceId = traceId;
+		httpSession.setAttribute(SessionConstants.TRACEID,traceId);
+	}
+
+	public String getPlanCode() {
+		return (String)httpSession.getAttribute(SessionConstants.PLANCODE);
+	}
+
+	public void setPlanCode(String planCode) {
+		this.planCode = planCode;
+		httpSession.setAttribute(SessionConstants.PLANCODE,planCode);
+	}
+
+	public String getSellerName() {
+		return (String)httpSession.getAttribute(SessionConstants.SELLERNAME);
+	}
+
+	public void setSellerName(String sellerName) {
+		this.sellerName = sellerName;
+		httpSession.setAttribute(SessionConstants.SELLERNAME,sellerName);
+	}
+
+	public String getShipmentNum() {
+		return (String)httpSession.getAttribute(SessionConstants.SHIPMENTNUM);
+	}
+
+	public void setShipmentNum(String shipmentNum) {
+		this.shipmentNum = shipmentNum;
+		httpSession.setAttribute(SessionConstants.SHIPMENTNUM,shipmentNum);
+	}
+
+	public String getScanUrl() {
+		return (String)httpSession.getAttribute(SessionConstants.SCANURL);
+	}
+
+	public void setScanUrl(String scanUrl) {
+		this.scanUrl = scanUrl;
+		httpSession.setAttribute(SessionConstants.SCANURL,scanUrl);
+	}
+
+	public String getGoodsName() {
+		return (String)httpSession.getAttribute(SessionConstants.GOODSNAME);
+	}
+
+	public void setGoodsName(String goodsName) {
+		this.goodsName = goodsName;
+		httpSession.setAttribute(SessionConstants.GOODSNAME,goodsName);
+	}
+
+	public String getRefOrderStatus() {
+		return (String)httpSession.getAttribute(SessionConstants.REFORDERSTATUS);
+	}
+
+	public void setRefOrderStatus(String refOrderStatus) {
+		this.refOrderStatus = refOrderStatus;
+		httpSession.setAttribute(SessionConstants.REFORDERSTATUS,refOrderStatus);
+	}
+
+	public String getScanLoginUrl() {
+		return (String)httpSession.getAttribute(SessionConstants.SCANLOGINURL);
+	}
+
+	public void setScanLoginUrl(String scanLoginUrl) {
+		this.scanLoginUrl = scanLoginUrl;
+		httpSession.setAttribute(SessionConstants.SCANLOGINURL,scanLoginUrl);
+	}
+
+	public String getScanPayUrl() {
+		return (String)httpSession.getAttribute(SessionConstants.SCANPAYURL);
+	}
+
+	public void setScanPayUrl(String scanPayUrl) {
+		this.scanPayUrl = scanPayUrl;
+		httpSession.setAttribute(SessionConstants.SCANPAYURL,scanPayUrl);
+	}
+
+	public String getInteractId() {
+		return (String)httpSession.getAttribute(SessionConstants.INTERACTID);
+	}
+
+	public void setInteractId(String interactId) {
+		this.interactId = interactId;
+		httpSession.setAttribute(SessionConstants.INTERACTID,interactId);
+	}
+
+	public String getGameUserId() {
+		return  (String)httpSession.getAttribute(SessionConstants.GAMEUSERID);
+	}
+
+	public void setGameUserId(String gameUserId) {
+		this.gameUserId = gameUserId;
+		httpSession.setAttribute(SessionConstants.GAMEUSERID,gameUserId);
+	}
+
+	public String getMid() {
+		return (String)httpSession.getAttribute(SessionConstants.MID);
+	}
+
+	public void setMid(String mid) {
+		this.mid = mid;
+		httpSession.setAttribute(SessionConstants.MID,mid);
+	}
+
+	public String getUserNick() {
+		return (String)httpSession.getAttribute(SessionConstants.USERNICK);
+	}
+
+	public void setUserNick(String userNick) {
+		this.userNick = userNick;
+		httpSession.setAttribute(SessionConstants.USERNICK,userNick);
+	}
+
+	public String getUserId() {
+		return (String)httpSession.getAttribute(SessionConstants.USERID);
+	}
+
+	public void setUserId(String userId) {
+		this.userId = userId;
+		httpSession.setAttribute(SessionConstants.USERID,userId);
+	}
+
+	public String getAccessToken() {
+		return (String)httpSession.getAttribute(SessionConstants.ACCESSTOKEN);
+	}
+
+	public void setAccessToken(String accessToken) {
+		this.accessToken = accessToken;
+		httpSession.setAttribute(SessionConstants.ACCESSTOKEN,accessToken);
+	}
+
+	public String getGameId() {
+		return (String)httpSession.getAttribute(SessionConstants.GAMEID);
+	}
+
+	public void setGameId(String gameId) {
+		this.gameId = gameId;
+		httpSession.setAttribute(SessionConstants.GAMEID,gameId);
+	}
+
+	public String getSessionUuid() {
+		return (String)httpSession.getAttribute(SessionConstants.SESSIONUUID);
+	}
+
+	public void setSessionUuid(String sessionUuid) {
+		this.sessionUuid = sessionUuid;
+		httpSession.setAttribute(SessionConstants.SESSIONUUID,sessionUuid);
+	}
+
+	public String getMixnick() {
+		return (String)httpSession.getAttribute(SessionConstants.MIXNICK);
+	}
+
+	public void setMixnick(String mixnick) {
+		this.mixnick = mixnick;
+		httpSession.setAttribute(SessionConstants.MIXNICK,mixnick);
+	}
+
+	public String getSource() {
+		return (String)httpSession.getAttribute(SessionConstants.SOURCE);
+	}
+
+	public void setSource(String source) {
+		this.source = source;
+		httpSession.setAttribute(SessionConstants.SOURCE,source);
+	}
+
+	public String getRefOrderId() {
+		return (String)httpSession.getAttribute(SessionConstants.REFORDERID);
+	}
+
+	public void setRefOrderId(String refOrderId) {
+		this.refOrderId = refOrderId;
+		httpSession.setAttribute(SessionConstants.REFORDERID,refOrderId);
+	}
+
+	public String getSellerId() {
+		return (String)httpSession.getAttribute(SessionConstants.SELLERID);
+	}
+
+	public void setSellerId(String sellerId) {
+		this.sellerId = sellerId;
+		httpSession.setAttribute(SessionConstants.SELLERID,sellerId);
+	}
+
+	public String getMerchantName() {
+		return (String)httpSession.getAttribute(SessionConstants.MERCHANTNAME);
+	}
+
+	public void setMerchantName(String merchantName) {
+		this.merchantName = merchantName;
+		httpSession.setAttribute(SessionConstants.MERCHANTNAME,merchantName);
+	}
+
+	public Inno72MachineVo getInno72MachineVo() {
+		return (Inno72MachineVo)httpSession.getAttribute(SessionConstants.INNO72MACHINEVO);
+	}
+
+	public void setInno72MachineVo(Inno72MachineVo inno72MachineVo) {
+		this.inno72MachineVo = inno72MachineVo;
+		httpSession.setAttribute(SessionConstants.INNO72MACHINEVO,inno72MachineVo);
+	}
+
+	public String getMerchantAccountId() {
+		return (String)httpSession.getAttribute(SessionConstants.MERCHANTACCOUNTID);
+	}
+
+	public void setMerchantAccountId(String merchantAccountId) {
+		this.merchantAccountId = merchantAccountId;
+		httpSession.setAttribute(SessionConstants.MERCHANTACCOUNTID,merchantAccountId);
+	}
+
+	public String getMerchantAccountName() {
+		return (String)httpSession.getAttribute(SessionConstants.MERCHANTACCOUNTNAME);
+	}
+
+	public void setMerchantAccountName(String merchantAccountName) {
+		this.merchantAccountName = merchantAccountName;
+		httpSession.setAttribute(SessionConstants.MERCHANTACCOUNTNAME,merchantAccountName);
+	}
+
+	public String getChannelMerchantId() {
+		return  (String)httpSession.getAttribute(SessionConstants.CHANNELMERCHANTID);
+	}
+
+	public void setChannelMerchantId(String channelMerchantId) {
+		this.channelMerchantId = channelMerchantId;
+		httpSession.setAttribute(SessionConstants.CHANNELMERCHANTID,channelMerchantId);
+	}
+
+	public String getChannelName() {
+		return  (String)httpSession.getAttribute(SessionConstants.CHANNELNAME);
+	}
+
+	public void setChannelName(String channelName) {
+		this.channelName = channelName;
+		httpSession.setAttribute(SessionConstants.CHANNELNAME,channelName);
+	}
+
+	public String getGameReport() {
+		return  (String)httpSession.getAttribute(SessionConstants.GAMEREPORT);
+	}
+
+	public void setGameReport(String gameReport) {
+		this.gameReport = gameReport;
+		httpSession.setAttribute(SessionConstants.GAMEREPORT,gameReport);
+	}
+
+	public String getInno72OrderId() {
+		return  (String)httpSession.getAttribute(SessionConstants.INNO72ORDERID);
+	}
+
+	public void setInno72OrderId(String inno72OrderId) {
+		this.inno72OrderId = inno72OrderId;
+		httpSession.setAttribute(SessionConstants.INNO72ORDERID,inno72OrderId);
+	}
+
+	public String getInno72CouponOrderId() {
+		return  (String)httpSession.getAttribute(SessionConstants.INNO72COUPONORDERID);
+	}
+
+	public void setInno72CouponOrderId(String inno72CouponOrderId) {
+		this.inno72CouponOrderId = inno72CouponOrderId;
+		httpSession.setAttribute(SessionConstants.INNO72COUPONORDERID,inno72CouponOrderId);
+	}
+
+	public String getActivityPlanId() {
+		return  (String)httpSession.getAttribute(SessionConstants.ACTIVITYPLANID);
+	}
+
+	public void setActivityPlanId(String activityPlanId) {
+		this.activityPlanId = activityPlanId;
+		httpSession.setAttribute(SessionConstants.ACTIVITYPLANID,activityPlanId);
+	}
+
+	public Long getPlayTimes() {
+		return playTimes;
+	}
+
+	public void setPlayTimes(Long playTimes) {
+		this.playTimes = playTimes;
+	}
+
+	public boolean isCanOrder() {
+		return canOrder;
+	}
+
+	public boolean isCanGame() {
+		return canGame;
+	}
+
+	public Integer getChannelType() {
+		return channelType;
+	}
+
+	public void setChannelType(Integer channelType) {
+		this.channelType = channelType;
+	}
+
+	public boolean isCountGoods() {
+		return countGoods;
+	}
+
+	public List<GoodsVo> getGoodsList() {
+		return goodsList;
+	}
+
+	public void setGoodsList(List<GoodsVo> goodsList) {
+		this.goodsList = goodsList;
+	}
+
+	public boolean isLogged() {
+		return logged;
+	}
+
+	public void setLogged(boolean logged) {
+		this.logged = logged;
+	}
+
+	public String getGoodsId() {
+		return goodsId;
+	}
+
+	public void setGoodsId(String goodsId) {
+		this.goodsId = goodsId;
+	}
+
+	public String getGoodsCode() {
+		return goodsCode;
+	}
+
+	public void setGoodsCode(String goodsCode) {
+		this.goodsCode = goodsCode;
+	}
+
+	public String getAuthUrl() {
+		return authUrl;
+	}
+
+	public void setAuthUrl(String authUrl) {
+		this.authUrl = authUrl;
+	}
+
+	public boolean isNeedPay() {
+		return needPay;
+	}
+
+	public String getIsVip() {
+		return isVip;
+	}
+
+	public void setIsVip(String isVip) {
+		this.isVip = isVip;
+	}
+
+	public String getSessionKey() {
+		return sessionKey;
+	}
+
+	public void setSessionKey(String sessionKey) {
+		this.sessionKey = sessionKey;
+	}
+
+	public boolean isScanned() {
+		return isScanned;
+	}
+
+	public void setScanned(boolean scanned) {
+		isScanned = scanned;
+	}
+
+	public String getNewRetailMemberUrl() {
+		return newRetailMemberUrl;
+	}
+
+	public void setNewRetailMemberUrl(String newRetailMemberUrl) {
+		this.newRetailMemberUrl = newRetailMemberUrl;
+	}
+
+	public Integer getGoodsType() {
+		return goodsType;
+	}
+
+	public void setGoodsType(Integer goodsType) {
+		this.goodsType = goodsType;
+	}
+
+	public Integer getActivityType() {
+		return activityType;
+	}
+
+	public void setActivityType(Integer activityType) {
+		this.activityType = activityType;
+	}
+
+	public boolean isFllowed() {
+		return fllowed;
+	}
+
+	public void setFllowed(boolean fllowed) {
+		this.fllowed = fllowed;
+	}
+
+	public boolean findPaiyangFlag() {
 		boolean flag = false;
 
 		if(inno72MachineVo!=null && inno72MachineVo.getActivityType() == Inno72MachineVo.ACTIVITYTYPE_PAIYANG){
@@ -243,13 +682,5 @@ public class UserSessionVo {
 		}
 
 		return flag;
-    }
-	public boolean getIsScanned() {
-		return isScanned;
 	}
-
-	public void setIsScanned(boolean isScanned) {
-		this.isScanned = isScanned;
-	}
-
 }
