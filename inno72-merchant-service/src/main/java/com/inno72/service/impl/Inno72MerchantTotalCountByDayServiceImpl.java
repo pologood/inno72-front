@@ -539,9 +539,17 @@ public class Inno72MerchantTotalCountByDayServiceImpl extends AbstractService<In
 	}
 
 	private byte[] buildGoodsExcel(Object list) {
+
 		List<Inno72MerchantTotalCountByDay> days = (List<Inno72MerchantTotalCountByDay>) list;
 
+		LOGGER.info("构建商品统计数据 -》 {}", JSON.toJSONString(days));
+
 		Map<String, List<Inno72MerchantTotalCountByDay>> dayAndCityAndGoods = new HashMap<>();
+
+		if (days.size() == 0){
+			return new byte[0];
+		}
+
 		for (Inno72MerchantTotalCountByDay day : days) {
 			String date = day.getDate();
 			String city = day.getCity();
