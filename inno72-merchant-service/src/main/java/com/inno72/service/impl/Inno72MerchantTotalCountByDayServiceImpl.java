@@ -162,7 +162,7 @@ public class Inno72MerchantTotalCountByDayServiceImpl extends AbstractService<In
 
 			LocalDate cDate = LocalDateUtil.transfer(k.getKey(), DateTimeFormatter.ofPattern("yyyy-MM-dd"));
 			//计算日差，如果当前日期数据小于传入的开始日期。补充0的数据到数组
-			while (thisDate.plusDays(1).isBefore(cDate)) {
+			while (thisDate.isBefore(cDate)) {
 				orderQtyTotalS.add(0);
 				orderQtySuccS.add(0);
 				goodsNumS.add(0);
@@ -280,7 +280,7 @@ public class Inno72MerchantTotalCountByDayServiceImpl extends AbstractService<In
 			userResult.put("experience", totleStay + "");
 			userResult.put("concern", totleConcernNum + "");
 			if (totleConcernNum != 0) {
-				userResult.put("percent", totleStay / totleConcernNum * 100 + "");
+				userResult.put("percent",  totleConcernNum / totleStay * 100 + "");
 			} else {
 				userResult.put("percent", "0");
 			}
@@ -297,12 +297,12 @@ public class Inno72MerchantTotalCountByDayServiceImpl extends AbstractService<In
 
 		LocalDate thisDate = startDateLocal;
 		//统计单日下所有数量的总和
-		for (Map.Entry k : kk.entrySet()) {
+		for (Map.Entry<String, List<Map<String, String>>> k : kk.entrySet()) {
 
 			if (StringUtil.isEmpty(k.getKey())) {
 				continue;
 			}
-			List<Map<String, String>> value = (List<Map<String, String>>) k.getValue();
+			List<Map<String, String>> value = k.getValue();
 
 			int experience = 0;
 			int concern = 0;
@@ -314,9 +314,9 @@ public class Inno72MerchantTotalCountByDayServiceImpl extends AbstractService<In
 				concern += Integer.parseInt(day.get("concern"));
 				percent += Integer.parseInt(day.get("percent"));
 			}
-			LocalDate cDate = LocalDateUtil.transfer((String) k.getKey(), DateTimeFormatter.ofPattern("yyyy-MM-dd"));
+			LocalDate cDate = LocalDateUtil.transfer(k.getKey(), DateTimeFormatter.ofPattern("yyyy-MM-dd"));
 			//计算日差，如果当前日期数据小于传入的开始日期。补充0的数据到数组
-			while (thisDate.plusDays(1).isBefore(cDate)) {
+			while (thisDate.isBefore(cDate)) {
 				experienceS.add(0);
 				concernS.add(0);
 				percentS.add(0);
@@ -458,7 +458,7 @@ public class Inno72MerchantTotalCountByDayServiceImpl extends AbstractService<In
 			String uv = e.get("uv");
 			String date = e.get("date");
 			LocalDate thisDate = LocalDateUtil.transfer(date, DateTimeFormatter.ofPattern("yyyy-MM-dd"));
-			while (addDateLocal.plusDays(1).isBefore(thisDate)) {
+			while (addDateLocal.isBefore(thisDate)) {
 				pvs.add(0);
 				uvs.add(0);
 				addDateLocal = addDateLocal.plusDays(1);
@@ -503,7 +503,7 @@ public class Inno72MerchantTotalCountByDayServiceImpl extends AbstractService<In
 			for (Inno72MerchantTotalCountByDay inno72MerchantTotalCountByDay : value) {
 				String date = inno72MerchantTotalCountByDay.getDate();
 				LocalDate thisDate = LocalDateUtil.transfer(date, DateTimeFormatter.ofPattern("yyyy-MM-dd"));
-				while (curLocalDate.plusDays(1).isBefore(thisDate)) {
+				while (curLocalDate.isBefore(thisDate)) {
 					num.add(0);
 					curLocalDate = curLocalDate.plusDays(1);
 					LOGGER.info("商品维度 日期 - {}, num - {}", curLocalDate, num);
