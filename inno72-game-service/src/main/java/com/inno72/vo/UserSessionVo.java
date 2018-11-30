@@ -146,6 +146,11 @@ public class UserSessionVo {
 	 */
 	private boolean fllowed;
 
+	/**
+	 * 失败货道
+	 */
+	private String failChannelIds;
+
 	public UserSessionVo(String mid, String userNick, String userId, String access_token, String gameId,
 			String sessionUuid, String planId) {
 		super();

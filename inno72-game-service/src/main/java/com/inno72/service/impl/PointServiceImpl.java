@@ -207,6 +207,9 @@ public class PointServiceImpl implements PointService {
 		}else if(type.equals(Inno72MachineInformation.ENUM_INNO72_MACHINE_INFORMATION_TYPE.SHIPMENT.getType())){
 			//添加出货 货道号 商品 出货数量
 			buildShipmentFromSession(sessionKey, info);
+		}else if(type.equals(Inno72MachineInformation.ENUM_INNO72_MACHINE_INFORMATION_TYPE.LOCK_CHANNEL.getType())){
+			//添加锁货道 货道号 失败货道号 商品
+			buildLockChannelFromSession(sessionKey, info);
 		}else if(type.equals(Inno72MachineInformation.ENUM_INNO72_MACHINE_INFORMATION_TYPE.ORDER_GOODS.getType())){
 			//添加下单 订单号 三方订单号
 			buildOrderFromSession(sessionKey, info);
@@ -341,6 +344,24 @@ public class PointServiceImpl implements PointService {
 		String shipmentNum = sessionKey.getShipmentNum();
 		info.setShipmentNum(shipmentNum);
 	}
+
+	private void buildLockChannelFromSession(UserSessionVo sessionKey, Inno72MachineInformation info) {
+		String channelId = Optional.ofNullable(sessionKey.getChannelId()).orElse("");
+		String refOrderId = Optional.ofNullable(sessionKey.getRefOrderId()).orElse("");
+		String inno72OrderId = Optional.ofNullable(sessionKey.getInno72OrderId()).orElse("");
+		String failChannelIds = Optional.ofNullable(sessionKey.getFailChannelIds()).orElse("");
+		String goodsCode = Optional.ofNullable(sessionKey.getGoodsCode()).orElse("");
+		String goodsName = Optional.ofNullable(sessionKey.getGoodsName()).orElse("");
+
+		info.setFailChannelIds(failChannelIds);
+		info.setChannel(channelId);
+		info.setFailChannelIds(failChannelIds);
+		info.setRefOrderId(refOrderId);
+		info.setOrderId(inno72OrderId);
+		info.setGoodsId(goodsCode);
+		info.setGoodsName(goodsName);
+	}
+
 	private void buildScanLoginFromSession(UserSessionVo sessionKey, Inno72MachineInformation info) {
 		info.setScanUrl(sessionKey.getScanLoginUrl());
 	}
