@@ -23,7 +23,8 @@ public class LoginInterceptor extends HandlerInterceptorAdapter {
 
 	private static List<String> doNotCheckUs = Arrays
 			.asList("/inno72/merchant/login", "/inno72/merchant/resetPhone", "/inno72/merchant/resetPhone",
-					"/common/code/", "/inno72/merchant/resetPwd", "/inno72/merchant/checkMerchant", "/search/export");
+					"/common/code/", "/inno72/merchant/resetPwd", "/inno72/merchant/checkMerchant", "/search/export"
+			,"/inno72/merchant/selectUser");
 
 	@Resource
 	private IRedisUtil redisUtil;
