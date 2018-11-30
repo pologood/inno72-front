@@ -551,8 +551,8 @@ public class Inno72MerchantTotalCountByDayServiceImpl extends AbstractService<In
 				days1 = new ArrayList<>();
 			}
 			days1.add(day);
+			dayAndCityAndGoods.put(key, days);
 		}
-
 
 		Set<String> goodsIds = new TreeSet<>();
 		Set<String> goodsNames = new TreeSet<>();
@@ -561,6 +561,7 @@ public class Inno72MerchantTotalCountByDayServiceImpl extends AbstractService<In
 		goodsNames.add("城市");
 		goodsNames.add("互动次数");
 		goodsNames.add("互动人数");
+
 		for (Map.Entry<String, List<Inno72MerchantTotalCountByDay>> m : dayAndCityAndGoods.entrySet()) {
 
 			List<Inno72MerchantTotalCountByDay> value = m.getValue();
