@@ -193,6 +193,8 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 		String sessionUuid = vo.getSessionUuid();
 
 		UserSessionVo userSessionVo = gameSessionRedisUtil.getSessionKey(sessionUuid);
+		LOGGER.info("orderPolling userSessionVo {}", userSessionVo);
+
 		if (userSessionVo == null) {
 			return Results.failure("登录失效!");
 		}
@@ -831,6 +833,7 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
             LOGGER.info("已经超过最大游戏数量啦 QAQ!");
             return Results.failure("已经超过最大游戏数量啦 QAQ!");
         }
+        LOGGER.info("sendOrder inno72OrderId {}", inno72OrderId);
         userSessionVo.setInno72OrderId(inno72OrderId);
 
         Inno72ChannelService channelService = (Inno72ChannelService)ApplicationContextHandle.getBean(StandardLoginTypeEnum.getValue(userSessionVo.getChannelType()));
