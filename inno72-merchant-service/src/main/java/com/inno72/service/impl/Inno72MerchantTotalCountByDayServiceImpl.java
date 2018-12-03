@@ -296,9 +296,9 @@ public class Inno72MerchantTotalCountByDayServiceImpl extends AbstractService<In
 
 		Map<String, List<Map<String, String>>> kk = kku(list, startDateLocal, endDateLocal);
 
-		List<Long> experienceS = new ArrayList<>();
-		List<Long> concernS = new ArrayList<>();
-		List<Long> percentS = new ArrayList<>();
+		List<Double> experienceS = new ArrayList<>();
+		List<Double> concernS = new ArrayList<>();
+		List<Double> percentS = new ArrayList<>();
 
 		LocalDate thisDate = startDateLocal;
 		// 统计单日下所有数量的总和
@@ -309,9 +309,9 @@ public class Inno72MerchantTotalCountByDayServiceImpl extends AbstractService<In
 			}
 			List<Map<String, String>> value = k.getValue();
 
-			long experience = 0;
-			long concern = 0;
-			long percent = 0;
+			double experience = 0;
+			double concern = 0;
+			double percent = 0;
 
 			for (Map<String, String> day : value) {
 
@@ -322,9 +322,9 @@ public class Inno72MerchantTotalCountByDayServiceImpl extends AbstractService<In
 			LocalDate cDate = LocalDateUtil.transfer(k.getKey(), DateTimeFormatter.ofPattern("yyyy-MM-dd"));
 			// 计算日差，如果当前日期数据小于传入的开始日期。补充0的数据到数组
 			while (thisDate.isBefore(cDate)) {
-				experienceS.add(0L);
-				concernS.add(0L);
-				percentS.add(0L);
+				experienceS.add((double)0);
+				concernS.add((double)0);
+				percentS.add((double)0);
 				thisDate = thisDate.plusDays(1);
 			}
 			// 指针日期加一天
@@ -339,12 +339,12 @@ public class Inno72MerchantTotalCountByDayServiceImpl extends AbstractService<In
 
 		// 日期不足，补充0直到到结束日期
 		while (experienceS.size() <= (endDateLocal.getDayOfYear() - startDateLocal.getDayOfYear())) {
-			experienceS.add(0L);
-			concernS.add(0L);
-			percentS.add(0L);
+			experienceS.add((double)0);
+			concernS.add((double)0);
+			percentS.add((double)0);
 		}
 
-		Map<String, List<Long>> ys = new HashMap<>();
+		Map<String, List<Double>> ys = new HashMap<>();
 		ys.put("experienceS", experienceS);
 		ys.put("percentS", percentS);
 		ys.put("concernS", concernS);
