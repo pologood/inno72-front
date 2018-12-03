@@ -296,9 +296,9 @@ public class Inno72MerchantTotalCountByDayServiceImpl extends AbstractService<In
 
 		Map<String, List<Map<String, String>>> kk = kku(list, startDateLocal, endDateLocal);
 
-		List<Integer> experienceS = new ArrayList<>();
-		List<Integer> concernS = new ArrayList<>();
-		List<Integer> percentS = new ArrayList<>();
+		List<Long> experienceS = new ArrayList<>();
+		List<Long> concernS = new ArrayList<>();
+		List<Long> percentS = new ArrayList<>();
 
 		LocalDate thisDate = startDateLocal;
 		// 统计单日下所有数量的总和
@@ -309,22 +309,22 @@ public class Inno72MerchantTotalCountByDayServiceImpl extends AbstractService<In
 			}
 			List<Map<String, String>> value = k.getValue();
 
-			int experience = 0;
-			int concern = 0;
-			int percent = 0;
+			long experience = 0;
+			long concern = 0;
+			long percent = 0;
 
 			for (Map<String, String> day : value) {
 
-				experience += Integer.parseInt(day.get("experience"));
-				concern += Integer.parseInt(day.get("concern"));
+				experience +=  Long.parseLong(day.get("experience"));
+				concern +=  Long.parseLong(day.get("concern"));
 				percent += Long.parseLong(day.get("percent"));
 			}
 			LocalDate cDate = LocalDateUtil.transfer(k.getKey(), DateTimeFormatter.ofPattern("yyyy-MM-dd"));
 			// 计算日差，如果当前日期数据小于传入的开始日期。补充0的数据到数组
 			while (thisDate.isBefore(cDate)) {
-				experienceS.add(0);
-				concernS.add(0);
-				percentS.add(0);
+				experienceS.add(0L);
+				concernS.add(0L);
+				percentS.add(0L);
 				thisDate = thisDate.plusDays(1);
 			}
 			// 指针日期加一天
@@ -339,12 +339,12 @@ public class Inno72MerchantTotalCountByDayServiceImpl extends AbstractService<In
 
 		// 日期不足，补充0直到到结束日期
 		while (experienceS.size() <= (endDateLocal.getDayOfYear() - startDateLocal.getDayOfYear())) {
-			experienceS.add(0);
-			concernS.add(0);
-			percentS.add(0);
+			experienceS.add(0L);
+			concernS.add(0L);
+			percentS.add(0L);
 		}
 
-		Map<String, List<Integer>> ys = new HashMap<>();
+		Map<String, List<Long>> ys = new HashMap<>();
 		ys.put("experienceS", experienceS);
 		ys.put("percentS", percentS);
 		ys.put("concernS", concernS);
