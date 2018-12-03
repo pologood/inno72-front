@@ -12,7 +12,7 @@
     <groupId>com.github.binarywang</groupId>
     <version>1.0.0-SNAPSHOT</version>
     <artifactId>inno72-weixin-java-mp</artifactId>
-    <packaging>jar</packaging>
+    <packaging>war</packaging>
 
     <name>inno72-weixin-java-mp</name>
     <description>Spring Boot Demo with wechat MP</description>
