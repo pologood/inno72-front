@@ -2,7 +2,9 @@ package com.github.binarywang.demo.wx.mp;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.boot.builder.SpringApplicationBuilder;
 import org.springframework.boot.web.servlet.FilterRegistrationBean;
+import org.springframework.boot.web.servlet.support.SpringBootServletInitializer;
 import org.springframework.context.annotation.Bean;
 import org.springframework.web.filter.OncePerRequestFilter;
 
@@ -17,7 +19,7 @@ import java.io.IOException;
  * @author Binary Wang(https://github.com/binarywang)
  */
 @SpringBootApplication
-public class WxMpDemoApplication {
+public class WxMpDemoApplication extends SpringBootServletInitializer {
 
     @Bean
     public FilterRegistrationBean crossFilter() {
@@ -46,6 +48,11 @@ public class WxMpDemoApplication {
         registration.setName("crossFilter");
         registration.setOrder(1);
         return registration;
+    }
+
+    @Override
+    protected SpringApplicationBuilder configure(SpringApplicationBuilder builder) {
+        return builder.sources(WxMpDemoApplication.class);
     }
 
     public static void main(String[] args) {
