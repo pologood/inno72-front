@@ -257,4 +257,11 @@ public class UserSessionVo {
 		this.isScanned = isScanned;
 	}
 
+	public boolean getLogged() {
+		return logged;
+	}
+
+	public void setLogged(boolean logged) {
+		this.logged = logged;
+	}
 }

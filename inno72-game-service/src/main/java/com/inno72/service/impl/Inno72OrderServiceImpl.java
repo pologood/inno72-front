@@ -507,7 +507,7 @@ public class Inno72OrderServiceImpl implements Inno72OrderService {
 			orderId = this.genInno72Order(channelId, activityPlanId, _machineId, inno72Coupon.getId(), vo.getUserId(),
 					Inno72Order.INNO72ORDER_GOODSTYPE.COUPON);
 		} catch (Exception e) {
-			LOGGER.info("获取优惠券下单失败 {}", e.getMessage(), e);
+			LOGGER.error("获取优惠券下单失败 {}", e.getMessage(), e);
 			return Results.failure("获取优惠券下单失败!");
 		}
 
