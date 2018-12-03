@@ -134,5 +134,6 @@
         <module>inno72-merchant-service</module>
         <module>inno72-activity-service</module>
         <module>inno72-wechat-share-service</module>
+        <module>inno72-weixin-java-mp</module>
     </modules>
 </project>
