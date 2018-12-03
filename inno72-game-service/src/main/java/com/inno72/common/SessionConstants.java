@@ -58,5 +58,4 @@ public final class SessionConstants {
     public final static String INNO72COUPONORDERID = "inno72CouponOrderId";
 
 
-
 }

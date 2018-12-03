@@ -3,6 +3,8 @@ package com.inno72.common.util;
 
 import java.util.concurrent.TimeUnit;
 
+import com.inno72.sessionshare.support.context.SessionContextInitializer;
+import com.inno72.sessionshare.utils.SessionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,12 +28,13 @@ public class GameSessionRedisUtil {
 	private StringRedisTemplate template;
 
 	public UserSessionVo getSessionKey(String sessionUuid) {
-		String sessionKey = SESSION_KEY + sessionUuid;
-		String s = string().get(sessionKey);
-		UserSessionVo userSessionVo = null;
-		if (StringUtil.isNotEmpty(s)) {
-			userSessionVo = JSON.parseObject(s, UserSessionVo.class);
-		}
+//		String sessionKey = SESSION_KEY + sessionUuid;
+//		String s = string().get(sessionKey);
+//		UserSessionVo userSessionVo = null;
+//		if (StringUtil.isNotEmpty(s)) {
+//			userSessionVo = JSON.parseObject(s, UserSessionVo.class);
+//		}
+		UserSessionVo userSessionVo = new UserSessionVo(sessionUuid);
 		return userSessionVo;
 	}
 
@@ -41,7 +44,8 @@ public class GameSessionRedisUtil {
 	 */
 	public void delSession(String sessionUuid) {
 		LOGGER.debug("delSession sessionUuid is {}", sessionUuid);
-		template.delete(SESSION_KEY + sessionUuid);
+//		template.delete(SESSION_KEY + sessionUuid);
+		SessionUtils.removeSession(sessionUuid);
 	}
 
 	/**
@@ -49,10 +53,10 @@ public class GameSessionRedisUtil {
 	 * @param sessionUuid
 	 * @param value
 	 */
-	public void setSession(String sessionUuid, String value) {
-		LOGGER.debug("setSession sessionUuid is {}, value is {}", sessionUuid, value);
-		string().set(SESSION_KEY + sessionUuid, value);
-	}
+//	public void setSession(String sessionUuid, String value) {
+//		LOGGER.debug("setSession sessionUuid is {}, value is {}", sessionUuid, value);
+//		string().set(SESSION_KEY + sessionUuid, value);
+//	}
 
 	public void setSessionEx(String sessionUuid, String value) {
 		LOGGER.debug("存入session ===> sessionUuid[{}]、 value[{}];", sessionUuid, value);

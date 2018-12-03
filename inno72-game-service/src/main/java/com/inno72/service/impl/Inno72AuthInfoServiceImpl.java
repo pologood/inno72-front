@@ -372,7 +372,7 @@ public class Inno72AuthInfoServiceImpl implements Inno72AuthInfoService {
 
 		LOGGER.info("processBeforeLogged返回聚石塔结果 is {}", resultMap);
 
-		gameSessionRedisUtil.setSession(sessionUuid, JSON.toJSONString(sessionVo));
+//		gameSessionRedisUtil.setSession(sessionUuid, JSON.toJSONString(sessionVo));
 
 		CommonBean.logger(
 				CommonBean.POINT_TYPE_LOGIN,
@@ -665,7 +665,7 @@ public class Inno72AuthInfoServiceImpl implements Inno72AuthInfoService {
 			if (hasKey) {
 				UserSessionVo userSessionVo = gameSessionRedisUtil.getSessionKey(sessionUuid);
 				userSessionVo.setLogged(true);
-				gameSessionRedisUtil.setSession(userSessionVo.getSessionUuid(), JSON.toJSONString(userSessionVo));
+//				gameSessionRedisUtil.setSession(userSessionVo.getSessionUuid(), JSON.toJSONString(userSessionVo));
 				logged = true;
 				pointService.innerPoint(sessionUuid, Inno72MachineInformation.ENUM_INNO72_MACHINE_INFORMATION_TYPE.LOGIN);
 			}
@@ -683,7 +683,7 @@ public class Inno72AuthInfoServiceImpl implements Inno72AuthInfoService {
 			if (hasKey) {
 				UserSessionVo userSessionVo = gameSessionRedisUtil.getSessionKey(sessionUuid);
 				userSessionVo.setFllowed(true);
-				gameSessionRedisUtil.setSession(userSessionVo.getSessionUuid(), JSON.toJSONString(userSessionVo));
+//				gameSessionRedisUtil.setSession(userSessionVo.getSessionUuid(), JSON.toJSONString(userSessionVo));
 			}
 		} catch (Exception e) {
 			LOGGER.error(e.getMessage(), e);

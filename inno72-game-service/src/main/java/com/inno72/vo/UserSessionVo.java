@@ -4,6 +4,7 @@ import java.util.List;
 
 import com.inno72.common.SessionConstants;
 import com.inno72.sessionshare.utils.SessionUtils;
+import com.sun.org.apache.xpath.internal.operations.Bool;
 import lombok.Data;
 
 import javax.servlet.http.HttpSession;
@@ -547,131 +548,145 @@ public class UserSessionVo {
 	}
 
 	public Long getPlayTimes() {
-		return playTimes;
+		return  (Long)httpSession.getAttribute(SessionConstants.PLAYTIMES);
 	}
 
 	public void setPlayTimes(Long playTimes) {
 		this.playTimes = playTimes;
+		httpSession.setAttribute(SessionConstants.PLAYTIMES,playTimes);
 	}
 
 	public boolean isCanOrder() {
-		return canOrder;
+		return (Boolean)httpSession.getAttribute(SessionConstants.CANORDER);
 	}
 
 	public boolean isCanGame() {
-		return canGame;
+		return (Boolean)httpSession.getAttribute(SessionConstants.CANGAME);
 	}
 
 	public Integer getChannelType() {
-		return channelType;
+		return (Integer)httpSession.getAttribute(SessionConstants.CHANNELTYPE);
 	}
 
 	public void setChannelType(Integer channelType) {
 		this.channelType = channelType;
+		httpSession.setAttribute(SessionConstants.CHANNELTYPE,channelType);
 	}
 
 	public boolean isCountGoods() {
-		return countGoods;
+		return (Boolean)httpSession.getAttribute(SessionConstants.COUNTGOODS);
 	}
 
 	public List<GoodsVo> getGoodsList() {
-		return goodsList;
+		return (List<GoodsVo>)httpSession.getAttribute(SessionConstants.GOODSLIST);
 	}
 
 	public void setGoodsList(List<GoodsVo> goodsList) {
 		this.goodsList = goodsList;
+		httpSession.setAttribute(SessionConstants.GOODSLIST,goodsList);
 	}
 
 	public boolean isLogged() {
-		return logged;
+		return (Boolean)httpSession.getAttribute(SessionConstants.LOGGED);
 	}
 
 	public void setLogged(boolean logged) {
 		this.logged = logged;
+		httpSession.setAttribute(SessionConstants.LOGGED,logged);
 	}
 
 	public String getGoodsId() {
-		return goodsId;
+		return (String)httpSession.getAttribute(SessionConstants.GOODSID);
 	}
 
 	public void setGoodsId(String goodsId) {
 		this.goodsId = goodsId;
+		httpSession.setAttribute(SessionConstants.GOODSID,goodsId);
 	}
 
 	public String getGoodsCode() {
-		return goodsCode;
+		return (String)httpSession.getAttribute(SessionConstants.GOODSCODE);
 	}
 
 	public void setGoodsCode(String goodsCode) {
 		this.goodsCode = goodsCode;
+		httpSession.setAttribute(SessionConstants.GOODSCODE,goodsCode);
 	}
 
 	public String getAuthUrl() {
-		return authUrl;
+		return (String)httpSession.getAttribute(SessionConstants.AUTHURL);
 	}
 
 	public void setAuthUrl(String authUrl) {
 		this.authUrl = authUrl;
+		httpSession.setAttribute(SessionConstants.AUTHURL,authUrl);
 	}
 
 	public boolean isNeedPay() {
-		return needPay;
+		return (Boolean)httpSession.getAttribute(SessionConstants.NEEDPAY);
 	}
 
 	public String getIsVip() {
-		return isVip;
+		return (String)httpSession.getAttribute(SessionConstants.ISVIP);
 	}
 
 	public void setIsVip(String isVip) {
 		this.isVip = isVip;
+		httpSession.setAttribute(SessionConstants.ISVIP,isVip);
 	}
 
 	public String getSessionKey() {
-		return sessionKey;
+		return (String)httpSession.getAttribute(SessionConstants.SESSIONKEY);
 	}
 
 	public void setSessionKey(String sessionKey) {
 		this.sessionKey = sessionKey;
+		httpSession.setAttribute(SessionConstants.SESSIONKEY,sessionKey);
 	}
 
 	public boolean isScanned() {
-		return isScanned;
+		return (Boolean)httpSession.getAttribute(SessionConstants.ISSCANNED);
 	}
 
 	public void setScanned(boolean scanned) {
 		isScanned = scanned;
+		httpSession.setAttribute(SessionConstants.ISSCANNED,isScanned);
 	}
 
 	public String getNewRetailMemberUrl() {
-		return newRetailMemberUrl;
+		return (String)httpSession.getAttribute(SessionConstants.NEWRETAILMEMBERURL);
 	}
 
 	public void setNewRetailMemberUrl(String newRetailMemberUrl) {
 		this.newRetailMemberUrl = newRetailMemberUrl;
+		httpSession.setAttribute(SessionConstants.NEWRETAILMEMBERURL,newRetailMemberUrl);
 	}
 
 	public Integer getGoodsType() {
-		return goodsType;
+		return (Integer)httpSession.getAttribute(SessionConstants.GOODSTYPE);
 	}
 
 	public void setGoodsType(Integer goodsType) {
 		this.goodsType = goodsType;
+		httpSession.setAttribute(SessionConstants.GOODSTYPE,goodsType);
 	}
 
 	public Integer getActivityType() {
-		return activityType;
+		return (Integer)httpSession.getAttribute(SessionConstants.ACTIVITYTYPE);
 	}
 
 	public void setActivityType(Integer activityType) {
 		this.activityType = activityType;
+		httpSession.setAttribute(SessionConstants.ACTIVITYTYPE,activityType);
 	}
 
 	public boolean isFllowed() {
-		return fllowed;
+		return (Boolean)httpSession.getAttribute(SessionConstants.FLLOWED);
 	}
 
 	public void setFllowed(boolean fllowed) {
 		this.fllowed = fllowed;
+		httpSession.setAttribute(SessionConstants.FLLOWED,fllowed);
 	}
 
 	public boolean findPaiyangFlag() {
