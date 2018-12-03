@@ -317,7 +317,7 @@ public class Inno72MerchantTotalCountByDayServiceImpl extends AbstractService<In
 
 				experience += Integer.parseInt(day.get("experience"));
 				concern += Integer.parseInt(day.get("concern"));
-				percent += Integer.parseInt(day.get("percent"));
+				percent += Long.parseLong(day.get("percent"));
 			}
 			LocalDate cDate = LocalDateUtil.transfer(k.getKey(), DateTimeFormatter.ofPattern("yyyy-MM-dd"));
 			// 计算日差，如果当前日期数据小于传入的开始日期。补充0的数据到数组
