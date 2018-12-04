@@ -279,7 +279,7 @@ public class UserSessionVo {
 
 	public Boolean getIsScanned() {
 		Object obj = httpSession.getAttribute(SessionConstants.ISSCANNED);
-		if(obj == null) return null;
+		if(obj == null) return false;
 		return (Boolean)obj ;
 	}
 
