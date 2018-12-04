@@ -809,6 +809,7 @@ public class UserSessionVo {
 
 	public boolean findPaiyangFlag() {
 		boolean flag = false;
+		inno72MachineVo =getInno72MachineVo();
 
 		if(inno72MachineVo!=null && inno72MachineVo.getActivityType() == Inno72MachineVo.ACTIVITYTYPE_PAIYANG){
 			flag = true;
