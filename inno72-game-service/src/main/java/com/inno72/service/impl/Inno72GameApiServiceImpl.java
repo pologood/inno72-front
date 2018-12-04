@@ -1375,7 +1375,7 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 	 * @param sessionUuid
 	 */
 	private void startSession(Inno72Machine inno72Machine, String ext, String sessionUuid){
-		UserSessionVo userSessionVo = new UserSessionVo(inno72Machine.getMachineCode());
+		UserSessionVo userSessionVo =  new UserSessionVo(inno72Machine.getMachineCode());
 		userSessionVo.setMachineCode(inno72Machine.getMachineCode());
 		userSessionVo.setMachineId(inno72Machine.getId());
 		userSessionVo.setLogged(false);
