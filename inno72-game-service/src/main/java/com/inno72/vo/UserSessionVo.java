@@ -183,8 +183,10 @@ public class UserSessionVo {
 		httpSession.setAttribute(SessionConstants.CANORDER,canOrder);
 	}
 
-	public boolean getCanOrder() {
-		return (Boolean) httpSession.getAttribute(SessionConstants.CANORDER);
+	public Boolean getCanOrder() {
+		Object obj = httpSession.getAttribute(SessionConstants.CANORDER);
+		if(obj == null) return null;
+		return (Boolean)obj ;
 	}
 
 	public void setChannelId(String channelId) {
@@ -193,7 +195,9 @@ public class UserSessionVo {
 	}
 
 	public String getChannelId() {
-		return (String)httpSession.getAttribute(SessionConstants.CHANNELID);
+		Object obj = httpSession.getAttribute(SessionConstants.CHANNELID);
+		if(obj == null) return null;
+		return (String)obj ;
 	}
 
 	public void setMachineId(String machineId) {
@@ -202,7 +206,9 @@ public class UserSessionVo {
 	}
 
 	public String getMachineId() {
-		return (String)httpSession.getAttribute(SessionConstants.MACHINEID);
+		Object obj = httpSession.getAttribute(SessionConstants.MACHINEID);
+		if(obj == null) return null;
+		return (String)obj ;
 	}
 
 	public void setActivityId(String activityId) {
@@ -211,7 +217,9 @@ public class UserSessionVo {
 	}
 
 	public String getActivityId() {
-		return (String)httpSession.getAttribute(SessionConstants.ACTIVITYID);
+		Object obj = httpSession.getAttribute(SessionConstants.ACTIVITYID);
+		if(obj == null) return null;
+		return (String)obj ;
 	}
 
 	public void setMachineCode(String machineCode) {
@@ -220,7 +228,9 @@ public class UserSessionVo {
 	}
 
 	public String getMachineCode() {
-		return (String)httpSession.getAttribute(SessionConstants.MACHINECODE);
+		Object obj = httpSession.getAttribute(SessionConstants.MACHINECODE);
+		if(obj == null) return null;
+		return (String)obj ;
 	}
 
 	public void setCountGoods(boolean countGoods) {
@@ -228,8 +238,10 @@ public class UserSessionVo {
 		httpSession.setAttribute(SessionConstants.COUNTGOODS,countGoods);
 	}
 
-	public boolean getCountGoods() {
-		return (Boolean)httpSession.getAttribute(SessionConstants.COUNTGOODS);
+	public Boolean getCountGoods() {
+		Object obj = httpSession.getAttribute(SessionConstants.COUNTGOODS);
+		if(obj == null) return null;
+		return (Boolean)obj ;
 	}
 
 	public void setLoginType(int loginType) {
@@ -237,12 +249,16 @@ public class UserSessionVo {
 		httpSession.setAttribute(SessionConstants.LOGINTYPE,loginType);
 	}
 
-	public int getLoginType() {
-		return (Integer)httpSession.getAttribute(SessionConstants.LOGINTYPE);
+	public Integer getLoginType() {
+		Object obj = httpSession.getAttribute(SessionConstants.LOGINTYPE);
+		if(obj == null) return null;
+		return (Integer)obj ;
 	}
 
-	public boolean getNeedPay() {
-		return (Boolean)httpSession.getAttribute(SessionConstants.NEEDPAY);
+	public Boolean getNeedPay() {
+		Object obj = httpSession.getAttribute(SessionConstants.NEEDPAY);
+		if(obj == null) return null;
+		return (Boolean)obj ;
 	}
 
 	public void setNeedPay(boolean needPay) {
@@ -250,8 +266,10 @@ public class UserSessionVo {
 		httpSession.setAttribute(SessionConstants.NEEDPAY,needPay);
 	}
 
-	public boolean getCanGame() {
-		return (Boolean)httpSession.getAttribute(SessionConstants.CANGAME);
+	public Boolean getCanGame() {
+		Object obj = httpSession.getAttribute(SessionConstants.CANGAME);
+		if(obj == null) return null;
+		return (Boolean)obj ;
 	}
 
 	public void setCanGame(boolean canGame) {
@@ -259,8 +277,10 @@ public class UserSessionVo {
 		httpSession.setAttribute(SessionConstants.CANGAME,canGame);
 	}
 
-	public boolean getIsScanned() {
-		return (Boolean)httpSession.getAttribute(SessionConstants.ISSCANNED);
+	public Boolean getIsScanned() {
+		Object obj = httpSession.getAttribute(SessionConstants.ISSCANNED);
+		if(obj == null) return null;
+		return (Boolean)obj ;
 	}
 
 	public void setIsScanned(boolean isScanned) {
@@ -269,7 +289,9 @@ public class UserSessionVo {
 	}
 
 	public String getTraceId() {
-		return (String)httpSession.getAttribute(SessionConstants.TRACEID);
+		Object obj = httpSession.getAttribute(SessionConstants.TRACEID);
+		if(obj == null) return null;
+		return (String)obj ;
 	}
 
 	public void setTraceId(String traceId) {
@@ -278,7 +300,9 @@ public class UserSessionVo {
 	}
 
 	public String getPlanCode() {
-		return (String)httpSession.getAttribute(SessionConstants.PLANCODE);
+		Object obj = httpSession.getAttribute(SessionConstants.PLANCODE);
+		if(obj == null) return null;
+		return (String)obj ;
 	}
 
 	public void setPlanCode(String planCode) {
@@ -287,7 +311,9 @@ public class UserSessionVo {
 	}
 
 	public String getSellerName() {
-		return (String)httpSession.getAttribute(SessionConstants.SELLERNAME);
+		Object obj = httpSession.getAttribute(SessionConstants.SELLERNAME);
+		if(obj == null) return null;
+		return (String)obj ;
 	}
 
 	public void setSellerName(String sellerName) {
@@ -296,7 +322,9 @@ public class UserSessionVo {
 	}
 
 	public String getShipmentNum() {
-		return (String)httpSession.getAttribute(SessionConstants.SHIPMENTNUM);
+		Object obj = httpSession.getAttribute(SessionConstants.SHIPMENTNUM);
+		if(obj == null) return null;
+		return (String)obj ;
 	}
 
 	public void setShipmentNum(String shipmentNum) {
@@ -305,7 +333,9 @@ public class UserSessionVo {
 	}
 
 	public String getScanUrl() {
-		return (String)httpSession.getAttribute(SessionConstants.SCANURL);
+		Object obj = httpSession.getAttribute(SessionConstants.SCANURL);
+		if(obj == null) return null;
+		return (String)obj ;
 	}
 
 	public void setScanUrl(String scanUrl) {
@@ -314,7 +344,9 @@ public class UserSessionVo {
 	}
 
 	public String getGoodsName() {
-		return (String)httpSession.getAttribute(SessionConstants.GOODSNAME);
+		Object obj = httpSession.getAttribute(SessionConstants.GOODSNAME);
+		if(obj == null) return null;
+		return (String)obj ;
 	}
 
 	public void setGoodsName(String goodsName) {
@@ -323,7 +355,9 @@ public class UserSessionVo {
 	}
 
 	public String getRefOrderStatus() {
-		return (String)httpSession.getAttribute(SessionConstants.REFORDERSTATUS);
+		Object obj = httpSession.getAttribute(SessionConstants.REFORDERSTATUS);
+		if(obj == null) return null;
+		return (String)obj ;
 	}
 
 	public void setRefOrderStatus(String refOrderStatus) {
@@ -332,7 +366,9 @@ public class UserSessionVo {
 	}
 
 	public String getScanLoginUrl() {
-		return (String)httpSession.getAttribute(SessionConstants.SCANLOGINURL);
+		Object obj = httpSession.getAttribute(SessionConstants.SCANLOGINURL);
+		if(obj == null) return null;
+		return (String)obj ;
 	}
 
 	public void setScanLoginUrl(String scanLoginUrl) {
@@ -341,7 +377,9 @@ public class UserSessionVo {
 	}
 
 	public String getScanPayUrl() {
-		return (String)httpSession.getAttribute(SessionConstants.SCANPAYURL);
+		Object obj = httpSession.getAttribute(SessionConstants.SCANPAYURL);
+		if(obj == null) return null;
+		return (String)obj ;
 	}
 
 	public void setScanPayUrl(String scanPayUrl) {
@@ -350,7 +388,9 @@ public class UserSessionVo {
 	}
 
 	public String getInteractId() {
-		return (String)httpSession.getAttribute(SessionConstants.INTERACTID);
+		Object obj = httpSession.getAttribute(SessionConstants.INTERACTID);
+		if(obj == null) return null;
+		return (String)obj ;
 	}
 
 	public void setInteractId(String interactId) {
@@ -359,7 +399,9 @@ public class UserSessionVo {
 	}
 
 	public String getGameUserId() {
-		return  (String)httpSession.getAttribute(SessionConstants.GAMEUSERID);
+		Object obj = httpSession.getAttribute(SessionConstants.GAMEUSERID);
+		if(obj == null) return null;
+		return (String)obj ;
 	}
 
 	public void setGameUserId(String gameUserId) {
@@ -368,7 +410,9 @@ public class UserSessionVo {
 	}
 
 	public String getMid() {
-		return (String)httpSession.getAttribute(SessionConstants.MID);
+		Object obj = httpSession.getAttribute(SessionConstants.MID);
+		if(obj == null) return null;
+		return (String)obj ;
 	}
 
 	public void setMid(String mid) {
@@ -377,7 +421,9 @@ public class UserSessionVo {
 	}
 
 	public String getUserNick() {
-		return (String)httpSession.getAttribute(SessionConstants.USERNICK);
+		Object obj = httpSession.getAttribute(SessionConstants.USERNICK);
+		if(obj == null) return null;
+		return (String)obj ;
 	}
 
 	public void setUserNick(String userNick) {
@@ -386,7 +432,9 @@ public class UserSessionVo {
 	}
 
 	public String getUserId() {
-		return (String)httpSession.getAttribute(SessionConstants.USERID);
+		Object obj = httpSession.getAttribute(SessionConstants.USERID);
+		if(obj == null) return null;
+		return (String)obj ;
 	}
 
 	public void setUserId(String userId) {
@@ -395,7 +443,9 @@ public class UserSessionVo {
 	}
 
 	public String getAccessToken() {
-		return (String)httpSession.getAttribute(SessionConstants.ACCESSTOKEN);
+		Object obj = httpSession.getAttribute(SessionConstants.ACCESSTOKEN);
+		if(obj == null) return null;
+		return (String)obj ;
 	}
 
 	public void setAccessToken(String accessToken) {
@@ -404,7 +454,9 @@ public class UserSessionVo {
 	}
 
 	public String getGameId() {
-		return (String)httpSession.getAttribute(SessionConstants.GAMEID);
+		Object obj = httpSession.getAttribute(SessionConstants.GAMEID);
+		if(obj == null) return null;
+		return (String)obj ;
 	}
 
 	public void setGameId(String gameId) {
@@ -413,7 +465,9 @@ public class UserSessionVo {
 	}
 
 	public String getSessionUuid() {
-		return (String)httpSession.getAttribute(SessionConstants.SESSIONUUID);
+		Object obj = httpSession.getAttribute(SessionConstants.SESSIONUUID);
+		if(obj == null) return null;
+		return (String)obj ;
 	}
 
 	public void setSessionUuid(String sessionUuid) {
@@ -422,7 +476,9 @@ public class UserSessionVo {
 	}
 
 	public String getMixnick() {
-		return (String)httpSession.getAttribute(SessionConstants.MIXNICK);
+		Object obj = httpSession.getAttribute(SessionConstants.MIXNICK);
+		if(obj == null) return null;
+		return (String)obj ;
 	}
 
 	public void setMixnick(String mixnick) {
@@ -431,7 +487,9 @@ public class UserSessionVo {
 	}
 
 	public String getSource() {
-		return (String)httpSession.getAttribute(SessionConstants.SOURCE);
+		Object obj = httpSession.getAttribute(SessionConstants.SOURCE);
+		if(obj == null) return null;
+		return (String)obj ;
 	}
 
 	public void setSource(String source) {
@@ -440,7 +498,9 @@ public class UserSessionVo {
 	}
 
 	public String getRefOrderId() {
-		return (String)httpSession.getAttribute(SessionConstants.REFORDERID);
+		Object obj = httpSession.getAttribute(SessionConstants.REFORDERID);
+		if(obj == null) return null;
+		return (String)obj ;
 	}
 
 	public void setRefOrderId(String refOrderId) {
@@ -449,7 +509,9 @@ public class UserSessionVo {
 	}
 
 	public String getSellerId() {
-		return (String)httpSession.getAttribute(SessionConstants.SELLERID);
+		Object obj = httpSession.getAttribute(SessionConstants.SELLERID);
+		if(obj == null) return null;
+		return (String)obj ;
 	}
 
 	public void setSellerId(String sellerId) {
@@ -458,7 +520,9 @@ public class UserSessionVo {
 	}
 
 	public String getMerchantName() {
-		return (String)httpSession.getAttribute(SessionConstants.MERCHANTNAME);
+		Object obj = httpSession.getAttribute(SessionConstants.MERCHANTNAME);
+		if(obj == null) return null;
+		return (String)obj ;
 	}
 
 	public void setMerchantName(String merchantName) {
@@ -467,7 +531,9 @@ public class UserSessionVo {
 	}
 
 	public Inno72MachineVo getInno72MachineVo() {
-		return (Inno72MachineVo)httpSession.getAttribute(SessionConstants.INNO72MACHINEVO);
+		Object obj = httpSession.getAttribute(SessionConstants.INNO72MACHINEVO);
+		if(obj == null) return null;
+		return (Inno72MachineVo)obj ;
 	}
 
 	public void setInno72MachineVo(Inno72MachineVo inno72MachineVo) {
@@ -476,7 +542,9 @@ public class UserSessionVo {
 	}
 
 	public String getMerchantAccountId() {
-		return (String)httpSession.getAttribute(SessionConstants.MERCHANTACCOUNTID);
+		Object obj = httpSession.getAttribute(SessionConstants.MERCHANTACCOUNTID);
+		if(obj == null) return null;
+		return (String)obj ;
 	}
 
 	public void setMerchantAccountId(String merchantAccountId) {
@@ -485,7 +553,9 @@ public class UserSessionVo {
 	}
 
 	public String getMerchantAccountName() {
-		return (String)httpSession.getAttribute(SessionConstants.MERCHANTACCOUNTNAME);
+		Object obj = httpSession.getAttribute(SessionConstants.MERCHANTACCOUNTNAME);
+		if(obj == null) return null;
+		return (String)obj ;
 	}
 
 	public void setMerchantAccountName(String merchantAccountName) {
@@ -494,7 +564,9 @@ public class UserSessionVo {
 	}
 
 	public String getChannelMerchantId() {
-		return  (String)httpSession.getAttribute(SessionConstants.CHANNELMERCHANTID);
+		Object obj = httpSession.getAttribute(SessionConstants.CHANNELMERCHANTID);
+		if(obj == null) return null;
+		return (String)obj ;
 	}
 
 	public void setChannelMerchantId(String channelMerchantId) {
@@ -503,7 +575,9 @@ public class UserSessionVo {
 	}
 
 	public String getChannelName() {
-		return  (String)httpSession.getAttribute(SessionConstants.CHANNELNAME);
+		Object obj = httpSession.getAttribute(SessionConstants.CHANNELNAME);
+		if(obj == null) return null;
+		return (String)obj ;
 	}
 
 	public void setChannelName(String channelName) {
@@ -512,7 +586,9 @@ public class UserSessionVo {
 	}
 
 	public String getGameReport() {
-		return  (String)httpSession.getAttribute(SessionConstants.GAMEREPORT);
+		Object obj = httpSession.getAttribute(SessionConstants.GAMEREPORT);
+		if(obj == null) return null;
+		return (String)obj ;
 	}
 
 	public void setGameReport(String gameReport) {
@@ -521,7 +597,9 @@ public class UserSessionVo {
 	}
 
 	public String getInno72OrderId() {
-		return  (String)httpSession.getAttribute(SessionConstants.INNO72ORDERID);
+		Object obj = httpSession.getAttribute(SessionConstants.INNO72ORDERID);
+		if(obj == null) return null;
+		return (String)obj ;
 	}
 
 	public void setInno72OrderId(String inno72OrderId) {
@@ -530,7 +608,9 @@ public class UserSessionVo {
 	}
 
 	public String getInno72CouponOrderId() {
-		return  (String)httpSession.getAttribute(SessionConstants.INNO72COUPONORDERID);
+		Object obj = httpSession.getAttribute(SessionConstants.INNO72COUPONORDERID);
+		if(obj == null) return null;
+		return (String)obj ;
 	}
 
 	public void setInno72CouponOrderId(String inno72CouponOrderId) {
@@ -539,7 +619,9 @@ public class UserSessionVo {
 	}
 
 	public String getActivityPlanId() {
-		return  (String)httpSession.getAttribute(SessionConstants.ACTIVITYPLANID);
+		Object obj = httpSession.getAttribute(SessionConstants.ACTIVITYPLANID);
+		if(obj == null) return null;
+		return (String)obj ;
 	}
 
 	public void setActivityPlanId(String activityPlanId) {
@@ -548,7 +630,9 @@ public class UserSessionVo {
 	}
 
 	public Long getPlayTimes() {
-		return  (Long)httpSession.getAttribute(SessionConstants.PLAYTIMES);
+		Object obj = httpSession.getAttribute(SessionConstants.PLAYTIMES);
+		if(obj == null) return null;
+		return (Long)obj ;
 	}
 
 	public void setPlayTimes(Long playTimes) {
@@ -556,16 +640,22 @@ public class UserSessionVo {
 		httpSession.setAttribute(SessionConstants.PLAYTIMES,playTimes);
 	}
 
-	public boolean isCanOrder() {
-		return (Boolean)httpSession.getAttribute(SessionConstants.CANORDER);
+	public Boolean isCanOrder() {
+		Object obj = httpSession.getAttribute(SessionConstants.CANORDER);
+		if(obj == null) return null;
+		return (Boolean)obj ;
 	}
 
-	public boolean isCanGame() {
-		return (Boolean)httpSession.getAttribute(SessionConstants.CANGAME);
+	public Boolean isCanGame() {
+		Object obj = httpSession.getAttribute(SessionConstants.CANGAME);
+		if(obj == null) return null;
+		return (Boolean)obj ;
 	}
 
 	public Integer getChannelType() {
-		return (Integer)httpSession.getAttribute(SessionConstants.CHANNELTYPE);
+		Object obj = httpSession.getAttribute(SessionConstants.CHANNELTYPE);
+		if(obj == null) return null;
+		return (Integer)obj ;
 	}
 
 	public void setChannelType(Integer channelType) {
@@ -573,12 +663,16 @@ public class UserSessionVo {
 		httpSession.setAttribute(SessionConstants.CHANNELTYPE,channelType);
 	}
 
-	public boolean isCountGoods() {
-		return (Boolean)httpSession.getAttribute(SessionConstants.COUNTGOODS);
+	public Boolean isCountGoods() {
+		Object obj = httpSession.getAttribute(SessionConstants.COUNTGOODS);
+		if(obj == null) return null;
+		return (Boolean)obj ;
 	}
 
 	public List<GoodsVo> getGoodsList() {
-		return (List<GoodsVo>)httpSession.getAttribute(SessionConstants.GOODSLIST);
+		Object obj = httpSession.getAttribute(SessionConstants.GOODSLIST);
+		if(obj == null) return null;
+		return (List<GoodsVo>)obj ;
 	}
 
 	public void setGoodsList(List<GoodsVo> goodsList) {
@@ -586,8 +680,10 @@ public class UserSessionVo {
 		httpSession.setAttribute(SessionConstants.GOODSLIST,goodsList);
 	}
 
-	public boolean isLogged() {
-		return (Boolean)httpSession.getAttribute(SessionConstants.LOGGED);
+	public Boolean isLogged() {
+		Object obj = httpSession.getAttribute(SessionConstants.LOGGED);
+		if(obj == null) return null;
+		return (Boolean)obj ;
 	}
 
 	public void setLogged(boolean logged) {
@@ -596,7 +692,9 @@ public class UserSessionVo {
 	}
 
 	public String getGoodsId() {
-		return (String)httpSession.getAttribute(SessionConstants.GOODSID);
+		Object obj = httpSession.getAttribute(SessionConstants.GOODSID);
+		if(obj == null) return null;
+		return (String)obj ;
 	}
 
 	public void setGoodsId(String goodsId) {
@@ -605,7 +703,9 @@ public class UserSessionVo {
 	}
 
 	public String getGoodsCode() {
-		return (String)httpSession.getAttribute(SessionConstants.GOODSCODE);
+		Object obj = httpSession.getAttribute(SessionConstants.GOODSCODE);
+		if(obj == null) return null;
+		return (String)obj ;
 	}
 
 	public void setGoodsCode(String goodsCode) {
@@ -614,7 +714,9 @@ public class UserSessionVo {
 	}
 
 	public String getAuthUrl() {
-		return (String)httpSession.getAttribute(SessionConstants.AUTHURL);
+		Object obj = httpSession.getAttribute(SessionConstants.AUTHURL);
+		if(obj == null) return null;
+		return (String)obj ;
 	}
 
 	public void setAuthUrl(String authUrl) {
@@ -622,12 +724,16 @@ public class UserSessionVo {
 		httpSession.setAttribute(SessionConstants.AUTHURL,authUrl);
 	}
 
-	public boolean isNeedPay() {
-		return (Boolean)httpSession.getAttribute(SessionConstants.NEEDPAY);
+	public Boolean isNeedPay() {
+		Object obj = httpSession.getAttribute(SessionConstants.NEEDPAY);
+		if(obj == null) return null;
+		return (Boolean)obj ;
 	}
 
 	public String getIsVip() {
-		return (String)httpSession.getAttribute(SessionConstants.ISVIP);
+		Object obj = httpSession.getAttribute(SessionConstants.ISVIP);
+		if(obj == null) return null;
+		return (String)obj ;
 	}
 
 	public void setIsVip(String isVip) {
@@ -636,7 +742,9 @@ public class UserSessionVo {
 	}
 
 	public String getSessionKey() {
-		return (String)httpSession.getAttribute(SessionConstants.SESSIONKEY);
+		Object obj = httpSession.getAttribute(SessionConstants.SESSIONKEY);
+		if(obj == null) return null;
+		return (String)obj ;
 	}
 
 	public void setSessionKey(String sessionKey) {
@@ -644,8 +752,10 @@ public class UserSessionVo {
 		httpSession.setAttribute(SessionConstants.SESSIONKEY,sessionKey);
 	}
 
-	public boolean isScanned() {
-		return (Boolean)httpSession.getAttribute(SessionConstants.ISSCANNED);
+	public Boolean isScanned() {
+		Object obj = httpSession.getAttribute(SessionConstants.ISSCANNED);
+		if(obj == null) return null;
+		return (Boolean)obj ;
 	}
 
 	public void setScanned(boolean scanned) {
@@ -654,7 +764,9 @@ public class UserSessionVo {
 	}
 
 	public String getNewRetailMemberUrl() {
-		return (String)httpSession.getAttribute(SessionConstants.NEWRETAILMEMBERURL);
+		Object obj = httpSession.getAttribute(SessionConstants.NEWRETAILMEMBERURL);
+		if(obj == null) return null;
+		return (String)obj ;
 	}
 
 	public void setNewRetailMemberUrl(String newRetailMemberUrl) {
@@ -663,7 +775,9 @@ public class UserSessionVo {
 	}
 
 	public Integer getGoodsType() {
-		return (Integer)httpSession.getAttribute(SessionConstants.GOODSTYPE);
+		Object obj = httpSession.getAttribute(SessionConstants.GOODSTYPE);
+		if(obj == null) return null;
+		return (Integer)obj ;
 	}
 
 	public void setGoodsType(Integer goodsType) {
@@ -672,7 +786,9 @@ public class UserSessionVo {
 	}
 
 	public Integer getActivityType() {
-		return (Integer)httpSession.getAttribute(SessionConstants.ACTIVITYTYPE);
+		Object obj = httpSession.getAttribute(SessionConstants.ACTIVITYTYPE);
+		if(obj == null) return null;
+		return (Integer)obj ;
 	}
 
 	public void setActivityType(Integer activityType) {
@@ -680,8 +796,10 @@ public class UserSessionVo {
 		httpSession.setAttribute(SessionConstants.ACTIVITYTYPE,activityType);
 	}
 
-	public boolean isFllowed() {
-		return (Boolean)httpSession.getAttribute(SessionConstants.FLLOWED);
+	public Boolean isFllowed() {
+		Object obj = httpSession.getAttribute(SessionConstants.FLLOWED);
+		if(obj == null) return null;
+		return (Boolean)obj ;
 	}
 
 	public void setFllowed(boolean fllowed) {
