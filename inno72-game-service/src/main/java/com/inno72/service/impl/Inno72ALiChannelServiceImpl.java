@@ -193,7 +193,7 @@ public class Inno72ALiChannelServiceImpl implements Inno72ChannelService {
         sessionVo.setActivityPlanId(interact.getId());
         boolean canOrder = inno72AuthInfoService.findCanOrder(interact,sessionVo,userId);
         sessionVo.setCanOrder(canOrder);
-        if(sessionVo.getGoodsType()!=null && UserSessionVo.GOODSTYPE_COUPON == sessionVo.getGoodsType()){
+        if(sessionVo.getGoodsType()!=null && UserSessionVo.GOODSTYPE_COUPON.compareTo(sessionVo.getGoodsType())==0){
             sessionVo.setCountGoods(true);
         }else{
             sessionVo.setCountGoods(goodsCount>0);
@@ -395,7 +395,7 @@ public class Inno72ALiChannelServiceImpl implements Inno72ChannelService {
         if (StringUtil.isNotEmpty(isVip) && sessionVo.getIsVip().equals("1")) {
             String goodsId = sessionVo.getGoodsId();
             if (!StringUtil.isEmpty(goodsId)) {
-                if(sessionVo.getGoodsType()!=null && UserSessionVo.GOODSTYPE_COUPON == sessionVo.getGoodsType()){
+                if(sessionVo.getGoodsType()!=null && UserSessionVo.GOODSTYPE_COUPON.compareTo(sessionVo.getGoodsType()) == 0){
                     Inno72Coupon inno72Coupon = inno72CouponMapper.selectByPrimaryKey(goodsId);
                     sessionVo.setGoodsCode(inno72Coupon.getCode());
                 }else{
