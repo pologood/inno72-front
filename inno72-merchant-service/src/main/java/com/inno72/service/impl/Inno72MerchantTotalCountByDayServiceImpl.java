@@ -268,8 +268,8 @@ public class Inno72MerchantTotalCountByDayServiceImpl extends AbstractService<In
 		for (Map.Entry<String, List<Inno72MerchantTotalCountByDay>> entry : map.entrySet()) {
 			List<Inno72MerchantTotalCountByDay> value = entry.getValue();
 
-			int totleStay = 0;
-			int totleConcernNum = 0;
+			Double totleStay = (double)0;
+			Double totleConcernNum = (double)0;
 			String city = value.get(0).getCity();
 			String date = value.get(0).getDate();
 
@@ -282,7 +282,7 @@ public class Inno72MerchantTotalCountByDayServiceImpl extends AbstractService<In
 			userResult.put("city", city);
 			userResult.put("experience", totleStay + "");
 			userResult.put("concern", totleConcernNum + "");
-			if (totleConcernNum != 0) {
+			if (totleConcernNum != 0 && totleStay != 0) {
 				BigDecimal divide = new BigDecimal(totleConcernNum).divide(new BigDecimal(totleStay), 2,
 						BigDecimal.ROUND_CEILING);
 				userResult.put("percent", divide.toString());
