@@ -30,7 +30,7 @@ public enum StandardLoginTypeEnum {
 		return false;
 	}
 
-	public static String getValue(Integer value) {
+	public static String getValue(int value) {
 		StandardLoginTypeEnum[] operTypeEnums = values();
 		for (StandardLoginTypeEnum operTypeEnum : operTypeEnums) {
 			if (operTypeEnum.getValue() == value) {

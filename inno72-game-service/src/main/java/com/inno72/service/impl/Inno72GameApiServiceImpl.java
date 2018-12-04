@@ -832,7 +832,6 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
             return Results.failure("已经超过最大游戏数量啦 QAQ!");
         }
         userSessionVo.setInno72OrderId(inno72OrderId);
-
         Inno72ChannelService channelService = (Inno72ChannelService)ApplicationContextHandle.getBean(StandardLoginTypeEnum.getValue(userSessionVo.getChannelType()));
 
         Result<Object> r =  channelService.order(userSessionVo,itemId,inno72OrderId);
@@ -1358,6 +1357,8 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 		// 开始会话流程
 		try {
 			this.startSession(inno72Machine, ext, sessionUuid);
+			UserSessionVo userSessionVo =  new UserSessionVo(inno72Machine.getMachineCode());
+			userSessionVo.setLoginType(req.getLoginType());
 		} catch(Exception e){
 			LOGGER.error("prepareLoginQrCode",e);
 			return Results.failure("系统异常");
