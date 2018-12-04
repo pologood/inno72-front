@@ -141,7 +141,7 @@ public class Inno72ALiChannelServiceImpl implements Inno72ChannelService {
         // 检查二维码是否可以重复扫
         String qrStatus = this.checkQrCode(sessionUuid);
         Inno72Merchant inno72Merchant = null;
-        if(sessionVo.getGoodsType()!=null && UserSessionVo.GOODSTYPE_COUPON == sessionVo.getGoodsType()){
+        if(sessionVo.getGoodsType()!=null && UserSessionVo.GOODSTYPE_COUPON.compareTo(sessionVo.getGoodsType()) == 0){
             inno72Merchant = inno72MerchantMapper.findByCoupon(sessionVo.getGoodsId());
         }else{
             if(!StringUtils.isEmpty(sessionVo.getGoodsId())){
