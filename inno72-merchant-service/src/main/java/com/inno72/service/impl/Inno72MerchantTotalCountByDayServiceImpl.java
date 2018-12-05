@@ -270,8 +270,8 @@ public class Inno72MerchantTotalCountByDayServiceImpl extends AbstractService<In
 
 //			Double totleStay = (double)0;
 //			Double totleConcernNum = (double)0;
-			Double totleStay = Double.valueOf(value.get(0).getStayNum());
-			Double totleConcernNum = Double.valueOf(value.get(0).getConcernNum());
+			Integer totleStay =value.get(0).getStayNum();
+			Integer totleConcernNum =value.get(0).getConcernNum();
 			String city = value.get(0).getCity();
 			String date = value.get(0).getDate();
 
@@ -298,9 +298,9 @@ public class Inno72MerchantTotalCountByDayServiceImpl extends AbstractService<In
 
 		Map<String, List<Map<String, String>>> kk = kku(list, startDateLocal, endDateLocal);
 
-		List<Double> experienceS = new ArrayList<>();
-		List<Double> concernS = new ArrayList<>();
-		List<Double> percentS = new ArrayList<>();
+		List<Object> experienceS = new ArrayList<>();
+		List<Object> concernS = new ArrayList<>();
+		List<Object> percentS = new ArrayList<>();
 
 		LocalDate thisDate = startDateLocal;
 		// 统计单日下所有数量的总和
@@ -311,8 +311,8 @@ public class Inno72MerchantTotalCountByDayServiceImpl extends AbstractService<In
 			}
 			List<Map<String, String>> value = k.getValue();
 
-			double experience = 0;
-			double concern = 0;
+			int experience = 0;
+			int concern = 0;
 			double percent = 0;
 
 			for (Map<String, String> day : value) {
@@ -324,8 +324,8 @@ public class Inno72MerchantTotalCountByDayServiceImpl extends AbstractService<In
 			LocalDate cDate = LocalDateUtil.transfer(k.getKey(), DateTimeFormatter.ofPattern("yyyy-MM-dd"));
 			// 计算日差，如果当前日期数据小于传入的开始日期。补充0的数据到数组
 			while (thisDate.isBefore(cDate)) {
-				experienceS.add((double)0);
-				concernS.add((double)0);
+				experienceS.add(0);
+				concernS.add(0);
 				percentS.add((double)0);
 				thisDate = thisDate.plusDays(1);
 			}
@@ -341,12 +341,12 @@ public class Inno72MerchantTotalCountByDayServiceImpl extends AbstractService<In
 
 		// 日期不足，补充0直到到结束日期
 		while (experienceS.size() <= (endDateLocal.getDayOfYear() - startDateLocal.getDayOfYear())) {
-			experienceS.add((double)0);
-			concernS.add((double)0);
+			experienceS.add(0);
+			concernS.add(0);
 			percentS.add((double)0);
 		}
 
-		Map<String, List<Double>> ys = new HashMap<>();
+		Map<String, List<Object>> ys = new HashMap<>();
 		ys.put("experienceS", experienceS);
 		ys.put("percentS", percentS);
 		ys.put("concernS", concernS);
