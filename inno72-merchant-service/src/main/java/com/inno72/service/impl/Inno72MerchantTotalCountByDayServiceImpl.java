@@ -287,7 +287,7 @@ public class Inno72MerchantTotalCountByDayServiceImpl extends AbstractService<In
 			if (totleConcernNum != 0 && totleStay != 0) {
 				BigDecimal divide = new BigDecimal(totleConcernNum).divide(new BigDecimal(totleStay), 2,
 						BigDecimal.ROUND_CEILING).multiply(new BigDecimal("100"));
-				userResult.put("percent", divide.toString());
+				userResult.put("percent", divide.intValue()+"");
 			} else {
 				userResult.put("percent", "0");
 			}
@@ -298,9 +298,9 @@ public class Inno72MerchantTotalCountByDayServiceImpl extends AbstractService<In
 
 		Map<String, List<Map<String, String>>> kk = kku(list, startDateLocal, endDateLocal);
 
-		List<Object> experienceS = new ArrayList<>();
-		List<Object> concernS = new ArrayList<>();
-		List<Object> percentS = new ArrayList<>();
+		List<Integer> experienceS = new ArrayList<>();
+		List<Integer> concernS = new ArrayList<>();
+		List<Integer> percentS = new ArrayList<>();
 
 		LocalDate thisDate = startDateLocal;
 		// 统计单日下所有数量的总和
@@ -313,20 +313,20 @@ public class Inno72MerchantTotalCountByDayServiceImpl extends AbstractService<In
 
 			int experience = 0;
 			int concern = 0;
-			double percent = 0;
+			int percent = 0;
 
 			for (Map<String, String> day : value) {
 
-				experience +=  Double.valueOf(day.get("experience"));
-				concern +=  Double.valueOf(day.get("concern"));
-				percent += Double.valueOf(day.get("percent"));
+				experience +=  Integer.parseInt(day.get("experience"));
+				concern += Integer.parseInt(day.get("concern"));
+				percent += Integer.parseInt(day.get("percent"));
 			}
 			LocalDate cDate = LocalDateUtil.transfer(k.getKey(), DateTimeFormatter.ofPattern("yyyy-MM-dd"));
 			// 计算日差，如果当前日期数据小于传入的开始日期。补充0的数据到数组
 			while (thisDate.isBefore(cDate)) {
 				experienceS.add(0);
 				concernS.add(0);
-				percentS.add((double)0);
+				percentS.add(0);
 				thisDate = thisDate.plusDays(1);
 			}
 			// 指针日期加一天
@@ -343,10 +343,10 @@ public class Inno72MerchantTotalCountByDayServiceImpl extends AbstractService<In
 		while (experienceS.size() <= (endDateLocal.getDayOfYear() - startDateLocal.getDayOfYear())) {
 			experienceS.add(0);
 			concernS.add(0);
-			percentS.add((double)0);
+			percentS.add(0);
 		}
 
-		Map<String, List<Object>> ys = new HashMap<>();
+		Map<String, List<Integer>> ys = new HashMap<>();
 		ys.put("experienceS", experienceS);
 		ys.put("percentS", percentS);
 		ys.put("concernS", concernS);
