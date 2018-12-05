@@ -268,8 +268,10 @@ public class Inno72MerchantTotalCountByDayServiceImpl extends AbstractService<In
 		for (Map.Entry<String, List<Inno72MerchantTotalCountByDay>> entry : map.entrySet()) {
 			List<Inno72MerchantTotalCountByDay> value = entry.getValue();
 
-			Double totleStay = (double)0;
-			Double totleConcernNum = (double)0;
+//			Double totleStay = (double)0;
+//			Double totleConcernNum = (double)0;
+			Double totleStay = Double.valueOf(value.get(0).getStayNum());
+			Double totleConcernNum = Double.valueOf(value.get(0).getConcernNum());
 			String city = value.get(0).getCity();
 			String date = value.get(0).getDate();
 
