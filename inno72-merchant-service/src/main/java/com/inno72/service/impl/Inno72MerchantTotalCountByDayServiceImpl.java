@@ -286,7 +286,7 @@ public class Inno72MerchantTotalCountByDayServiceImpl extends AbstractService<In
 			userResult.put("concern", totleConcernNum + "");
 			if (totleConcernNum != 0 && totleStay != 0) {
 				BigDecimal divide = new BigDecimal(totleConcernNum).divide(new BigDecimal(totleStay), 2,
-						BigDecimal.ROUND_CEILING);
+						BigDecimal.ROUND_CEILING).multiply(new BigDecimal("100"));
 				userResult.put("percent", divide.toString());
 			} else {
 				userResult.put("percent", "0");
