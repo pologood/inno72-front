@@ -320,6 +320,7 @@ public class Inno72MerchantTotalCountByDayServiceImpl extends AbstractService<In
 				experience +=  Integer.parseInt(day.get("experience"));
 				concern += Integer.parseInt(day.get("concern"));
 				percent += Integer.parseInt(day.get("percent"));
+
 			}
 			LocalDate cDate = LocalDateUtil.transfer(k.getKey(), DateTimeFormatter.ofPattern("yyyy-MM-dd"));
 			// 计算日差，如果当前日期数据小于传入的开始日期。补充0的数据到数组
@@ -335,8 +336,13 @@ public class Inno72MerchantTotalCountByDayServiceImpl extends AbstractService<In
 			// 归类数据
 			experienceS.add(experience);
 			concernS.add(concern);
-			percentS.add(percent);
-
+			if (experience != 0 && concern != 0) {
+				BigDecimal divide = new BigDecimal(concern).divide(new BigDecimal(experience), 2,
+						BigDecimal.ROUND_CEILING).multiply(new BigDecimal("100"));
+				percentS.add(divide.intValue());
+			} else {
+				percentS.add(0);
+			}
 		}
 
 		// 日期不足，补充0直到到结束日期
