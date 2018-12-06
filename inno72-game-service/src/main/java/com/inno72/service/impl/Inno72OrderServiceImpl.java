@@ -384,7 +384,7 @@ public class Inno72OrderServiceImpl implements Inno72OrderService {
 				.genOrderNum(inno72Channel.getChannelCode(), inno72Machine.getMachineCode());
 		LocalDateTime now = LocalDateTime.now();
 
-		boolean b = inno72GameService.countSuccOrder(channelId, channelUserKey, activityPlanId);
+		boolean b = inno72GameService.countSuccOrder(channelId, channelUserKey, activityPlanId,inno72ActivityPlan.getActivityId());
 		Integer rep = null;
 		if (product.getKey().equals(Inno72Order.INNO72ORDER_GOODSTYPE.PRODUCT.getKey())) {
 			rep = Inno72Order.INNO72ORDER_REPETITION.NOT.getKey();

@@ -1649,7 +1649,7 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 		UserSessionVo sessionVo = new UserSessionVo(machineId, null, null, null, gameId, sessionUuid,
 				inno72ActivityPlan.getId());
 
-		boolean canOrder = inno72GameService.countSuccOrder(channelId, sessionUuid, inno72ActivityPlan.getId());
+		boolean canOrder = inno72GameService.countSuccOrder(channelId, sessionUuid, inno72ActivityPlan.getId(),inno72ActivityPlan.getActivityId());
 
 		sessionVo.setUserId(sessionUuid); // 非第三方用户 使用 sessionUuid 作为userid
 		sessionVo.setCanOrder(canOrder);
@@ -1873,7 +1873,7 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 
 		UserSessionVo sessionVo = new UserSessionVo(mid, nickName, userId, accessToken, gameId, sessionUuid,
 				inno72ActivityPlan.getId());
-		boolean b = inno72GameService.countSuccOrder(channelId, userId, inno72ActivityPlan.getId());
+		boolean b = inno72GameService.countSuccOrder(channelId, userId, inno72ActivityPlan.getId(),inno72ActivityPlan.getActivityId());
 		sessionVo.setCanOrder(b);
 		sessionVo.setCountGoods(goodsCount);
 		sessionVo.setChannelId(channelId);
@@ -2091,7 +2091,7 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 				inno72Machine.getMachineCode());
 		LocalDateTime now = LocalDateTime.now();
 
-		boolean b = inno72GameService.countSuccOrder(channelId, channelUserKey, activityPlanId);
+		boolean b = inno72GameService.countSuccOrder(channelId, channelUserKey, activityPlanId,inno72ActivityPlan.getActivityId());
 		Integer rep;
 		if (product.getKey().equals(Inno72Order.INNO72ORDER_GOODSTYPE.PRODUCT.getKey())) {
 			rep = Inno72Order.INNO72ORDER_REPETITION.NOT.getKey();
