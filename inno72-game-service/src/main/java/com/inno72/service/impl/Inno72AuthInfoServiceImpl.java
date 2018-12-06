@@ -378,7 +378,7 @@ public class Inno72AuthInfoServiceImpl implements Inno72AuthInfoService {
 
 		LOGGER.info("processBeforeLogged返回聚石塔结果 is {}", resultMap);
 
-		gameSessionRedisUtil.setSession(sessionUuid, JSON.toJSONString(sessionVo));
+//		gameSessionRedisUtil.setSession(sessionUuid, JSON.toJSONString(sessionVo));
 
 		CommonBean.logger(
 				CommonBean.POINT_TYPE_LOGIN,
@@ -523,7 +523,7 @@ public class Inno72AuthInfoServiceImpl implements Inno72AuthInfoService {
 		if (StringUtil.isNotEmpty(isVip) && sessionVo.getIsVip().equals("1")) {
 			String goodsId = sessionVo.getGoodsId();
 			if (!StringUtil.isEmpty(goodsId)) {
-				if(sessionVo.getGoodsType()!=null && UserSessionVo.GOODSTYPE_COUPON == sessionVo.getGoodsType()){
+				if(sessionVo.getGoodsType()!=null && UserSessionVo.GOODSTYPE_COUPON.compareTo(sessionVo.getGoodsType())==0 ){
 					Inno72Coupon inno72Coupon = inno72CouponMapper.selectByPrimaryKey(goodsId);
 					sessionVo.setGoodsCode(inno72Coupon.getCode());
 				}else{
@@ -672,7 +672,7 @@ public class Inno72AuthInfoServiceImpl implements Inno72AuthInfoService {
 				UserSessionVo userSessionVo = gameSessionRedisUtil.getSessionKey(sessionUuid);
 				if (!userSessionVo.getLogged()) {
 					userSessionVo.setLogged(true);
-					gameSessionRedisUtil.setSession(userSessionVo.getSessionUuid(), JSON.toJSONString(userSessionVo));
+//					gameSessionRedisUtil.setSession(userSessionVo.getSessionUuid(), JSON.toJSONString(userSessionVo));
 					logged = true;
 					pointService.innerPoint(sessionUuid, Inno72MachineInformation.ENUM_INNO72_MACHINE_INFORMATION_TYPE.LOGIN);
 				} else {
@@ -693,7 +693,7 @@ public class Inno72AuthInfoServiceImpl implements Inno72AuthInfoService {
 			if (hasKey) {
 				UserSessionVo userSessionVo = gameSessionRedisUtil.getSessionKey(sessionUuid);
 				userSessionVo.setFllowed(true);
-				gameSessionRedisUtil.setSession(userSessionVo.getSessionUuid(), JSON.toJSONString(userSessionVo));
+//				gameSessionRedisUtil.setSession(userSessionVo.getSessionUuid(), JSON.toJSONString(userSessionVo));
 			}
 		} catch (Exception e) {
 			LOGGER.error(e.getMessage(), e);

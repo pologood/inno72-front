@@ -60,13 +60,7 @@ public class CodeGenerator {
 	private static final String DATE = new SimpleDateFormat("yyyy/MM/dd").format(new Date());// @date
 
 	public static void main(String[] args) {
-		genCode("inno72_interact_goods"
-				,"inno72_interact_machine"
-				,"inno72_interact_machine_goods"
-				,"inno72_interact_machine_time"
-				,"inno72_interact_merchant",
-				"inno72_interact_shops",
-				"inno72_interact");
+		genCode("inno72_game_user_channel");
 
 
 	}

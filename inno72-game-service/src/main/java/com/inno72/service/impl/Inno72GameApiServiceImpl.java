@@ -835,12 +835,11 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
         }
         LOGGER.info("sendOrder inno72OrderId {}", inno72OrderId);
         userSessionVo.setInno72OrderId(inno72OrderId);
-
         Inno72ChannelService channelService = (Inno72ChannelService)ApplicationContextHandle.getBean(StandardLoginTypeEnum.getValue(userSessionVo.getChannelType()));
 
         Result<Object> r =  channelService.order(userSessionVo,itemId,inno72OrderId);
 
-        gameSessionRedisUtil.setSession(sessionUuid, JSON.toJSONString(userSessionVo));
+//        gameSessionRedisUtil.setSession(sessionUuid, JSON.toJSONString(userSessionVo));
         return r;
 	}
 
@@ -894,7 +893,7 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 
 	private String genPaiyangInno72Order(UserSessionVo userSessionVo,String sessionUuid, boolean canOrder ,String channelId, String activityPlanId, String machineId, String goodsId, String channelUserKey, Inno72Order.INNO72ORDER_GOODSTYPE product) {
 		Inno72GameUserChannel userChannel = null;
-		if(StandardLoginTypeEnum.ALIBABA.getValue() == userSessionVo.getChannelType()){
+		if(StandardLoginTypeEnum.ALIBABA.getValue().compareTo(userSessionVo.getChannelType()) == 0){
 			userChannel =  inno72GameUserChannelService.findInno72GameUserChannel(channelId,channelUserKey,null);
 		}else{
 			userChannel =  inno72GameUserChannelService.findInno72GameUserChannel(channelId,channelUserKey,userSessionVo.getSellerId());
@@ -1008,7 +1007,7 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 		userLife.setOrderId(inno72Order.getId());
 		inno72GameUserLifeMapper.updateByPrimaryKeySelective(userLife);
 
-		gameSessionRedisUtil.setSession(sessionUuid, JSON.toJSONString(userSessionVo));
+//		gameSessionRedisUtil.setSession(sessionUuid, JSON.toJSONString(userSessionVo));
 		return rep == 0 ? rep + "" : inno72Order.getId();
 	}
 
@@ -1377,6 +1376,8 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 		// 开始会话流程
 		try {
 			this.startSession(inno72Machine, ext, sessionUuid);
+			UserSessionVo userSessionVo =  new UserSessionVo(inno72Machine.getMachineCode());
+			userSessionVo.setLoginType(req.getLoginType());
 		} catch(Exception e){
 			LOGGER.error("prepareLoginQrCode",e);
 			return Results.failure("系统异常");
@@ -1394,7 +1395,7 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 	 * @param sessionUuid
 	 */
 	private void startSession(Inno72Machine inno72Machine, String ext, String sessionUuid){
-		UserSessionVo userSessionVo = new UserSessionVo();
+		UserSessionVo userSessionVo =  new UserSessionVo(inno72Machine.getMachineCode());
 		userSessionVo.setMachineCode(inno72Machine.getMachineCode());
 		userSessionVo.setMachineId(inno72Machine.getId());
 		userSessionVo.setLogged(false);
@@ -1425,7 +1426,7 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 //			initNewRetailMemberUrl(userSessionVo);
 //		}
 
-		gameSessionRedisUtil.setSession(sessionUuid, JsonUtil.toJson(userSessionVo));
+//		gameSessionRedisUtil.setSession(sessionUuid, JsonUtil.toJson(userSessionVo));
 
 		// 设置15秒内二维码不能被扫
 		gameSessionRedisUtil.setSessionEx(sessionUuid + "qrCode", sessionUuid, 15);
@@ -1646,7 +1647,7 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 		// 保存用户游戏渠道 信息
 		this.saveGameUserChannel(sessionUuid, channelId, inno72Activity, inno72ActivityPlan, inno72Game, inno72Machine);
 
-		UserSessionVo sessionVo = new UserSessionVo(machineId, null, null, null, gameId, sessionUuid,
+		UserSessionVo sessionVo = new UserSessionVo(inno72Machine.getMachineCode(),machineId, null, null, null, gameId, sessionUuid,
 				inno72ActivityPlan.getId());
 
 		boolean canOrder = inno72GameService.countSuccOrder(channelId, sessionUuid, inno72ActivityPlan.getId(),inno72ActivityPlan.getActivityId());
@@ -1665,7 +1666,7 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 		sessionVo.setGoodsList(list);
 		// sessionVo.setRefOrderId(life.getId());
 
-		gameSessionRedisUtil.setSession(sessionUuid, JSON.toJSONString(sessionVo));
+//		gameSessionRedisUtil.setSession(sessionUuid, JSON.toJSONString(sessionVo));
 
 
 		LOGGER.info("prepareLoginNologin output {} {}", sessionUuid, inno72Merchant.getMerchantCode());
@@ -1871,7 +1872,7 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 			}
 		}
 
-		UserSessionVo sessionVo = new UserSessionVo(mid, nickName, userId, accessToken, gameId, sessionUuid,
+		UserSessionVo sessionVo = new UserSessionVo(inno72Machine.getMachineCode(),mid, nickName, userId, accessToken, gameId, sessionUuid,
 				inno72ActivityPlan.getId());
 		boolean b = inno72GameService.countSuccOrder(channelId, userId, inno72ActivityPlan.getId(),inno72ActivityPlan.getActivityId());
 		sessionVo.setCanOrder(b);
@@ -1885,7 +1886,7 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 		LOGGER.info("loadGameInfo is {} ", JsonUtil.toJson(list));
 		sessionVo.setGoodsList(list);
 
-		gameSessionRedisUtil.setSession(sessionUuid, JSON.toJSONString(sessionVo));
+//		gameSessionRedisUtil.setSession(sessionUuid, JSON.toJSONString(sessionVo));
 
 		this.startGameLife(userChannel, inno72Activity, inno72ActivityPlan, inno72Game, inno72Machine, userId);
 
@@ -2182,7 +2183,7 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 				JSON.toJSONString(inno72Order), "初始化插入订单!"));
 
 		userSessionVo.setRefOrderStatus(inno72Order.getRefOrderStatus());
-		gameSessionRedisUtil.setSession(sessionUuid, JSON.toJSONString(userSessionVo));
+//		gameSessionRedisUtil.setSession(sessionUuid, JSON.toJSONString(userSessionVo));
 
 		return rep.equals(Inno72Order.INNO72ORDER_REPETITION.REPETITION.getKey()) ? rep + "" : inno72Order.getId();
 	}
