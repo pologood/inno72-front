@@ -56,6 +56,7 @@ public final class SessionConstants {
     public final static String ACTIVITYPLANID = "activityPlanId";
     public final static String INNO72ORDERID = "inno72OrderId";
     public final static String INNO72COUPONORDERID = "inno72CouponOrderId";
+    public final static String FAILCHANNELIDS = "failChannelIds";
 
 
 }
