@@ -1176,7 +1176,7 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 
 		if (StringUtil.isNotEmpty(failChannelIds)) {
 			userSessionVo.setFailChannelIds(failChannelIds);
-			gameSessionRedisUtil.setSession(sessionUuid, JSON.toJSONString(userSessionVo));
+//			gameSessionRedisUtil.setSession(sessionUuid, JSON.toJSONString(userSessionVo));
 
 			pointService.innerPoint(sessionUuid, Inno72MachineInformation.ENUM_INNO72_MACHINE_INFORMATION_TYPE.LOCK_CHANNEL);
 

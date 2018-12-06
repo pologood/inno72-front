@@ -696,6 +696,12 @@ public class UserSessionVo {
 		httpSession.setAttribute(SessionConstants.LOGGED,logged);
 	}
 
+	public Boolean getLogged() {
+		Object obj = httpSession.getAttribute(SessionConstants.LOGGED);
+		if(obj == null) return null;
+		return (Boolean)obj ;
+	}
+
 	public String getGoodsId() {
 		Object obj = httpSession.getAttribute(SessionConstants.GOODSID);
 		if(obj == null) return null;
@@ -812,6 +818,17 @@ public class UserSessionVo {
 		httpSession.setAttribute(SessionConstants.FLLOWED,fllowed);
 	}
 
+	public String getFailChannelIds() {
+		Object obj = httpSession.getAttribute(SessionConstants.FAILCHANNELIDS);
+		if(obj == null) return null;
+		return (String)obj ;
+	}
+
+	public void setFailChannelIds(String failChannelIds) {
+		this.fllowed = fllowed;
+		httpSession.setAttribute(SessionConstants.FAILCHANNELIDS,failChannelIds);
+	}
+
 	public boolean findPaiyangFlag() {
 		boolean flag = false;
 		inno72MachineVo =getInno72MachineVo();
@@ -822,19 +839,5 @@ public class UserSessionVo {
 
 		return flag;
     }
-	public boolean getIsScanned() {
-		return isScanned;
-	}
 
-	public void setIsScanned(boolean isScanned) {
-		this.isScanned = isScanned;
-	}
-
-	public boolean getLogged() {
-		return logged;
-	}
-
-	public void setLogged(boolean logged) {
-		this.logged = logged;
-	}
 }
