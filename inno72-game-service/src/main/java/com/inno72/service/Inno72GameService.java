@@ -14,7 +14,7 @@ public interface Inno72GameService extends Service<Inno72Game> {
 
 	public void updateOrderReport(UserSessionVo userSessionVo);
 
-	public boolean countSuccOrder(String channelId, String channelUserKey, String activityPlanId);
+	public boolean countSuccOrder(String channelId, String channelUserKey,String activityPlanId, String activityId);
 
 	/**
 	 * 计算用户玩的次数（下单成功，并且出货）每天，派样活动

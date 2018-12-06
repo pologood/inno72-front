@@ -333,7 +333,7 @@ public class Inno72AuthInfoServiceImpl implements Inno72AuthInfoService {
 		if (inno72Activity.getType() == Inno72Activity.ActivityType.PAIYANG.getType()) {
 			canOrder = inno72GameService.countSuccOrderPy(channelId, userId, inno72ActivityPlan.getId(), sessionVo.getGoodsId(), inno72Activity.getId());
 		} else if (inno72Activity.getType() == Inno72Activity.ActivityType.COMMON.getType()) {
-			canOrder = inno72GameService.countSuccOrder(channelId, userId, inno72ActivityPlan.getId());
+			canOrder = inno72GameService.countSuccOrder(channelId, userId,inno72ActivityPlan.getId(), inno72ActivityPlan.getActivityId());
 		}
 
 		// canOrder = inno72GameService.countSuccOrder(channelId, userId, inno72ActivityPlan.getId());
