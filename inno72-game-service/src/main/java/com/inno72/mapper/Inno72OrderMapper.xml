@@ -33,7 +33,7 @@
   </select>
     <select id="findGoodsStatusSucc" resultMap="BaseResultMap" parameterType="java.util.Map">
         select * from inno72_order
-        where inno72_activity_plan_id = #{activityPlanId}
+        where inno72_activity_id = #{activityId}
         and user_id = #{gameUserId}
         and goods_status = 1
         <if test="orderTime != null and orderTime != ''">

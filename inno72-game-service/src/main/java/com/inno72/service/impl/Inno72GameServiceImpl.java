@@ -118,7 +118,7 @@ public class Inno72GameServiceImpl extends AbstractService<Inno72Game> implement
 	}
 
 	@Override
-	public boolean countSuccOrder(String channelId, String channelUserKey, String activityPlanId) {
+	public boolean countSuccOrder(String channelId, String channelUserKey, String activityPlanId, String activityId) {
 		Map<String, String> paramsChannel = new HashMap<>();
 		paramsChannel.put("channelId", channelId);
 		paramsChannel.put("channelUserKey", channelUserKey);
@@ -126,7 +126,7 @@ public class Inno72GameServiceImpl extends AbstractService<Inno72Game> implement
 		String gameUserId = userChannel.getGameUserId();
 
 		Map<String, String> orderParams = new HashMap<>();
-		orderParams.put("activityPlanId", activityPlanId);
+		orderParams.put("activityId", activityId);
 		orderParams.put("gameUserId", gameUserId);
 		List<Inno72Order> inno72Orders = inno72OrderMapper.findGoodsStatusSucc(orderParams);
 
