@@ -150,6 +150,11 @@ public class UserSessionVo {
 	 */
 	private boolean fllowed;
 
+    /**
+     * 失败货道
+     */
+    private String failChannelIds;
+
 	public UserSessionVo(String machineCode ,String mid, String userNick, String userId, String access_token, String gameId,
 			String sessionUuid, String planId) {
 		super();
@@ -816,5 +821,20 @@ public class UserSessionVo {
 		}
 
 		return flag;
+    }
+	public boolean getIsScanned() {
+		return isScanned;
+	}
+
+	public void setIsScanned(boolean isScanned) {
+		this.isScanned = isScanned;
+	}
+
+	public boolean getLogged() {
+		return logged;
+	}
+
+	public void setLogged(boolean logged) {
+		this.logged = logged;
 	}
 }

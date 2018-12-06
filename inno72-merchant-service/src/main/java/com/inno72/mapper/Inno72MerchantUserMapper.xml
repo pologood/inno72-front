@@ -36,4 +36,8 @@
           where phone = #{phone}
           and login_name = #{loginName}
     </select>
+    <select id="selectByMerchantName" resultMap="BaseResultMap">
+      select * from inno72_merchant_user
+          where login_name = #{loginName}
+    </select>
 </mapper>

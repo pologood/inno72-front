@@ -155,4 +155,20 @@ public class Inno72MerchantUserServiceImpl extends AbstractService<Inno72Merchan
 		}
 		return Results.success();
 	}
+
+	@Override
+	public Result selectUser(String phone, String userName) {
+		if (StringUtil.isEmpty(phone) || StringUtil.isEmpty(userName)) {
+			return Results.failure("用户不存在!");
+		}
+		Inno72MerchantUser user = inno72MerchantUserMapper.selectByMerchantName(userName);
+		if (user == null) {
+			return Results.failure("商家不存在!");
+		}
+		if (user.getPhone().equals(phone)) {
+			return Results.success();
+		}
+
+		return Results.failure("商家预留手机号不匹配!");
+	}
 }

@@ -1,9 +1,6 @@
 package com.inno72.controller;
 
-import java.io.IOException;
-
 import javax.annotation.Resource;
-import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
@@ -14,6 +11,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.inno72.common.Result;
 import com.inno72.common.ResultGenerator;
+import com.inno72.common.Results;
 import com.inno72.model.Inno72MerchantUser;
 import com.inno72.service.Inno72MerchantUserService;
 
@@ -82,4 +80,21 @@ public class Inno72MerchantUserController {
 	public Result checkMerchant(String phone, String userName) {
 		return inno72MerchantUserService.checkMerchant(phone, userName);
 	}
+
+
+	@RequestMapping(value = "/inno72/merchant/selectUser")
+	public Result selectUser(String phone, String userName, HttpServletRequest request, HttpServletResponse response) {
+		Result result = inno72MerchantUserService.selectUser(phone, userName);
+		if (result.getCode() == Result.FAILURE) {
+			return result;
+		}
+		try {
+			request.getRequestDispatcher("/common/code/3").forward(request, response);
+		} catch (Exception e) {
+			return Results.failure("请求异常!");
+		}
+		return result;
+	}
+
+
 }

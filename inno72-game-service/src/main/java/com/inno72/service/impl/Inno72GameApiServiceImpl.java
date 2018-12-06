@@ -193,6 +193,8 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 		String sessionUuid = vo.getSessionUuid();
 
 		UserSessionVo userSessionVo = gameSessionRedisUtil.getSessionKey(sessionUuid);
+		LOGGER.info("orderPolling userSessionVo {}", userSessionVo);
+
 		if (userSessionVo == null) {
 			return Results.failure("登录失效!");
 		}
@@ -253,7 +255,7 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 
 					userSessionVo.setRefOrderStatus(inno72Order.getRefOrderStatus());
 					pointService.innerPoint(sessionUuid, Inno72MachineInformation.ENUM_INNO72_MACHINE_INFORMATION_TYPE.PAY);
-					this.taoBaoDataSyn(sessionUuid, JSON.toJSONString(requestForm), JSON.toJSONString(respJson), Inno72TaoBaoCheckDataVo.ENUM_INNO72_TAOBAO_CHECK_DATA_VO_TYPE.ORDER);
+					this.taoBaoDataSyn(sessionUuid, JSON.toJSONString(requestForm), respJson, Inno72TaoBaoCheckDataVo.ENUM_INNO72_TAOBAO_CHECK_DATA_VO_TYPE.ORDER);
 				}
 			}
 
@@ -428,7 +430,7 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 		}
 
 		List<Inno72ActivityPlanGameResult> planGameResults = this.getGameResults(vo, userSessionVo);
-		LOGGER.info("获取游戏结果 {}", planGameResults);
+		LOGGER.info("获取游戏结果 {}", JsonUtil.toJson(planGameResults));
 
 		LOGGER.debug("下单 userSessionVo ==> {}", JSON.toJSONString(userSessionVo));
 
@@ -831,6 +833,7 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
             LOGGER.info("已经超过最大游戏数量啦 QAQ!");
             return Results.failure("已经超过最大游戏数量啦 QAQ!");
         }
+        LOGGER.info("sendOrder inno72OrderId {}", inno72OrderId);
         userSessionVo.setInno72OrderId(inno72OrderId);
         Inno72ChannelService channelService = (Inno72ChannelService)ApplicationContextHandle.getBean(StandardLoginTypeEnum.getValue(userSessionVo.getChannelType()));
 
@@ -1138,16 +1141,20 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 		LOGGER.info("shipmentReportV2 params vo is {} ", JsonUtil.toJson(vo));
 		String machineCode = vo.getMachineId();
 
+		String sessionUuid = vo.getSessionUuid();
+
+		//掉货成功修改redis值
+		UserSessionVo userSessionVo = gameSessionRedisUtil.getSessionKey(vo.getSessionUuid());
+		LOGGER.info("shipmentReportV2 userSessionVo is {}", JsonUtil.toJson(userSessionVo));
+		if (userSessionVo == null) {
+			return Results.failure("登录失效!");
+		}
+
 		if (StringUtil.isNotEmpty(vo.getChannelId())) {
 			Result<String> succChannelResult = shipmentReport(vo);
 			LOGGER.info("succChannelResult code is {} ", succChannelResult.getCode());
 		}
 
-		//掉货成功修改redis值
-		UserSessionVo userSessionVo = gameSessionRedisUtil.getSessionKey(vo.getSessionUuid());
-		if (userSessionVo == null) {
-			return Results.failure("登录失效!");
-		}
 		boolean paiyangflag = userSessionVo.findPaiyangFlag();
 		if(paiyangflag){
 			String date = DateUtil.getDateStringByYYYYMMDD();
@@ -1168,8 +1175,13 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 		String failChannelIds = vo.getFailChannelIds();
 
 		if (StringUtil.isNotEmpty(failChannelIds)) {
+			userSessionVo.setFailChannelIds(failChannelIds);
+			gameSessionRedisUtil.setSession(sessionUuid, JSON.toJSONString(userSessionVo));
+
+			pointService.innerPoint(sessionUuid, Inno72MachineInformation.ENUM_INNO72_MACHINE_INFORMATION_TYPE.LOCK_CHANNEL);
+
 			Result<String> failChannelResult = this.shipmentFail(machineCode, failChannelIds, "");
-			LOGGER.info("machineCode is {}, failChannelIds is {}, code is {} ", machineCode, failChannelIds,
+			LOGGER.info("machineCode is {}, orderId is {}, failChannelIds is {}, code is {} ", machineCode, userSessionVo.getRefOrderId(), failChannelIds,
 					failChannelResult.getCode());
 		}
 
@@ -1197,6 +1209,8 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 		}
 
 		UserSessionVo userSessionVo = gameSessionRedisUtil.getSessionKey(sessionUuid);
+		LOGGER.info("shipmentReport userSessionVo {}", userSessionVo);
+
 		if (userSessionVo == null) {
 			return Results.failure("登录失效!");
 		}
@@ -1245,7 +1259,12 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 		}
 
 		Inno72Goods inno72Goods = inno72GoodsMapper.selectByChannelId(inno72SupplyChannel.getId());
-		Inno72ChannelService channelService = (Inno72ChannelService)ApplicationContextHandle.getBean(StandardLoginTypeEnum.getValue(userSessionVo.getChannelType()));
+
+		// todo gxg 观察代码执行情况
+		Integer channelType = userSessionVo.getChannelType();
+		LOGGER.info("shipmentReport channelType is {}", channelType);
+
+		Inno72ChannelService channelService = (Inno72ChannelService)ApplicationContextHandle.getBean(StandardLoginTypeEnum.getValue(channelType == null ? 0 : channelType));
 		channelService.feedBackInTime(userSessionVo.getInno72OrderId(),machineCode);
 
 		pointService.innerPoint(sessionUuid, Inno72MachineInformation.ENUM_INNO72_MACHINE_INFORMATION_TYPE.SHIPMENT);

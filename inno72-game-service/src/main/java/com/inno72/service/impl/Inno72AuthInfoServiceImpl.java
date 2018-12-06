@@ -199,6 +199,12 @@ public class Inno72AuthInfoServiceImpl implements Inno72AuthInfoService {
 			return Results.failure("sessionUuid 不存在!");
 		}
 
+		LOGGER.info("processBeforeLogged userSessionVo is {}", sessionVo);
+
+		if (sessionVo.getLogged()) {
+			return Results.failure("sessionUuid 已经存在登录用户");
+		}
+
 		String mid = sessionVo.getMachineId();
 		Inno72MachineVo inno72MachineVo = sessionVo.getInno72MachineVo();
         if(inno72MachineVo == null){
@@ -664,10 +670,14 @@ public class Inno72AuthInfoServiceImpl implements Inno72AuthInfoService {
 			LOGGER.info("setLogged hasKey is {}, sessionUuid is {}", hasKey, sessionUuid);
 			if (hasKey) {
 				UserSessionVo userSessionVo = gameSessionRedisUtil.getSessionKey(sessionUuid);
-				userSessionVo.setLogged(true);
-//				gameSessionRedisUtil.setSession(userSessionVo.getSessionUuid(), JSON.toJSONString(userSessionVo));
-				logged = true;
-				pointService.innerPoint(sessionUuid, Inno72MachineInformation.ENUM_INNO72_MACHINE_INFORMATION_TYPE.LOGIN);
+				if (!userSessionVo.getLogged()) {
+					userSessionVo.setLogged(true);
+//					gameSessionRedisUtil.setSession(userSessionVo.getSessionUuid(), JSON.toJSONString(userSessionVo));
+					logged = true;
+					pointService.innerPoint(sessionUuid, Inno72MachineInformation.ENUM_INNO72_MACHINE_INFORMATION_TYPE.LOGIN);
+				} else {
+					LOGGER.info("sessionUuid {} 用户已经登录，不能继续登录！", sessionUuid);
+				}
 			}
 		} catch (Exception e) {
 			LOGGER.error(e.getMessage(), e);

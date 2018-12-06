@@ -284,8 +284,6 @@ public class Inno72ALiChannelServiceImpl implements Inno72ChannelService {
                 return Results.failure("聚石塔无返回数据!");
             }
 
-            pointService.innerPoint(sessionUuid, Inno72MachineInformation.ENUM_INNO72_MACHINE_INFORMATION_TYPE.ORDER_GOODS);
-
             LOGGER.info("调用聚石塔接口  【下单】返回 ===> {}", respJson);
 
             String msgCode = FastJsonUtils.getString(respJson, "msg_code");
@@ -312,6 +310,9 @@ public class Inno72ALiChannelServiceImpl implements Inno72ChannelService {
 
         userSessionVo.setRefOrderId(ref_order_id);
         userSessionVo.setNeedPay(needPay);
+
+		gameSessionRedisUtil.setSession(sessionUuid, JSON.toJSONString(userSessionVo));
+		pointService.innerPoint(sessionUuid, Inno72MachineInformation.ENUM_INNO72_MACHINE_INFORMATION_TYPE.ORDER_GOODS);
 
         // 更新第三方订单号进inno72 order
         Result<String> stringResult = inno72GameService
