@@ -688,7 +688,7 @@ public class UserSessionVo {
 
 	public Boolean isLogged() {
 		Object obj = httpSession.getAttribute(SessionConstants.LOGGED);
-		if(obj == null) return null;
+		if(obj == null) return false;
 		return (Boolean)obj ;
 	}
 
@@ -699,7 +699,7 @@ public class UserSessionVo {
 
 	public Boolean getLogged() {
 		Object obj = httpSession.getAttribute(SessionConstants.LOGGED);
-		if(obj == null) return null;
+		if(obj == null) return false;
 		return (Boolean)obj ;
 	}
 
