@@ -167,14 +167,14 @@ public class UserSessionVo {
 		this.sessionUuid = sessionUuid;
 		this.activityPlanId = planId;
 		httpSession = SessionUtils.getSession(machineCode,true);
-		httpSession.setAttribute(SessionConstants.MACHINECODE,machineCode);
-		httpSession.setAttribute(SessionConstants.MID,mid);
-		httpSession.setAttribute(SessionConstants.USERNICK,userNick);
-		httpSession.setAttribute(SessionConstants.USERID,userId);
-		httpSession.setAttribute(SessionConstants.ACCESSTOKEN,accessToken);
-		httpSession.setAttribute(SessionConstants.GAMEID,gameId);
-		httpSession.setAttribute(SessionConstants.SESSIONUUID,sessionUuid);
-		httpSession.setAttribute(SessionConstants.ACTIVITYPLANID,activityPlanId);
+		setMachineCode(machineCode);
+		setMid(mid);
+		setUserNick(userNick);
+		setUserId(userId);
+		setAccessToken(accessToken);
+		setGameId(gameId);
+		setSessionUuid(sessionUuid);
+		setActivityPlanId(activityPlanId);
 	}
 
 	public UserSessionVo(String machineCode) {
@@ -681,6 +681,7 @@ public class UserSessionVo {
 	}
 
 	public void setGoodsList(List<GoodsVo> goodsList) {
+		if(goodsList == null || goodsList.size()==0) return;
 		this.goodsList = goodsList;
 		httpSession.setAttribute(SessionConstants.GOODSLIST,goodsList);
 	}
