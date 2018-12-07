@@ -706,11 +706,11 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 		String report = vo.getReport();
 		String activityPlanId = userSessionVo.getActivityPlanId();
 		String goodsId = userSessionVo.getGoodsId();
-		Integer activityType = userSessionVo.getActivityType();
+		int activityType = userSessionVo.getActivityType();
 
 		List<Inno72ActivityPlanGameResult> planGameResults = null;
 
-		if (activityType == Inno72Activity.ActivityType.PAIYANG.getType()) {
+		if (activityType == Inno72Activity.ActivityType.PAIYANG.getType().intValue()) {
 			Inno72Goods inno72GoodsCheck = inno72GoodsMapper.selectByPrimaryKey(goodsId);
 			String shopId = inno72GoodsCheck.getShopId();
 
