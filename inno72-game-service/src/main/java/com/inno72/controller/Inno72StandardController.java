@@ -326,7 +326,7 @@ public class Inno72StandardController {
      */
     @ResponseBody
     @RequestMapping(value = "/loginRedirect", method = {RequestMethod.GET})
-    public Result wechatloginRedirect(HttpServletResponse response, String sessionUuid, String env,Integer channelType) {
+    public Result loginRedirect(HttpServletResponse response, String sessionUuid, String env,Integer channelType) {
         LOGGER.info("loginRedirect sessionUuid is {}, env is {}", sessionUuid, env);
         Result result = null;
         try {
@@ -358,11 +358,16 @@ public class Inno72StandardController {
                         gameSessionRedisUtil.setSessionEx(sessionUuid + "qrCode", sessionUuid, 15);
 
                         pointService.innerPoint(sessionUuid, Inno72MachineInformation.ENUM_INNO72_MACHINE_INFORMATION_TYPE.SCAN_LOGIN);
-                        redirectUrl = String.format("%s%s/%s/%s", inno72GameServiceProperties.get("tmallUrl"), sessionUuid, env, traceId);
+						if(channelType!=null && channelType == StandardLoginTypeEnum.INNO72.getValue()){
+							redirectUrl = String.format(inno72GameServiceProperties.get("phoneLoginUrl"),sessionVo.getPlanCode(),sessionUuid);
+							LOGGER.info("loginRedirect loginUrl={}",redirectUrl);
+						}else{
+							redirectUrl = String.format("%s%s/%s/%s", inno72GameServiceProperties.get("tmallUrl"), sessionUuid, env, traceId);
+						}
                     }
                 }
                 LOGGER.info("loginRedirect redirectUrl is {} ", redirectUrl);
-                if(channelType == null){
+                if(channelType == null || channelType == StandardLoginTypeEnum.INNO72.getValue()){
                     response.sendRedirect(redirectUrl);
                     return null;
                 }

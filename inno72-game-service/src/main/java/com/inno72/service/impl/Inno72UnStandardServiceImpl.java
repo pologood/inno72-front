@@ -2,9 +2,15 @@ package com.inno72.service.impl;
 
 import com.inno72.common.Inno72BizException;
 import com.inno72.common.RedisConstants;
+import com.inno72.common.Result;
+import com.inno72.common.StandardLoginTypeEnum;
+import com.inno72.common.json.JsonUtil;
+import com.inno72.common.utils.StringUtil;
 import com.inno72.msg.MsgUtil;
 import com.inno72.redis.IRedisUtil;
+import com.inno72.service.Inno72AuthInfoService;
 import com.inno72.service.Inno72UnStandardService;
+import com.inno72.vo.Inno72AuthInfo;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -26,6 +32,9 @@ public class Inno72UnStandardServiceImpl implements Inno72UnStandardService {
 
     @Autowired
     private IRedisUtil iRedisUtil;
+
+    @Autowired
+    private Inno72AuthInfoService inno72AuthInfoService;
 
     @Value("${phoneverificationcode_limit_time}")
     private Integer phoneverificationcodeLimitTime;
@@ -65,7 +74,22 @@ public class Inno72UnStandardServiceImpl implements Inno72UnStandardService {
             throw new Inno72BizException("验证码过期");
         }
         if(code.equals(verificationCode)){
-
+            //登陆
+            String traceId = StringUtil.getUUID();
+            Inno72AuthInfo ai = new Inno72AuthInfo();
+            ai.setPhone(phone);
+            ai.setChannelType(StandardLoginTypeEnum.INNO72.getValue()+"");
+            String authInfo = JsonUtil.toJson(ai);
+            Result result = inno72AuthInfoService.processBeforeLogged(sessionUuid, authInfo, traceId);
+            if(result.getCode() != Result.SUCCESS){
+                throw new Inno72BizException(result.getMsg());
+            }
+            boolean success = inno72AuthInfoService.setLogged(sessionUuid);
+            if(success){
+                throw new Inno72BizException("设置登陆异常");
+            }
+        }else{
+            throw new Inno72BizException("验证码错误");
         }
     }
 
