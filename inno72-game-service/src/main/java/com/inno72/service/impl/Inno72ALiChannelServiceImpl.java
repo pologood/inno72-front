@@ -342,13 +342,6 @@ public class Inno72ALiChannelServiceImpl implements Inno72ChannelService {
         // 判断是否有他人登录以及二维码是否过期
         String qrStatus = QRSTATUS_NORMAL;
         LOGGER.info("sessionUuid is {}", sessionUuid);
-        // 判断二维码是否过期
-        boolean result = gameSessionRedisUtil.hasKey(sessionUuid);
-        LOGGER.info("qrCode hasKey result {} ", result);
-        if (!result) {
-            qrStatus = QRSTATUS_INVALID;
-            LOGGER.info("二维码已经过期");
-        }
         return qrStatus;
     }
     /**

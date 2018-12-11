@@ -1,88 +1,38 @@
 package com.inno72.service.impl;
 
-import java.io.File;
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
-import java.util.Calendar;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import javax.annotation.Resource;
-
 import com.alibaba.fastjson.JSON;
-import com.alibaba.fastjson.JSONObject;
 import com.google.gson.Gson;
 import com.inno72.common.*;
-import com.inno72.common.datetime.LocalDateTimeUtil;
-import com.inno72.common.util.*;
+import com.inno72.common.json.JsonUtil;
 import com.inno72.common.util.DateUtil;
-import com.inno72.log.LogAllContext;
-import com.inno72.log.PointLogContext;
-import com.inno72.log.vo.LogType;
+import com.inno72.common.util.FastJsonUtils;
+import com.inno72.common.util.GameSessionRedisUtil;
+import com.inno72.common.utils.StringUtil;
 import com.inno72.mapper.*;
 import com.inno72.model.*;
+import com.inno72.oss.OSSUtil;
+import com.inno72.redis.IRedisUtil;
 import com.inno72.service.*;
-import com.inno72.vo.*;
+import com.inno72.vo.GoodsVo;
+import com.inno72.vo.Inno72MachineInformation;
+import com.inno72.vo.Inno72MachineVo;
+import com.inno72.vo.UserSessionVo;
+import net.coobird.thumbnailator.Thumbnails;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
-import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import com.alibaba.fastjson.JSON;
-import com.alibaba.fastjson.JSONObject;
-import com.google.gson.Gson;
-import com.inno72.common.CommonBean;
-import com.inno72.common.Inno72GameServiceProperties;
-import com.inno72.common.Result;
-import com.inno72.common.Results;
-import com.inno72.common.json.JsonUtil;
-import com.inno72.common.util.AesUtils;
-import com.inno72.common.util.FastJsonUtils;
-import com.inno72.common.util.GameSessionRedisUtil;
-import com.inno72.common.util.QrCodeUtil;
-import com.inno72.common.util.UuidUtil;
-import com.inno72.common.utils.StringUtil;
-import com.inno72.mapper.Inno72ActivityMapper;
-import com.inno72.mapper.Inno72ActivityPlanGameResultMapper;
-import com.inno72.mapper.Inno72ActivityPlanMapper;
-import com.inno72.mapper.Inno72ActivityShopsMapper;
-import com.inno72.mapper.Inno72ChannelMapper;
-import com.inno72.mapper.Inno72GameMapper;
-import com.inno72.mapper.Inno72GameUserChannelMapper;
-import com.inno72.mapper.Inno72GameUserLifeMapper;
-import com.inno72.mapper.Inno72GameUserMapper;
-import com.inno72.mapper.Inno72GoodsMapper;
-import com.inno72.mapper.Inno72LocaleMapper;
-import com.inno72.mapper.Inno72MachineMapper;
-import com.inno72.mapper.Inno72MerchantMapper;
-import com.inno72.model.Inno72Activity;
-import com.inno72.model.Inno72ActivityPlan;
-import com.inno72.model.Inno72ActivityShops;
-import com.inno72.model.Inno72Channel;
-import com.inno72.model.Inno72Game;
-import com.inno72.model.Inno72GameUser;
-import com.inno72.model.Inno72GameUserChannel;
-import com.inno72.model.Inno72GameUserLife;
-import com.inno72.model.Inno72Goods;
-import com.inno72.model.Inno72Locale;
-import com.inno72.model.Inno72Machine;
-import com.inno72.model.Inno72Merchant;
-import com.inno72.oss.OSSUtil;
-import com.inno72.redis.IRedisUtil;
-import com.inno72.service.Inno72AuthInfoService;
-import com.inno72.service.Inno72GameService;
-import com.inno72.service.Inno72TopService;
-import com.inno72.vo.GoodsVo;
-
-import net.coobird.thumbnailator.Thumbnails;
 import tk.mybatis.mapper.entity.Condition;
+
+import javax.annotation.Resource;
+import java.io.File;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * Created by CodeGenerator on 2018/06/27.
@@ -598,25 +548,6 @@ public class Inno72AuthInfoServiceImpl implements Inno72AuthInfoService {
 	}
 
 	/**
-	 * 检查二维码是否可以重复扫
-	 * @param sessionUuid
-	 * @return
-	 */
-	private synchronized String checkQrCode(String sessionUuid) {
-		// 判断是否有他人登录以及二维码是否过期
-		String qrStatus = QRSTATUS_NORMAL;
-		LOGGER.info("sessionUuid is {}", sessionUuid);
-		// 判断二维码是否过期
-		boolean result = gameSessionRedisUtil.hasKey(sessionUuid);
-		LOGGER.info("qrCode hasKey result {} ", result);
-		if (!result) {
-			qrStatus = QRSTATUS_INVALID;
-			LOGGER.info("二维码已经过期");
-		}
-		return qrStatus;
-	}
-
-	/**
 	 *
 	 * @param mid
 	 * @return
@@ -666,18 +597,13 @@ public class Inno72AuthInfoServiceImpl implements Inno72AuthInfoService {
 	public boolean setLogged(String sessionUuid) {
 		boolean logged = false;
 		try {
-			boolean hasKey = gameSessionRedisUtil.hasKey(sessionUuid);
-			LOGGER.info("setLogged hasKey is {}, sessionUuid is {}", hasKey, sessionUuid);
-			if (hasKey) {
-				UserSessionVo userSessionVo = gameSessionRedisUtil.getSessionKey(sessionUuid);
-				if (!userSessionVo.getLogged()) {
-					userSessionVo.setLogged(true);
-//					gameSessionRedisUtil.setSession(userSessionVo.getSessionUuid(), JSON.toJSONString(userSessionVo));
-					logged = true;
-					pointService.innerPoint(sessionUuid, Inno72MachineInformation.ENUM_INNO72_MACHINE_INFORMATION_TYPE.LOGIN);
-				} else {
-					LOGGER.info("sessionUuid {} 用户已经登录，不能继续登录！", sessionUuid);
-				}
+			UserSessionVo userSessionVo = gameSessionRedisUtil.getSessionKey(sessionUuid);
+			if (!userSessionVo.getLogged()) {
+				userSessionVo.setLogged(true);
+				logged = true;
+				pointService.innerPoint(sessionUuid, Inno72MachineInformation.ENUM_INNO72_MACHINE_INFORMATION_TYPE.LOGIN);
+			} else {
+				LOGGER.info("sessionUuid {} 用户已经登录，不能继续登录！", sessionUuid);
 			}
 		} catch (Exception e) {
 			LOGGER.error(e.getMessage(), e);
@@ -688,13 +614,8 @@ public class Inno72AuthInfoServiceImpl implements Inno72AuthInfoService {
 	@Override
 	public void setFollowed(String sessionUuid) {
 		try {
-			boolean hasKey = gameSessionRedisUtil.hasKey(sessionUuid);
-			LOGGER.info("setFollowed hasKey is {}, sessionUuid is {}", hasKey, sessionUuid);
-			if (hasKey) {
-				UserSessionVo userSessionVo = gameSessionRedisUtil.getSessionKey(sessionUuid);
-				userSessionVo.setFllowed(true);
-//				gameSessionRedisUtil.setSession(userSessionVo.getSessionUuid(), JSON.toJSONString(userSessionVo));
-			}
+			UserSessionVo userSessionVo = gameSessionRedisUtil.getSessionKey(sessionUuid);
+			userSessionVo.setFllowed(true);
 		} catch (Exception e) {
 			LOGGER.error(e.getMessage(), e);
 		}
