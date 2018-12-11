@@ -27,6 +27,7 @@
         <result column="ref_order_status" jdbcType="VARCHAR" property="refOrderStatus"/>
         <result column="ref_order_id" jdbcType="VARCHAR" property="refOrderId"/>
         <result column="repetition" jdbcType="TINYINT" property="repetition"/>
+        <result column="order_status" jdbcType="TINYINT" property="orderStatus"/>
     </resultMap>
     <select id="selectByRefOrderId" parameterType="java.lang.String" resultMap="BaseResultMap">
   	select * from inno72_order where ref_order_id = #{orderId}

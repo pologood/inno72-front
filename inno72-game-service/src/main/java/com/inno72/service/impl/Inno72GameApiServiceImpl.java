@@ -893,22 +893,16 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 
 	private String genPaiyangInno72Order(UserSessionVo userSessionVo,String sessionUuid, boolean canOrder ,String channelId, String activityPlanId, String machineId, String goodsId, String channelUserKey, Inno72Order.INNO72ORDER_GOODSTYPE product) {
 		Inno72GameUserChannel userChannel = null;
-		if(StandardLoginTypeEnum.ALIBABA.getValue().compareTo(userSessionVo.getChannelType()) == 0){
+		if(StandardLoginTypeEnum.ALIBABA.getValue().compareTo(userSessionVo.getChannelType()) == 0 || StandardLoginTypeEnum.INNO72.getValue().compareTo(userSessionVo.getChannelType()) == 0){
 			userChannel =  inno72GameUserChannelService.findInno72GameUserChannel(channelId,channelUserKey,null);
 		}else{
 			userChannel =  inno72GameUserChannelService.findInno72GameUserChannel(channelId,channelUserKey,userSessionVo.getSellerId());
 		}
 		String gameUserId = userChannel.getGameUserId();
 
-//		// 活动计划
-//		Inno72ActivityPlan inno72ActivityPlan = inno72ActivityPlanMapper.selectByPrimaryKey(activityPlanId);
-//		// 活动
-//		Inno72Activity inno72Activity = inno72ActivityMapper.selectByPrimaryKey(inno72ActivityPlan.getActivityId());
-
 		Inno72Machine inno72Machine = inno72MachineMapper.selectByPrimaryKey(machineId);
 
 		Inno72Channel inno72Channel = inno72ChannelMapper.selectByPrimaryKey(channelId);
-
 
 		String orderNum = Inno72OrderNumGenUtil.genOrderNum(inno72Channel.getChannelCode(),
 				inno72Machine.getMachineCode());
@@ -939,6 +933,7 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 		inno72Order.setRefOrderStatus(null);
 		inno72Order.setGoodsType(product.getKey());
 		inno72Order.setRepetition(rep);
+		inno72Order.setOrderStatus(Inno72Order.INNO72ORDER_ORDERSTATUS.WAIT.getKey());
 
 		inno72Order.setUserId(gameUserId);
 
@@ -958,7 +953,9 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 			Inno72Shops inno72Shops = inno72ShopsMapper.selectByPrimaryKey(inno72Goods.getShopId());
 			inno72Order.setShopsId(inno72Shops.getId());
 			inno72Order.setShopsName(inno72Shops.getShopName());
-
+			inno72Order.setPayPrice(inno72Goods.getPrice());
+			inno72Order.setOrderPrice(inno72Goods.getPrice());
+			userSessionVo.setOrderPrice(inno72Goods.getPrice());
 			inno72Order.setMerchantId(inno72Goods.getSellerId());
 
 			userSessionVo.setGoodsId(inno72Goods.getId());
@@ -982,7 +979,6 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 			Inno72Shops inno72Shops = inno72ShopsMapper.selectByPrimaryKey(inno72Coupon.getShopsId());
 			inno72Order.setShopsId(inno72Shops.getId());
 			inno72Order.setShopsName(inno72Shops.getShopName());
-
 			inno72Order.setMerchantId(inno72Shops.getSellerId());
 
 			userSessionVo.setInteractId(inno72Coupon.getCode());

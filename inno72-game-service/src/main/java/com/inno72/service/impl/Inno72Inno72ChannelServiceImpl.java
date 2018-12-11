@@ -19,6 +19,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.math.BigDecimal;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
@@ -176,7 +177,18 @@ public class Inno72Inno72ChannelServiceImpl implements Inno72ChannelService {
 
     @Override
     public Result<Object> order(UserSessionVo userSessionVo, String itemId, String inno72OrderId) {
-        return null;
+        // 如果有支付链接则返回支付链接
+        Map<String, Object> map = new HashMap<>();
+
+        BigDecimal orderPrice = userSessionVo.getOrderPrice();
+        if(orderPrice!=null&&orderPrice.compareTo(BigDecimal.ZERO) == 1){
+            //需要支付
+            String payUrl = inno72GameServiceProperties.get("payUrl");
+            map.put("payUrl", null);
+        }
+        map.put("needPay", false);
+        map.put("inno72OrderId", inno72OrderId);
+        return Results.success(map);
     }
 
     private String buildUrl(Inno72Machine inno72Machine, String redirect,String sessionUuid){

@@ -123,6 +123,9 @@ public class Inno72Order {
 	@Column(name = "pay_status")
 	private Integer payStatus;
 
+	@Column(name = "order_status")
+	private Integer orderStatus;
+
 	public enum INNO72ORDER_PAYSTATUS {
 
 		SUCC(1, "已支付"), WAIT(0, "未支付");
@@ -131,6 +134,35 @@ public class Inno72Order {
 		private String desc;
 
 		INNO72ORDER_PAYSTATUS(Integer key, String desc) {
+			this.key = key;
+			this.desc = desc;
+		}
+
+		public Integer getKey() {
+			return key;
+		}
+
+		public void setKey(Integer key) {
+			this.key = key;
+		}
+
+		public String getDesc() {
+			return desc;
+		}
+
+		public void setDesc(String desc) {
+			this.desc = desc;
+		}
+	}
+
+	public enum INNO72ORDER_ORDERSTATUS {
+
+		WAIT(10, "未支付"),PAY(20, "已支付"),COMPLETE(30, "已完成"),REFUND(30, "已退款");
+
+		private Integer key;
+		private String desc;
+
+		INNO72ORDER_ORDERSTATUS(Integer key, String desc) {
 			this.key = key;
 			this.desc = desc;
 		}
@@ -603,4 +635,11 @@ public class Inno72Order {
 		this.repetition = repetition;
 	}
 
+	public Integer getOrderStatus() {
+		return orderStatus;
+	}
+
+	public void setOrderStatus(Integer orderStatus) {
+		this.orderStatus = orderStatus;
+	}
 }

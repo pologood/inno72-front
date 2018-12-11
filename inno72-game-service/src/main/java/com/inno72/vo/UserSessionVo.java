@@ -1,5 +1,6 @@
 package com.inno72.vo;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 import com.inno72.common.SessionConstants;
@@ -33,6 +34,7 @@ public class UserSessionVo {
 	private String refOrderId;
 	private String sellerId;
 	private String merchantName;
+	private BigDecimal orderPrice;
 	private Inno72MachineVo inno72MachineVo;
 
 	/**
@@ -828,6 +830,18 @@ public class UserSessionVo {
 	public void setFailChannelIds(String failChannelIds) {
 		this.fllowed = fllowed;
 		httpSession.setAttribute(SessionConstants.FAILCHANNELIDS,failChannelIds);
+	}
+
+	public BigDecimal getOrderPrice() {
+
+		Object obj = httpSession.getAttribute(SessionConstants.ORDERPRICE);
+		if(obj == null) return null;
+		return (BigDecimal)obj ;
+	}
+
+	public void setOrderPrice(BigDecimal orderPrice) {
+		this.orderPrice = orderPrice;
+		httpSession.setAttribute(SessionConstants.ORDERPRICE,orderPrice);
 	}
 
 	public boolean findPaiyangFlag() {
