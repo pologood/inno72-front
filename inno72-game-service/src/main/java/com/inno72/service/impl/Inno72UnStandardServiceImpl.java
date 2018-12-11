@@ -54,6 +54,11 @@ public class Inno72UnStandardServiceImpl implements Inno72UnStandardService {
         }
     }
 
+    @Override
+    public void checkPhoneVerificationCode(String sessionUuid, String phone, String verificationCode) {
+        LOGGER.info("checkPhoneVerificationCode sessionUuid = {}, phone = {}, verificationCode ={} ",sessionUuid,phone,verificationCode);
+    }
+
     /**
      * 发送短信验证码
      * @param phone

@@ -101,4 +101,21 @@ public class Inno72UnStandardController {
         }
     }
 
+    /**
+     * 获取手机号验证码
+     */
+    @ResponseBody
+    @RequestMapping(value = "/checkPhoneVerificationCode", method = {RequestMethod.GET,RequestMethod.POST})
+    public Result<Object> checkPhoneVerificationCode(String sessionUuid,String phone,String verificationCode) {
+        try{
+            inno72UnStandardService.checkPhoneVerificationCode(sessionUuid,phone,verificationCode);
+            return Results.success();
+        }catch (Inno72BizException e){
+            return Results.failure(e.getMessage());
+        }catch (Exception e){
+            LOGGER.error(e.getMessage(), e);
+            return Results.failure(e.getMessage());
+        }
+    }
+
 }
