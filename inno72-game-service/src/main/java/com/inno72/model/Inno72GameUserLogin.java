@@ -6,7 +6,7 @@ import java.util.Date;
 @Table(name = "inno72_game_user_login")
 public class Inno72GameUserLogin {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.IDENTITY, generator = "select uuid()")
     private String id;
 
     /**

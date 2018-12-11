@@ -85,7 +85,7 @@ public class Inno72UnStandardServiceImpl implements Inno72UnStandardService {
                 throw new Inno72BizException(result.getMsg());
             }
             boolean success = inno72AuthInfoService.setLogged(sessionUuid);
-            if(success){
+            if(!success){
                 throw new Inno72BizException("设置登陆异常");
             }
         }else{

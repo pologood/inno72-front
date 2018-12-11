@@ -99,7 +99,8 @@ public class SuperOpenServiceImpl implements SuperOpenService {
 		 */
 		GET_PROCESSBEFORELOGGED("019", "processBeforeLogged", "/api/standard/processBeforeLogged", "登陆回调", "1.0.0"),
 
-
+		CHECKPHONEVERIFICATIONCODE("022", "checkPhoneVerificationCode", "/api/unstandard/checkPhoneVerificationCode", "校验验证码", "1.0.0"),
+		GETPHONEVERIFICATIONCODE("023", "getPhoneVerificationCode", "/api/unstandard/getPhoneVerificationCode", "获取验证码", "1.0.0"),
 
 		/** 查找活动商品 */
 		ACTIVITY_GOODS("020", "findGoods", "/api/activity/findGoods", "查找活动商品接口", "1.0.0"),
