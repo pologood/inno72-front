@@ -1,9 +1,11 @@
 package com.inno72.service.impl;
 
+import com.inno72.common.Inno72BizException;
 import com.inno72.common.RedisConstants;
 import com.inno72.msg.MsgUtil;
 import com.inno72.redis.IRedisUtil;
 import com.inno72.service.Inno72UnStandardService;
+import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -57,6 +59,14 @@ public class Inno72UnStandardServiceImpl implements Inno72UnStandardService {
     @Override
     public void checkPhoneVerificationCode(String sessionUuid, String phone, String verificationCode) {
         LOGGER.info("checkPhoneVerificationCode sessionUuid = {}, phone = {}, verificationCode ={} ",sessionUuid,phone,verificationCode);
+        String key = RedisConstants.PHONEVERIFICATIONCODE_REDIS_KEY+sessionUuid +":"+phone;
+        String code = iRedisUtil.get(key);
+        if(StringUtils.isEmpty(code)){
+            throw new Inno72BizException("验证码过期");
+        }
+        if(code.equals(verificationCode)){
+
+        }
     }
 
     /**
