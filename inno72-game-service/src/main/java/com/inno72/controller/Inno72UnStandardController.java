@@ -118,4 +118,21 @@ public class Inno72UnStandardController {
         }
     }
 
+    /**
+     * 选择支付方式
+     */
+    @ResponseBody
+    @RequestMapping(value = "/changePayType", method = {RequestMethod.GET,RequestMethod.POST})
+    public Result<Object> changePayType(String sessionUuid,Integer payType) {
+        try{
+            String payUrl = inno72UnStandardService.changePayType(sessionUuid,payType);
+            return Results.success(payUrl);
+        }catch (Inno72BizException e){
+            return Results.failure(e.getMessage());
+        }catch (Exception e){
+            LOGGER.error(e.getMessage(), e);
+            return Results.failure(e.getMessage());
+        }
+    }
+
 }

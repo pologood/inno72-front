@@ -36,6 +36,7 @@ public class UserSessionVo {
 	private String merchantName;
 	private BigDecimal orderPrice;
 	private Inno72MachineVo inno72MachineVo;
+	private String gameUserLoginId;
 
 	/**
 	 * 商户总ID - table -> inno72_merchant_user.merchant_id
@@ -842,6 +843,17 @@ public class UserSessionVo {
 	public void setOrderPrice(BigDecimal orderPrice) {
 		this.orderPrice = orderPrice;
 		httpSession.setAttribute(SessionConstants.ORDERPRICE,orderPrice);
+	}
+
+	public String getGameUserLoginId() {
+		Object obj = httpSession.getAttribute(SessionConstants.GAMEUSERLOGINID);
+		if(obj == null) return null;
+		return (String)obj ;
+	}
+
+	public void setGameUserLoginId(String gameUserLoginId) {
+		this.gameUserLoginId = gameUserLoginId;
+		httpSession.setAttribute(SessionConstants.GAMEUSERLOGINID,gameUserLoginId);
 	}
 
 	public boolean findPaiyangFlag() {

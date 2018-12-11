@@ -144,7 +144,7 @@ public class Inno72Inno72ChannelServiceImpl implements Inno72ChannelService {
         inno72GameUserLogin.setProcessed(Inno72GameUserLogin.PROCESSED_NO);
         inno72GameUserLogin.setUserId(userChannel.getGameUserId());
         inno72GameUserLoginMapper.insert(inno72GameUserLogin);
-
+        sessionVo.setGameUserLoginId(inno72GameUserLogin.getId());
         sessionVo.setUserNick(nickName);
         sessionVo.setUserId(userId);
         sessionVo.setGameUserId(userChannel.getGameUserId());

@@ -189,6 +189,18 @@ public class Inno72OrderServiceImpl implements Inno72OrderService {
 		return Results.success(result);
 	}
 
+	@Override
+	public void updateOrderStatus(String inno72OrderId, Integer status) {
+		Inno72Order order = inno72OrderMapper.selectByPrimaryKey(inno72OrderId);
+		Inno72Order param = new Inno72Order();
+		param.setId(inno72OrderId);
+		param.setOrderStatus(status);
+		inno72OrderMapper.updateByPrimaryKeySelective(param);
+		order.setOrderStatus(status);
+		inno72OrderHistoryMapper.insert(new Inno72OrderHistory(inno72OrderId, order.getOrderNum(),
+				JSON.toJSONString(order), "修改订单状态为"+status));
+	}
+
 	/**
 	 * 获得排期游戏结果，根据不同活动类型处理
 	 * @param vo

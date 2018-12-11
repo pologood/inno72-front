@@ -6,11 +6,14 @@ import com.inno72.common.Result;
 import com.inno72.common.StandardLoginTypeEnum;
 import com.inno72.common.json.JsonUtil;
 import com.inno72.common.utils.StringUtil;
+import com.inno72.mapper.Inno72OrderMapper;
+import com.inno72.model.Inno72Order;
 import com.inno72.msg.MsgUtil;
 import com.inno72.redis.IRedisUtil;
 import com.inno72.service.Inno72AuthInfoService;
 import com.inno72.service.Inno72UnStandardService;
 import com.inno72.vo.Inno72AuthInfo;
+import com.inno72.vo.UserSessionVo;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -35,6 +38,9 @@ public class Inno72UnStandardServiceImpl implements Inno72UnStandardService {
 
     @Autowired
     private Inno72AuthInfoService inno72AuthInfoService;
+
+    @Autowired
+    private Inno72OrderMapper inno72OrderMapper;
 
     @Value("${phoneverificationcode_limit_time}")
     private Integer phoneverificationcodeLimitTime;
@@ -91,6 +97,20 @@ public class Inno72UnStandardServiceImpl implements Inno72UnStandardService {
         }else{
             throw new Inno72BizException("验证码错误");
         }
+    }
+
+    @Override
+    public String changePayType(String sessionUuid, Integer payType) {
+        UserSessionVo  UserSessionVo = new UserSessionVo(sessionUuid);
+        String orderId = UserSessionVo.getInno72OrderId();
+        //修改订单支付方式
+        Inno72Order order = new Inno72Order();
+        order.setId(orderId);
+        order.setPayType(payType);
+        inno72OrderMapper.updateByPrimaryKeySelective(order);
+        //调用支付接口获取支付链接
+
+        return null;
     }
 
     /**

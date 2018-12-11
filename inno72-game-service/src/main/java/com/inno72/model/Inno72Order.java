@@ -84,12 +84,42 @@ public class Inno72Order {
 
 	@Column(name = "pay_price")
 	private BigDecimal payPrice;
-
+	@Column(name = "pay_type")
+	private Integer payType;
 	/**
 	 * 订单类型 10
 	 */
 	@Column(name = "order_type")
 	private Integer orderType;
+
+	public enum INNO72ORDER_PAYTYPE {
+
+		WECHAT(1, "微信"),ALIPAY(2, "支付宝");
+
+		private Integer key;
+		private String desc;
+
+		INNO72ORDER_PAYTYPE(Integer key, String desc) {
+			this.key = key;
+			this.desc = desc;
+		}
+
+		public Integer getKey() {
+			return key;
+		}
+
+		public void setKey(Integer key) {
+			this.key = key;
+		}
+
+		public String getDesc() {
+			return desc;
+		}
+
+		public void setDesc(String desc) {
+			this.desc = desc;
+		}
+	}
 
 	public enum INNO72ORDER_ORDERTYPE {
 
@@ -641,5 +671,13 @@ public class Inno72Order {
 
 	public void setOrderStatus(Integer orderStatus) {
 		this.orderStatus = orderStatus;
+	}
+
+	public Integer getPayType() {
+		return payType;
+	}
+
+	public void setPayType(Integer payType) {
+		this.payType = payType;
 	}
 }

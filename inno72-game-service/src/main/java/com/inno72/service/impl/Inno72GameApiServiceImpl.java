@@ -90,6 +90,8 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 	@Resource
 	private Inno72GameMapper inno72GameMapper;
 	@Resource
+	private Inno72OrderService inno72OrderService;
+	@Resource
 	private Inno72OrderMapper inno72OrderMapper;
 	@Resource
 	private GameSessionRedisUtil gameSessionRedisUtil;
@@ -1205,12 +1207,17 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 		}
 
 		UserSessionVo userSessionVo = gameSessionRedisUtil.getSessionKey(sessionUuid);
+
+		//修改订单状态为完成
 		LOGGER.info("shipmentReport userSessionVo {}", userSessionVo);
 
 		if (userSessionVo == null) {
 			return Results.failure("登录失效!");
 		}
 		String orderId = userSessionVo.getRefOrderId();
+
+		//修改订单状态为成功
+		inno72OrderService.updateOrderStatus(userSessionVo.getInno72OrderId(),Inno72Order.INNO72ORDER_ORDERSTATUS.COMPLETE.getKey());
 
 		Inno72Machine machineByCode = inno72MachineMapper.findMachineByCode(machineCode);
 

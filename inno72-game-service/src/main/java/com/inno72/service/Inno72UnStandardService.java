@@ -15,4 +15,12 @@ public interface Inno72UnStandardService {
      * @param verificationCode
      */
     void checkPhoneVerificationCode(String sessionUuid, String phone, String verificationCode);
+
+    /**
+     * 选择支付方式
+     * @param sessionUuid
+     * @param payType
+     * @return
+     */
+    String changePayType(String sessionUuid, Integer payType);
 }
