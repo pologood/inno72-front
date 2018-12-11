@@ -150,6 +150,10 @@ public class Inno72ALiChannelServiceImpl implements Inno72ChannelService {
                 inno72Merchant = inno72MerchantMapper.selectByPrimaryKey(sellerId);
             }
         }
+        String merchentCode = sessionVo.getSellerId();
+        if(inno72Merchant == null && !StringUtils.isEmpty(merchentCode)){
+            inno72Merchant= inno72MerchantMapper.findByMerchantCode(merchentCode);
+        }
         Inno72Interact interact = inno72InteractService.findById(sessionVo.getInno72MachineVo().getActivityId());
         playCode = interact.getPlanCode();
         LOGGER.info("sessionRedirect layCode is {}", playCode);
@@ -342,13 +346,6 @@ public class Inno72ALiChannelServiceImpl implements Inno72ChannelService {
         // 判断是否有他人登录以及二维码是否过期
         String qrStatus = QRSTATUS_NORMAL;
         LOGGER.info("sessionUuid is {}", sessionUuid);
-        // 判断二维码是否过期
-        boolean result = gameSessionRedisUtil.hasKey(sessionUuid);
-        LOGGER.info("qrCode hasKey result {} ", result);
-        if (!result) {
-            qrStatus = QRSTATUS_INVALID;
-            LOGGER.info("二维码已经过期");
-        }
         return qrStatus;
     }
     /**
