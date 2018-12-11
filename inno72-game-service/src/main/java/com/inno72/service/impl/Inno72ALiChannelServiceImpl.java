@@ -150,6 +150,10 @@ public class Inno72ALiChannelServiceImpl implements Inno72ChannelService {
                 inno72Merchant = inno72MerchantMapper.selectByPrimaryKey(sellerId);
             }
         }
+        String merchentCode = sessionVo.getSellerId();
+        if(inno72Merchant == null && !StringUtils.isEmpty(merchentCode)){
+            inno72Merchant= inno72MerchantMapper.findByMerchantCode(merchentCode);
+        }
         Inno72Interact interact = inno72InteractService.findById(sessionVo.getInno72MachineVo().getActivityId());
         playCode = interact.getPlanCode();
         LOGGER.info("sessionRedirect layCode is {}", playCode);
