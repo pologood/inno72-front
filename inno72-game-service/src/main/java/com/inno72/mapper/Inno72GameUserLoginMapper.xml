@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.inno72.mapper.Inno72GameUserLoginMapper">
+  <resultMap id="BaseResultMap" type="com.inno72.model.Inno72GameUserLogin">
+    <!--
+      WARNING - @mbg.generated
+    -->
+    <id column="id" jdbcType="VARCHAR" property="id" />
+    <result column="user_id" jdbcType="VARCHAR" property="userId" />
+    <result column="url" jdbcType="VARCHAR" property="url" />
+    <result column="sex" jdbcType="INTEGER" property="sex" />
+    <result column="age" jdbcType="INTEGER" property="age" />
+    <result column="activity_id" jdbcType="VARCHAR" property="activityId" />
+    <result column="machine_id" jdbcType="VARCHAR" property="machineId" />
+    <result column="login_time" jdbcType="TIMESTAMP" property="loginTime" />
+    <result column="processed" jdbcType="INTEGER" property="processed" />
+    <result column="operating_system" jdbcType="INTEGER" property="operatingSystem" />
+    <result column="phone_model" jdbcType="VARCHAR" property="phoneModel" />
+    <result column="scan_software" jdbcType="VARCHAR" property="scanSoftware" />
+    <result column="locale_id" jdbcType="VARCHAR" property="localeId" />
+  </resultMap>
+</mapper>

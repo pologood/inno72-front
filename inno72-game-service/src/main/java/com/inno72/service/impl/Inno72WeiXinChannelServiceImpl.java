@@ -106,6 +106,7 @@ public class Inno72WeiXinChannelServiceImpl implements Inno72ChannelService {
         gameUserChannel.setChannelName(channel.getChannelName());
         gameUserChannel.setExt(authInfo);
         gameUserChannel.setUserNick(nickname);
+        gameUserChannel.setLoginType(StandardLoginTypeEnum.WEIXIN.getValue());
         if(resultList.size()>0){
             gameUserChannel.setId(resultList.get(0).getId());
             gameUserChannel.setGameUserId(resultList.get(0).getGameUserId());

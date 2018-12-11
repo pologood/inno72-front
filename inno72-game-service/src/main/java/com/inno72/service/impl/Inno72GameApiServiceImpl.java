@@ -1696,7 +1696,7 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 			inno72GameUserMapper.insert(inno72GameUser);
 			LOGGER.info("插入游戏用户表 完成 ===> {}", JSON.toJSONString(inno72GameUser));
 			userChannel = new Inno72GameUserChannel(sessionUuid, "", channelId, inno72GameUser.getId(),
-					inno72Channel.getChannelName(), sessionUuid, "");
+					inno72Channel.getChannelName(), sessionUuid, "",StandardLoginTypeEnum.ALIBABA.getValue());
 			inno72GameUserChannelMapper.insert(userChannel);
 			LOGGER.info("插入游戏用户渠道表 完成 ===> {}", JSON.toJSONString(userChannel));
 		}
@@ -1848,7 +1848,7 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 			inno72GameUserMapper.insert(inno72GameUser);
 			LOGGER.info("插入游戏用户表 完成 ===> {}", JSON.toJSONString(inno72GameUser));
 			userChannel = new Inno72GameUserChannel(nickName, "", channelId, inno72GameUser.getId(),
-					inno72Channel.getChannelName(), userId, accessToken);
+					inno72Channel.getChannelName(), userId, accessToken,StandardLoginTypeEnum.ALIBABA.getValue());
 			inno72GameUserChannelMapper.insert(userChannel);
 			LOGGER.info("插入游戏用户渠道表 完成 ===> {}", JSON.toJSONString(userChannel));
 

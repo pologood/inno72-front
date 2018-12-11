@@ -24,7 +24,7 @@ public enum StandardLoginTypeEnum {
 
 	public static boolean isExist(Integer value) {
 
-		if (ALIBABA.getValue().equals(value) || NOLOGIN.getValue().equals(value)|| WEIXIN.getValue().equals(value)) {
+		if (ALIBABA.getValue().equals(value) || NOLOGIN.getValue().equals(value)|| WEIXIN.getValue().equals(value)|| INNO72.getValue().equals(value)) {
 			return true;
 		}
 		return false;

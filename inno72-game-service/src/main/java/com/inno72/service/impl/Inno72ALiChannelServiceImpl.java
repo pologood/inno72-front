@@ -174,7 +174,7 @@ public class Inno72ALiChannelServiceImpl implements Inno72ChannelService {
             inno72GameUserMapper.insert(inno72GameUser);
             LOGGER.info("插入游戏用户表 完成 ===> {}", JSON.toJSONString(inno72GameUser));
             userChannel = new Inno72GameUserChannel(nickName, "", channelId, inno72GameUser.getId(),
-                    inno72Channel.getChannelName(), userId, accessToken);
+                    inno72Channel.getChannelName(), userId, accessToken,StandardLoginTypeEnum.ALIBABA.getValue());
             inno72GameUserChannelMapper.insert(userChannel);
             LOGGER.info("插入游戏用户渠道表 完成 ===> {}", JSON.toJSONString(userChannel));
         } else {
@@ -185,9 +185,17 @@ public class Inno72ALiChannelServiceImpl implements Inno72ChannelService {
 //		UserSessionVo sessionVo = new UserSessionVo(mid, nickName, userId, accessToken, gameId, sessionUuid,
 //				inno72ActivityPlan.getId());
 
+        //插入gameLife表
+        Inno72Locale inno72Locale = inno72LocaleMapper.selectByPrimaryKey(inno72Machine.getLocaleId());
+        Inno72GameUserLife life = new Inno72GameUserLife(userChannel == null ? null : userChannel.getGameUserId(),
+                userChannel == null ? null : userChannel.getId(), inno72Machine.getMachineCode(),
+                userChannel == null ? null : userChannel.getUserNick(), interact.getId(),
+                interact.getName(), interact.getId(), inno72Game.getId(), inno72Game.getName(),
+                inno72Machine.getLocaleId(), inno72Locale == null ? "" : inno72Locale.getMall(), null, "", null, null,
+                userId, sessionVo.getSellerId() == null ? inno72Merchant.getMerchantCode() : sessionVo.getSellerId(), sessionVo.getGoodsCode() == null ? "" : sessionVo.getGoodsCode());
+        LOGGER.info("插入用户游戏记录 ===> {}", JSON.toJSONString(life));
+        inno72GameUserLifeMapper.insert(life);
 
-
-        Integer goodsCount = inno72MachineService.getMachineGoodsCount(sessionVo.getGoodsId(),inno72Machine.getId());
         sessionVo.setUserNick(nickName);
         sessionVo.setUserId(userId);
         sessionVo.setGameUserId(userChannel.getGameUserId());
@@ -200,27 +208,11 @@ public class Inno72ALiChannelServiceImpl implements Inno72ChannelService {
         if(sessionVo.getGoodsType()!=null && UserSessionVo.GOODSTYPE_COUPON.compareTo(sessionVo.getGoodsType())==0){
             sessionVo.setCountGoods(true);
         }else{
+            Integer goodsCount = inno72MachineService.getMachineGoodsCount(sessionVo.getGoodsId(),inno72Machine.getId());
             sessionVo.setCountGoods(goodsCount>0);
         }
         sessionVo.setChannelId(channelId);
         sessionVo.setActivityId(interact.getId());
-        /**
-         * 派样 goodsList没用
-         */
-//		List<GoodsVo> list = loadGameInfo(mid);
-//		LOGGER.info("loadGameInfo is {} ", JsonUtil.toJson(list));
-//		sessionVo.setGoodsList(list);
-
-        //插入gameLife表
-        Inno72Locale inno72Locale = inno72LocaleMapper.selectByPrimaryKey(inno72Machine.getLocaleId());
-        Inno72GameUserLife life = new Inno72GameUserLife(userChannel == null ? null : userChannel.getGameUserId(),
-                userChannel == null ? null : userChannel.getId(), inno72Machine.getMachineCode(),
-                userChannel == null ? null : userChannel.getUserNick(), interact.getId(),
-                interact.getName(), interact.getId(), inno72Game.getId(), inno72Game.getName(),
-                inno72Machine.getLocaleId(), inno72Locale == null ? "" : inno72Locale.getMall(), null, "", null, null,
-                userId, sessionVo.getSellerId() == null ? inno72Merchant.getMerchantCode() : sessionVo.getSellerId(), sessionVo.getGoodsCode() == null ? "" : sessionVo.getGoodsCode());
-        LOGGER.info("插入用户游戏记录 ===> {}", JSON.toJSONString(life));
-        inno72GameUserLifeMapper.insert(life);
 
         LOGGER.info("playCode is" + playCode);
 
@@ -242,8 +234,6 @@ public class Inno72ALiChannelServiceImpl implements Inno72ChannelService {
         resultMap.put("goodsCode", sessionVo.getGoodsCode() != null ? sessionVo.getGoodsCode() : "");
 
         LOGGER.info("processBeforeLogged返回聚石塔结果 is {}", resultMap);
-
-        gameSessionRedisUtil.setSessionEx(sessionUuid, JSON.toJSONString(sessionVo));
 
         CommonBean.logger(
                 CommonBean.POINT_TYPE_LOGIN,
