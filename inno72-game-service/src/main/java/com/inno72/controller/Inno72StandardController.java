@@ -353,7 +353,6 @@ public class Inno72StandardController {
                         String traceId = UuidUtil.getUUID32();
                         sessionVo.setTraceId(traceId);
                         sessionVo.setScanUrl(redirectUrl);
-//                        gameSessionRedisUtil.setSession(sessionUuid, JSON.toJSONString(sessionVo));
                         // 设置15秒内二维码不能被扫
                         gameSessionRedisUtil.setSessionEx(sessionUuid + "qrCode", sessionUuid, 15);
 

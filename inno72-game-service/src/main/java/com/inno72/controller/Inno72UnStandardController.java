@@ -1,6 +1,5 @@
 package com.inno72.controller;
 
-import com.google.gson.Gson;
 import com.inno72.common.Inno72BizException;
 import com.inno72.common.RedisConstants;
 import com.inno72.common.Result;
@@ -11,7 +10,6 @@ import com.inno72.service.Inno72WeChatService;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -127,6 +125,23 @@ public class Inno72UnStandardController {
         try{
             String payUrl = inno72UnStandardService.changePayType(sessionUuid,payType);
             return Results.success(payUrl);
+        }catch (Inno72BizException e){
+            return Results.failure(e.getMessage());
+        }catch (Exception e){
+            LOGGER.error(e.getMessage(), e);
+            return Results.failure(e.getMessage());
+        }
+    }
+
+    /**
+     * 选择支付方式
+     */
+    @ResponseBody
+    @RequestMapping(value = "/upfile", method = {RequestMethod.GET,RequestMethod.POST})
+    public Result<Object> upfile(String sessionUuid,String photoImg,Integer operatingSystem,String phoneModel,String sacnSoftware) {
+        try{
+            inno72UnStandardService.updatePhoto(sessionUuid,photoImg,operatingSystem,phoneModel,sacnSoftware);
+            return Results.success();
         }catch (Inno72BizException e){
             return Results.failure(e.getMessage());
         }catch (Exception e){

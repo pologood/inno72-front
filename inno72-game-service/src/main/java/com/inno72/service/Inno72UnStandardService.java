@@ -23,4 +23,15 @@ public interface Inno72UnStandardService {
      * @return
      */
     String changePayType(String sessionUuid, Integer payType);
+
+    /**
+     * 更新用户图片
+     * @param sessionUuid
+     * @param photoImg
+     * @param operatingSystem
+     * @param phoneModel
+     * @param sacnSoftware
+     * @return
+     */
+    void updatePhoto(String sessionUuid, String photoImg, Integer operatingSystem, String phoneModel, String sacnSoftware);
 }

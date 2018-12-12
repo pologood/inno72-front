@@ -94,7 +94,7 @@ public class Inno72Order {
 
 	public enum INNO72ORDER_PAYTYPE {
 
-		WECHAT(1, "微信"),ALIPAY(2, "支付宝");
+		ALIPAY(1, "支付宝"),WECHAT(2, "微信");
 
 		private Integer key;
 		private String desc;
@@ -187,7 +187,7 @@ public class Inno72Order {
 
 	public enum INNO72ORDER_ORDERSTATUS {
 
-		WAIT(10, "未支付"),PAY(20, "已支付"),COMPLETE(30, "已完成"),REFUND(30, "已退款");
+		WAIT(10, "未支付"),PAY(20, "已支付"),COMPLETE(30, "已完成"),REFUND(40, "已退款");
 
 		private Integer key;
 		private String desc;

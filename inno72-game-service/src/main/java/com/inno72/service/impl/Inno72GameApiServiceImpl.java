@@ -939,7 +939,6 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 
 		inno72Order.setUserId(gameUserId);
 
-
 		Inno72OrderGoods orderGoods = new Inno72OrderGoods();
 
 		String goodsName = "";

@@ -37,7 +37,6 @@ public class UserSessionVo {
 	private BigDecimal orderPrice;
 	private Inno72MachineVo inno72MachineVo;
 	private String gameUserLoginId;
-
 	/**
 	 * 商户总ID - table -> inno72_merchant_user.merchant_id
 	 */
