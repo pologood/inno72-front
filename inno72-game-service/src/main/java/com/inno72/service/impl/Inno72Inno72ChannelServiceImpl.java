@@ -6,10 +6,8 @@ import com.inno72.common.util.FastJsonUtils;
 import com.inno72.common.utils.StringUtil;
 import com.inno72.mapper.*;
 import com.inno72.model.*;
-import com.inno72.service.Inno72AuthInfoService;
-import com.inno72.service.Inno72ChannelService;
-import com.inno72.service.Inno72InteractService;
-import com.inno72.service.Inno72MachineService;
+import com.inno72.service.*;
+import com.inno72.vo.MachineApiVo;
 import com.inno72.vo.UserSessionVo;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -20,9 +18,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 @Service("INNO72")
 @Transactional
@@ -39,6 +35,9 @@ public class Inno72Inno72ChannelServiceImpl implements Inno72ChannelService {
     private Inno72ChannelMapper inno72ChannelMapper;
 
     @Autowired
+    private Inno72OrderMapper inno72OrderMapper;
+
+    @Autowired
     private Inno72GameUserChannelMapper inno72GameUserChannelMapper;
 
     @Autowired
@@ -52,6 +51,10 @@ public class Inno72Inno72ChannelServiceImpl implements Inno72ChannelService {
 
     @Autowired
     private Inno72InteractService inno72InteractService;
+
+    @Autowired
+    private Inno72GameApiService inno72GameApiService;
+
 
     @Autowired
     private Inno72GameMapper inno72GameMapper;
@@ -196,5 +199,22 @@ public class Inno72Inno72ChannelServiceImpl implements Inno72ChannelService {
                 "%s/?sessionUuid=%s&env=%s&channelType=%s",
                 redirect, sessionUuid, env, StandardLoginTypeEnum.INNO72.getValue());
         return url;
+    }
+
+    @Override
+    public Result<Object> orderPolling(UserSessionVo userSessionVo, MachineApiVo vo) {
+        String orderId = userSessionVo.getInno72OrderId();
+        Inno72Order order = inno72OrderMapper.selectByPrimaryKey(orderId);
+        Map<String, Object> result = new HashMap<>();
+        boolean model = false;
+        if(Inno72Order.INNO72ORDER_ORDERSTATUS.PAY.getKey() == order.getOrderStatus()){
+            String goodsId = userSessionVo.getGoodsId();
+            model = true;
+            List<String> goodsIds = new ArrayList<>();
+            goodsIds.add(goodsId);
+            inno72GameApiService.setChannelInfo(userSessionVo, result, goodsIds);
+        }
+        result.put("model", model);
+        return Results.success(result);
     }
 }

@@ -12,9 +12,7 @@ import com.inno72.model.*;
 import com.inno72.plugin.http.HttpClient;
 import com.inno72.redis.IRedisUtil;
 import com.inno72.service.*;
-import com.inno72.vo.Inno72MachineInformation;
-import com.inno72.vo.Inno72MachineVo;
-import com.inno72.vo.UserSessionVo;
+import com.inno72.vo.*;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -23,7 +21,10 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
+import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 @Service("ALI")
@@ -34,10 +35,22 @@ public class Inno72ALiChannelServiceImpl implements Inno72ChannelService {
     private Inno72GameServiceProperties inno72GameServiceProperties;
 
     @Resource
+    private Inno72GameApiService inno72GameApiService;
+
+    @Resource
     private Inno72MachineMapper inno72MachineMapper;
 
     @Resource
+    private Inno72OrderGoodsMapper inno72OrderGoodsMapper;
+
+    @Resource
+    private Inno72OrderHistoryMapper inno72OrderHistoryMapper;
+
+    @Resource
     private Inno72GameMapper inno72GameMapper;
+
+    @Resource
+    private Inno72OrderMapper inno72OrderMapper;
 
     @Resource
     private GameSessionRedisUtil gameSessionRedisUtil;
@@ -399,5 +412,103 @@ public class Inno72ALiChannelServiceImpl implements Inno72ChannelService {
             resultMap.put("sessionKey", sessionVo.getSessionKey());
         }
     }
+
+    @Override
+    public Result<Object> orderPolling(UserSessionVo userSessionVo, MachineApiVo vo) {
+        LOGGER.info("orderPolling userSessionVo {}", userSessionVo);
+
+        if (userSessionVo == null) {
+            return Results.failure("登录失效!");
+        }
+
+        String orderId = userSessionVo.getRefOrderId();
+        if (StringUtil.isEmpty(orderId)) {
+            LOGGER.info("第三方订单号不存在!");
+            return Results.failure("请求失败");
+        }
+
+//		Result orderPollingResult = inno72TopService.orderPolling(sessionUuid, orderId);
+//		if (orderPollingResult.getCode() == Result.FAILURE) {
+//			return Results.failure(orderPollingResult.getMsg());
+//		}
+
+        // todo gxg 统一维护到聚石塔服务 order-polling
+        String accessToken = userSessionVo.getAccessToken();
+        Map<String, String> requestForm = new HashMap<>();
+
+        requestForm.put("accessToken", accessToken);
+        requestForm.put("orderId", orderId);
+
+        LOGGER.info("调用聚石塔接口【下单支付状态】 orderId {}, machineCode {} , 参数 {}", orderId, userSessionVo.getMachineCode(), JSON.toJSONString(requestForm));
+
+        String respJson = HttpClient.form(CommonBean.TopUrl.ORDER_POLLING, requestForm, null);
+        if (StringUtil.isEmpty(respJson)) {
+            return Results.failure("聚石塔无返回数据!");
+        }
+
+        LOGGER.info("调用聚石塔接口【下单支付状态】 orderId {}, machineCode {} , 返回 {}", orderId, userSessionVo.getMachineCode(), JSON.toJSONString(respJson));
+
+        try {
+            String msg_code = FastJsonUtils.getString(respJson, "msg_code");
+
+            if (!msg_code.equals("SUCCESS")) {
+                String msg_info = FastJsonUtils.getString(respJson, "msg_info");
+                return Results.failure(msg_info);
+            }
+
+            boolean model = Boolean.valueOf(FastJsonUtils.getString(respJson, "model"));
+
+            if (model) {
+                Inno72Order inno72Order = inno72OrderMapper.selectByRefOrderId(orderId);
+                if (inno72Order != null) {
+                    inno72Order.setPayStatus(Inno72Order.INNO72ORDER_PAYSTATUS.SUCC.getKey());
+                    inno72Order.setPayTime(LocalDateTime.now());
+                    inno72OrderMapper.updateByPrimaryKeySelective(inno72Order);
+                    inno72OrderHistoryMapper.insert(new Inno72OrderHistory(inno72Order.getId(),
+                            inno72Order.getOrderNum(), JSON.toJSONString(inno72Order), "修改状态为已支付"));
+
+                    Map<String, Object> goodsParams = new HashMap<>();
+                    goodsParams.put("goodsType", Inno72Order.INNO72ORDER_GOODSTYPE.PRODUCT.getKey());
+                    goodsParams.put("orderId", inno72Order.getId());
+                    // todo gxg 处理报错情况
+                    Inno72OrderGoods goods = inno72OrderGoodsMapper.selectByOrderIdAndGoodsType(goodsParams);
+                    goods.setStatus(Inno72Order.INNO72ORDER_PAYSTATUS.SUCC.getKey());
+                    inno72OrderGoodsMapper.updateByPrimaryKeySelective(goods);
+
+                    userSessionVo.setRefOrderStatus(inno72Order.getRefOrderStatus());
+                    pointService.innerPoint(vo.getSessionUuid(), Inno72MachineInformation.ENUM_INNO72_MACHINE_INFORMATION_TYPE.PAY);
+                    this.taoBaoDataSyn(vo.getSessionUuid(), JSON.toJSONString(requestForm), respJson, Inno72TaoBaoCheckDataVo.ENUM_INNO72_TAOBAO_CHECK_DATA_VO_TYPE.ORDER);
+                }
+            }
+
+            Map<String, Object> result = new HashMap<>();
+
+            // 如果需要支付 polling时 需要返回货道信息
+            boolean needPay = userSessionVo.getNeedPay();
+            if (needPay) {
+                String goodsId = userSessionVo.getGoodsId();
+                List<String> goodsIds = new ArrayList<>();
+                goodsIds.add(goodsId);
+                inno72GameApiService.setChannelInfo(userSessionVo, result, goodsIds);
+            }
+            result.put("model", model);
+            LOGGER.info("orderPolling 返回结果 orderId {}, machineCode {} , result {}", orderId, userSessionVo.getMachineCode(), JSON.toJSONString(result));
+            return Results.success(result);
+
+        } catch (Exception e) {
+            LOGGER.info("解析聚石塔返回数据异常! ===>  {}", e.getMessage(), e);
+            return Results.failure("解析聚石塔返回数据异常!");
+        }
+    }
+
+    private void taoBaoDataSyn(String sessionUuid, String reqBody, String resBody, Inno72TaoBaoCheckDataVo.ENUM_INNO72_TAOBAO_CHECK_DATA_VO_TYPE type) {
+        Inno72TaoBaoCheckDataVo inno72TaoBaoCheckDataVo = new Inno72TaoBaoCheckDataVo();
+        inno72TaoBaoCheckDataVo.setSessionUuid(sessionUuid);
+        inno72TaoBaoCheckDataVo.setReqBody(reqBody);
+        inno72TaoBaoCheckDataVo.setRspBody(resBody);
+        inno72TaoBaoCheckDataVo.setType(type.getType());
+        pointService.innerTaoBaoDataSyn(inno72TaoBaoCheckDataVo);
+    }
+
 
 }

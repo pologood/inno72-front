@@ -2,6 +2,7 @@ package com.inno72.service;
 
 import com.inno72.common.Result;
 import com.inno72.model.Inno72Machine;
+import com.inno72.vo.MachineApiVo;
 import com.inno72.vo.UserSessionVo;
 
 public interface Inno72ChannelService {
@@ -20,4 +21,6 @@ public interface Inno72ChannelService {
     default boolean getCanOrder(UserSessionVo userSessionVo){
         return true;
     }
+
+    default Result<Object> orderPolling(UserSessionVo userSessionVo, MachineApiVo vo){ return null;}
 }
