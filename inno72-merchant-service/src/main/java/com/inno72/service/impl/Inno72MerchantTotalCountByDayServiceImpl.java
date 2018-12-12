@@ -34,8 +34,10 @@ import com.inno72.common.Results;
 import com.inno72.common.datetime.LocalDateUtil;
 import com.inno72.common.utils.StringUtil;
 import com.inno72.mapper.Inno72MerchantTotalCountByDayMapper;
+import com.inno72.mapper.Inno72MerchantTotalCountMapper;
 import com.inno72.model.Inno72MerchantTotalCountByDay;
 import com.inno72.service.Inno72MerchantTotalCountByDayService;
+import com.inno72.service.Inno72MerchantTotalCountByUserService;
 
 
 /**
@@ -49,6 +51,12 @@ public class Inno72MerchantTotalCountByDayServiceImpl extends AbstractService<In
 	private static final Logger LOGGER = LoggerFactory.getLogger(Inno72MerchantTotalCountByDayServiceImpl.class);
 	@Resource
 	private Inno72MerchantTotalCountByDayMapper inno72MerchantTotalCountByDayMapper;
+
+	@Resource
+	private Inno72MerchantTotalCountMapper inno72MerchantTotalCountMapper;
+
+	@Resource
+	private Inno72MerchantTotalCountByUserService inno72MerchantTotalCountByUserService;
 
 	@Override
 	public Result<Object> searchData(String label, String activityId, String city, String startDate, String endDate,
@@ -68,6 +76,8 @@ public class Inno72MerchantTotalCountByDayServiceImpl extends AbstractService<In
 
 		List<Inno72MerchantTotalCountByDay> days = inno72MerchantTotalCountByDayMapper.selectList(activityId, city,
 				startDate, endDate, goods, merchantId);
+
+
 		Map<String, Object> result;
 		switch (label) {
 			case "order":
@@ -78,6 +88,22 @@ public class Inno72MerchantTotalCountByDayServiceImpl extends AbstractService<In
 				break;
 			case "user":
 				result = this.buildUser(days, startDateLocal, endDateLocal);
+				String activityType = inno72MerchantTotalCountMapper.selectActivityType(activityId);
+				if (StringUtil.isEmpty(activityType)){
+					int i = inno72MerchantTotalCountMapper.researchFromInteract(activityId);
+					activityType = "2";
+					inno72MerchantTotalCountMapper.updateActivityType(activityId, activityType);
+				}
+				result.put(activityType, activityType);
+				if (activityType.equals("2")){
+					Result<Map<String, Object>> result1 = inno72MerchantTotalCountByUserService
+							.selectByActivityId(activityId, startDate, endDate);
+					if (result1.getCode() != Result.SUCCESS){
+						return Results.failure(result1.getMsg());
+					}
+					result.putAll(result1.getData());
+				}
+
 				break;
 			default:
 				return Results.failure("无查询类型!");
