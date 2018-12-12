@@ -101,7 +101,9 @@ public class Inno72MerchantTotalCountByDayServiceImpl extends AbstractService<In
 					if (result1.getCode() != Result.SUCCESS){
 						return Results.failure(result1.getMsg());
 					}
-					result.putAll(result1.getData());
+					Map<String, Object> o = (Map<String, Object>)result.get("chart");
+					o.putAll(result1.getData());
+					result.put("chart", o);
 				}
 
 				break;
@@ -378,7 +380,7 @@ public class Inno72MerchantTotalCountByDayServiceImpl extends AbstractService<In
 			percentS.add(0);
 		}
 
-		Map<String, List<Integer>> ys = new HashMap<>();
+		Map<String, Object> ys = new HashMap<>();
 		ys.put("experienceS", experienceS);
 		ys.put("percentS", percentS);
 		ys.put("concernS", concernS);
