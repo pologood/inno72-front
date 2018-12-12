@@ -150,4 +150,22 @@ public class Inno72UnStandardController {
         }
     }
 
+    /**
+     * 支付回调
+     */
+    @ResponseBody
+    @RequestMapping(value = "/payCallback", method = {RequestMethod.GET,RequestMethod.POST})
+    public Result<Object> payCallback(String retCode,String billId,String buyerId,String extra,
+                                      String fee,String outTradeNo,String spId,Integer terminalType,Integer type) {
+        try{
+            inno72UnStandardService.payCallback(retCode,billId,buyerId,extra,fee,outTradeNo,spId,terminalType,type);
+            return Results.success();
+        }catch (Inno72BizException e){
+            return Results.failure(e.getMessage());
+        }catch (Exception e){
+            LOGGER.error(e.getMessage(), e);
+            return Results.failure(e.getMessage());
+        }
+    }
+
 }

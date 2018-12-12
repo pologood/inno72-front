@@ -13,6 +13,7 @@ import com.inno72.mapper.Inno72SupplyChannelMapper;
 import com.inno72.model.*;
 import com.inno72.service.Inno72ChannelService;
 import com.inno72.service.Inno72GameApiService;
+import com.inno72.service.Inno72QrCodeService;
 import com.inno72.service.PointService;
 import com.inno72.vo.GameResultVo;
 import com.inno72.vo.Inno72MachineInformation;
@@ -39,6 +40,9 @@ import java.util.Map;
 public class Inno72ActivityController {
 
 	private Logger LOGGER = LoggerFactory.getLogger(this.getClass());
+
+	@Resource
+	private Inno72QrCodeService inno72QrCodeService;
 
 	@Resource
 	private GameSessionRedisUtil gameSessionRedisUtil;
@@ -137,7 +141,7 @@ public class Inno72ActivityController {
 		String localUrl = "activityLogin" + inno72Machine.getId() + sessionUuid + ".png";
 		Inno72ChannelService channelService = (Inno72ChannelService)ApplicationContextHandle.getBean(StandardLoginTypeEnum.ALIBABA.getName());
 		String qrCOntent = channelService.buildQrContent(inno72Machine,sessionUuid);
-		String qrCode = inno72GameApiService.createQrCode(qrCOntent, localUrl);
+		String qrCode = inno72QrCodeService.createQrCode(qrCOntent, localUrl);
 		Map<String, Object> map = new HashMap<String, Object>();
 		map.put("qrCodeUrl", qrCode);
 		return Results.success(map);

@@ -1,6 +1,5 @@
 package com.inno72.service.impl;
 
-import java.io.File;
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
@@ -34,14 +33,12 @@ import com.google.gson.Gson;
 import com.inno72.common.json.JsonUtil;
 import com.inno72.common.shiro.filter.JWTUtil;
 import com.inno72.common.util.DateUtil;
-import com.inno72.common.util.AesUtils;
 import com.inno72.common.util.FastJsonUtils;
 import com.inno72.common.util.GameSessionRedisUtil;
 import com.inno72.common.util.Inno72OrderNumGenUtil;
 import com.inno72.common.util.QrCodeUtil;
 import com.inno72.common.util.UuidUtil;
 import com.inno72.common.utils.StringUtil;
-import com.inno72.machine.vo.SupplyRequestVo;
 import com.inno72.model.*;
 import com.inno72.model.AlarmDetailBean;
 import com.inno72.model.Inno72Activity;
@@ -65,8 +62,6 @@ import com.inno72.model.Inno72OrderGoods;
 import com.inno72.model.Inno72OrderHistory;
 import com.inno72.model.Inno72Shops;
 import com.inno72.model.Inno72SupplyChannel;
-import com.inno72.model.MachineDropGoodsBean;
-import com.inno72.oss.OSSUtil;
 import com.inno72.plugin.http.HttpClient;
 import com.inno72.redis.IRedisUtil;
 import com.inno72.service.Inno72GameApiService;
@@ -78,8 +73,6 @@ import com.inno72.service.Inno72TopService;
 import com.inno72.util.AlarmUtil;
 import com.taobao.api.ApiException;
 
-import net.coobird.thumbnailator.Thumbnails;
-
 @Service
 public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 
@@ -87,6 +80,8 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 
 	@Resource
 	private Inno72GameServiceProperties inno72GameServiceProperties;
+	@Resource
+	private Inno72QrCodeService qrCodeService;
 	@Resource
 	private Inno72GameMapper inno72GameMapper;
 	@Resource
@@ -883,7 +878,7 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 				}
 
 				if (result) {
-					this.qrCodeImgDeal(localUrl, objectName);
+					qrCodeService.qrCodeImgDeal(localUrl, objectName);
 				}
 			}
 		} catch (IOException e) {
@@ -1373,7 +1368,7 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 			String qrCOntent = channelService.buildQrContent(inno72Machine,sessionUuid);
 			// 二维码存储在本地的路径
 			String localUrl = "pre" + inno72Machine.getId() + sessionUuid +".png";
-			returnUrl = this.createQrCode(qrCOntent, localUrl);
+			returnUrl = qrCodeService.createQrCode(qrCOntent, localUrl);
 		}
 		// 开始会话流程
 		try {
@@ -1458,35 +1453,6 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 	}
 
 	/**
-	 * 生成二维码
-	 * @return
-	 */
-	public String createQrCode(String qrCodeContent, String localUrl) {
-
-		LOGGER.info("二维码访问 qrCodeContent is {} ", qrCodeContent);
-
-		// 存储在阿里云上的文件名
-		String objectName = "qrcode/" + localUrl;
-
-		// 提供给前端用来调用二维码的地址
-		String returnUrl = inno72GameServiceProperties.get("returnUrl") + objectName;
-
-		boolean result = false;
-
-		try {
-			result = QrCodeUtil.createQrCode(localUrl, qrCodeContent, 1800, "png");
-		} catch (Exception e) {
-			LOGGER.error(e.getMessage(), e);
-		}
-
-		if (result) {
-			this.qrCodeImgDeal(localUrl, objectName);
-		}
-
-		return returnUrl;
-	}
-
-	/**
 	 * 解析ext
 	 * @param userSessionVo
 	 * @param ext
@@ -1550,24 +1516,6 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 		}
 	}
 
-	/**
-	 * 二维图片码处理
-	 */
-	private void qrCodeImgDeal(String localUrl, String objectName) {
-		try {
-			File f = new File(localUrl);
-			if (f.exists()) {
-				// 压缩图片
-				Thumbnails.of(localUrl).scale(0.5f).outputQuality(0f).toFile(localUrl);
-				// 上传阿里云
-				OSSUtil.uploadLocalFile(localUrl, objectName);
-				// 删除本地文件
-				f.delete();
-			}
-		} catch (Exception e) {
-			LOGGER.error(e.getMessage(), e);
-		}
-	}
 
 	@Override
 	@Transactional(propagation = Propagation.REQUIRED, rollbackFor = Exception.class)

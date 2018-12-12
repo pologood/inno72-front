@@ -201,6 +201,56 @@ public class Inno72OrderServiceImpl implements Inno72OrderService {
 				JSON.toJSONString(order), "修改订单状态为"+status));
 	}
 
+	@Override
+	public Inno72Order changePayType(String sessionUuid, Integer payType) {
+
+		UserSessionVo userSessionVo = new UserSessionVo(sessionUuid);
+		String orderId = userSessionVo.getInno72OrderId();
+		Inno72Order order = inno72OrderMapper.selectByPrimaryKey(orderId);
+		if(null == order.getPayType()){
+			//首次支付
+			order.setPayType(payType);
+			updateOrderPayType(order);
+		}else{
+			//复制一条订单
+			order.setOrderNum(Inno72OrderNumGenUtil.changeOrderNum(order.getOrderNum()));
+			order.setId(null);
+			order.setOrderTime(LocalDateTime.now());
+			order.setPayType(payType);
+
+			saveOrder(order);
+		}
+		return order;
+	}
+
+	@Override
+	public void updateOrderStatusAndPayStatus(String orderId, Integer orderStatus, Integer payStatus) {
+		Inno72Order param = new Inno72Order();
+		param.setId(orderId);
+		param.setOrderStatus(orderStatus);
+		param.setPayStatus(payStatus);
+		param.setPayTime(LocalDateTime.now());
+		inno72OrderMapper.updateByPrimaryKeySelective(param);
+		param = inno72OrderMapper.selectByPrimaryKey(orderId);
+		inno72OrderHistoryMapper.insert(new Inno72OrderHistory(param.getId(), param.getOrderNum(),
+				JSON.toJSONString(param), "支付成功"));
+	}
+
+	private void saveOrder(Inno72Order order) {
+		inno72OrderMapper.insert(order);
+		inno72OrderHistoryMapper.insert(new Inno72OrderHistory(order.getId(), order.getOrderNum(),
+				JSON.toJSONString(order), "初始插入"));
+	}
+
+	private void updateOrderPayType(Inno72Order order) {
+		Inno72Order param = new Inno72Order();
+		param.setId(order.getId());
+		param.setPayType(order.getPayType());
+		inno72OrderMapper.updateByPrimaryKeySelective(param);
+		inno72OrderHistoryMapper.insert(new Inno72OrderHistory(order.getId(), order.getOrderNum(),
+				JSON.toJSONString(order), "修改支付状态为"+order.getPayType()));
+	}
+
 	/**
 	 * 获得排期游戏结果，根据不同活动类型处理
 	 * @param vo

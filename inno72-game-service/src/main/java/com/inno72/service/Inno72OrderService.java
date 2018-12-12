@@ -18,4 +18,20 @@ public interface Inno72OrderService {
 	 * @param complete
 	 */
     void updateOrderStatus(String inno72OrderId, Integer complete);
+
+	/**
+	 * 修改支付方式
+	 * @param sessionUuid
+	 * @param payType
+	 * @return
+	 */
+	Inno72Order changePayType(String sessionUuid, Integer payType);
+
+	/**
+	 * 更新支付结果
+	 * @param outTradeNo
+	 * @param pay
+	 * @param succ
+	 */
+    void updateOrderStatusAndPayStatus(String outTradeNo, Integer orderStatus, Integer payStatus);
 }

@@ -58,5 +58,5 @@ public interface Inno72GameApiService {
 	 * @param localUrl 本地路径
 	 * @return
 	 */
-    String createQrCode(String qrContent, String localUrl);
+//    String createQrCode(String qrContent, String localUrl);
 }

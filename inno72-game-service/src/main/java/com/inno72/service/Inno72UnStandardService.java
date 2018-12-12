@@ -34,4 +34,18 @@ public interface Inno72UnStandardService {
      * @return
      */
     void updatePhoto(String sessionUuid, String photoImg, Integer operatingSystem, String phoneModel, String sacnSoftware);
+
+    /**
+     * 支付回调
+     * @param retCode
+     * @param billId
+     * @param buyerId
+     * @param extra
+     * @param fee
+     * @param outTradeNo
+     * @param spId
+     * @param terminalType
+     * @param type
+     */
+    void payCallback(String retCode, String billId, String buyerId, String extra, String fee, String outTradeNo, String spId, Integer terminalType, Integer type);
 }

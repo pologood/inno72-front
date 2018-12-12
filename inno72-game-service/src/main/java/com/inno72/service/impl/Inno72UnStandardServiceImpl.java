@@ -13,6 +13,8 @@ import com.inno72.model.Inno72Order;
 import com.inno72.msg.MsgUtil;
 import com.inno72.redis.IRedisUtil;
 import com.inno72.service.Inno72AuthInfoService;
+import com.inno72.service.Inno72OrderService;
+import com.inno72.service.Inno72PayService;
 import com.inno72.service.Inno72UnStandardService;
 import com.inno72.vo.Inno72AuthInfo;
 import com.inno72.vo.UserSessionVo;
@@ -22,6 +24,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.security.SecureRandom;
 import java.util.HashMap;
@@ -29,6 +32,7 @@ import java.util.Map;
 import java.util.Random;
 
 @Service
+@Transactional
 public class Inno72UnStandardServiceImpl implements Inno72UnStandardService {
     private Logger LOGGER = LoggerFactory.getLogger(this.getClass());
 
@@ -42,10 +46,16 @@ public class Inno72UnStandardServiceImpl implements Inno72UnStandardService {
     private Inno72AuthInfoService inno72AuthInfoService;
 
     @Autowired
+    private Inno72OrderService inno72OrderService;
+
+    @Autowired
     private Inno72OrderMapper inno72OrderMapper;
 
     @Autowired
     private Inno72GameUserLoginMapper inno72GameUserLoginMapper;
+
+    @Autowired
+    private Inno72PayService inno72PayService;
 
     @Value("${phoneverificationcode_limit_time}")
     private Integer phoneverificationcodeLimitTime;
@@ -106,16 +116,9 @@ public class Inno72UnStandardServiceImpl implements Inno72UnStandardService {
 
     @Override
     public String changePayType(String sessionUuid, Integer payType) {
-        UserSessionVo  UserSessionVo = new UserSessionVo(sessionUuid);
-        String orderId = UserSessionVo.getInno72OrderId();
         //修改订单支付方式
-        Inno72Order order = new Inno72Order();
-        order.setId(orderId);
-        order.setPayType(payType);
-        inno72OrderMapper.updateByPrimaryKeySelective(order);
-        //调用支付接口获取支付链接
-
-        return null;
+        Inno72Order order = inno72OrderService.changePayType(sessionUuid,payType);
+        return inno72PayService.pay(order);
     }
 
     @Override
@@ -129,6 +132,15 @@ public class Inno72UnStandardServiceImpl implements Inno72UnStandardService {
         login.setPhoneModel(phoneModel);
         login.setScanSoftware(sacnSoftware);
         inno72GameUserLoginMapper.updateByPrimaryKeySelective(login);
+    }
+
+    @Override
+    public void payCallback(String retCode, String billId, String buyerId, String extra, String fee, String outTradeNo, String spId, Integer terminalType, Integer type) {
+        LOGGER.info("payCallback retCode ={},billId={},buyerId={},extra={},fee={},outTradeNo={},spId={},terminalType={},type={}",retCode,billId,buyerId,extra,fee,outTradeNo,spId,terminalType,type);
+        //更新订单状态为一支付
+        if(Result.SUCCESS == Integer.parseInt(retCode)){
+            inno72OrderService.updateOrderStatusAndPayStatus(outTradeNo,Inno72Order.INNO72ORDER_ORDERSTATUS.PAY.getKey(),Inno72Order.INNO72ORDER_PAYSTATUS.SUCC.getKey());
+        }
     }
 
     /**
