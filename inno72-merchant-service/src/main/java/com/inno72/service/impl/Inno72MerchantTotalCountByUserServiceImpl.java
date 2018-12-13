@@ -242,8 +242,8 @@ public class Inno72MerchantTotalCountByUserServiceImpl extends AbstractService<I
 			tagNum.add(tag.getValue());
 		}
 		Map<String, Object> userLabel = new HashMap<>();
-		userAge.put("x", tagNames);
-		userAge.put("y", tagNum);
+		userLabel.put("x", tagNames);
+		userLabel.put("y", tagNum);
 
 		Map<String, Object> result = new HashMap<>();
 		result.put("userSex", userSex);
