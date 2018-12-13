@@ -26,6 +26,14 @@
         <result column="age" jdbcType="TINYINT" property="age"/>
         <result column="merchant_code" jdbcType="VARCHAR" property="merchantCode"/>
         <result column="goods_code" jdbcType="VARCHAR" property="goodsCode"/>
+        <result column="game_start_time" jdbcType="TIMESTAMP" property="gameStartTime" javaType="java.time.LocalDateTime"
+                typeHandler="org.apache.ibatis.type.LocalDateTimeTypeHandler"/>
+        <result column="game_end_time" jdbcType="TIMESTAMP" property="gameEndTime" javaType="java.time.LocalDateTime"
+                typeHandler="org.apache.ibatis.type.LocalDateTimeTypeHandler"/>
+        <result column="shipment_time" jdbcType="TIMESTAMP" property="shipmentTime" javaType="java.time.LocalDateTime"
+                typeHandler="org.apache.ibatis.type.LocalDateTimeTypeHandler"/>
+        <result column="share_time" jdbcType="TIMESTAMP" property="shareTime" javaType="java.time.LocalDateTime"
+                typeHandler="org.apache.ibatis.type.LocalDateTimeTypeHandler"/>
     </resultMap>
     <select id="selectByUserChannelIdLast" resultMap="BaseResultMap" parameterType="string">
       select * from inno72_game_user_life where third_ref_id = #{userId} order by login_time desc LIMIT 1

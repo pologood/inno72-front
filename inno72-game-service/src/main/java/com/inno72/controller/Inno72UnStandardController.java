@@ -168,4 +168,21 @@ public class Inno72UnStandardController {
         }
     }
 
+    /**
+     * 支付回调
+     */
+    @ResponseBody
+    @RequestMapping(value = "/gamePointTime", method = {RequestMethod.GET,RequestMethod.POST})
+    public Result<Object> gamePointTime(String sessionUuid,Integer type) {
+        try{
+            inno72UnStandardService.gamePointTime(sessionUuid,type);
+            return Results.success();
+        }catch (Inno72BizException e){
+            return Results.failure(e.getMessage());
+        }catch (Exception e){
+            LOGGER.error(e.getMessage(), e);
+            return Results.failure(e.getMessage());
+        }
+    }
+
 }

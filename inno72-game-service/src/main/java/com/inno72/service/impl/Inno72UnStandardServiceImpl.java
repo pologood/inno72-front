@@ -6,8 +6,10 @@ import com.inno72.common.Result;
 import com.inno72.common.StandardLoginTypeEnum;
 import com.inno72.common.json.JsonUtil;
 import com.inno72.common.utils.StringUtil;
+import com.inno72.mapper.Inno72GameUserLifeMapper;
 import com.inno72.mapper.Inno72GameUserLoginMapper;
 import com.inno72.mapper.Inno72OrderMapper;
+import com.inno72.model.Inno72GameUserLife;
 import com.inno72.model.Inno72GameUserLogin;
 import com.inno72.model.Inno72Order;
 import com.inno72.msg.MsgUtil;
@@ -27,6 +29,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.security.SecureRandom;
+import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Random;
@@ -44,6 +47,8 @@ public class Inno72UnStandardServiceImpl implements Inno72UnStandardService {
 
     @Autowired
     private Inno72AuthInfoService inno72AuthInfoService;
+    @Autowired
+    private Inno72GameUserLifeMapper inno72GameUserLifeMapper;
 
     @Autowired
     private Inno72OrderService inno72OrderService;
@@ -68,6 +73,7 @@ public class Inno72UnStandardServiceImpl implements Inno72UnStandardService {
     public void getPhoneVerificationCode(String sessionUuid, String phone) {
         LOGGER.info("getPhoneVerificationCode sessionUuid = {}, phone = {}",sessionUuid,phone);
         String code = getNonceStr();
+        LOGGER.info("getPhoneVerificationCode phone = {},code={}",phone,code);
         //发送短信
         sendSms(phone,code);
         //将code放入redis
@@ -141,6 +147,23 @@ public class Inno72UnStandardServiceImpl implements Inno72UnStandardService {
         if(Result.SUCCESS == Integer.parseInt(retCode)){
             inno72OrderService.updateOrderStatusAndPayStatus(outTradeNo,Inno72Order.INNO72ORDER_ORDERSTATUS.PAY.getKey(),Inno72Order.INNO72ORDER_PAYSTATUS.SUCC.getKey());
         }
+    }
+
+    @Override
+    public void gamePointTime(String sessionUuid, Integer type) {
+        UserSessionVo userSessionVo = new UserSessionVo(sessionUuid);
+        Inno72GameUserLife userLife = inno72GameUserLifeMapper.selectByUserChannelIdLast(userSessionVo.getUserId());
+        if(type == Inno72GameUserLife.GAME_START_TIME_TYPE){
+            userLife.setGameStartTime(LocalDateTime.now());
+        }else if(type == Inno72GameUserLife.GAME_END_TIME_TYPE){
+            userLife.setGameEndTime(LocalDateTime.now());
+        }else if(type == Inno72GameUserLife.SHARE_TIME_TYPE){
+            userLife.setShareTime(LocalDateTime.now());
+        }else if(type == Inno72GameUserLife.SHIPMENT_TIME_TYPE){
+            userLife.setShipmentTime(LocalDateTime.now());
+        }
+        inno72GameUserLifeMapper.updateByPrimaryKeySelective(userLife);
+
     }
 
     /**

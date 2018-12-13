@@ -48,4 +48,11 @@ public interface Inno72UnStandardService {
      * @param type
      */
     void payCallback(String retCode, String billId, String buyerId, String extra, String fee, String outTradeNo, String spId, Integer terminalType, Integer type);
+
+    /**
+     * 记录游戏各个点的时间比如 开始游戏时间，结束游戏时间，分享游戏时间
+     * @param sessionUuid
+     * @param type
+     */
+    void gamePointTime(String sessionUuid, Integer type);
 }

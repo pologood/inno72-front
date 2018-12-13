@@ -81,6 +81,8 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 	@Resource
 	private Inno72GameServiceProperties inno72GameServiceProperties;
 	@Resource
+	private Inno72UnStandardService inno72UnStandardService;
+	@Resource
 	private Inno72QrCodeService qrCodeService;
 	@Resource
 	private Inno72GameMapper inno72GameMapper;
@@ -1176,7 +1178,7 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 		channelService.feedBackInTime(userSessionVo.getInno72OrderId(),machineCode);
 
 		pointService.innerPoint(sessionUuid, Inno72MachineInformation.ENUM_INNO72_MACHINE_INFORMATION_TYPE.SHIPMENT);
-
+		inno72UnStandardService.gamePointTime(sessionUuid,Inno72GameUserLife.SHIPMENT_TIME_TYPE);
 		/* 埋点 */
 		CommonBean.logger(
 				CommonBean.POINT_TYPE_FINISH,
