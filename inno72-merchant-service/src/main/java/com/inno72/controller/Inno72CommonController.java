@@ -19,6 +19,7 @@ import com.inno72.common.utils.StringUtil;
 import com.inno72.msg.MsgUtil;
 import com.inno72.redis.IRedisUtil;
 import com.inno72.service.CommonService;
+import com.inno72.service.Inno72MerchantTotalCountByUserService;
 
 
 @RestController
@@ -82,6 +83,17 @@ public class Inno72CommonController {
 	public Result baseApi(@PathVariable(value = "type") String type, String merchantId) {
 		return Results.success(commonService.baseApi(type, merchantId));
 	}
+
+
+	@Resource
+	private Inno72MerchantTotalCountByUserService inno72MerchantTotalCountByUserService;
+
+	@RequestMapping(value = "/test")
+	public Result test(String actId, String start, String end) {
+		return Results.success(inno72MerchantTotalCountByUserService.selectByActivityId(actId, start, end));
+	}
+
+
 
 
 }
