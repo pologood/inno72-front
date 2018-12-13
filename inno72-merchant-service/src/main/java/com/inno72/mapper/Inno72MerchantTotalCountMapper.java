@@ -17,4 +17,6 @@ public interface Inno72MerchantTotalCountMapper extends Mapper<Inno72MerchantTot
 	int researchFromInteract(String activityId);
 
 	void updateActivityType(@Param("activityId") String activityId, @Param("activityType")String activityType);
+
+	String selectChannelCode(String activityId);
 }

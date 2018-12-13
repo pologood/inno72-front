@@ -88,14 +88,9 @@ public class Inno72MerchantTotalCountByDayServiceImpl extends AbstractService<In
 				break;
 			case "user":
 				result = this.buildUser(days, startDateLocal, endDateLocal);
-				String activityType = inno72MerchantTotalCountMapper.selectActivityType(activityId);
-				if (StringUtil.isEmpty(activityType)){
-					int i = inno72MerchantTotalCountMapper.researchFromInteract(activityId);
-					activityType = "2";
-					inno72MerchantTotalCountMapper.updateActivityType(activityId, activityType);
-				}
-				result.put(activityType, activityType);
-				if (activityType.equals("2")){
+				String channel = inno72MerchantTotalCountMapper.selectChannelCode(activityId);
+				result.put("channel", channel);
+				if (StringUtil.notEmpty(channel) && channel.equals("002002")){
 					Result<Map<String, Object>> result1 = inno72MerchantTotalCountByUserService
 							.selectByActivityId(activityId, startDate, endDate);
 					if (result1.getCode() != Result.SUCCESS){
@@ -105,6 +100,7 @@ public class Inno72MerchantTotalCountByDayServiceImpl extends AbstractService<In
 					o.putAll(result1.getData());
 					result.put("chart", o);
 				}
+
 
 				break;
 			default:

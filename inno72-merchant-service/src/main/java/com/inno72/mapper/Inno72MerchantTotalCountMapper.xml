@@ -37,4 +37,7 @@
     <select id="researchFromInteract" resultType="java.lang.Integer">
         select count(0) from inno72.inno72_interact where id = #{activityId}
     </select>
+    <select id="selectChannelCode" resultType="java.lang.String" parameterType="string">
+        select channel from inno72.inno72_interact where id = #{activityId}
+    </select>
 </mapper>
