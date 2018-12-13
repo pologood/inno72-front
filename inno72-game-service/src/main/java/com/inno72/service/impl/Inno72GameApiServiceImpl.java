@@ -835,7 +835,13 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 		inno72Order.setOrderNum(orderNum);
 		inno72Order.setOrderPrice(BigDecimal.ZERO);
 		inno72Order.setOrderTime(now);
-		inno72Order.setOrderType(Inno72Order.INNO72ORDER_ORDERTYPE.DEFAULT.getKey());
+		if(StandardLoginTypeEnum.ALIBABA.getValue().compareTo(userSessionVo.getChannelType()) == 0){
+			inno72Order.setOrderType(Inno72Order.INNO72ORDER_ORDERTYPE.ALI.getKey());
+		}else if(StandardLoginTypeEnum.INNO72.getValue().compareTo(userSessionVo.getChannelType()) == 0){
+            inno72Order.setOrderType(Inno72Order.INNO72ORDER_ORDERTYPE.INNO72.getKey());
+		}else{
+            inno72Order.setOrderType(Inno72Order.INNO72ORDER_ORDERTYPE.DEFAULT.getKey());
+        }
 		inno72Order.setPayPrice(BigDecimal.ZERO);
 		inno72Order.setPayStatus(Inno72Order.INNO72ORDER_PAYSTATUS.WAIT.getKey());
 		inno72Order.setPayTime(null);

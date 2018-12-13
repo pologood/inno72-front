@@ -26,6 +26,7 @@
         <result column="age" jdbcType="TINYINT" property="age"/>
         <result column="merchant_code" jdbcType="VARCHAR" property="merchantCode"/>
         <result column="goods_code" jdbcType="VARCHAR" property="goodsCode"/>
+        <result column="channel_id" jdbcType="VARCHAR" property="channelId"/>
         <result column="game_start_time" jdbcType="TIMESTAMP" property="gameStartTime" javaType="java.time.LocalDateTime"
                 typeHandler="org.apache.ibatis.type.LocalDateTimeTypeHandler"/>
         <result column="game_end_time" jdbcType="TIMESTAMP" property="gameEndTime" javaType="java.time.LocalDateTime"

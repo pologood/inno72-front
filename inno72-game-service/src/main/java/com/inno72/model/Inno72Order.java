@@ -123,7 +123,7 @@ public class Inno72Order {
 
 	public enum INNO72ORDER_ORDERTYPE {
 
-		DEFAULT(999, "默认");
+		DEFAULT(999, "默认"),ALI(20, "淘宝订单"),INNO72(10, "点72订单");
 
 		private Integer key;
 		private String desc;

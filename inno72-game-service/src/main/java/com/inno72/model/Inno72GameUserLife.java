@@ -130,6 +130,12 @@ public class Inno72GameUserLife {
 	private String goodsCode;
 
 	/**
+	 * 渠道id
+	 */
+	@Column(name = "channel_id")
+	private String channelId;
+
+	/**
 	 * 游戏开始时间
 	 */
 	@Column(name = "game_start_time")
@@ -539,5 +545,13 @@ public class Inno72GameUserLife {
 
 	public void setShareTime(LocalDateTime shareTime) {
 		this.shareTime = shareTime;
+	}
+
+	public String getChannelId() {
+		return channelId;
+	}
+
+	public void setChannelId(String channelId) {
+		this.channelId = channelId;
 	}
 }

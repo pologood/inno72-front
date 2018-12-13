@@ -136,6 +136,7 @@ public class Inno72Inno72ChannelServiceImpl implements Inno72ChannelService {
                 interact.getName(), interact.getId(), inno72Game.getId(), inno72Game.getName(),
                 inno72Machine.getLocaleId(), inno72Locale == null ? "" : inno72Locale.getMall(), null, "", null, null,
                 userId, sessionVo.getSellerId() == null ? inno72Merchant.getMerchantCode() : sessionVo.getSellerId(), sessionVo.getGoodsCode() == null ? "" : sessionVo.getGoodsCode());
+        life.setChannelId(channelId);
         LOGGER.info("插入用户游戏记录 ===> {}", JSON.toJSONString(life));
         inno72GameUserLifeMapper.insert(life);
 
