@@ -320,8 +320,6 @@ public class Inno72ALiChannelServiceImpl implements Inno72ChannelService {
         userSessionVo.setNeedPay(needPay);
 
 //		gameSessionRedisUtil.setSession(sessionUuid, JSON.toJSONString(userSessionVo));
-		pointService.innerPoint(sessionUuid, Inno72MachineInformation.ENUM_INNO72_MACHINE_INFORMATION_TYPE.ORDER_GOODS);
-
         // 更新第三方订单号进inno72 order
         Result<String> stringResult = inno72GameService
                 .updateRefOrderId(inno72OrderId, ref_order_id, userSessionVo.getUserId());

@@ -750,6 +750,7 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
         Inno72ChannelService channelService = (Inno72ChannelService)ApplicationContextHandle.getBean(StandardLoginTypeEnum.getValue(userSessionVo.getChannelType()));
 
         Result<Object> r =  channelService.order(userSessionVo,itemId,inno72OrderId);
+		pointService.innerPoint(sessionUuid, Inno72MachineInformation.ENUM_INNO72_MACHINE_INFORMATION_TYPE.ORDER_GOODS);
 
 //        gameSessionRedisUtil.setSession(sessionUuid, JSON.toJSONString(userSessionVo));
         return r;

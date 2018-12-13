@@ -7,6 +7,7 @@ import com.inno72.common.utils.StringUtil;
 import com.inno72.mapper.*;
 import com.inno72.model.*;
 import com.inno72.service.*;
+import com.inno72.vo.Inno72MachineInformation;
 import com.inno72.vo.MachineApiVo;
 import com.inno72.vo.UserSessionVo;
 import org.apache.commons.lang3.StringUtils;
@@ -27,6 +28,9 @@ public class Inno72Inno72ChannelServiceImpl implements Inno72ChannelService {
 
     @Autowired
     private Inno72GameServiceProperties inno72GameServiceProperties;
+
+    @Autowired
+    private PointService pointService;
 
     @Autowired
     private Inno72MerchantMapper inno72MerchantMapper;
@@ -217,6 +221,7 @@ public class Inno72Inno72ChannelServiceImpl implements Inno72ChannelService {
             List<String> goodsIds = new ArrayList<>();
             goodsIds.add(goodsId);
             inno72GameApiService.setChannelInfo(userSessionVo, result, goodsIds);
+            pointService.innerPoint(vo.getSessionUuid(), Inno72MachineInformation.ENUM_INNO72_MACHINE_INFORMATION_TYPE.PAY);
         }
         result.put("model", model);
         return Results.success(result);

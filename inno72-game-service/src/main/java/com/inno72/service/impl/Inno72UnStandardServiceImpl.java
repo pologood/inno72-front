@@ -19,6 +19,7 @@ import com.inno72.service.Inno72OrderService;
 import com.inno72.service.Inno72PayService;
 import com.inno72.service.Inno72UnStandardService;
 import com.inno72.vo.Inno72AuthInfo;
+import com.inno72.vo.Inno72MachineInformation;
 import com.inno72.vo.UserSessionVo;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
