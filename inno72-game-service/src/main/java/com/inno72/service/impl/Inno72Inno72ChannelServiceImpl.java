@@ -123,6 +123,7 @@ public class Inno72Inno72ChannelServiceImpl implements Inno72ChannelService {
             LOGGER.info("插入游戏用户表 完成 ===> {}", JSON.toJSONString(inno72GameUser));
             userChannel = new Inno72GameUserChannel(nickName, userId, channelId, inno72GameUser.getId(),
                     inno72Channel.getChannelName(), userId, null,StandardLoginTypeEnum.INNO72.getValue());
+            userChannel.setChannelId(channelId);
             inno72GameUserChannelMapper.insert(userChannel);
             LOGGER.info("插入游戏用户渠道表 完成 ===> {}", JSON.toJSONString(userChannel));
         }
@@ -146,6 +147,7 @@ public class Inno72Inno72ChannelServiceImpl implements Inno72ChannelService {
         inno72GameUserLogin.setMachineId(inno72Machine.getId());
         inno72GameUserLogin.setProcessed(Inno72GameUserLogin.PROCESSED_NO);
         inno72GameUserLogin.setUserId(userChannel.getGameUserId());
+        inno72GameUserLogin.setChannelId(channelId);
         inno72GameUserLoginMapper.insert(inno72GameUserLogin);
         sessionVo.setGameUserLoginId(inno72GameUserLogin.getId());
         sessionVo.setUserNick(nickName);

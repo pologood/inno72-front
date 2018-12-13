@@ -18,5 +18,6 @@
     <result column="phone_model" jdbcType="VARCHAR" property="phoneModel" />
     <result column="scan_software" jdbcType="VARCHAR" property="scanSoftware" />
     <result column="locale_id" jdbcType="VARCHAR" property="localeId" />
+    <result column="channel_id" jdbcType="VARCHAR" property="channelId" />
   </resultMap>
 </mapper>

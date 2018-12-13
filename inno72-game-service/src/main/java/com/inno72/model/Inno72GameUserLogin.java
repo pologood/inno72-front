@@ -80,6 +80,9 @@ public class Inno72GameUserLogin {
     @Column(name = "locale_id")
     private String localeId;
 
+    @Column(name = "channel_id")
+    private String channelId;
+
     /**
      * @return id
      */
@@ -308,5 +311,13 @@ public class Inno72GameUserLogin {
      */
     public void setLocaleId(String localeId) {
         this.localeId = localeId;
+    }
+
+    public String getChannelId() {
+        return channelId;
+    }
+
+    public void setChannelId(String channelId) {
+        this.channelId = channelId;
     }
 }
