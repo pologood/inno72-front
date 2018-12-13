@@ -182,6 +182,7 @@ public class UserSessionVo {
 	public UserSessionVo(String machineCode) {
 		super();
 		httpSession = SessionUtils.getSession(machineCode,true);
+		setMachineCode(machineCode);
 	}
 
 
