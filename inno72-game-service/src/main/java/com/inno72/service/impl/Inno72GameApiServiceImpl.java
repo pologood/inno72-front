@@ -431,6 +431,7 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 		Inno72InteractGoods inno72InteractGoods = inno72InteractGoodsService.findByInteractIdAndGoodsId(interactId,goodsId);
 		int lotteryCode = 1;
 		boolean needPay = false;
+		String channelCode = "";
 		String payQrcodeImage = "";
 		int orderCode = 1;
 		List<String> resultGoodsId = null;
@@ -449,6 +450,7 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 			if (orderResult.getCode() == Result.SUCCESS) {
 				Map map = (Map)orderResult.getData();
 				needPay = (Boolean)map.get("needPay");
+				channelCode = (String)map.get("channelCode");
 				payQrcodeImage = (String)map.get("payQrcodeImage");
 			}
 			resultGoodsId.add(goodsId);
@@ -481,7 +483,7 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 		result.put("time", new Date().getTime());
 		result.put("lotteryResult", lotteryCode);
 		result.put("orderResult", orderCode);
-
+		result.put("channelCode",channelCode);
 		result.put("needPay", needPay);
 		result.put("payQrcodeImage", payQrcodeImage);
 
