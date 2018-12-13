@@ -90,7 +90,7 @@ public class Inno72MerchantTotalCountByDayServiceImpl extends AbstractService<In
 				result = this.buildUser(days, startDateLocal, endDateLocal);
 				String channel = inno72MerchantTotalCountMapper.selectChannelCode(activityId);
 				result.put("channel", channel);
-				if (StringUtil.notEmpty(channel) && channel.equals("002002")){
+				if (StringUtil.notEmpty(channel) && channel.equals("002003")){
 					Result<Map<String, Object>> result1 = inno72MerchantTotalCountByUserService
 							.selectByActivityId(activityId, startDate, endDate);
 					if (result1.getCode() != Result.SUCCESS){
