@@ -89,8 +89,10 @@ public class Inno72CommonController {
 	private Inno72MerchantTotalCountByUserService inno72MerchantTotalCountByUserService;
 
 	@RequestMapping(value = "/test")
-	public Result test(String actId, String start, String end) {
-		return Results.success(inno72MerchantTotalCountByUserService.selectByActivityId(actId, start, end));
+	public Result<Map<String, Object>> test(String actId, String start, String end) {
+		Result<Map<String, Object>> mapResult = inno72MerchantTotalCountByUserService
+				.selectByActivityId(actId, start, end);
+		return mapResult;
 	}
 
 

@@ -170,11 +170,11 @@ public class Inno72MerchantTotalCountByUserServiceImpl extends AbstractService<I
 			Integer value = entry.getValue();
 			String key = entry.getKey();
 			BigDecimal multiply = BigDecimal.valueOf(value)
-					.divide(BigDecimal.valueOf(totalGenderNum), 2, BigDecimal.ROUND_HALF_EVEN)
+					.divide(BigDecimal.valueOf(totalGenderNum), 3, BigDecimal.ROUND_HALF_EVEN)
 					.multiply(new BigDecimal("100"));
 			Map<String, Object> map = new HashMap<>();
 			map.put("name", key);
-			map.put("y", multiply.intValue());
+			map.put("y", multiply.floatValue());
 			map.put("no", value);
 			userSex.add(map);
 		}
@@ -188,11 +188,11 @@ public class Inno72MerchantTotalCountByUserServiceImpl extends AbstractService<I
 			Integer value = entry.getValue();
 			String key = entry.getKey();
 			BigDecimal multiply = BigDecimal.valueOf(value)
-					.divide(BigDecimal.valueOf(totalCityNum), 2, BigDecimal.ROUND_HALF_EVEN)
+					.divide(BigDecimal.valueOf(totalCityNum), 3, BigDecimal.ROUND_HALF_EVEN)
 					.multiply(new BigDecimal("100"));
 			Map<String, Object> map = new HashMap<>();
 			map.put("name", key);
-			map.put("y", multiply.intValue());
+			map.put("y", multiply.floatValue());
 			map.put("no", value);
 			city.add(map);
 		}
@@ -206,11 +206,11 @@ public class Inno72MerchantTotalCountByUserServiceImpl extends AbstractService<I
 			Integer value = entry.getValue();
 			String key = entry.getKey();
 			BigDecimal multiply = BigDecimal.valueOf(value)
-					.divide(BigDecimal.valueOf(totalPointNum), 2, BigDecimal.ROUND_HALF_EVEN)
+					.divide(BigDecimal.valueOf(totalPointNum), 3, BigDecimal.ROUND_HALF_EVEN)
 					.multiply(new BigDecimal("100"));
 			Map<String, Object> map = new HashMap<>();
 			map.put("name", key);
-			map.put("y", multiply.intValue());
+			map.put("y", multiply.floatValue());
 			map.put("no", value);
 			point.add(map);
 		}
