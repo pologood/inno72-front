@@ -193,6 +193,7 @@ public class Inno72WeiXinChannelServiceImpl implements Inno72ChannelService {
             String payUrl = inno72GameServiceProperties.get("payUrl");
             map.put("payUrl", null);
         }
+        map.put("channelCode",Inno72Channel.CHANNELCODE_WECHAT);
         map.put("needPay", false);
         map.put("inno72OrderId", inno72OrderId);
         return Results.success(map);

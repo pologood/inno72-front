@@ -328,6 +328,7 @@ public class Inno72ALiChannelServiceImpl implements Inno72ChannelService {
 
         // 如果有支付链接则返回支付链接
         Map<String, Object> map = new HashMap<>();
+        map.put("channelCode",Inno72Channel.CHANNELCODE_ALI);
         map.put("needPay", needPay);
         map.put("payQrcodeImage", payQrcodeImage);
         map.put("inno72OrderId", inno72OrderId);

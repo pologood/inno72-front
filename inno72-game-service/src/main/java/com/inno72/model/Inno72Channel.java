@@ -20,6 +20,10 @@ public class Inno72Channel {
 	@Column(name = "channel_code")
 	private String channelCode;
 
+	public static final String CHANNELCODE_ALI = "002001";
+	public static final String CHANNELCODE_WECHAT = "002002";
+	public static final String CHANNELCODE_INNO72 = "002003";
+
 	/**
 	 * 渠道名称
 	 */

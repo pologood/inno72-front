@@ -191,6 +191,7 @@ public class Inno72Inno72ChannelServiceImpl implements Inno72ChannelService {
             String payUrl = inno72GameServiceProperties.get("payUrl");
             map.put("payUrl", null);
         }
+        map.put("channelCode",Inno72Channel.CHANNELCODE_INNO72);
         map.put("needPay", false);
         map.put("inno72OrderId", inno72OrderId);
         return Results.success(map);
