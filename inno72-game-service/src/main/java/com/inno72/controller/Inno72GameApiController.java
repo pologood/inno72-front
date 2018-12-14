@@ -49,20 +49,6 @@ public class Inno72GameApiController {
 //	}
 
 	/**
-	 * @param sessionUuid sessionUuid
-	 * @param mid mid
-	 * @param token token
-	 * @param code code
-	 * @param userId userId
-	 * @return Result
-	 */
-	@RequestMapping(value = "/sessionRedirect", method = {RequestMethod.POST, RequestMethod.GET})
-	public Result<String> sessionRedirect(String sessionUuid, String mid, String token, String code, String userId,
-			String itemId) {
-		return inno72GameApiService.sessionRedirect(sessionUuid, mid, token, code, userId, itemId);
-	}
-
-	/**
 	 * 设置用户已为已登录
 	 * @param sessionUuid
 	 * @return
