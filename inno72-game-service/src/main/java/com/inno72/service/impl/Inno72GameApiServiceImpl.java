@@ -1333,8 +1333,8 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 		String planCode = FastJsonUtils.getString(rVoJson, "planCode");
 		if (!StringUtil.isEmpty(planCode)) {
 			userSessionVo.setPlanCode(planCode);
-			userSessionVo.setActivityId(inno72MachineVo.getActivityId());
 		}
+		userSessionVo.setActivityId(inno72MachineVo.getActivityId());
 		LOGGER.debug("parse rVoJson string finish --> {}", inno72MachineVo);
 
         // 解析 ext

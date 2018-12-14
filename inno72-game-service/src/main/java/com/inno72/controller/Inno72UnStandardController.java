@@ -7,6 +7,7 @@ import com.inno72.common.Results;
 import com.inno72.redis.IRedisUtil;
 import com.inno72.service.Inno72UnStandardService;
 import com.inno72.service.Inno72WeChatService;
+import com.inno72.vo.UserSessionVo;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -73,13 +74,15 @@ public class Inno72UnStandardController {
             checkParam(sessionUuid,phone);
 
             //检查redis
-            String key = RedisConstants.PHONEVERIFICATIONCODE_TIME_LIMIT_REDIS_KEY+sessionUuid +":"+phone;
+            String key = RedisConstants.PHONEVERIFICATIONCODE_TIME_LIMIT_REDIS_KEY +":"+phone;
             if(iRedisUtil.exists(key)){
                 Long time = iRedisUtil.ttl(key);
                 return Results.warn("60s 内只能发一次" ,1,time);
             }
+            UserSessionVo sessionVo = new UserSessionVo(sessionUuid);
+            String activityId = sessionVo.getActivityId();
             //10分钟内只能发三次
-            key = RedisConstants.PHONEVERIFICATIONCODE_TIMES_LIMIT_REDIS_KEY+sessionUuid +":"+phone;
+            key = RedisConstants.PHONEVERIFICATIONCODE_TIMES_LIMIT_REDIS_KEY+activityId+":" +":"+phone;
             if(iRedisUtil.exists(key)&&Integer.parseInt((String)iRedisUtil.get(key))>=phoneverificationcodeLimitTimes){
                 Long time = iRedisUtil.ttl(key);
                 return Results.warn(phoneverificationcodeLimitTime+"分钟内只能发"+phoneverificationcodeLimitTimes+"次" ,1,60);

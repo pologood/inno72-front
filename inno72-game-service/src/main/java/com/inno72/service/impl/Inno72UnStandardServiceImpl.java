@@ -81,10 +81,12 @@ public class Inno72UnStandardServiceImpl implements Inno72UnStandardService {
         String key = RedisConstants.PHONEVERIFICATIONCODE_REDIS_KEY+sessionUuid +":"+phone;
         iRedisUtil.setex(key,5*60,code);
         //记录redis时间
-        key = RedisConstants.PHONEVERIFICATIONCODE_TIME_LIMIT_REDIS_KEY+sessionUuid +":"+phone;
+        key = RedisConstants.PHONEVERIFICATIONCODE_TIME_LIMIT_REDIS_KEY+phone;
         iRedisUtil.setex(key,60,"1");
         //记录redis次数
-        key = RedisConstants.PHONEVERIFICATIONCODE_TIMES_LIMIT_REDIS_KEY+sessionUuid +":"+phone;
+        UserSessionVo sessionVo = new UserSessionVo(sessionUuid);
+        String activityId = sessionVo.getActivityId();
+        key = RedisConstants.PHONEVERIFICATIONCODE_TIMES_LIMIT_REDIS_KEY+activityId +":"+phone;
         if(iRedisUtil.exists(key)){
             iRedisUtil.incrBy(key,1);
         }else{
