@@ -60,4 +60,18 @@ public class TestController {
             return null;
         }
     }
+
+    @RequestMapping(value = "/getSignature")
+    public WxJsapiSignature getSignature(String url){
+        try{
+            String appid = "wxd2d020e170a05549";
+            log.info("url={}",url,appid);
+            final WxMpService wxMpService = WxMpConfiguration.getMpServices().get(appid);
+            WxJsapiSignature signature = wxMpService.createJsapiSignature(url);
+            return signature;
+        }catch(Exception e){
+            e.printStackTrace();
+            return null;
+        }
+    }
 }
