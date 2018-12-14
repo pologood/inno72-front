@@ -10,6 +10,9 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+/**
+ *给文杰提供接口
+ */
 @RestController
 public class Inno72LocalDataSendController {
     @Autowired

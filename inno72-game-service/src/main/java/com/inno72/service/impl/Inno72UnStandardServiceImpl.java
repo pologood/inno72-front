@@ -178,7 +178,7 @@ public class Inno72UnStandardServiceImpl implements Inno72UnStandardService {
         //yp_validate_code
         Map<String, String> params = new HashMap<String, String>(1);
         params.put("code",code);
-        msgUtil.sendSMS("yp_validate_code",params,phone,"inno72-game-service");
+        msgUtil.sendSMS("interact_validate_code",params,phone,"inno72-game-service");
     }
 
     /**
