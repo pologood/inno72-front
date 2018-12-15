@@ -77,7 +77,6 @@ public class Inno72MerchantTotalCountByDayServiceImpl extends AbstractService<In
 		List<Inno72MerchantTotalCountByDay> days = inno72MerchantTotalCountByDayMapper.selectList(activityId, city,
 				startDate, endDate, goods, merchantId);
 
-
 		Map<String, Object> result;
 		switch (label) {
 			case "order":
@@ -456,8 +455,8 @@ public class Inno72MerchantTotalCountByDayServiceImpl extends AbstractService<In
 		result.put("list", days);
 
 		Map<String, List<Inno72MerchantTotalCountByDay>> map = new HashMap<>();
-		this.groupByCityAndDate(days, map);
-
+//		this.groupByCityAndDate(days, map);
+		this.groupByGoodsAndDate(days, map);
 		List<Inno72MerchantTotalCountByDay> resultList = new ArrayList<>();
 		List<Map<String, String>> pvuvMap = new ArrayList<>();
 		for (Map.Entry<String, List<Inno72MerchantTotalCountByDay>> entry : map.entrySet()) {
@@ -485,7 +484,9 @@ public class Inno72MerchantTotalCountByDayServiceImpl extends AbstractService<In
 			resultList.addAll(value);
 		}
 		result.put("list", resultList);
+
 		pvuvMap.sort(Comparator.comparing(o -> o.get("date")));
+
 
 		List<Integer> pvs = new ArrayList<>();
 		List<Integer> uvs = new ArrayList<>();
@@ -573,6 +574,30 @@ public class Inno72MerchantTotalCountByDayServiceImpl extends AbstractService<In
 		charts.put("num", nums);
 		result.put("chart", charts);
 		return result;
+	}
+
+	private void groupByGoodsAndDate(List<Inno72MerchantTotalCountByDay> days,
+			Map<String, List<Inno72MerchantTotalCountByDay>> mapGoodsDateKey) {
+
+		for (Inno72MerchantTotalCountByDay day : days){
+
+			String goodsId = day.getGoodsId();
+			String date = day.getDate();
+
+			if (StringUtil.isEmpty(goodsId) || StringUtil.isEmpty(date)){
+				continue;
+			}
+			String key = goodsId + date;
+			List<Inno72MerchantTotalCountByDay> dayss = mapGoodsDateKey.get(key);
+
+			if (dayss == null){
+				dayss = new ArrayList<>();
+			}
+			dayss.add(day);
+			mapGoodsDateKey.put(key, dayss);
+
+		}
+
 	}
 
 	private byte[] buildGoodsExcel(Object list) {
