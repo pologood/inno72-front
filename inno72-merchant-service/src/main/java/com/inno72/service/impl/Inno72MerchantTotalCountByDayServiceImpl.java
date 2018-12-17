@@ -12,6 +12,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Optional;
 import java.util.Set;
 import java.util.TreeMap;
 import java.util.TreeSet;
@@ -87,7 +88,7 @@ public class Inno72MerchantTotalCountByDayServiceImpl extends AbstractService<In
 				break;
 			case "user":
 				result = this.buildUser(days, startDateLocal, endDateLocal);
-				String channel = inno72MerchantTotalCountMapper.selectChannelCode(activityId);
+				String channel = Optional.ofNullable(inno72MerchantTotalCountMapper.selectChannelCode(activityId)).orElse("002001");
 				result.put("channel", channel);
 				if (StringUtil.notEmpty(channel) && channel.equals("002003")) {
 					Result<Map<String, Object>> result1 = inno72MerchantTotalCountByUserService
