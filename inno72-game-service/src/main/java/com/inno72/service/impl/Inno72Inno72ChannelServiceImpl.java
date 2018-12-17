@@ -146,6 +146,14 @@ public class Inno72Inno72ChannelServiceImpl implements Inno72ChannelService {
 
         //插入登陆日志
         Inno72GameUserLogin inno72GameUserLogin = new Inno72GameUserLogin();
+        String operatingSystem = FastJsonUtils.getString(authInfo, "operatingSystem");
+        String phoneModel = FastJsonUtils.getString(authInfo, "phoneModel");
+        String scanSoftware = FastJsonUtils.getString(authInfo, "scanSoftware");
+        if(!StringUtils.isEmpty(operatingSystem)){
+            inno72GameUserLogin.setOperatingSystem(Integer.parseInt(operatingSystem));
+        }
+        inno72GameUserLogin.setPhoneModel(phoneModel);
+        inno72GameUserLogin.setScanSoftware(scanSoftware);
         inno72GameUserLogin.setActivityId(sessionVo.getActivityId());
         inno72GameUserLogin.setLocaleId(inno72Machine.getLocaleId());
         inno72GameUserLogin.setLoginTime(new Date());

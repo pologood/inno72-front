@@ -96,7 +96,7 @@ public class Inno72UnStandardServiceImpl implements Inno72UnStandardService {
     }
 
     @Override
-    public void checkPhoneVerificationCode(String sessionUuid, String phone, String verificationCode,Integer operatingSystem,String phoneModel,String sacnSoftware) {
+    public void checkPhoneVerificationCode(String sessionUuid, String phone, String verificationCode,Integer operatingSystem,String phoneModel,String scanSoftware) {
         LOGGER.info("checkPhoneVerificationCode sessionUuid = {}, phone = {}, verificationCode ={} ",sessionUuid,phone,verificationCode);
         String key = RedisConstants.PHONEVERIFICATIONCODE_REDIS_KEY+phone;
         String code = iRedisUtil.get(key);
@@ -109,6 +109,9 @@ public class Inno72UnStandardServiceImpl implements Inno72UnStandardService {
             Inno72AuthInfo ai = new Inno72AuthInfo();
             ai.setPhone(phone);
             ai.setChannelType(StandardLoginTypeEnum.INNO72.getValue()+"");
+            ai.setOperatingSystem(operatingSystem);
+            ai.setPhoneModel(phoneModel);
+            ai.setScanSoftware(scanSoftware);
             String authInfo = JsonUtil.toJson(ai);
             Result result = inno72AuthInfoService.processBeforeLogged(sessionUuid, authInfo, traceId);
             if(result.getCode() != Result.SUCCESS){
@@ -118,15 +121,6 @@ public class Inno72UnStandardServiceImpl implements Inno72UnStandardService {
             if(!success){
                 throw new Inno72BizException("设置登陆异常");
             }
-            //更新login表
-            UserSessionVo userSessionVo = new UserSessionVo(sessionUuid);
-            String gameUserLoginId = userSessionVo.getGameUserLoginId();
-            Inno72GameUserLogin login = new Inno72GameUserLogin();
-            login.setId(gameUserLoginId);
-            login.setOperatingSystem(operatingSystem);
-            login.setPhoneModel(phoneModel);
-            login.setScanSoftware(sacnSoftware);
-            inno72GameUserLoginMapper.updateByPrimaryKeySelective(login);
         }else{
             throw new Inno72BizException("验证码错误");
         }
