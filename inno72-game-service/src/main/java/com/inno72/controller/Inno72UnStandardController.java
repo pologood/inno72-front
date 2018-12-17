@@ -18,6 +18,8 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.annotation.Resource;
+import javax.servlet.http.HttpServletRequest;
+import java.util.Enumeration;
 import java.util.List;
 
 /**
@@ -107,9 +109,9 @@ public class Inno72UnStandardController {
      */
     @ResponseBody
     @RequestMapping(value = "/checkPhoneVerificationCode", method = {RequestMethod.GET,RequestMethod.POST})
-    public Result<Object> checkPhoneVerificationCode(String sessionUuid,String phone,String verificationCode) {
+    public Result<Object> checkPhoneVerificationCode(String sessionUuid,String phone,String verificationCode,Integer operatingSystem,String phoneModel,String sacnSoftware) {
         try{
-            inno72UnStandardService.checkPhoneVerificationCode(sessionUuid,phone,verificationCode);
+            inno72UnStandardService.checkPhoneVerificationCode(sessionUuid,phone,verificationCode,operatingSystem,phoneModel,sacnSoftware);
             return Results.success();
         }catch (Inno72BizException e){
             return Results.failure(e.getMessage());
@@ -141,9 +143,9 @@ public class Inno72UnStandardController {
      */
     @ResponseBody
     @RequestMapping(value = "/upfile", method = {RequestMethod.GET,RequestMethod.POST})
-    public Result<Object> upfile(String sessionUuid,String photoImg,Integer operatingSystem,String phoneModel,String sacnSoftware) {
+    public Result<Object> upfile(String sessionUuid,String photoImg) {
         try{
-            inno72UnStandardService.updatePhoto(sessionUuid,photoImg,operatingSystem,phoneModel,sacnSoftware);
+            inno72UnStandardService.updatePhoto(sessionUuid,photoImg);
             return Results.success();
         }catch (Inno72BizException e){
             return Results.failure(e.getMessage());
@@ -187,5 +189,6 @@ public class Inno72UnStandardController {
             return Results.failure(e.getMessage());
         }
     }
+
 
 }

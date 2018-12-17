@@ -14,7 +14,7 @@ public interface Inno72UnStandardService {
      * @param phone
      * @param verificationCode
      */
-    void checkPhoneVerificationCode(String sessionUuid, String phone, String verificationCode);
+    void checkPhoneVerificationCode(String sessionUuid, String phone, String verificationCode,Integer operatingSystem,String phoneModel,String sacnSoftware);
 
     /**
      * 选择支付方式
@@ -28,12 +28,9 @@ public interface Inno72UnStandardService {
      * 更新用户图片
      * @param sessionUuid
      * @param photoImg
-     * @param operatingSystem
-     * @param phoneModel
-     * @param sacnSoftware
      * @return
      */
-    void updatePhoto(String sessionUuid, String photoImg, Integer operatingSystem, String phoneModel, String sacnSoftware);
+    void updatePhoto(String sessionUuid, String photoImg);
 
     /**
      * 支付回调
