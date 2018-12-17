@@ -46,7 +46,7 @@
         where merchant_id = #{merchantId}
     </select>
     <select id="findActivityByMerchantId" resultType="java.util.Map" parameterType="string">
-        select act.activityId, act.activityName, ifnull(interact.channel, "002001")
+        select act.activityId, act.activityName, ifnull(interact.channel, "002001") as code
         from (
             select distinct
                 activity_id   as activityId,
