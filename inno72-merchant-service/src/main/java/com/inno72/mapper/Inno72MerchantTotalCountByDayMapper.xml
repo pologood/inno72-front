@@ -46,8 +46,16 @@
         where merchant_id = #{merchantId}
     </select>
     <select id="findActivityByMerchantId" resultType="java.util.Map" parameterType="string">
-        select distinct activity_id as activityId, activity_name as activityName
-        from inno72_merchant_total_count_by_day
-        where merchant_id = #{merchantId}
+        select act.activityId, act.activityName, ifnull(interact.channel, "002001")
+        from (
+            select distinct
+                activity_id   as activityId,
+                activity_name as activityName,
+                merchant_id
+            from inno72_merchant_total_count_by_day
+            where merchant_id = #{merchantId}
+        ) act
+        left join inno72_interact interact on interact.id = act.activityId
+
     </select>
 </mapper>
