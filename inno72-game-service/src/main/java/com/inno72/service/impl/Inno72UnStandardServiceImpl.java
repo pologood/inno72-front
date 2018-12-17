@@ -78,7 +78,7 @@ public class Inno72UnStandardServiceImpl implements Inno72UnStandardService {
         //发送短信
         sendSms(phone,code);
         //将code放入redis
-        String key = RedisConstants.PHONEVERIFICATIONCODE_REDIS_KEY+sessionUuid +":"+phone;
+        String key = RedisConstants.PHONEVERIFICATIONCODE_REDIS_KEY + phone;
         iRedisUtil.setex(key,5*60,code);
         //记录redis时间
         key = RedisConstants.PHONEVERIFICATIONCODE_TIME_LIMIT_REDIS_KEY+phone;
@@ -98,7 +98,7 @@ public class Inno72UnStandardServiceImpl implements Inno72UnStandardService {
     @Override
     public void checkPhoneVerificationCode(String sessionUuid, String phone, String verificationCode) {
         LOGGER.info("checkPhoneVerificationCode sessionUuid = {}, phone = {}, verificationCode ={} ",sessionUuid,phone,verificationCode);
-        String key = RedisConstants.PHONEVERIFICATIONCODE_REDIS_KEY+sessionUuid +":"+phone;
+        String key = RedisConstants.PHONEVERIFICATIONCODE_REDIS_KEY+phone;
         String code = iRedisUtil.get(key);
         if(StringUtils.isEmpty(code)){
             throw new Inno72BizException("验证码过期");
