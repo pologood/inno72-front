@@ -19,7 +19,7 @@
         <result column="merchant_id" jdbcType="VARCHAR" property="merchantId"/>
         <result column="seller_id" jdbcType="VARCHAR" property="sellerId"/>
     </resultMap>
-    <resultMap id="BaseResultVoMap" type="com.inno72.model.Inno72MerchantTotalCount">
+    <resultMap id="BaseResultVoMap" type="com.inno72.vo.Inno72MerchantTotalCountVo">
         <!--
           WARNING - @mbg.generated
         -->
@@ -36,6 +36,7 @@
         <result column="shipment" jdbcType="INTEGER" property="shipment"/>
         <result column="merchant_id" jdbcType="VARCHAR" property="merchantId"/>
         <result column="seller_id" jdbcType="VARCHAR" property="sellerId"/>
+        <result column="code" jdbcType="VARCHAR" property="code"/>
     </resultMap>
     <update id="updateActivityType">
         update inno72.inno72_merchant_total_count set inno72.inno72_merchant_total_count.activity_type = #{activityType}
