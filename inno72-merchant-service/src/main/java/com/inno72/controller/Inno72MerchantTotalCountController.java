@@ -16,6 +16,7 @@ import com.inno72.common.Result;
 import com.inno72.common.ResultGenerator;
 import com.inno72.model.Inno72MerchantTotalCount;
 import com.inno72.service.Inno72MerchantTotalCountService;
+import com.inno72.vo.Inno72MerchantTotalCountVo;
 
 /**
  * Created by CodeGenerator on 2018/11/07.
@@ -40,7 +41,7 @@ public class Inno72MerchantTotalCountController {
 	}
 
 	@RequestMapping(value = "/list")
-	public Result<List<Inno72MerchantTotalCount>> list(String id) {
+	public Result<List<Inno72MerchantTotalCountVo>> list(String id) {
 		return inno72MerchantTotalCountService.findAllById(id);
 	}
 

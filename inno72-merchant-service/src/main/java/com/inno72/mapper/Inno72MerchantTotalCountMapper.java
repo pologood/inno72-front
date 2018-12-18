@@ -7,10 +7,11 @@ import org.apache.ibatis.annotations.Param;
 
 import com.inno72.common.Mapper;
 import com.inno72.model.Inno72MerchantTotalCount;
+import com.inno72.vo.Inno72MerchantTotalCountVo;
 
 public interface Inno72MerchantTotalCountMapper extends Mapper<Inno72MerchantTotalCount> {
 
-	List<Inno72MerchantTotalCount> selectByMerchantId(String merchantId);
+	List<Inno72MerchantTotalCountVo> selectByMerchantId(String merchantId);
 
 	String selectActivityType(String activityId);
 

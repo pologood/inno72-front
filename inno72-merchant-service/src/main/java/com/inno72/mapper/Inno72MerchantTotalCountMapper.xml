@@ -19,17 +19,37 @@
         <result column="merchant_id" jdbcType="VARCHAR" property="merchantId"/>
         <result column="seller_id" jdbcType="VARCHAR" property="sellerId"/>
     </resultMap>
+    <resultMap id="BaseResultVoMap" type="com.inno72.model.Inno72MerchantTotalCount">
+        <!--
+          WARNING - @mbg.generated
+        -->
+        <id column="id" jdbcType="VARCHAR" property="id"/>
+        <result column="activity_name" jdbcType="VARCHAR" property="activityName"/>
+        <result column="activity_id" jdbcType="VARCHAR" property="activityId"/>
+        <result column="activity_status" jdbcType="VARCHAR" property="activityStatus"/>
+        <result column="machine_num" jdbcType="INTEGER" property="machineNum"/>
+        <result column="visitor_num" jdbcType="INTEGER" property="visitorNum"/>
+        <result column="stay_user" jdbcType="INTEGER" property="stayUser"/>
+        <result column="pv" jdbcType="INTEGER" property="pv"/>
+        <result column="uv" jdbcType="INTEGER" property="uv"/>
+        <result column="order" jdbcType="INTEGER" property="order"/>
+        <result column="shipment" jdbcType="INTEGER" property="shipment"/>
+        <result column="merchant_id" jdbcType="VARCHAR" property="merchantId"/>
+        <result column="seller_id" jdbcType="VARCHAR" property="sellerId"/>
+    </resultMap>
     <update id="updateActivityType">
         update inno72.inno72_merchant_total_count set inno72.inno72_merchant_total_count.activity_type = #{activityType}
         where activity_id = #{activityId}
     </update>
 
     <select id="selectByMerchantId" resultMap="BaseResultMap" parameterType="string">
-      select * from
-      (select * from inno72_merchant_total_count where merchant_id is not null and merchant_id != '' order by last_update_time desc limit 100000) a
-       where merchant_id = #{merchantId}
-      group by merchant_id, activity_id
-      order by id desc
+
+        select a.*, IFNULL(interact.channel,'002001') as code from
+            (select * from inno72_merchant_total_count where merchant_id is not null and merchant_id != '' order by last_update_time desc limit 100000) a
+            left join inno72_interact interact on interact.id  = a.activity_id
+        where merchant_id  = #{merchantId}
+        group by merchant_id, activity_id
+        order by id desc
     </select>
     <select id="selectActivityType" resultType="java.lang.String" parameterType="string">
         select activity_type from inno72.inno72_merchant_total_count where activity_id = #{activityId} limit 1

@@ -18,6 +18,7 @@ import com.inno72.mapper.Inno72MerchantUserMapper;
 import com.inno72.model.Inno72MerchantTotalCount;
 import com.inno72.model.Inno72MerchantUser;
 import com.inno72.service.Inno72MerchantTotalCountService;
+import com.inno72.vo.Inno72MerchantTotalCountVo;
 
 
 /**
@@ -33,7 +34,7 @@ public class Inno72MerchantTotalCountServiceImpl extends AbstractService<Inno72M
 	private Inno72MerchantUserMapper inno72MerchantUserMapper;
 
 	@Override
-	public Result<List<Inno72MerchantTotalCount>> findAllById(String id) {
+	public Result<List<Inno72MerchantTotalCountVo>> findAllById(String id) {
 		Inno72MerchantUser user = inno72MerchantUserMapper.selectByPrimaryKey(id);
 		if (user == null) {
 			return Results.failure("无商户用户!");
@@ -42,7 +43,7 @@ public class Inno72MerchantTotalCountServiceImpl extends AbstractService<Inno72M
 		if (StringUtils.isEmpty(merchantId)) {
 			return Results.failure("商户信息异常!");
 		}
-		List<Inno72MerchantTotalCount> inno72MerchantTotalCounts = inno72MerchantTotalCountMapper
+		List<Inno72MerchantTotalCountVo> inno72MerchantTotalCounts = inno72MerchantTotalCountMapper
 				.selectByMerchantId(merchantId);
 		return Results.success(inno72MerchantTotalCounts);
 	}
@@ -50,7 +51,7 @@ public class Inno72MerchantTotalCountServiceImpl extends AbstractService<Inno72M
 	@Override
 	public Result<Object> totle(String id) {
 
-		Result<List<Inno72MerchantTotalCount>> allById = findAllById(id);
+		Result<List<Inno72MerchantTotalCountVo>> allById = findAllById(id);
 		if (allById.getCode() == Result.FAILURE) {
 			return Results.failure(allById.getMsg());
 		}
