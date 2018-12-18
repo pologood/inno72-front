@@ -54,6 +54,23 @@ public class Inno72MerchantTotalCountByDayController {
 		response.setHeader("Content-Disposition", "attachment;filename=" + label + ".xls");
 		response.setContentType("application/x-msdownload");
 		response.setContentLength(bytes.length);
+		this.close(response, bytes);
+		return Results.success();
+	}
+	@RequestMapping(value = "/search/export/user")
+	public Result searchDataExportUser(String label, String body, String activityId, String city, String startDate,
+			String endDate, String goods, String merchantId, HttpServletResponse response) throws IOException {
+		byte[] bytes = inno72MerchantTotalCountByDayService
+				.searchUserData(label, activityId, city, startDate, endDate, goods, merchantId);
+
+		response.setHeader("Content-Disposition", "attachment;filename=" + label + ".xls");
+		response.setContentType("application/x-msdownload");
+		response.setContentLength(bytes.length);
+		this.close(response, bytes);
+		return Results.success();
+	}
+
+	private void close(HttpServletResponse response, byte[] bytes) {
 		try {
 			response.getOutputStream().write(bytes);
 			response.getOutputStream().flush();
@@ -61,7 +78,6 @@ public class Inno72MerchantTotalCountByDayController {
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-		return Results.success();
 	}
 
 }
