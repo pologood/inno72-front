@@ -16,14 +16,11 @@ public interface Inno72MachineService extends Service<Inno72Machine> {
 
 	Result<Inno72MachineVo> findGame(String mid, String plantId, String version, String versionInno72);
 
-	List<MachineVo> selectListByQimen(QimenTmallFansAutomachineQureymachinesRequest.MachineQuery query);
-
 	/**
 	 * tmall.fans.automachine.savemachine( 注册、更新供应商上的设备信息到天猫互动吧 )
 	 * @param machineId 监听到的ID
 	 * @return MachineVo
 	 */
-	Result<MachineVo> selectTianMaoMachineVoById(String machineId);
 	//查询机器下这个商品的个数
     Integer getMachineGoodsCount(String goodsId, String machineId);
 

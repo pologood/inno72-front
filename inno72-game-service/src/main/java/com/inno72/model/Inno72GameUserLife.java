@@ -129,6 +129,52 @@ public class Inno72GameUserLife {
 	 */
 	private String goodsCode;
 
+	/**
+	 * 渠道id
+	 */
+	@Column(name = "channel_id")
+	private String channelId;
+
+	/**
+	 * 游戏开始时间
+	 */
+	@Column(name = "game_start_time")
+	@JsonSerialize(using = CustomLocalDateTimeSerializer.class)
+	@Convert(converter = LocalDateConverter.class)
+	private LocalDateTime gameStartTime;
+
+	/**
+	 * 游戏结束时间
+	 */
+	@Column(name = "game_end_time")
+	@JsonSerialize(using = CustomLocalDateTimeSerializer.class)
+	@Convert(converter = LocalDateConverter.class)
+	private LocalDateTime gameEndTime;
+
+	/**
+	 * 游戏结束时间
+	 */
+	@Column(name = "shipment_time")
+	@JsonSerialize(using = CustomLocalDateTimeSerializer.class)
+	@Convert(converter = LocalDateConverter.class)
+	private LocalDateTime shipmentTime;
+
+	/**
+	 * 分享时间
+	 */
+	@Column(name = "share_time")
+	@JsonSerialize(using = CustomLocalDateTimeSerializer.class)
+	@Convert(converter = LocalDateConverter.class)
+	private LocalDateTime shareTime;
+
+	public static final Integer GAME_START_TIME_TYPE = 0;
+
+	public static final Integer GAME_END_TIME_TYPE = 1;
+
+	public static final Integer SHIPMENT_TIME_TYPE = 2;
+
+	public static final Integer SHARE_TIME_TYPE = 3;
+
 	public Inno72GameUserLife() {
 	}
 
@@ -467,5 +513,45 @@ public class Inno72GameUserLife {
 
 	public void setGoodsCode(String goodsCode) {
 		this.goodsCode = goodsCode;
+	}
+
+	public LocalDateTime getGameStartTime() {
+		return gameStartTime;
+	}
+
+	public void setGameStartTime(LocalDateTime gameStartTime) {
+		this.gameStartTime = gameStartTime;
+	}
+
+	public LocalDateTime getGameEndTime() {
+		return gameEndTime;
+	}
+
+	public void setGameEndTime(LocalDateTime gameEndTime) {
+		this.gameEndTime = gameEndTime;
+	}
+
+	public LocalDateTime getShipmentTime() {
+		return shipmentTime;
+	}
+
+	public void setShipmentTime(LocalDateTime shipmentTime) {
+		this.shipmentTime = shipmentTime;
+	}
+
+	public LocalDateTime getShareTime() {
+		return shareTime;
+	}
+
+	public void setShareTime(LocalDateTime shareTime) {
+		this.shareTime = shareTime;
+	}
+
+	public String getChannelId() {
+		return channelId;
+	}
+
+	public void setChannelId(String channelId) {
+		this.channelId = channelId;
 	}
 }

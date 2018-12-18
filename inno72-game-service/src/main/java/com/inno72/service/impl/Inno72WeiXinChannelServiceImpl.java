@@ -20,6 +20,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.Date;
 import java.util.HashMap;
@@ -56,6 +57,8 @@ public class Inno72WeiXinChannelServiceImpl implements Inno72ChannelService {
     private Inno72MerchantMapper inno72MerchantMapper;
     @Autowired
     private Inno72GameUserLifeMapper inno72GameUserLifeMapper;
+    @Autowired
+    private Inno72GameServiceProperties inno72GameServiceProperties;
     @Autowired
     private GameSessionRedisUtil gameSessionRedisUtil;
     @Autowired
@@ -106,6 +109,7 @@ public class Inno72WeiXinChannelServiceImpl implements Inno72ChannelService {
         gameUserChannel.setChannelName(channel.getChannelName());
         gameUserChannel.setExt(authInfo);
         gameUserChannel.setUserNick(nickname);
+        gameUserChannel.setLoginType(StandardLoginTypeEnum.WEIXIN.getValue());
         if(resultList.size()>0){
             gameUserChannel.setId(resultList.get(0).getId());
             gameUserChannel.setGameUserId(resultList.get(0).getGameUserId());
@@ -163,6 +167,7 @@ public class Inno72WeiXinChannelServiceImpl implements Inno72ChannelService {
                 interact.getName(), interact.getId(), inno72Game.getId(), inno72Game.getName(),
                 inno72Machine.getLocaleId(), inno72Locale == null ? "" : inno72Locale.getMall(), null, "", null, null,
                 openId, sessionVo.getSellerId() == null ? inno72Merchant.getMerchantCode() : sessionVo.getSellerId(), sessionVo.getGoodsCode() == null ? "" : sessionVo.getGoodsCode());
+        life.setChannelId(channel.getId());
         LOGGER.info("插入用户游戏记录 ===> {}", JSON.toJSONString(life));
         inno72GameUserLifeMapper.insert(life);
 
@@ -180,11 +185,17 @@ public class Inno72WeiXinChannelServiceImpl implements Inno72ChannelService {
 
     @Override
     public Result<Object> order(UserSessionVo userSessionVo, String itemId, String inno72OrderId) {
-        String sessionUuid = userSessionVo.getSessionUuid();
         // 如果有支付链接则返回支付链接
         Map<String, Object> map = new HashMap<>();
+
+        BigDecimal orderPrice = userSessionVo.getOrderPrice();
+        if(orderPrice!=null&&orderPrice.compareTo(BigDecimal.ZERO) == 1){
+            //需要支付
+            String payUrl = inno72GameServiceProperties.get("payUrl");
+            map.put("payUrl", null);
+        }
+        map.put("channelCode",Inno72Channel.CHANNELCODE_WECHAT);
         map.put("needPay", false);
-        map.put("payQrcodeImage", null);
         map.put("inno72OrderId", inno72OrderId);
         return Results.success(map);
     }

@@ -63,4 +63,33 @@ public class Inno72OrderNumGenUtil {
 		return channelNum + lastSixMerNum + date + random;
 	}
 
+	/**
+	 *
+	 * @return 生成的号码
+	 */
+	public synchronized static String changeOrderNum(String orderNum) {
+
+		String startOrderNum = orderNum.substring(0,orderNum.length()-14);
+
+		String date = LocalDateTimeUtil.transfer(LocalDateTime.now(), DateTimeFormatter.ofPattern("yyyyMMdd"));
+
+		String orderNumKey = "inno72_common:order_num:";
+		String localOrderNumKey = orderNumKey + date;
+
+		Set<Object> smembers = redisUtil.smembers(localOrderNumKey);
+		if (smembers == null || smembers.size() == 0){
+			redisUtil.del(orderNumKey+"*");
+			smembers = new HashSet<>();
+		}
+
+		String random = (int) ((Math.random() * 9 + 1) * 100000)+"";
+		while (smembers.contains(random)){
+			random = (int) ((Math.random() * 9 + 1) * 100000)+"";
+		}
+
+		redisUtil.sadd(localOrderNumKey, random+"");
+
+		return  startOrderNum +date + random;
+	}
+
 }
