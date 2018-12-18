@@ -152,6 +152,7 @@ public class Inno72Inno72ChannelServiceImpl implements Inno72ChannelService {
         if(!StringUtils.isEmpty(operatingSystem)){
             inno72GameUserLogin.setOperatingSystem(Integer.parseInt(operatingSystem));
         }
+        inno72GameUserLogin.setClientInfo(FastJsonUtils.getString(authInfo, "clientInfo"));
         inno72GameUserLogin.setPhoneModel(phoneModel);
         inno72GameUserLogin.setScanSoftware(scanSoftware);
         inno72GameUserLogin.setActivityId(sessionVo.getActivityId());

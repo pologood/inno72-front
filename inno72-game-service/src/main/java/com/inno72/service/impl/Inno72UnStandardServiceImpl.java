@@ -96,7 +96,7 @@ public class Inno72UnStandardServiceImpl implements Inno72UnStandardService {
     }
 
     @Override
-    public void checkPhoneVerificationCode(String sessionUuid, String phone, String verificationCode,Integer operatingSystem,String phoneModel,String scanSoftware) {
+    public void checkPhoneVerificationCode(String sessionUuid, String phone, String verificationCode,Integer operatingSystem,String phoneModel,String scanSoftware,String clientInfo) {
         LOGGER.info("checkPhoneVerificationCode sessionUuid = {}, phone = {}, verificationCode ={} ",sessionUuid,phone,verificationCode);
         String key = RedisConstants.PHONEVERIFICATIONCODE_REDIS_KEY+phone;
         String code = iRedisUtil.get(key);
@@ -112,6 +112,7 @@ public class Inno72UnStandardServiceImpl implements Inno72UnStandardService {
             ai.setOperatingSystem(operatingSystem);
             ai.setPhoneModel(phoneModel);
             ai.setScanSoftware(scanSoftware);
+            ai.setClientInfo(clientInfo);
             String authInfo = JsonUtil.toJson(ai);
             Result result = inno72AuthInfoService.processBeforeLogged(sessionUuid, authInfo, traceId);
             if(result.getCode() != Result.SUCCESS){

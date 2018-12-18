@@ -83,6 +83,9 @@ public class Inno72GameUserLogin {
     @Column(name = "channel_id")
     private String channelId;
 
+    @Column(name = "client_info")
+    private String clientInfo;
+
     /**
      * @return id
      */
@@ -319,5 +322,13 @@ public class Inno72GameUserLogin {
 
     public void setChannelId(String channelId) {
         this.channelId = channelId;
+    }
+
+    public String getClientInfo() {
+        return clientInfo;
+    }
+
+    public void setClientInfo(String clientInfo) {
+        this.clientInfo = clientInfo;
     }
 }

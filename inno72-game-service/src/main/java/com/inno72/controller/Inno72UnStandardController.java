@@ -109,9 +109,9 @@ public class Inno72UnStandardController {
      */
     @ResponseBody
     @RequestMapping(value = "/checkPhoneVerificationCode", method = {RequestMethod.GET,RequestMethod.POST})
-    public Result<Object> checkPhoneVerificationCode(String sessionUuid,String phone,String verificationCode,Integer operatingSystem,String phoneModel,String sacnSoftware) {
+    public Result<Object> checkPhoneVerificationCode(String sessionUuid,String phone,String verificationCode,Integer operatingSystem,String phoneModel,String sacnSoftware,String clientInfo) {
         try{
-            inno72UnStandardService.checkPhoneVerificationCode(sessionUuid,phone,verificationCode,operatingSystem,phoneModel,sacnSoftware);
+            inno72UnStandardService.checkPhoneVerificationCode(sessionUuid,phone,verificationCode,operatingSystem,phoneModel,sacnSoftware,clientInfo);
             return Results.success();
         }catch (Inno72BizException e){
             return Results.failure(e.getMessage());

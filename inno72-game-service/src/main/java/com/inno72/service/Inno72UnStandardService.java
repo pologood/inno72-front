@@ -14,7 +14,7 @@ public interface Inno72UnStandardService {
      * @param phone
      * @param verificationCode
      */
-    void checkPhoneVerificationCode(String sessionUuid, String phone, String verificationCode,Integer operatingSystem,String phoneModel,String sacnSoftware);
+    void checkPhoneVerificationCode(String sessionUuid, String phone, String verificationCode,Integer operatingSystem,String phoneModel,String sacnSoftware,String clientInfo);
 
     /**
      * 选择支付方式

@@ -187,7 +187,7 @@ public class Inno72Order {
 
 	public enum INNO72ORDER_ORDERSTATUS {
 
-		WAIT(10, "未支付"),PAY(20, "已支付"),COMPLETE(30, "已完成"),REFUND(40, "已退款");
+		WAIT(10, "未支付"),PAY(20, "已支付"),COMPLETE(30, "已经掉货"),REFUND_SUCCESS(40, "退款成功"),REFUND_FAIL(50, "退款失败"),INREFUND(60, "退款中");
 
 		private Integer key;
 		private String desc;

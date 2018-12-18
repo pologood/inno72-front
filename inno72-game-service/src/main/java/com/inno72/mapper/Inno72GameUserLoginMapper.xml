@@ -19,5 +19,6 @@
     <result column="scan_software" jdbcType="VARCHAR" property="scanSoftware" />
     <result column="locale_id" jdbcType="VARCHAR" property="localeId" />
     <result column="channel_id" jdbcType="VARCHAR" property="channelId" />
+    <result column="client_info" jdbcType="LONGVARCHAR" property="clientInfo" />
   </resultMap>
 </mapper>
