@@ -23,5 +23,28 @@
         where date BETWEEN #{start} and #{end}
               and activity_id = #{activityId}
         GROUP BY user_id
+        order by date, id
+    </select>
+
+    <select id="selectByActivityIdCount" resultType="long">
+        select count(*) from
+            (select id from inno72_merchant_total_count_by_user
+            WHERE
+                activity_id = #{activityId}
+                and
+                date BETWEEN #{start} and #{end}
+
+            group by user_id order by null) ss
+    </select>
+    <select id="selectByActivityIdByPage" resultType="com.inno72.model.Inno72MerchantTotalCountByUser">
+        select * from inno72.inno72_merchant_total_count_by_user
+        where date BETWEEN #{start} and #{end}
+              and activity_id = #{activityId}
+        GROUP BY user_id
+        order by date, id
+        limit #{page}, #{pageSize}
+    </select>
+    <select id="selectUserMobile" resultType="string" parameterType="string">
+        select phone from inno72.inno72_game_user_channel where game_user_id = #{userId}
     </select>
 </mapper>

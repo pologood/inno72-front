@@ -39,6 +39,12 @@ public class Inno72MerchantTotalCountByUser {
     private String sellerId;
 
     /**
+     * 商家code
+     */
+    @Column(name = "user_id")
+    private String userId;
+
+    /**
      * 年龄
      */
     private Integer age;
@@ -282,4 +288,12 @@ public class Inno72MerchantTotalCountByUser {
     public void setLastUpdateTime(Date lastUpdateTime) {
         this.lastUpdateTime = lastUpdateTime;
     }
+
+	public String getUserId() {
+		return userId;
+	}
+
+	public void setUserId(String userId) {
+		this.userId = userId;
+	}
 }

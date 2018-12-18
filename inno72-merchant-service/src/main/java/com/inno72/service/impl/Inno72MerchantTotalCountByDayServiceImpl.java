@@ -35,8 +35,10 @@ import com.inno72.common.Results;
 import com.inno72.common.datetime.LocalDateUtil;
 import com.inno72.common.utils.StringUtil;
 import com.inno72.mapper.Inno72MerchantTotalCountByDayMapper;
+import com.inno72.mapper.Inno72MerchantTotalCountByUserMapper;
 import com.inno72.mapper.Inno72MerchantTotalCountMapper;
 import com.inno72.model.Inno72MerchantTotalCountByDay;
+import com.inno72.model.Inno72MerchantTotalCountByUser;
 import com.inno72.service.Inno72MerchantTotalCountByDayService;
 import com.inno72.service.Inno72MerchantTotalCountByUserService;
 
@@ -120,6 +122,48 @@ public class Inno72MerchantTotalCountByDayServiceImpl extends AbstractService<In
 		}
 
 		return new byte[0];
+	}
+
+	@Resource
+	private Inno72MerchantTotalCountByUserMapper inno72MerchantTotalCountByUserMapper;
+
+	@Override
+	public byte[] searchUserData(String label, String activityId, String city, String startDate, String endDate,
+			String goods, String merchantId) throws IOException {
+		Result<Map<String, Object>> result = inno72MerchantTotalCountByUserService
+				.selectByActivityId(activityId, startDate, endDate);
+		if (result.getCode() != Result.SUCCESS){
+			return new byte[0];
+		}
+
+		List<Object> objects = new ArrayList<>();
+		objects.add("手机号");
+		objects.add("性别");
+		objects.add("年龄");
+		objects.add("城市");
+		objects.add("点位");
+		objects.add("画像标签");
+		List<List<Object>> objectss = new ArrayList<>();
+		objectss.add(objects);
+
+		List<Inno72MerchantTotalCountByUser> users =
+				inno72MerchantTotalCountByUserMapper.selectByActivityId(activityId, startDate, endDate);
+		for (Inno72MerchantTotalCountByUser inno72MerchantTotalCountByUser : users) {
+			String mobile = inno72MerchantTotalCountByUserMapper
+					.selectUserMobile(inno72MerchantTotalCountByUser.getUserId());
+
+			objects = new ArrayList<>();
+			objects.add(mobile);
+			objects.add(inno72MerchantTotalCountByUser.getSex());
+			objects.add(inno72MerchantTotalCountByUser.getAge());
+			objects.add(inno72MerchantTotalCountByUser.getCity());
+			objects.add(inno72MerchantTotalCountByUser.getPointTag());
+			objects.add(inno72MerchantTotalCountByUser.getUserTag());
+
+			objectss.add(objects);
+		}
+
+		return buildExcel(objectss);
 	}
 
 	private byte[] getCharts(Object chart, String label) {
@@ -763,9 +807,9 @@ public class Inno72MerchantTotalCountByDayServiceImpl extends AbstractService<In
 
 
 	private byte[] buildExcel(List<List<Object>> values) {
+		Workbook wb = new XSSFWorkbook();
+		ByteArrayOutputStream out = new ByteArrayOutputStream();
 		try {
-			Workbook wb = new XSSFWorkbook();
-			ByteArrayOutputStream out = new ByteArrayOutputStream();
 
 			Sheet sheet = wb.createSheet("new sheet");
 			for (int i = 0; i < values.size(); i++) {
@@ -776,12 +820,16 @@ public class Inno72MerchantTotalCountByDayServiceImpl extends AbstractService<In
 				}
 			}
 			wb.write(out);
-			byte[] a = out.toByteArray();
-			out.close();
-			return a;
+			return out.toByteArray();
 		} catch (IOException e) {
 			e.printStackTrace();
+		}finally {
+			try {
+				out.close();
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
 		}
-		return null;
+		return new byte[0];
 	}
 }

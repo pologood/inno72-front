@@ -1,5 +1,6 @@
 package com.inno72.service;
 
+import java.io.IOException;
 import java.util.Map;
 
 import com.inno72.common.Result;
@@ -16,4 +17,7 @@ public interface Inno72MerchantTotalCountByDayService extends Service<Inno72Merc
 			String goods, String sellerId);
 
 	byte[] getBytes(Map<String, Object> data, String body, String label);
+
+	byte[] searchUserData(String label, String activityId, String city, String startDate, String endDate, String goods, String merchantId)
+			throws IOException;
 }
