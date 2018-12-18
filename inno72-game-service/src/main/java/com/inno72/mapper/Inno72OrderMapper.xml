@@ -20,6 +20,7 @@
         <result column="order_price" jdbcType="DECIMAL" property="orderPrice"/>
         <result column="pay_price" jdbcType="DECIMAL" property="payPrice"/>
         <result column="order_type" jdbcType="TINYINT" property="orderType"/>
+        <result column="pay_type" jdbcType="TINYINT" property="payType"/>
         <result column="pay_status" jdbcType="TINYINT" property="payStatus"/>
         <result column="goods_status" jdbcType="TINYINT" property="goodsStatus"/>
         <result column="pay_time" jdbcType="TIMESTAMP" property="payTime" javaType="java.time.LocalDateTime"
@@ -27,6 +28,7 @@
         <result column="ref_order_status" jdbcType="VARCHAR" property="refOrderStatus"/>
         <result column="ref_order_id" jdbcType="VARCHAR" property="refOrderId"/>
         <result column="repetition" jdbcType="TINYINT" property="repetition"/>
+        <result column="order_status" jdbcType="TINYINT" property="orderStatus"/>
     </resultMap>
     <select id="selectByRefOrderId" parameterType="java.lang.String" resultMap="BaseResultMap">
   	select * from inno72_order where ref_order_id = #{orderId}

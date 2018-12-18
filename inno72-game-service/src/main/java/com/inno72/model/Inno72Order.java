@@ -84,16 +84,46 @@ public class Inno72Order {
 
 	@Column(name = "pay_price")
 	private BigDecimal payPrice;
-
+	@Column(name = "pay_type")
+	private Integer payType;
 	/**
 	 * 订单类型 10
 	 */
 	@Column(name = "order_type")
 	private Integer orderType;
 
+	public enum INNO72ORDER_PAYTYPE {
+
+		ALIPAY(1, "支付宝"),WECHAT(2, "微信");
+
+		private Integer key;
+		private String desc;
+
+		INNO72ORDER_PAYTYPE(Integer key, String desc) {
+			this.key = key;
+			this.desc = desc;
+		}
+
+		public Integer getKey() {
+			return key;
+		}
+
+		public void setKey(Integer key) {
+			this.key = key;
+		}
+
+		public String getDesc() {
+			return desc;
+		}
+
+		public void setDesc(String desc) {
+			this.desc = desc;
+		}
+	}
+
 	public enum INNO72ORDER_ORDERTYPE {
 
-		DEFAULT(999, "默认");
+		DEFAULT(999, "默认"),ALI(20, "淘宝订单"),INNO72(10, "点72订单");
 
 		private Integer key;
 		private String desc;
@@ -123,6 +153,9 @@ public class Inno72Order {
 	@Column(name = "pay_status")
 	private Integer payStatus;
 
+	@Column(name = "order_status")
+	private Integer orderStatus;
+
 	public enum INNO72ORDER_PAYSTATUS {
 
 		SUCC(1, "已支付"), WAIT(0, "未支付");
@@ -131,6 +164,35 @@ public class Inno72Order {
 		private String desc;
 
 		INNO72ORDER_PAYSTATUS(Integer key, String desc) {
+			this.key = key;
+			this.desc = desc;
+		}
+
+		public Integer getKey() {
+			return key;
+		}
+
+		public void setKey(Integer key) {
+			this.key = key;
+		}
+
+		public String getDesc() {
+			return desc;
+		}
+
+		public void setDesc(String desc) {
+			this.desc = desc;
+		}
+	}
+
+	public enum INNO72ORDER_ORDERSTATUS {
+
+		WAIT(10, "未支付"),PAY(20, "已支付"),COMPLETE(30, "已经掉货"),REFUND_SUCCESS(40, "退款成功"),REFUND_FAIL(50, "退款失败"),INREFUND(60, "退款中");
+
+		private Integer key;
+		private String desc;
+
+		INNO72ORDER_ORDERSTATUS(Integer key, String desc) {
 			this.key = key;
 			this.desc = desc;
 		}
@@ -603,4 +665,19 @@ public class Inno72Order {
 		this.repetition = repetition;
 	}
 
+	public Integer getOrderStatus() {
+		return orderStatus;
+	}
+
+	public void setOrderStatus(Integer orderStatus) {
+		this.orderStatus = orderStatus;
+	}
+
+	public Integer getPayType() {
+		return payType;
+	}
+
+	public void setPayType(Integer payType) {
+		this.payType = payType;
+	}
 }

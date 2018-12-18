@@ -1,25 +1,23 @@
 package com.inno72.service.impl;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import javax.annotation.Resource;
-
+import com.alibaba.fastjson.JSON;
+import com.inno72.common.AbstractService;
+import com.inno72.common.Result;
+import com.inno72.common.Results;
 import com.inno72.common.utils.StringUtil;
 import com.inno72.mapper.*;
 import com.inno72.model.*;
+import com.inno72.service.Inno72GameService;
+import com.inno72.vo.UserSessionVo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.alibaba.fastjson.JSON;
-import com.inno72.common.AbstractService;
-import com.inno72.common.Result;
-import com.inno72.common.Results;
-import com.inno72.service.Inno72GameService;
-import com.inno72.vo.UserSessionVo;
+import javax.annotation.Resource;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 
 /**
@@ -30,9 +28,6 @@ import com.inno72.vo.UserSessionVo;
 public class Inno72GameServiceImpl extends AbstractService<Inno72Game> implements Inno72GameService {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(Inno72GameServiceImpl.class);
-
-	@Resource
-	private Inno72GameMapper inno72GameMapper;
 
 	@Resource
 	private Inno72OrderMapper inno72OrderMapper;

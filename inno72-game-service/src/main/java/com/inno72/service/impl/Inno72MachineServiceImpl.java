@@ -122,38 +122,6 @@ public class Inno72MachineServiceImpl extends AbstractService<Inno72Machine> imp
 		return Results.success(inno72MachineVo);
 	}
 
-	@Override
-	public List<MachineVo> selectListByQimen(QimenTmallFansAutomachineQureymachinesRequest.MachineQuery query) {
-		String city = query.getCity();
-		String machineId = query.getMachineId();
-		List<String> machineIdList = query.getMachineIdList();
-		if (machineIdList == null && StringUtil.isNotEmpty(machineId)) {
-			machineIdList = new ArrayList<>();
-			machineIdList.add(machineId);
-		}
-
-		Map<String, Object> params = new HashMap<>(2);
-		params.put("list", machineIdList);
-		params.put("city", city);
-		params.put("machineId", machineId);
-
-		return inno72MachineMapper.queryQimenMachineListByPage(params);
-	}
-
-	@Override
-	public Result<MachineVo> selectTianMaoMachineVoById(String machineId) {
-		if (StringUtil.isEmpty(machineId)) {
-			LOGGER.info("传入参数为空！");
-			return Results.failure("传入参数为空！");
-		}
-		Map<String, Object> params = new HashMap<>(1);
-		params.put("machineId", machineId);
-		List<MachineVo> machineVos = inno72MachineMapper.queryQimenMachineListByPage(params);
-		if (machineVos.size() > 0) {
-			return Results.success(machineVos.get(0));
-		}
-		return Results.failure("ID[" + machineId + "]对应的数据不存在传入参数为空！");
-	}
 
 	@Override
 	public Integer getMachineGoodsCount(String goodsId, String machineId) {

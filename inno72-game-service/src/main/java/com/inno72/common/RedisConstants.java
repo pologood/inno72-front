@@ -16,4 +16,17 @@ public class RedisConstants {
     public final static String PAIYANG_ORDER_TIMES = "paiyang_order_times:%s:%s";//活动id:用户id
 
     public final static String PAIYANG_GOODS_ORDER_TIMES = "paiyang_goods_order_times:%s:%s:%s%s";//活动id:商品id:日期:用户id
+
+
+
+    //*****************验证码****************
+
+    public static final Integer PHONEVERIFICATIONCODE_ACTIVE_TIME = 5;//单位分钟
+
+    public static final String PHONEVERIFICATIONCODE_REDIS_KEY="PHONEVERIFICATIONCODE:";
+
+    public static final String PHONEVERIFICATIONCODE_TIME_LIMIT_REDIS_KEY="PHONEVERIFICATIONCODE_TIME_LIMIT:";
+
+    public static final String PHONEVERIFICATIONCODE_TIMES_LIMIT_REDIS_KEY="PHONEVERIFICATIONCODE_TIMES_LIMIT:";
+    //*****************验证码****************
 }
