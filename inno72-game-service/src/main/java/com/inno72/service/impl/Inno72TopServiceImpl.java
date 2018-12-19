@@ -10,6 +10,9 @@ import com.inno72.common.util.GameSessionRedisUtil;
 import com.inno72.common.utils.StringUtil;
 import com.inno72.plugin.http.HttpClient;
 import com.inno72.service.Inno72TopService;
+import com.inno72.service.PointService;
+import com.inno72.vo.Inno72MachineInformation;
+import com.inno72.vo.Inno72TaoBaoCheckDataVo;
 import com.inno72.vo.LogReqrest;
 import com.inno72.vo.UserSessionVo;
 import org.slf4j.Logger;
@@ -31,12 +34,16 @@ public class Inno72TopServiceImpl implements Inno72TopService {
 	@Resource
 	private GameSessionRedisUtil gameSessionRedisUtil;
 
+	@Resource
+	private PointService pointService;
+
 	@Override
 	public void fllowshopLog(String sessionUuid, String sellerId) {
 		LOGGER.info("fllowshopLog sessionUuid is {}", sessionUuid, sellerId);
 		LogReqrest logReqrest = new LogReqrest();
 		logReqrest.setType(LogReqrest.LogRequest_Type.follow.getBizType());
 		logReqrest.setSellerId(Long.valueOf(sellerId));
+		logReqrest.setValue2("");
 		this.addLog(sessionUuid, logReqrest);
 	}
 
@@ -96,6 +103,8 @@ public class Inno72TopServiceImpl implements Inno72TopService {
 			LOGGER.info("getMaskUserNick params is {}", JsonUtil.toJson(requestForm));
 			respJson = HttpClient.form(jstUrl + "/api/top/getMaskUserNick", requestForm, null);
 			LOGGER.info("调用聚石塔接口 getMaskUserNick 返回 {}", JSON.toJSONString(respJson));
+			this.taoBaoDataSyn(sessionUuid, JSON.toJSONString(requestForm), respJson, Inno72TaoBaoCheckDataVo.ENUM_INNO72_TAOBAO_CHECK_DATA_VO_TYPE.LOGIN);
+
 		} catch (Exception e) {
 			LOGGER.error(e.getMessage(), e);
 		}
@@ -104,6 +113,15 @@ public class Inno72TopServiceImpl implements Inno72TopService {
 			nickName = FastJsonUtils.getString(respJson, "model");
 		}
 		return nickName;
+	}
+
+	private void taoBaoDataSyn(String sessionUuid, String reqBody, String resBody, Inno72TaoBaoCheckDataVo.ENUM_INNO72_TAOBAO_CHECK_DATA_VO_TYPE type) {
+		Inno72TaoBaoCheckDataVo inno72TaoBaoCheckDataVo = new Inno72TaoBaoCheckDataVo();
+		inno72TaoBaoCheckDataVo.setSessionUuid(sessionUuid);
+		inno72TaoBaoCheckDataVo.setReqBody(reqBody);
+		inno72TaoBaoCheckDataVo.setRspBody(resBody);
+		inno72TaoBaoCheckDataVo.setType(type.getType());
+		pointService.innerTaoBaoDataSyn(inno72TaoBaoCheckDataVo);
 	}
 
 	@Override
@@ -141,7 +159,7 @@ public class Inno72TopServiceImpl implements Inno72TopService {
 		String jstUrl = inno72GameServiceProperties.get("jstUrl");
 		Map<String, String> requestForm = new HashMap<>();
 		requestForm.put("value1", machineCode); // 机器code
-		requestForm.put("value2", reqrest.getValue2());
+		requestForm.put("value2", !StringUtil.isEmpty(reqrest.getValue2()) ? reqrest.getValue2() : "");
 		requestForm.put("sellerId", reqrest.getSellerId().toString());
 		requestForm.put("type", reqrest.getType());
 		requestForm.put("accessToken", accessToken);

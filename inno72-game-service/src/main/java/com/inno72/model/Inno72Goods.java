@@ -3,11 +3,7 @@ package com.inno72.model;
 import java.math.BigDecimal;
 import java.util.Date;
 
-import javax.persistence.Column;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.Table;
+import javax.persistence.*;
 
 @Table(name = "inno72_goods")
 public class Inno72Goods {
@@ -39,6 +35,11 @@ public class Inno72Goods {
 	@Column(name = "seller_id")
 	private String sellerId;
 	/**
+	 * 商户编码
+	 */
+	@Transient
+	private String merchantCode;
+	/**
 	 * 商户ID
 	 */
 	@Column(name = "shop_id")
@@ -48,6 +49,11 @@ public class Inno72Goods {
 	 * 图片
 	 */
 	private String img;
+
+	/**
+	 * 轮播图
+	 */
+	private String banner;
 
 	/**
 	 * 状态：0正常，1下架
@@ -83,6 +89,11 @@ public class Inno72Goods {
 	 */
 	@Column(name = "update_time")
 	private Date updateTime;
+
+	/**
+	 * 规格描述
+	 */
+	private String specRemark;
 
 	/**
 	 * 获取商品ID
@@ -306,5 +317,29 @@ public class Inno72Goods {
 
 	public void setShopId(String shopId) {
 		this.shopId = shopId;
+	}
+
+	public String getBanner() {
+		return banner;
+	}
+
+	public void setBanner(String banner) {
+		this.banner = banner;
+	}
+
+	public String getSpecRemark() {
+		return specRemark;
+	}
+
+	public void setSpecRemark(String specRemark) {
+		this.specRemark = specRemark;
+	}
+
+	public String getMerchantCode() {
+		return merchantCode;
+	}
+
+	public void setMerchantCode(String merchantCode) {
+		this.merchantCode = merchantCode;
 	}
 }

@@ -42,6 +42,18 @@ public class Inno72Shops {
 	private Integer isDelete;
 
 	/**
+	 *
+	 */
+	@Column(name = "session_key")
+	private String sessionKey;
+
+	/**
+	 * 关注sessionKey
+	 */
+	@Column(name = "focus_session_key")
+	private String focusSessionKey;
+
+	/**
 	 * 备注描述
 	 */
 	private String remark;
@@ -69,6 +81,8 @@ public class Inno72Shops {
 	 */
 	@Column(name = "update_time")
 	private Date updateTime;
+
+
 
 	/**
 	 * 获取店铺ID
@@ -248,5 +262,22 @@ public class Inno72Shops {
 	 */
 	public void setUpdateTime(Date updateTime) {
 		this.updateTime = updateTime;
+	}
+
+	public String getSessionKey() {
+		return sessionKey;
+	}
+
+	public void setSessionKey(String sessionKey) {
+		this.sessionKey = sessionKey;
+	}
+
+
+	public String getFocusSessionKey() {
+		return focusSessionKey;
+	}
+
+	public void setFocusSessionKey(String focusSessionKey) {
+		this.focusSessionKey = focusSessionKey;
 	}
 }

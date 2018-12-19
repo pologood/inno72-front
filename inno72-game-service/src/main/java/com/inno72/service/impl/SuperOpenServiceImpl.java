@@ -41,7 +41,7 @@ public class SuperOpenServiceImpl implements SuperOpenService {
 
 		requestJson = Optional.ofNullable(requestJson).orElse("");
 
-		LOGGER.info("inno72 开放接口 request 参数 ==> requestJson -> {} ", requestJson);
+		LOGGER.debug("inno72 开放接口 request 参数 ==> requestJson -> {} ", requestJson);
 		JSONObject jsonObject = JSON.parseObject(requestJson);
 		String serviceName = Optional.ofNullable(jsonObject.get(SERVICE_NAME_KEY)).map(Object::toString).orElse("");
 		String version = Optional.ofNullable(jsonObject.get(VERSION_KEY)).map(Object::toString).orElse("");
@@ -55,46 +55,36 @@ public class SuperOpenServiceImpl implements SuperOpenService {
 	@SuppressWarnings("unused")
 	public static enum ADPTE_METHOD {
 
-		/** 生成二维码 */
-		CREATE_QR_CODE("001", "createQrCode", "/session/createQrCode", "生成二维码", "1.0.0"),
-		/** 获取登录信息 */
-		SESSION_POLLING("002", "polling", "/session/polling", "获取登录信息", "1.0.0"),
-		/** */
-		FIND_GAME("003", "findGame", "/machine/findGame", "生成二维码", "1.0.0"),
-		/** 获取商品信息 */
-		FIND_PRODUCT("004", "findProduct", "/api/goods/findProduct", "获取商品信息", "1.0.0"),
-		/** 下单  */
-		CREATE_ORDER("005", "order", "/api/qroauth/order", "下单", "1.0.0"),
-		/** 验证下单状态 */
-		ORDER_POLLING("006", "orderPolling", "/api/qroauth/order-polling", "验证下单状态", "1.0.0"),
-		/** 抽奖 */
-		LUCKY_DRAW("007", "luckyDraw", "/api/special/luckyDraw", "抽奖", "1.0.0"),
-		/** 出货后调用减货 */
-		SHIPMENT_REPORT("008", "shipmentReport", "/api/goods/shipmentReport", "出货后调用减货", "1.0.0"),
 		/** 没有方法 */
 		ERROR_NO_METHOD("404", "ERROR_NO_METHOD", "/inno72/noMethod/open", "出货后调用减货", "1.0.0"),
 		/** 版本不存在 */
 		ERROR_NO_VERSION("500", "ERROR_NO_VERSION", "/inno72/noVersion/open", "出货后调用减货",
-				"1.0.0"), MALFUNCTION_LOG("009", "malfunctionLog", "/api/malfunctionLog", "货道异常信息存储", "1.0.0"),
+				"1.0.0"),
 		/** 货道异常信息存储 */
-		SHIPMENT_FAIL("010", "shipmentFail", "/api/shipmentFail", "掉货失败", "1.0.0"),
 		/** 掉货失败 */
-		USER_DURATION("011", "userDuration", "/api/userDuration", "用户互动时长", "1.0.0"),
 		/* 用户互动时长 */
 		GET_SAMPLING("012", "getSampling", "/api/getSampling", "获取派样商品", "1.0.0"),
 		/* 获取派样商品 */
-		ONE_KEY_ORDER("013", "oneKeyOrder", "/api/qroauth/oneKeyOrder", "一键下单（优惠券 and goods）", "1.0.0"),
-		/* 获取派样商品 *//* 生成派样活动二维码 */
-		createSamplingQrCode("014", "createSamplingQrCode", "/session/createSamplingQrCode", "生成派样活动二维码", "1.0.0"),
 		/** 创建派样订单 */
-		CREATE_PARYANG_ORDER("015", "paiYangOrder", "/api/qroauth/paiYangOrder", "派样下单", "1.0.0"),
 		/** 出货后调用减货 (同时处理 成功及失败情况) */
-		SHIPMENT_REPORTV2("016", "shipmentReportV2", "/api/goods/shipmentReportV2", "出货", "1.0.0"),
 		/** 设置心跳 */
 		SET_HEARTBEAT("017", "setHeartbeat", "/api/setHeartbeat", "设置心跳", "1.0.0"),
+		/* 获取派样商品 */
+		GET_SAMPLINGNEW("018", "getSamplingNew", "/api/getSamplingNew", "获取派样商品", "1.0.0"),
+		/**
+		 * 登陆回调
+		 */
+		GET_PROCESSBEFORELOGGED("019", "processBeforeLogged", "/api/standard/processBeforeLogged", "登陆回调", "1.0.0"),
 
-		
-		
+		/** 查找活动商品 */
+		ACTIVITY_GOODS("020", "findGoods", "/api/activity/findGoods", "查找活动商品接口", "1.0.0"),
+
+		CHECKPHONEVERIFICATIONCODE("022", "checkPhoneVerificationCode", "/api/unstandard/checkPhoneVerificationCode", "校验验证码", "1.0.0"),
+		GETPHONEVERIFICATIONCODE("023", "getPhoneVerificationCode", "/api/unstandard/getPhoneVerificationCode", "获取验证码", "1.0.0"),
+		UPFILE("024", "upfile", "/api/unstandard/upfile", "上传拍照图片", "1.0.0"),
+		CHANGEPAYTYPE("025", "changePayType", "/api/unstandard/changePayType", "修改支付方式", "1.0.0"),
+		GAMEPOINTTIME("026", "gamePointTime", "/api/unstandard/gamePointTime", "记录游戏时间点", "1.0.0"),
+
 		STANDARD_PREPARELOGIN("100", "standardPrepareLogin", "/api/standard/prepareLogin", "预登陆", "1.0.0"),
 		
 		STANDARD_REDIRECTLOGIN("101", "standardRedirectLogin", "/api/standard/redirectLogin", "跳转登陆", "1.0.0"),
@@ -115,6 +105,10 @@ public class SuperOpenServiceImpl implements SuperOpenService {
 		/** 标准查找活动接口 */
 		FINDACTIVITY_STANDARD("107", "standardFindActivity", "/api/standard/findActivity", "标准订单polling接口", "1.0.0"),
 
+		/** 标准查找活动接口 */
+		POINT_LOG("108", "point", "/api/point", "标准埋点接口", "1.0.0"),
+		/** 标准查找活动接口 */
+		STANDARD_LOTTERY("110", "standardLottery", "/api/standard/lottery", "发送优惠券", "1.0.0"),
 		;
 
 		private String code;

@@ -20,6 +20,7 @@
         <result column="order_price" jdbcType="DECIMAL" property="orderPrice"/>
         <result column="pay_price" jdbcType="DECIMAL" property="payPrice"/>
         <result column="order_type" jdbcType="TINYINT" property="orderType"/>
+        <result column="pay_type" jdbcType="TINYINT" property="payType"/>
         <result column="pay_status" jdbcType="TINYINT" property="payStatus"/>
         <result column="goods_status" jdbcType="TINYINT" property="goodsStatus"/>
         <result column="pay_time" jdbcType="TIMESTAMP" property="payTime" javaType="java.time.LocalDateTime"
@@ -27,13 +28,14 @@
         <result column="ref_order_status" jdbcType="VARCHAR" property="refOrderStatus"/>
         <result column="ref_order_id" jdbcType="VARCHAR" property="refOrderId"/>
         <result column="repetition" jdbcType="TINYINT" property="repetition"/>
+        <result column="order_status" jdbcType="TINYINT" property="orderStatus"/>
     </resultMap>
     <select id="selectByRefOrderId" parameterType="java.lang.String" resultMap="BaseResultMap">
   	select * from inno72_order where ref_order_id = #{orderId}
   </select>
     <select id="findGoodsStatusSucc" resultMap="BaseResultMap" parameterType="java.util.Map">
         select * from inno72_order
-        where inno72_activity_plan_id = #{activityPlanId}
+        where inno72_activity_id = #{activityId}
         and user_id = #{gameUserId}
         and goods_status = 1
         <if test="orderTime != null and orderTime != ''">
@@ -53,7 +55,7 @@
     <select id="findGoodsStatusSuccPy" resultMap="BaseResultMap" parameterType="java.util.Map">
         select o.id from inno72_order o left join inno72_order_goods og
         on o.id = og.order_id
-        where o.inno72_activity_plan_id = #{activityPlanId}
+        where o.inno72_activity_id = #{activityId}
         and o.user_id = #{gameUserId}
         and o.goods_status = 1
         and og.goods_id = #{goodsId}
@@ -61,5 +63,14 @@
             and DATE_FORMAT(order_time, '%Y-%m-%d') = CURDATE()
         </if>
     </select>
-    
+
+
+    <select id="findSuccessOrderByMerchantId" resultType="com.inno72.vo.OrderOrderGoodsVo" parameterType="string">
+         select orderGoods.goods_id as goodsId,orderGoods.order_id as orderId,o.user_id as userId,machine.machine_code machineCode,o.ref_order_id as taobaoOrderNum, orderGoods.goods_code as taobaoGoodsId from inno72_order_goods orderGoods
+                 join inno72_order o on orderGoods.order_id = o.id
+                 join inno72_goods g on orderGoods.goods_id = g.id
+                 left join inno72_machine machine on o.machine_id = machine.id
+                where  o.merchant_id=#{merchantId} and o.goods_status=1 and o.goods_type = 1 and g.seller_id=#{merchantId}
+    </select>
+
 </mapper>

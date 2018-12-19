@@ -64,4 +64,19 @@
         left join inno72_admin_area i6 on i6.`code` = i5.area_code
         where i2.code = #{actId}
     </select>
+
+    <select id="selectMachineCodeByActivityId" resultType="string" parameterType="string">
+        select m.machine_code from inno72_activity_plan ap
+        join inno72_activity_plan_machine pm on ap.id = pm.activity_plan_id
+        left join inno72_machine m on pm.machine_id = m.id
+        where ap.activity_id=#{activityId}
+    </select>
+
+    <select id="selectSellerIdByActivityId" resultType="string" parameterType="string">
+        select mht.merchant_code from inno72_activity_plan ap
+        join inno72_activity_plan_goods pg on ap.id = pg.activity_plan_id
+        left join inno72_goods g on pg.goods_id =g.id
+        left join inno72_merchant mht on mht.id = g.seller_id
+        where ap.activity_id=#{activityId}
+    </select>
 </mapper>

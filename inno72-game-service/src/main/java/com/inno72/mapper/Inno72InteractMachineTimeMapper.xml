@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.inno72.mapper.Inno72InteractMachineTimeMapper">
+  <resultMap id="BaseResultMap" type="com.inno72.model.Inno72InteractMachineTime">
+    <!--
+      WARNING - @mbg.generated
+    -->
+    <id column="id" jdbcType="VARCHAR" property="id" />
+    <result column="interact_machine_id" jdbcType="VARCHAR" property="interactMachineId" />
+    <result column="start_time" jdbcType="TIMESTAMP" property="startTime" />
+    <result column="end_time" jdbcType="TIMESTAMP" property="endTime" />
+  </resultMap>
+
+
+
+  <select id="findActiveTimeByInteractMachineId" resultMap="BaseResultMap">
+    select * from inno72_interact_machine_time t
+      where t.interact_machine_id= #{interactMachineId}  and
+      CURRENT_TIMESTAMP() BETWEEN t.start_time and t.end_time
+  </select>
+</mapper>

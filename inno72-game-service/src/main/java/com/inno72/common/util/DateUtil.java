@@ -126,6 +126,16 @@ public class DateUtil extends DateUtils {
 		return returnValue;
 	}
 
+	public static String format(LocalDateTime date, String pattern) {
+		String returnValue = "";
+		if (date != null) {
+			DateTimeFormatter fomatter1 = DateTimeFormatter
+					.ofPattern(pattern);
+			returnValue = date.format(fomatter1);
+		}
+		return returnValue;
+	}
+
 	/**
 	 * 使用参数Format格式化Timestamp成字符串
 	 */
@@ -603,4 +613,10 @@ public class DateUtil extends DateUtils {
 	public static LocalDate getTomorrowLocalDate() {
 		return getTodayLocalDate().plusDays(1);
 	}
+
+    public static String getDateStringByYYYYMMDD() {
+		Calendar c = Calendar.getInstance();
+		String date = c.get(Calendar.YEAR)+"-"+c.get(Calendar.MONTH)+"-"+c.get(Calendar.DAY_OF_MONTH);
+		return date;
+    }
 }

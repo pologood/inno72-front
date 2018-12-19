@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.inno72.mapper.Inno72InteractShopsMapper">
+  <resultMap id="BaseResultMap" type="com.inno72.model.Inno72InteractShops">
+    <!--
+      WARNING - @mbg.generated
+    -->
+    <id column="id" jdbcType="VARCHAR" property="id" />
+    <result column="interact_id" jdbcType="VARCHAR" property="interactId" />
+    <result column="shops_id" jdbcType="VARCHAR" property="shopsId" />
+    <result column="is_vip" jdbcType="INTEGER" property="isVip" />
+  </resultMap>
+
+  <select id="findByInteractIdAndShopId" resultMap="BaseResultMap">
+    SELECT
+	    *
+	FROM inno72_interact_shops
+	WHERE
+	    interact_id=#{interactId} and shops_id=#{shopId}
+  </select>
+    <select id="findWeChatQrCodes" resultType="string">
+    SELECT DISTINCT m.wechat_qrcode_url
+    FROM inno72_interact_goods interact_goods
+        LEFT JOIN inno72_goods goods on interact_goods.goods_id=goods.id
+        LEFT JOIN inno72_merchant m ON goods.seller_id = m.id
+    WHERE interact_goods.interact_id = #{interactId}
+  </select>
+</mapper>

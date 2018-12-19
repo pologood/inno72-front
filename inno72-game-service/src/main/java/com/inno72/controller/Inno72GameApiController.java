@@ -4,10 +4,6 @@ import java.util.List;
 
 import javax.annotation.Resource;
 
-import com.inno72.common.Results;
-import com.inno72.common.json.JsonUtil;
-import com.inno72.common.util.GameSessionRedisUtil;
-import com.inno72.vo.UserSessionVo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -15,9 +11,13 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.inno72.common.Result;
+import com.inno72.common.Results;
+import com.inno72.common.json.JsonUtil;
+import com.inno72.common.util.GameSessionRedisUtil;
 import com.inno72.service.Inno72GameApiService;
+import com.inno72.service.Inno72PaiYangService;
 import com.inno72.vo.Inno72SamplingGoods;
-import com.inno72.vo.MachineApiVo;
+import com.inno72.vo.UserSessionVo;
 
 @RestController
 @RequestMapping(value = "api")
@@ -31,114 +31,22 @@ public class Inno72GameApiController {
 	@Resource
 	private GameSessionRedisUtil gameSessionRedisUtil;
 
-	/**
-	 *
-	 * @param vo
-	 *  machineId 机器ID
-	 *  gameId 游戏ID
-	 *  report 游戏结果
-	 * @return Result<Object>
-	 */
-	@RequestMapping(value = "/goods/findProduct", method = {RequestMethod.POST, RequestMethod.GET})
-	public Result<Object> findProduct(MachineApiVo vo) {
-		return inno72GameApiService.findProduct(vo);
-	}
+	@Resource
+	private Inno72PaiYangService paiYangService;
 
-	/**
-	 * @param vo
-	 *  sessionUuid
-	 *  activityId 活动ID，表明活动的来源和品牌
-	 *  machineId 售货机ID
-	 *  itemId 商品ID
-	 *  gameId 游戏ID
-	 * @return Result<Object>
-	 */
-	@RequestMapping(value = "/qroauth/order", method = {RequestMethod.POST, RequestMethod.GET})
-	public Result<Object> order(MachineApiVo vo) {
-
-		return inno72GameApiService.order(vo);
-	}
-
-	/**
-	 * @param vo
-	 *  sessionUuid
-	 *  activityId 活动ID，表明活动的来源和品牌
-	 *  machineId 售货机ID
-	 *  itemId 商品ID
-	 *  gameId 游戏ID
-	 * @return Result<Object>
-	 */
-	@RequestMapping(value = "/qroauth/oneKeyOrder", method = {RequestMethod.POST, RequestMethod.GET})
-	public Result<Object> oneKeyOrder(MachineApiVo vo) {
-		return inno72GameApiService.oneKeyOrder(vo);
-	}
-
-	/**
-	 * @param vo
-	 *  sessionUuid
-	 *  activityId 活动ID，表明活动的来源和品牌
-	 *  machineId 售货机ID
-	 *  itemId 商品ID
-	 *  gameId 游戏ID
-	 * @return Result<Object>
-	 */
-	@RequestMapping(value = "/qroauth/paiYangOrder", method = {RequestMethod.POST, RequestMethod.GET})
-	public Result<Object> paiYangOrder(MachineApiVo vo) {
-		return inno72GameApiService.paiYangOrder(vo);
-	}
-
-	/**
-	 * @param vo
-	 *  sessionUuid
-	 *  orderId
-	 * @return Result<Boolean>
-	 */
-	@RequestMapping(value = "/qroauth/order-polling", method = {RequestMethod.POST, RequestMethod.GET})
-	public Result<Object> orderPolling(MachineApiVo vo) {
-		return inno72GameApiService.orderPolling(vo);
-	}
-
-	/**
-	 * @param vo
-	 *  userId
-	 *  gameId
-	 * @return Result<Object>
-	 */
-	@RequestMapping(value = "/special/luckyDraw", method = {RequestMethod.POST, RequestMethod.GET})
-	public Result<Object> luckyDraw(MachineApiVo vo) {
-		return inno72GameApiService.luckyDraw(vo);
-	}
-
-	/**
-	 * @param vo
-	 *  machineId
-	 *  gameId
-	 *  goodsId
-	 * @return Result<String>
-	 */
-	@RequestMapping(value = "/goods/shipmentReport", method = {RequestMethod.POST, RequestMethod.GET})
-	public Result<String> shipmentReport(MachineApiVo vo) {
-		return inno72GameApiService.shipmentReport(vo);
-	}
-
-	@RequestMapping(value = "/goods/shipmentReportV2", method = {RequestMethod.POST, RequestMethod.GET})
-	public Result<String> shipmentReportV2(MachineApiVo vo) {
-		return inno72GameApiService.shipmentReportV2(vo);
-	}
-
-	/**
-	 * @param sessionUuid sessionUuid
-	 * @param mid mid
-	 * @param token token
-	 * @param code code
-	 * @param userId userId
-	 * @return Result
-	 */
-	@RequestMapping(value = "/sessionRedirect", method = {RequestMethod.POST, RequestMethod.GET})
-	public Result<String> sessionRedirect(String sessionUuid, String mid, String token, String code, String userId,
-			String itemId) {
-		return inno72GameApiService.sessionRedirect(sessionUuid, mid, token, code, userId, itemId);
-	}
+//	@Resource
+//	private RedisSessionDao redisSessionDao;
+//
+//	@RequestMapping(value = "/sessionTest", method = {RequestMethod.POST, RequestMethod.GET})
+//	public Result<Object> test(String session){
+//		ShareHttpSession shareHttpSession = redisSessionDao.get(session);
+//		if (shareHttpSession == null){
+//
+//		}
+//		HttpSession session1 = SessionUtils.getSession(session, true);
+//		session1.setAttribute("sss","s1");
+//		return Results.success(session1);
+//	}
 
 	/**
 	 * 设置用户已为已登录
@@ -150,7 +58,7 @@ public class Inno72GameApiController {
 		try {
 			UserSessionVo userSessionVo = gameSessionRedisUtil.getSessionKey(sessionUuid);
 			userSessionVo.setLogged(true);
-			gameSessionRedisUtil.setSessionEx(sessionUuid, JsonUtil.toJson(userSessionVo));
+//			gameSessionRedisUtil.setSession(sessionUuid, JsonUtil.toJson(userSessionVo));
 		} catch (Exception e) {
 			LOGGER.error(e.getMessage(), e);
 		}
@@ -171,41 +79,22 @@ public class Inno72GameApiController {
 	}
 
 	/**
-	 * @param machineId
-	 * @return Result
-	 */
-	@RequestMapping(value = "/malfunctionLog", method = {RequestMethod.POST, RequestMethod.GET})
-	public Result<String> malfunctionLog(String machineId, String channelCode) {
-		return inno72GameApiService.malfunctionLog(machineId, channelCode);
-	}
-
-	/**
-	 * 掉货失败接口
-	 * @param machineId
-	 * @return Result
-	 */
-	@RequestMapping(value = "/shipmentFail", method = {RequestMethod.POST, RequestMethod.GET})
-	public Result<String> shipmentFail(String machineId, String channelCode, String describtion) {
-		return inno72GameApiService.shipmentFail(machineId, channelCode, describtion);
-	}
-
-	/**
-	 * 用户互动时长接口
-	 * @return Result
-	 */
-	@RequestMapping(value = "/userDuration", method = {RequestMethod.POST, RequestMethod.GET})
-	public Result<String> userDuration(String token, String itemId, String sellerId, String userId, String machineCode,
-			String playTime) {
-		return inno72GameApiService.userDuration(token, itemId, sellerId, userId, machineCode, playTime);
-	}
-
-	/**
 	 * 获取派样商品
 	 * @return Result
 	 */
 	@RequestMapping(value = "/getSampling", method = {RequestMethod.POST, RequestMethod.GET})
 	public Result<List<Inno72SamplingGoods>> getSampling(String machineCode) {
 		return inno72GameApiService.getSampling(machineCode);
+	}
+
+
+	/**
+	 * 获取派样商品
+	 * @return Result
+	 */
+	@RequestMapping(value = "/getSamplingNew", method = {RequestMethod.POST, RequestMethod.GET})
+	public Result<List<Inno72SamplingGoods>> getSamplingNew(String machineCode) {
+		return paiYangService.getSampling(machineCode);
 	}
 
 	/**

@@ -13,6 +13,9 @@ public class UserInfo implements Serializable {
 
 	private String authInfo;
 
+	// 请求traceId
+	private String traceId;
+
 	public String getSessionUuid() {
 		return sessionUuid;
 	}
@@ -59,5 +62,13 @@ public class UserInfo implements Serializable {
 
 	public void setAuthInfo(String authInfo) {
 		this.authInfo = authInfo;
+	}
+
+	public String getTraceId() {
+		return traceId;
+	}
+
+	public void setTraceId(String traceId) {
+		this.traceId = traceId;
 	}
 }

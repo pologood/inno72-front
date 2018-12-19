@@ -7,6 +7,10 @@ import java.math.BigDecimal;
  */
 public class Inno72SamplingGoods {
 	/**
+	 * 类型：0商品，1优惠券
+	 */
+	private Integer goodsType;
+	/**
 	 * 商品ID
 	 */
 	private String id;
@@ -30,6 +34,11 @@ public class Inno72SamplingGoods {
 	 * 商户ID
 	 */
 	private String sellerId;
+
+	/**
+	 * 商户Code
+	 */
+	private String sellerCode;
 
 	/**
 	 * 店铺ID
@@ -80,6 +89,10 @@ public class Inno72SamplingGoods {
 	 * 商品数量
 	 */
 	private Integer num;
+	/**
+	 * 机器配置的商品数量-发放的数量
+	 */
+	private Integer machineSurplusGoodsNum;
 	/**
 	 * 是否需要入会   0否，1是
 	 */
@@ -365,4 +378,26 @@ public class Inno72SamplingGoods {
 		this.machineId = machineId;
 	}
 
+	public Integer getMachineSurplusGoodsNum() {
+		return machineSurplusGoodsNum;
+	}
+
+	public void setMachineSurplusGoodsNum(Integer machineSurplusGoodsNum) {
+		this.machineSurplusGoodsNum = machineSurplusGoodsNum;
+	}
+
+	public Integer getGoodsType() {
+		return goodsType;
+	}
+
+	public void setGoodsType(Integer goodsType) {
+		this.goodsType = goodsType;
+	}
+    public String getSellerCode() {
+        return sellerCode;
+    }
+
+    public void setSellerCode(String sellerCode) {
+        this.sellerCode = sellerCode;
+    }
 }

@@ -14,10 +14,17 @@
         <result column="channel_user_key" jdbcType="VARCHAR" property="channelUserKey"/>
         <result column="create_time" jdbcType="TIMESTAMP" property="createTime" javaType="java.time.LocalDateTime"
                 typeHandler="org.apache.ibatis.type.LocalDateTimeTypeHandler"/>
+        <result column="access_token" jdbcType="VARCHAR" property="accessToken"/>
+        <result column="login_type" jdbcType="INTEGER" property="loginType"/>
     </resultMap>
     <select id="selectByChannelUserKey" resultMap="BaseResultMap">
       select * from inno72_game_user_channel
       where channel_id = #{channelId}
       and channel_user_key = #{channelUserKey}
+    </select>
+
+    <select id="selectUserNickByGameUserId" resultType="string">
+      select channel_user_key from inno72_game_user_channel
+      where game_user_id = #{userId}
     </select>
 </mapper>

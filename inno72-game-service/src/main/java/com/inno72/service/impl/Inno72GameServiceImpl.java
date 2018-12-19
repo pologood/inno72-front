@@ -1,25 +1,23 @@
 package com.inno72.service.impl;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import javax.annotation.Resource;
-
+import com.alibaba.fastjson.JSON;
+import com.inno72.common.AbstractService;
+import com.inno72.common.Result;
+import com.inno72.common.Results;
 import com.inno72.common.utils.StringUtil;
 import com.inno72.mapper.*;
 import com.inno72.model.*;
+import com.inno72.service.Inno72GameService;
+import com.inno72.vo.UserSessionVo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.alibaba.fastjson.JSON;
-import com.inno72.common.AbstractService;
-import com.inno72.common.Result;
-import com.inno72.common.Results;
-import com.inno72.service.Inno72GameService;
-import com.inno72.vo.UserSessionVo;
+import javax.annotation.Resource;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 
 /**
@@ -30,9 +28,6 @@ import com.inno72.vo.UserSessionVo;
 public class Inno72GameServiceImpl extends AbstractService<Inno72Game> implements Inno72GameService {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(Inno72GameServiceImpl.class);
-
-	@Resource
-	private Inno72GameMapper inno72GameMapper;
 
 	@Resource
 	private Inno72OrderMapper inno72OrderMapper;
@@ -118,7 +113,7 @@ public class Inno72GameServiceImpl extends AbstractService<Inno72Game> implement
 	}
 
 	@Override
-	public boolean countSuccOrder(String channelId, String channelUserKey, String activityPlanId) {
+	public boolean countSuccOrder(String channelId, String channelUserKey, String activityPlanId, String activityId) {
 		Map<String, String> paramsChannel = new HashMap<>();
 		paramsChannel.put("channelId", channelId);
 		paramsChannel.put("channelUserKey", channelUserKey);
@@ -126,7 +121,7 @@ public class Inno72GameServiceImpl extends AbstractService<Inno72Game> implement
 		String gameUserId = userChannel.getGameUserId();
 
 		Map<String, String> orderParams = new HashMap<>();
-		orderParams.put("activityPlanId", activityPlanId);
+		orderParams.put("activityId", activityId);
 		orderParams.put("gameUserId", gameUserId);
 		List<Inno72Order> inno72Orders = inno72OrderMapper.findGoodsStatusSucc(orderParams);
 
@@ -144,7 +139,7 @@ public class Inno72GameServiceImpl extends AbstractService<Inno72Game> implement
 	}
 
 	@Override
-	public boolean countSuccOrderPy(String channelId, String channelUserKey, String activityPlanId, String goodsId) {
+	public boolean countSuccOrderPy(String channelId, String channelUserKey, String activityPlanId, String goodsId, String activityId) {
 		boolean canOrder = false;
 		Inno72ActivityPlanGoods activityPlanGoods = new Inno72ActivityPlanGoods();
 		activityPlanGoods.setActivityPlanId(activityPlanId);
@@ -158,7 +153,7 @@ public class Inno72GameServiceImpl extends AbstractService<Inno72Game> implement
 		String gameUserId = userChannel.getGameUserId();
 
 		Map<String, String> orderParams = new HashMap<>();
-		orderParams.put("activityPlanId", activityPlanId);
+		orderParams.put("activityId", activityId);
 		orderParams.put("gameUserId", gameUserId);
 		orderParams.put("goodsId", goodsId);
 		List<Inno72Order> inno72Orders = inno72OrderMapper.findGoodsStatusSuccPy(orderParams);

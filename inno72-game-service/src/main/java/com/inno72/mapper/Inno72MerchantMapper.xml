@@ -14,6 +14,10 @@
         <result column="is_delete" jdbcType="INTEGER" property="isDelete"/>
         <result column="create_id" jdbcType="VARCHAR" property="createId"/>
         <result column="update_id" jdbcType="VARCHAR" property="updateId"/>
+        <result column="sell_session_key" jdbcType="VARCHAR" property="sellSessionKey"/>
+        <result column="merchant_id" jdbcType="VARCHAR" property="merchantId"/>
+        <result column="wechat_qrcode_url" jdbcType="VARCHAR" property="wechatQrcodeUrl"/>
+        <result column="wechat_user_api_url" jdbcType="VARCHAR" property="wechatUserApiUrl"/>
         <result column="create_time" jdbcType="TIMESTAMP" property="createTime" javaType="java.time.LocalDateTime"
                 typeHandler="org.apache.ibatis.type.LocalDateTimeTypeHandler"/>
         <result column="update_time" jdbcType="TIMESTAMP" property="updateTime" javaType="java.time.LocalDateTime"
@@ -36,5 +40,61 @@
             )
         )
         and is_delete = 0
+    </select>
+    <select id="findMerchantByName" parameterType="string" resultMap="BaseResultMap">
+
+        select * from inno72_merchant where merchant_name like CONCAT('%',#{merchantName},'%') and is_delete = 0
+    </select>
+    <select id="findMerchantByByGoodsId" parameterType="string" resultMap="BaseResultMap">
+        SELECT
+            *
+        FROM
+            inno72_merchant m
+        LEFT JOIN inno72_goods g
+        on m.id = g.seller_id
+        WHERE
+            g.id = #{goodsId}
+        AND m.is_delete = 0
+    </select>
+
+    <select id="findByGoodsId" resultMap="BaseResultMap" parameterType="string">
+      select m.*, u.merchant_id as merchant_id from inno72_merchant m
+       join inno72_goods g on g.seller_id = m.id
+       left join inno72_merchant_user u on u.id = m.merchant_account_id
+      where g.id=#{goodsId} and m.is_delete = 0
+    </select>
+
+    <select id="findByCoupon" resultMap="BaseResultMap" parameterType="string">
+      select m.*,u.merchant_id as merchant_id from inno72_merchant m
+         join inno72_shops shops on m.id = shops.seller_id
+         join inno72_coupon c on c.shops_id = shops.id
+         left join inno72_merchant_user u on u.id = m.merchant_account_id
+          where c.id=#{itemId} and c.is_delete = 0
+    </select>
+
+    <select id="findByGoodsCode" resultMap="BaseResultMap" parameterType="string">
+      select * from inno72_merchant m
+       join inno72_goods g on g.seller_id = m.id
+      where g.code=#{goodsCode} and  g.use_type != 1 and m.is_delete = 0
+    </select>
+
+    <select id="findMerchantByMap" parameterType="java.util.Map" resultMap="BaseResultMap">
+        select m.*, u.merchant_id as merchant_id from inno72_activity_shops ias
+        left join inno72_shops s on ias.shops_id = s.id
+        left join inno72_merchant m on s.seller_id = m.id
+        left join inno72_merchant_user u on u.id = m.merchant_account_id
+        where ias.activity_id = #{activityId} and m.merchant_code = #{merchantCode}
+    </select>
+
+    <select id="findMerchantByActivityId" parameterType="string" resultMap="BaseResultMap">
+        select m.*, u.merchant_id as merchant_id from inno72_activity_shops ias
+        left join inno72_shops s on ias.shops_id = s.id
+        left join inno72_merchant m on s.seller_id = m.id
+         left join inno72_merchant_user u on u.id = m.merchant_account_id
+        where ias.activity_id = #{activityId} limit 0,1
+    </select>
+    <select id="findByMerchantCode" resultMap="BaseResultMap" parameterType="string">
+      select * from inno72_merchant m
+      where m.merchant_code = #{merchantCode} and m.is_delete = 0
     </select>
 </mapper>

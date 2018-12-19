@@ -7,12 +7,24 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
+import javax.persistence.Transient;
 
 @Table(name = "inno72_merchant")
 public class Inno72Merchant {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private String id;
+
+	/**
+	 * 商户主键
+	 */
+	@Column(name = "merchant_account_id")
+	private String merchantAccountId;
+	/**
+	 * 商户主键
+	 */
+	@Column(name = "merchant_account_name")
+	private String merchantAccountName;
 
 	/**
 	 * 商户号
@@ -45,6 +57,12 @@ public class Inno72Merchant {
 	private String channelId;
 
 	/**
+	 * 商户所属渠道
+	 */
+	@Column(name = "channel_name")
+	private String channelName;
+
+	/**
 	 * 商户可用状态0:可用，1:不可用
 	 */
 	@Column(name = "is_delete")
@@ -73,6 +91,35 @@ public class Inno72Merchant {
 	 */
 	@Column(name = "update_time")
 	private LocalDateTime updateTime;
+
+	/**
+	 * 新零售sessionkey
+	 */
+	@Column(name = "sell_session_key")
+	private String sellSessionKey;
+
+	@Transient
+	private String merchantId;
+
+	public String getMerchantId() {
+		return merchantId;
+	}
+
+	public void setMerchantId(String merchantId) {
+		this.merchantId = merchantId;
+	}
+
+	/**
+	 * 微信二维码url
+	 */
+	@Column(name = "wechat_qrcode_url")
+	private String wechatQrcodeUrl;
+
+	/**
+	 * 微信二维码url
+	 */
+	@Column(name = "wechat_user_api_url")
+	private String wechatUserApiUrl;
 
 	/**
 	 * @return id
@@ -266,5 +313,57 @@ public class Inno72Merchant {
 	 */
 	public void setUpdateTime(LocalDateTime updateTime) {
 		this.updateTime = updateTime;
+	}
+
+	public String getSellerSessionKey() {
+		return sellSessionKey;
+	}
+
+	public void setSellSessionKey(String sellSessionKey) {
+		this.sellSessionKey = sellSessionKey;
+	}
+
+	public String getMerchantAccountId() {
+		return merchantAccountId;
+	}
+
+	public void setMerchantAccountId(String merchantAccountId) {
+		this.merchantAccountId = merchantAccountId;
+	}
+
+	public String getMerchantAccountName() {
+		return merchantAccountName;
+	}
+
+	public void setMerchantAccountName(String merchantAccountName) {
+		this.merchantAccountName = merchantAccountName;
+	}
+
+	public String getChannelName() {
+		return channelName;
+	}
+
+	public void setChannelName(String channelName) {
+		this.channelName = channelName;
+	}
+
+	public String getWechatQrcodeUrl() {
+		return wechatQrcodeUrl;
+	}
+
+	public void setWechatQrcodeUrl(String wechatQrcodeUrl) {
+		this.wechatQrcodeUrl = wechatQrcodeUrl;
+	}
+
+	public String getWechatUserApiUrl() {
+		return wechatUserApiUrl;
+	}
+
+	public void setWechatUserApiUrl(String wechatUserApiUrl) {
+		this.wechatUserApiUrl = wechatUserApiUrl;
+	}
+
+	public String getSellSessionKey() {
+		return sellSessionKey;
 	}
 }

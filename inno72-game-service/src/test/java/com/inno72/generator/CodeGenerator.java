@@ -47,7 +47,7 @@ public class CodeGenerator {
 	private static final String JDBC_PASSWORD = "inno72NB@2018";
 	private static final String JDBC_DIVER_CLASS_NAME = "com.mysql.jdbc.Driver";
 
-	private static final String PROJECT_PATH = System.getProperty("user.dir");// 项目在硬盘上的基础路径
+	private static final String PROJECT_PATH = System.getProperty("user.dir")+"/inno72-game-service";// 项目在硬盘上的基础路径
 	private static final String TEMPLATE_FILE_PATH = PROJECT_PATH + "/src/test/resources/generator/template";// 模板位置
 
 	private static final String JAVA_PATH = "/src/test/java"; // java文件路径
@@ -60,7 +60,9 @@ public class CodeGenerator {
 	private static final String DATE = new SimpleDateFormat("yyyy/MM/dd").format(new Date());// @date
 
 	public static void main(String[] args) {
-		genCode("inno72_coupon");
+		genCode("inno72_game_user_channel");
+
+
 	}
 
 	/**

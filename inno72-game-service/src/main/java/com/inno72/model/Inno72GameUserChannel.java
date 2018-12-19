@@ -58,11 +58,24 @@ public class Inno72GameUserChannel {
 	@Convert(converter = LocalDateConverter.class)
 	private LocalDateTime createTime;
 
+	/**
+	 * accessToken
+	 */
+	@Column(name = "access_token")
+	private String accessToken;
+
+	@Column(name = "seller_id")
+	private String sellerId;
+
+	private String ext;
+	@Column(name = "login_type")
+	private Integer loginType;
+
 	public Inno72GameUserChannel() {
 	}
 
 	public Inno72GameUserChannel(String userNick, String phone, String channelId, String gameUserId, String channelName,
-			String channelUserKey) {
+			String channelUserKey, String accessToken,Integer loginType) {
 		this.userNick = userNick;
 		this.phone = phone;
 		this.channelId = channelId;
@@ -70,6 +83,8 @@ public class Inno72GameUserChannel {
 		this.channelName = channelName;
 		this.channelUserKey = channelUserKey;
 		this.createTime = LocalDateTime.now();
+		this.accessToken = accessToken;
+		this.loginType = loginType;
 	}
 
 	/**
@@ -196,5 +211,37 @@ public class Inno72GameUserChannel {
 
 	public void setGameUserId(String gameUserId) {
 		this.gameUserId = gameUserId;
+	}
+
+	public String getAccessToken() {
+		return accessToken;
+	}
+
+	public void setAccessToken(String accessToken) {
+		this.accessToken = accessToken;
+	}
+
+	public String getSellerId() {
+		return sellerId;
+	}
+
+	public void setSellerId(String sellerId) {
+		this.sellerId = sellerId;
+	}
+
+	public String getExt() {
+		return ext;
+	}
+
+	public void setExt(String ext) {
+		this.ext = ext;
+	}
+
+	public Integer getLoginType() {
+		return loginType;
+	}
+
+	public void setLoginType(Integer loginType) {
+		this.loginType = loginType;
 	}
 }
