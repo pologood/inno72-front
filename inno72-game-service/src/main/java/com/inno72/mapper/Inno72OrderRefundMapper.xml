@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.inno72.mapper.Inno72OrderRefundMapper">
+  <resultMap id="BaseResultMap" type="com.inno72.model.Inno72OrderRefund">
+    <!--
+      WARNING - @mbg.generated
+    -->
+    <id column="id" jdbcType="VARCHAR" property="id" />
+    <result column="order_id" jdbcType="VARCHAR" property="orderId" />
+    <result column="phone" jdbcType="VARCHAR" property="phone" />
+    <result column="user_id" jdbcType="VARCHAR" property="userId" />
+    <result column="amount" jdbcType="DECIMAL" property="amount" />
+    <result column="reason" jdbcType="VARCHAR" property="reason" />
+    <result column="url" jdbcType="VARCHAR" property="url" />
+    <result column="status" jdbcType="TINYINT" property="status" />
+    <result column="audit_status" jdbcType="TINYINT" property="auditStatus" />
+    <result column="remark" jdbcType="VARCHAR" property="remark" />
+    <result column="refund_num" jdbcType="VARCHAR" property="refundNum" />
+    <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
+    <result column="update_time" jdbcType="TIMESTAMP" property="updateTime" />
+    <result column="refund_time" jdbcType="TIMESTAMP" property="refundTime" />
+  </resultMap>
+</mapper>
