@@ -19,7 +19,7 @@
 
     <properties>
         <weixin-java-mp.version>3.2.0</weixin-java-mp.version>
-
+        <plugin.version>0.0.1-SNAPSHOT</plugin.version>
         <maven.compiler.source>1.8</maven.compiler.source>
         <maven.compiler.target>1.8</maven.compiler.target>
         <maven.compiler.encoding>UTF-8</maven.compiler.encoding>
@@ -66,6 +66,12 @@
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-test</artifactId>
             <scope>test</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>com.inno72</groupId>
+            <artifactId>inno72-http</artifactId>
+            <version>${plugin.version}</version>
         </dependency>
 
         <dependency>

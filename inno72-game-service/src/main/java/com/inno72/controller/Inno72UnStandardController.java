@@ -4,10 +4,12 @@ import com.inno72.common.Inno72BizException;
 import com.inno72.common.RedisConstants;
 import com.inno72.common.Result;
 import com.inno72.common.Results;
+import com.inno72.common.json.JsonUtil;
 import com.inno72.redis.IRedisUtil;
 import com.inno72.service.Inno72UnStandardService;
 import com.inno72.service.Inno72WeChatService;
 import com.inno72.vo.UserSessionVo;
+import com.inno72.vo.WxMpUser;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -18,8 +20,6 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.annotation.Resource;
-import javax.servlet.http.HttpServletRequest;
-import java.util.Enumeration;
 import java.util.List;
 
 /**
@@ -190,5 +190,21 @@ public class Inno72UnStandardController {
         }
     }
 
+    /**
+     * 支付回调
+     */
+    @ResponseBody
+    @RequestMapping(value = "/joinPhoneFlag", method = {RequestMethod.GET,RequestMethod.POST},produces = "application/json")
+    public Result<Object> joinPhoneFlag(WxMpUser user) {
+        try{
+            LOGGER.info("user = {}",JsonUtil.toJson(user));
+            return Results.success();
+        }catch (Inno72BizException e){
+            return Results.failure(e.getMessage());
+        }catch (Exception e){
+            LOGGER.error(e.getMessage(), e);
+            return Results.failure(e.getMessage());
+        }
+    }
 
 }

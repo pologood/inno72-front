@@ -18,4 +18,4 @@ wx:
 server:
   port: 8080
 
-gameserver: https://localhost:10080/api/unstandard
+gameserver: https://api.game.36solo.com/api/unstandard

@@ -17,5 +17,4 @@ wx:
         aesKey: 3i0up31qMYPRjPpAtyx4lDcUJGVlyfJ95Bvt4Mw27lR
 server:
   port: 8080
-
-gameserver: https://localhost:10080/api/unstandard
+gameserver: https://api.game.32solo.com/api/unstandard
