@@ -28,4 +28,18 @@ public class Inno72MerchantTotalCountVo extends Inno72MerchantTotalCount {
 		}
 		return "";
 	}
+
+	public String getStartTime() {
+		if (StringUtil.isEmpty(this.startTime)){
+			return "2018-12-01 10:53:50";
+		}
+		return startTime;
+	}
+
+	public String getEndTime() {
+		if (StringUtil.isEmpty(this.endTime)){
+			return "2018-12-31 10:53:50";
+		}
+		return endTime;
+	}
 }
