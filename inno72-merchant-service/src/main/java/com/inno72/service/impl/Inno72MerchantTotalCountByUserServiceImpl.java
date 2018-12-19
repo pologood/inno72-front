@@ -230,7 +230,7 @@ public class Inno72MerchantTotalCountByUserServiceImpl extends AbstractService<I
 		objectMap.put("y", multiply1.floatValue());
 		ageS.add(objectMap);
 
-		objectMap.clear();
+		objectMap = new HashMap<>();
 		objectMap.put("name", "11-20");
 		Integer age2 = Optional.ofNullable(ageTotal.get("2")).orElse(0);
 		BigDecimal multiply2 = BigDecimal.valueOf(age2)
@@ -240,7 +240,7 @@ public class Inno72MerchantTotalCountByUserServiceImpl extends AbstractService<I
 		ageS.add(objectMap);
 
 
-		objectMap.clear();
+		objectMap = new HashMap<>();
 		objectMap.put("name", "21-30");
 		Integer age3 = Optional.ofNullable(ageTotal.get("3")).orElse(0);
 		BigDecimal multiply3 = BigDecimal.valueOf(age3)
@@ -250,7 +250,7 @@ public class Inno72MerchantTotalCountByUserServiceImpl extends AbstractService<I
 		ageS.add(objectMap);
 
 
-		objectMap.clear();
+		objectMap = new HashMap<>();
 		objectMap.put("name", "31-40");
 		Integer age4 = Optional.ofNullable(ageTotal.get("4")).orElse(0);
 		BigDecimal multiply4 = BigDecimal.valueOf(age4)
@@ -260,7 +260,7 @@ public class Inno72MerchantTotalCountByUserServiceImpl extends AbstractService<I
 		ageS.add(objectMap);
 
 
-		objectMap.clear();
+		objectMap = new HashMap<>();
 		objectMap.put("name", "41-50");
 		Integer age5 = Optional.ofNullable(ageTotal.get("5")).orElse(0);
 		BigDecimal multiply5 = BigDecimal.valueOf(age5)
@@ -270,7 +270,7 @@ public class Inno72MerchantTotalCountByUserServiceImpl extends AbstractService<I
 		ageS.add(objectMap);
 
 
-		objectMap.clear();
+		objectMap = new HashMap<>();
 		objectMap.put("name", "51-60");
 		Integer age6 = Optional.ofNullable(ageTotal.get("6")).orElse(0);
 		BigDecimal multiply6 = BigDecimal.valueOf(age6)
@@ -280,7 +280,7 @@ public class Inno72MerchantTotalCountByUserServiceImpl extends AbstractService<I
 		ageS.add(objectMap);
 
 
-		objectMap.clear();
+		objectMap = new HashMap<>();
 		objectMap.put("name", "60岁以上");
 		Integer age7 = Optional.ofNullable(ageTotal.get("7")).orElse(0);
 		BigDecimal multiply7 = BigDecimal.valueOf(age7)
