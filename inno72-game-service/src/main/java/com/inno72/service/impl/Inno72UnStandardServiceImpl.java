@@ -6,21 +6,18 @@ import com.inno72.common.Result;
 import com.inno72.common.StandardLoginTypeEnum;
 import com.inno72.common.json.JsonUtil;
 import com.inno72.common.utils.StringUtil;
+import com.inno72.mapper.Inno72ChannelMapper;
 import com.inno72.mapper.Inno72GameUserLifeMapper;
 import com.inno72.mapper.Inno72GameUserLoginMapper;
 import com.inno72.mapper.Inno72OrderMapper;
-import com.inno72.model.Inno72GameUserLife;
-import com.inno72.model.Inno72GameUserLogin;
-import com.inno72.model.Inno72Order;
+import com.inno72.model.*;
 import com.inno72.msg.MsgUtil;
 import com.inno72.redis.IRedisUtil;
-import com.inno72.service.Inno72AuthInfoService;
-import com.inno72.service.Inno72OrderService;
-import com.inno72.service.Inno72PayService;
-import com.inno72.service.Inno72UnStandardService;
+import com.inno72.service.*;
 import com.inno72.vo.Inno72AuthInfo;
 import com.inno72.vo.Inno72MachineInformation;
 import com.inno72.vo.UserSessionVo;
+import com.inno72.vo.WxMpUser;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -47,6 +44,12 @@ public class Inno72UnStandardServiceImpl implements Inno72UnStandardService {
     private IRedisUtil iRedisUtil;
 
     @Autowired
+    private Inno72ChannelMapper inno72ChannelMapper;
+
+    @Autowired
+    private Inno72GameUserChannelService inno72GameUserChannelService;
+
+    @Autowired
     private Inno72AuthInfoService inno72AuthInfoService;
     @Autowired
     private Inno72GameUserLifeMapper inno72GameUserLifeMapper;
@@ -65,6 +68,9 @@ public class Inno72UnStandardServiceImpl implements Inno72UnStandardService {
 
     @Value("${phoneverificationcode_limit_time}")
     private Integer phoneverificationcodeLimitTime;
+
+    @Value("${duduji.appid}")
+    private String dudujiAppId;
 
     private final String SYMBOLS = "0123456789"; // 数字
 
@@ -168,6 +174,26 @@ public class Inno72UnStandardServiceImpl implements Inno72UnStandardService {
         }
         inno72GameUserLifeMapper.updateByPrimaryKeySelective(userLife);
 
+    }
+
+    @Override
+    public Integer joinPhoneFlag(WxMpUser user) {
+
+        if(user == null) return -1;
+        user.setAppId(dudujiAppId);
+        Inno72Channel channel = inno72ChannelMapper.findByCode(Inno72Channel.CHANNELCODE_WECHAT);
+        Inno72GameUserChannel userChannel = inno72GameUserChannelService.findInno72GameUserChannel(channel.getId(),user.getOpenId(),dudujiAppId);
+        if(userChannel == null){
+            //插入微信用户
+            inno72GameUserChannelService.saveWechatUser(user);
+            return WxMpUser.JOIN_PHONE_FLAG_NO;
+        }
+        channel = inno72ChannelMapper.findByCode(Inno72Channel.CHANNELCODE_INNO72);
+        userChannel = inno72GameUserChannelService.findByGameUserIdAndChannelId(userChannel.getGameUserId(),channel.getId());
+        if(userChannel == null){
+            return WxMpUser.JOIN_PHONE_FLAG_NO;
+        }
+        return WxMpUser.JOIN_PHONE_FLAG_YES;
     }
 
     /**

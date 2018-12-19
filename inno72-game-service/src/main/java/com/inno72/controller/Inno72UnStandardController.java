@@ -14,12 +14,11 @@ import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.ResponseBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.http.MediaType;
+import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
+import java.awt.*;
 import java.util.List;
 
 /**
@@ -191,14 +190,15 @@ public class Inno72UnStandardController {
     }
 
     /**
-     * 支付回调
+     * 微信用户关联手机号
      */
     @ResponseBody
-    @RequestMapping(value = "/joinPhoneFlag", method = {RequestMethod.GET,RequestMethod.POST},produces = "application/json")
-    public Result<Object> joinPhoneFlag(WxMpUser user) {
+    @RequestMapping(value = "/joinPhoneFlag", method = {RequestMethod.GET,RequestMethod.POST},produces = "application/json;charset=UTF-8")
+    public Result<Object> joinPhoneFlag(@RequestBody WxMpUser user) {
         try{
             LOGGER.info("user = {}",JsonUtil.toJson(user));
-            return Results.success();
+            Integer flag = inno72UnStandardService.joinPhoneFlag(user);
+            return Results.success(flag);
         }catch (Inno72BizException e){
             return Results.failure(e.getMessage());
         }catch (Exception e){

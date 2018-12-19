@@ -8,8 +8,11 @@ import java.io.Serializable;
 public class WxMpUser implements Serializable {
   private static final long serialVersionUID = 5788154322646488738L;
 
+  public static final Integer JOIN_PHONE_FLAG_YES = 1;
+  public static final Integer JOIN_PHONE_FLAG_NO = 0;
   private Boolean subscribe;
   private String openId;
+  private String appId;
   private String nickname;
   /**
    * 性别描述信息：男、女、未知等.

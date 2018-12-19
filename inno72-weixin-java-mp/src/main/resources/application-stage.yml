@@ -18,3 +18,5 @@ wx:
 server:
   port: 8080
 gameserver: https://api.game.32solo.com/api/unstandard
+login_url: http://wechat.32solo.com/front/order/#/login
+order_url: http://wechat.32solo.com/front/order/#/orderList

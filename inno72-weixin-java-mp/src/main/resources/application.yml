@@ -18,4 +18,6 @@ wx:
 server:
   port: 8080
 
-gameserver: https://localhost:10080/api/unstandard
+gameserver: http://localhost:10080/api/unstandard
+login_url: http://wechat.36solo.com/front/order/#/login
+order_url: http://wechat.36solo.com/front/order/#/orderList

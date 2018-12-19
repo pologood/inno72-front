@@ -1,5 +1,7 @@
 package com.inno72.service;
 
+import com.inno72.vo.WxMpUser;
+
 public interface Inno72UnStandardService {
     /**
      * 获取手机验证码
@@ -52,4 +54,11 @@ public interface Inno72UnStandardService {
      * @param type
      */
     void gamePointTime(String sessionUuid, Integer type);
+
+    /**
+     * 获取微信是否关联手机号
+     * @param user
+     * @return
+     */
+    Integer joinPhoneFlag(WxMpUser user);
 }
