@@ -14,7 +14,7 @@ import lombok.Data;
 @Data
 public class Inno72MerchantTotalCountVo extends Inno72MerchantTotalCount {
 	private String code;
-	private List<Map<String, String>> machineNumCity;
+	private List<Map<String, Object>> machineInfo;
 
 	private String startTime;
 	private String endTime;

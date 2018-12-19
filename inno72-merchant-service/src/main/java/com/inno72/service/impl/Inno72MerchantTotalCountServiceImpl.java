@@ -54,6 +54,20 @@ public class Inno72MerchantTotalCountServiceImpl extends AbstractService<Inno72M
 			String activityId = countVo.getActivityId();
 			Inno72MerchantTotalCountVo vo = inno72MerchantTotalCountMapper.selectMaxMinTime(activityId);
 			BeanUtils.copyProperties(vo, countVo);
+			List<Map<String, Object>> addressNums = new ArrayList<>();
+			Map<String, Object> addressNum = new HashMap<>();
+			addressNum.put("address", "北京");
+			addressNum.put("num", 30);
+			addressNums.add(addressNum);
+			addressNum = new HashMap<>();
+			addressNum.put("address", "南京");
+			addressNum.put("num", 10);
+			addressNums.add(addressNum);
+			addressNum = new HashMap<>();
+			addressNum.put("address", "上海");
+			addressNum.put("num", 10);
+			addressNums.add(addressNum);
+			vo.setMachineInfo(addressNums);
 		}
 		return Results.success(inno72MerchantTotalCounts);
 	}
