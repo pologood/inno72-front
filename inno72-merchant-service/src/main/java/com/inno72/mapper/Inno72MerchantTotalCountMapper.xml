@@ -35,8 +35,9 @@
         <result column="order" jdbcType="INTEGER" property="order"/>
         <result column="shipment" jdbcType="INTEGER" property="shipment"/>
         <result column="merchant_id" jdbcType="VARCHAR" property="merchantId"/>
-        <result column="seller_id" jdbcType="VARCHAR" property="sellerId"/>
         <result column="code" jdbcType="VARCHAR" property="code"/>
+        <result column="start_time" jdbcType="VARCHAR" property="startTime"/>
+        <result column="end_time" jdbcType="VARCHAR" property="endTime"/>
     </resultMap>
     <update id="updateActivityType">
         update inno72.inno72_merchant_total_count set inno72.inno72_merchant_total_count.activity_type = #{activityType}
@@ -60,5 +61,16 @@
     </select>
     <select id="selectChannelCode" resultType="java.lang.String" parameterType="string">
         select channel from inno72.inno72_interact where id = #{activityId}
+    </select>
+    <select id="selectMaxMinTime" resultMap="BaseResultVoMap" parameterType="string">
+        select * from (
+                          select MAX(t.start_time)  as start_time, min(t.end_time) as end_time, m.interact_id as activity_id from inno72.inno72_interact_machine as m
+                              left join  inno72.inno72_interact_machine_time as t on m.id = t.interact_machine_id
+                          group by t.interact_machine_id
+                      ) tab
+        where tab.activity_id = #{activityId}
+    </select>
+    <select id="selectMachineNumCity" resultType="java.util.Map">
+
     </select>
 </mapper>

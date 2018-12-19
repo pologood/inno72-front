@@ -50,9 +50,6 @@ public class Inno72MerchantTotalCount {
 	@Column(name = "merchant_id")
 	private String merchantId;
 
-	@Column(name = "seller_id")
-	private String sellerId;
-
 	/**
 	 * 购买人数
 	 */
@@ -236,20 +233,6 @@ public class Inno72MerchantTotalCount {
 	 */
 	public void setMerchantId(String merchantId) {
 		this.merchantId = merchantId;
-	}
-
-	/**
-	 * @return seller_id
-	 */
-	public String getSellerId() {
-		return sellerId;
-	}
-
-	/**
-	 * @param sellerId
-	 */
-	public void setSellerId(String sellerId) {
-		this.sellerId = sellerId;
 	}
 
 	public Integer getBuyer() {
