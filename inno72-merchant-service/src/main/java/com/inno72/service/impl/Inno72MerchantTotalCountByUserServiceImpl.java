@@ -215,25 +215,101 @@ public class Inno72MerchantTotalCountByUserServiceImpl extends AbstractService<I
 			point.add(map);
 		}
 
-		List<String> ageStage = new ArrayList<>();
-		ageStage.add("10岁以下");
-		ageStage.add("11-20");
-		ageStage.add("21-30");
-		ageStage.add("31-40");
-		ageStage.add("41-50");
-		ageStage.add("51-60");
-		ageStage.add("60岁以上");
-		List<Integer> ageStageNum = new ArrayList<>();
-		ageStageNum.add(Optional.ofNullable(ageTotal.get("1")).orElse(0));
-		ageStageNum.add(Optional.ofNullable(ageTotal.get("2")).orElse(0));
-		ageStageNum.add(Optional.ofNullable(ageTotal.get("3")).orElse(0));
-		ageStageNum.add(Optional.ofNullable(ageTotal.get("4")).orElse(0));
-		ageStageNum.add(Optional.ofNullable(ageTotal.get("5")).orElse(0));
-		ageStageNum.add(Optional.ofNullable(ageTotal.get("6")).orElse(0));
-		ageStageNum.add(Optional.ofNullable(ageTotal.get("7")).orElse(0));
-		Map<String, Object> userAge = new HashMap<>();
-		userAge.put("x", ageStage);
-		userAge.put("y", ageStageNum);
+		List<Map<String, Object>> ageS = new ArrayList<>();
+		int totalAge = 0;
+		for (Integer age : ageTotal.values()){
+			totalAge += age;
+		}
+
+		Map<String, Object> objectMap = new HashMap<>();
+		objectMap.put("name", "10岁以下");
+		Integer age1 = Optional.ofNullable(ageTotal.get("1")).orElse(0);
+		BigDecimal multiply1 = BigDecimal.valueOf(age1)
+				.divide(BigDecimal.valueOf(totalAge), 3, BigDecimal.ROUND_HALF_EVEN)
+				.multiply(new BigDecimal("100"));
+		objectMap.put("y", multiply1.floatValue());
+		ageS.add(objectMap);
+
+		objectMap.clear();
+		objectMap.put("name", "11-20");
+		Integer age2 = Optional.ofNullable(ageTotal.get("2")).orElse(0);
+		BigDecimal multiply2 = BigDecimal.valueOf(age2)
+				.divide(BigDecimal.valueOf(totalAge), 3, BigDecimal.ROUND_HALF_EVEN)
+				.multiply(new BigDecimal("100"));
+		objectMap.put("y", multiply2.floatValue());
+		ageS.add(objectMap);
+
+
+		objectMap.clear();
+		objectMap.put("name", "21-30");
+		Integer age3 = Optional.ofNullable(ageTotal.get("3")).orElse(0);
+		BigDecimal multiply3 = BigDecimal.valueOf(age3)
+				.divide(BigDecimal.valueOf(totalAge), 3, BigDecimal.ROUND_HALF_EVEN)
+				.multiply(new BigDecimal("100"));
+		objectMap.put("y", multiply3.floatValue());
+		ageS.add(objectMap);
+
+
+		objectMap.clear();
+		objectMap.put("name", "31-40");
+		Integer age4 = Optional.ofNullable(ageTotal.get("4")).orElse(0);
+		BigDecimal multiply4 = BigDecimal.valueOf(age4)
+				.divide(BigDecimal.valueOf(totalAge), 3, BigDecimal.ROUND_HALF_EVEN)
+				.multiply(new BigDecimal("100"));
+		objectMap.put("y", multiply4.floatValue());
+		ageS.add(objectMap);
+
+
+		objectMap.clear();
+		objectMap.put("name", "41-50");
+		Integer age5 = Optional.ofNullable(ageTotal.get("5")).orElse(0);
+		BigDecimal multiply5 = BigDecimal.valueOf(age5)
+				.divide(BigDecimal.valueOf(totalAge), 3, BigDecimal.ROUND_HALF_EVEN)
+				.multiply(new BigDecimal("100"));
+		objectMap.put("y", multiply5.floatValue());
+		ageS.add(objectMap);
+
+
+		objectMap.clear();
+		objectMap.put("name", "51-60");
+		Integer age6 = Optional.ofNullable(ageTotal.get("6")).orElse(0);
+		BigDecimal multiply6 = BigDecimal.valueOf(age6)
+				.divide(BigDecimal.valueOf(totalAge), 3, BigDecimal.ROUND_HALF_EVEN)
+				.multiply(new BigDecimal("100"));
+		objectMap.put("y", multiply6.floatValue());
+		ageS.add(objectMap);
+
+
+		objectMap.clear();
+		objectMap.put("name", "60岁以上");
+		Integer age7 = Optional.ofNullable(ageTotal.get("7")).orElse(0);
+		BigDecimal multiply7 = BigDecimal.valueOf(age7)
+				.divide(BigDecimal.valueOf(totalAge), 3, BigDecimal.ROUND_HALF_EVEN)
+				.multiply(new BigDecimal("100"));
+		objectMap.put("y", multiply7.floatValue());
+		ageS.add(objectMap);
+
+
+//
+//		List<String> ageStage = new ArrayList<>();
+//		ageStage.add("10岁以下");
+//		ageStage.add("11-20");
+//		ageStage.add("21-30");
+//		ageStage.add("31-40");
+//		ageStage.add("41-50");
+//		ageStage.add("51-60");
+//		ageStage.add("60岁以上");
+//		List<Integer> ageStageNum = new ArrayList<>();
+//		ageStageNum.add(Optional.ofNullable(ageTotal.get("1")).orElse(0));
+//		ageStageNum.add(Optional.ofNullable(ageTotal.get("2")).orElse(0));
+//		ageStageNum.add(Optional.ofNullable(ageTotal.get("3")).orElse(0));
+//		ageStageNum.add(Optional.ofNullable(ageTotal.get("4")).orElse(0));
+//		ageStageNum.add(Optional.ofNullable(ageTotal.get("5")).orElse(0));
+//		ageStageNum.add(Optional.ofNullable(ageTotal.get("6")).orElse(0));
+//		ageStageNum.add(Optional.ofNullable(ageTotal.get("7")).orElse(0));
+//		Map<String, Object> userAge = new HashMap<>();
+//		userAge.put("x", ageStage);
+//		userAge.put("y", ageStageNum);
 
 		List<String> tagNames = new ArrayList<>();
 		List<Integer> tagNum = new ArrayList<>();
@@ -249,7 +325,7 @@ public class Inno72MerchantTotalCountByUserServiceImpl extends AbstractService<I
 		result.put("userSex", userSex);
 		result.put("point", point);
 		result.put("city", city);
-		result.put("userAge", userAge);
+		result.put("userAge", ageS);
 		result.put("userlabel", userLabel);
 
 		return Results.success(result);
