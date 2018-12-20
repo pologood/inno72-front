@@ -21,7 +21,7 @@ public class Inno72MerchantTotalCountVo extends Inno72MerchantTotalCount {
 	private String totalTime;
 
 	public String getTotalTime(){
-		if (StringUtil.notEmpty(this.startTime) ){
+		if (StringUtil.notEmpty(getStartTime()) ){
 			Duration between = Duration
 					.between(LocalDateTimeUtil.transfer(getStartTime()), LocalDateTime.now());
 			return between.toHours()+"";
