@@ -77,8 +77,8 @@ public class Inno72UnStandardServiceImpl implements Inno72UnStandardService {
     private final Random RANDOM = new SecureRandom();
 
     @Override
-    public void getPhoneVerificationCode(String sessionUuid, String phone) {
-        LOGGER.info("getPhoneVerificationCode sessionUuid = {}, phone = {}",sessionUuid,phone);
+    public void getPhoneVerificationCode(String sessionUuid, String phone,Integer type) {
+        LOGGER.info("getPhoneVerificationCode sessionUuid = {}, phone = {}, type ={}",sessionUuid,phone,type);
         String code = getNonceStr();
         LOGGER.info("getPhoneVerificationCode phone = {},code={}",phone,code);
         //发送短信
@@ -90,9 +90,15 @@ public class Inno72UnStandardServiceImpl implements Inno72UnStandardService {
         key = RedisConstants.PHONEVERIFICATIONCODE_TIME_LIMIT_REDIS_KEY+phone;
         iRedisUtil.setex(key,60,"1");
         //记录redis次数
-        UserSessionVo sessionVo = new UserSessionVo(sessionUuid);
-        String activityId = sessionVo.getActivityId();
-        key = RedisConstants.PHONEVERIFICATIONCODE_TIMES_LIMIT_REDIS_KEY+activityId +":"+phone;
+        if(type == null){
+            UserSessionVo sessionVo = new UserSessionVo(sessionUuid);
+            String activityId = sessionVo.getActivityId();
+            key = RedisConstants.PHONEVERIFICATIONCODE_TIMES_LIMIT_REDIS_KEY+activityId +":"+phone;
+        }else{
+            //不根据活动限制
+            key = RedisConstants.PHONEVERIFICATIONCODE_TIMES_LIMIT_REDIS_KEY+phone;
+        }
+
         if(iRedisUtil.exists(key)){
             iRedisUtil.incrBy(key,1);
         }else{
@@ -102,7 +108,7 @@ public class Inno72UnStandardServiceImpl implements Inno72UnStandardService {
     }
 
     @Override
-    public void checkPhoneVerificationCode(String sessionUuid, String phone, String verificationCode,Integer operatingSystem,String phoneModel,String scanSoftware,String clientInfo) {
+    public String checkPhoneVerificationCode(String sessionUuid, String phone, String verificationCode,Integer operatingSystem,String phoneModel,String scanSoftware,String clientInfo,Integer type,String openId) {
         LOGGER.info("checkPhoneVerificationCode sessionUuid = {}, phone = {}, verificationCode ={} ",sessionUuid,phone,verificationCode);
         String key = RedisConstants.PHONEVERIFICATIONCODE_REDIS_KEY+phone;
         String code = iRedisUtil.get(key);
@@ -110,27 +116,34 @@ public class Inno72UnStandardServiceImpl implements Inno72UnStandardService {
             throw new Inno72BizException("验证码过期");
         }
         if(code.equals(verificationCode)){
-            //登陆
-            String traceId = StringUtil.getUUID();
-            Inno72AuthInfo ai = new Inno72AuthInfo();
-            ai.setPhone(phone);
-            ai.setChannelType(StandardLoginTypeEnum.INNO72.getValue()+"");
-            ai.setOperatingSystem(operatingSystem);
-            ai.setPhoneModel(phoneModel);
-            ai.setScanSoftware(scanSoftware);
-            ai.setClientInfo(clientInfo);
-            String authInfo = JsonUtil.toJson(ai);
-            Result result = inno72AuthInfoService.processBeforeLogged(sessionUuid, authInfo, traceId);
-            if(result.getCode() != Result.SUCCESS){
-                throw new Inno72BizException(result.getMsg());
-            }
-            boolean success = inno72AuthInfoService.setLogged(sessionUuid);
-            if(!success){
-                throw new Inno72BizException("设置登陆异常");
+            if(type == null){
+                //登陆
+                String traceId = StringUtil.getUUID();
+                Inno72AuthInfo ai = new Inno72AuthInfo();
+                ai.setPhone(phone);
+                ai.setChannelType(StandardLoginTypeEnum.INNO72.getValue()+"");
+                ai.setOperatingSystem(operatingSystem);
+                ai.setPhoneModel(phoneModel);
+                ai.setScanSoftware(scanSoftware);
+                ai.setClientInfo(clientInfo);
+                String authInfo = JsonUtil.toJson(ai);
+                Result result = inno72AuthInfoService.processBeforeLogged(sessionUuid, authInfo, traceId);
+                if(result.getCode() != Result.SUCCESS){
+                    throw new Inno72BizException(result.getMsg());
+                }
+                boolean success = inno72AuthInfoService.setLogged(sessionUuid);
+                if(!success){
+                    throw new Inno72BizException("设置登陆异常");
+                }
+            }else{
+                //关联微信用户和手机号用户
+                String gameUserId = inno72GameUserChannelService.joinUser(openId,phone);
+                return gameUserId;
             }
         }else{
             throw new Inno72BizException("验证码错误");
         }
+        return null;
     }
 
     @Override
@@ -177,23 +190,23 @@ public class Inno72UnStandardServiceImpl implements Inno72UnStandardService {
     }
 
     @Override
-    public Integer joinPhoneFlag(WxMpUser user) {
+    public String joinPhoneFlag(WxMpUser user) {
 
-        if(user == null) return -1;
+        if(user == null) return null;
         user.setAppId(dudujiAppId);
         Inno72Channel channel = inno72ChannelMapper.findByCode(Inno72Channel.CHANNELCODE_WECHAT);
         Inno72GameUserChannel userChannel = inno72GameUserChannelService.findInno72GameUserChannel(channel.getId(),user.getOpenId(),dudujiAppId);
         if(userChannel == null){
             //插入微信用户
             inno72GameUserChannelService.saveWechatUser(user);
-            return WxMpUser.JOIN_PHONE_FLAG_NO;
+            return null;
         }
         channel = inno72ChannelMapper.findByCode(Inno72Channel.CHANNELCODE_INNO72);
         userChannel = inno72GameUserChannelService.findByGameUserIdAndChannelId(userChannel.getGameUserId(),channel.getId());
         if(userChannel == null){
-            return WxMpUser.JOIN_PHONE_FLAG_NO;
+            return null;
         }
-        return WxMpUser.JOIN_PHONE_FLAG_YES;
+        return userChannel.getGameUserId();
     }
 
     /**

@@ -32,11 +32,11 @@ public class GameServiceImpl implements GameServcie {
         try{
             Result res = gson.fromJson(result, Result.class);
             if(res.getCode() == Result.SUCCESS){
-                Integer flag = Integer.parseInt(FastJsonUtils.getString(result,"data"));
-                if(flag == REDIRECT_FLAG_ORDER){
-                    return orderUrl;
+                if(res.getData() != null){
+                    String gameUserId = (String)res.getData();
+                    return orderUrl+"?gameUserId="+gameUserId;
                 }else{
-                    return loginUrl;
+                    return loginUrl+"?openId="+user.getOpenId();
                 }
             }else{
                 log.error("joinPhoneFlag error msg = {}",res.getMsg());

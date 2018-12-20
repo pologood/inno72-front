@@ -8,7 +8,7 @@ public interface Inno72UnStandardService {
      * @param sessionUuid
      * @param phone
      */
-    void getPhoneVerificationCode(String sessionUuid, String phone);
+    void getPhoneVerificationCode(String sessionUuid, String phone,Integer type);
 
     /**
      * 校验验证码
@@ -16,7 +16,7 @@ public interface Inno72UnStandardService {
      * @param phone
      * @param verificationCode
      */
-    void checkPhoneVerificationCode(String sessionUuid, String phone, String verificationCode,Integer operatingSystem,String phoneModel,String sacnSoftware,String clientInfo);
+    String checkPhoneVerificationCode(String sessionUuid, String phone, String verificationCode,Integer operatingSystem,String phoneModel,String sacnSoftware,String clientInfo,Integer type,String openId);
 
     /**
      * 选择支付方式
@@ -60,5 +60,5 @@ public interface Inno72UnStandardService {
      * @param user
      * @return
      */
-    Integer joinPhoneFlag(WxMpUser user);
+    String joinPhoneFlag(WxMpUser user);
 }

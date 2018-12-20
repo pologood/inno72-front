@@ -13,6 +13,7 @@ import com.inno72.service.Inno72GameUserChannelService;
 import com.inno72.vo.WxMpUser;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -29,6 +30,9 @@ public class Inno72GameUserChannelImpl implements Inno72GameUserChannelService {
     private Inno72GameUserMapper inno72GameUserMapper;
     @Autowired
     private Inno72ChannelMapper inno72ChannelMapper;
+
+    @Value("${duduji.appid}")
+    private String dudujiAppId;
     @Override
     public Inno72GameUserChannel findInno72GameUserChannel(String channelId, String channelUserKey, String sellerId) {
         Inno72GameUserChannel param = new Inno72GameUserChannel();
@@ -71,5 +75,40 @@ public class Inno72GameUserChannelImpl implements Inno72GameUserChannelService {
         List<Inno72GameUserChannel> list = inno72GameUserChannelMapper.select(param);
         if(list.size() == 0) return null;
         return list.get(0);
+    }
+
+    @Override
+    public String joinUser(String openId, String phone) {
+        Inno72GameUserChannel param = new Inno72GameUserChannel();
+        param.setChannelUserKey(openId);
+        param.setSellerId(dudujiAppId);
+        List<Inno72GameUserChannel> list = inno72GameUserChannelMapper.select(param);
+        Inno72GameUserChannel weixinUser = list.get(0);
+
+        //查找手机号用户
+        //查找手机号渠道
+        Inno72Channel channel = inno72ChannelMapper.findByCode(Inno72Channel.CHANNELCODE_INNO72);
+        param = new Inno72GameUserChannel();
+        param.setChannelId(channel.getId());
+        param.setChannelUserKey(phone);
+        list = inno72GameUserChannelMapper.select(param);
+        if(list.size()== 0){
+            //保存手机用户
+            savePhoneUser(channel,phone,weixinUser.getGameUserId());
+        }else{
+            Inno72GameUserChannel phoneUser = list.get(0);
+            param = new Inno72GameUserChannel();
+            param.setId(phoneUser.getId());
+            param.setGameUserId(weixinUser.getGameUserId());
+            inno72GameUserChannelMapper.updateByPrimaryKeySelective(param);
+        }
+        return weixinUser.getGameUserId();
+    }
+
+    private void savePhoneUser(Inno72Channel inno72Channel, String phone,String gameUserId) {
+        String nickName = phone.substring(0, 3) + "****" + phone.substring(7, phone.length());
+        Inno72GameUserChannel userChannel = new Inno72GameUserChannel(nickName, phone, inno72Channel.getId(), gameUserId,
+                inno72Channel.getChannelName(), phone, null,StandardLoginTypeEnum.INNO72.getValue());
+        inno72GameUserChannelMapper.insert(userChannel);
     }
 }

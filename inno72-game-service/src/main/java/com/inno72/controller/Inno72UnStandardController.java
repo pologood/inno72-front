@@ -69,37 +69,32 @@ public class Inno72UnStandardController {
      */
     @ResponseBody
     @RequestMapping(value = "/getPhoneVerificationCode", method = {RequestMethod.GET,RequestMethod.POST})
-    public Result<Object> getPhoneVerificationCode(String sessionUuid,String phone) {
+    public Result<Object> getPhoneVerificationCode(@RequestParam(required = false) String sessionUuid,String phone,@RequestParam(required = false) Integer type) {
         try{
-            //检查
-            checkParam(sessionUuid,phone);
-
+            LOGGER.info("getPhoneVerificationCode sessionUuid = {},phone = {},type = {}",sessionUuid,phone,type);
             //检查redis
             String key = RedisConstants.PHONEVERIFICATIONCODE_TIME_LIMIT_REDIS_KEY +phone;
             if(iRedisUtil.exists(key)){
                 Long time = iRedisUtil.ttl(key);
                 return Results.warn("60s 内只能发一次" ,1,time);
             }
-            UserSessionVo sessionVo = new UserSessionVo(sessionUuid);
-            String activityId = sessionVo.getActivityId();
-            //10分钟内只能发三次
-            key = RedisConstants.PHONEVERIFICATIONCODE_TIMES_LIMIT_REDIS_KEY+activityId +":"+phone;
+            if(type == null){
+                UserSessionVo sessionVo = new UserSessionVo(sessionUuid);
+                String activityId = sessionVo.getActivityId();
+                //10分钟内只能发三次
+                key = RedisConstants.PHONEVERIFICATIONCODE_TIMES_LIMIT_REDIS_KEY+activityId +":"+phone;
+            }else{
+                key = RedisConstants.PHONEVERIFICATIONCODE_TIMES_LIMIT_REDIS_KEY+phone;
+            }
             if(iRedisUtil.exists(key)&&Integer.parseInt((String)iRedisUtil.get(key))>=phoneverificationcodeLimitTimes){
                 Long time = iRedisUtil.ttl(key);
                 return Results.warn(phoneverificationcodeLimitTime+"分钟内只能发"+phoneverificationcodeLimitTimes+"次" ,1,60);
             }
-            inno72UnStandardService.getPhoneVerificationCode(sessionUuid,phone);
+            inno72UnStandardService.getPhoneVerificationCode(sessionUuid,phone,type);
             return Results.success(60);
         }catch (Exception e){
             LOGGER.error(e.getMessage(), e);
             return Results.failure(e.getMessage());
-        }
-    }
-
-    private void checkParam(String sessionUuid, String phone){
-        if(StringUtils.isEmpty(sessionUuid) || StringUtils.isEmpty(phone)){
-            LOGGER.error("参数异常 sessionUuid={},phone={}");
-            throw new Inno72BizException("参数异常");
         }
     }
 
@@ -108,10 +103,17 @@ public class Inno72UnStandardController {
      */
     @ResponseBody
     @RequestMapping(value = "/checkPhoneVerificationCode", method = {RequestMethod.GET,RequestMethod.POST})
-    public Result<Object> checkPhoneVerificationCode(String sessionUuid,String phone,String verificationCode,Integer operatingSystem,String phoneModel,String sacnSoftware,String clientInfo) {
+    public Result<Object> checkPhoneVerificationCode(@RequestParam(required = false) Integer type,
+                                                     @RequestParam(required = false) String openId,
+                                                     @RequestParam(required = false) String sessionUuid,
+                                                     String phone,@RequestParam(required = false) String verificationCode,
+                                                     @RequestParam(required = false) Integer operatingSystem,
+                                                     @RequestParam(required = false) String phoneModel,
+                                                     @RequestParam(required = false) String sacnSoftware,
+                                                     @RequestParam(required = false) String clientInfo) {
         try{
-            inno72UnStandardService.checkPhoneVerificationCode(sessionUuid,phone,verificationCode,operatingSystem,phoneModel,sacnSoftware,clientInfo);
-            return Results.success();
+            String gameUserId = inno72UnStandardService.checkPhoneVerificationCode(sessionUuid,phone,verificationCode,operatingSystem,phoneModel,sacnSoftware,clientInfo,type,openId);
+            return Results.success(gameUserId);
         }catch (Inno72BizException e){
             return Results.failure(e.getMessage());
         }catch (Exception e){
@@ -197,8 +199,8 @@ public class Inno72UnStandardController {
     public Result<Object> joinPhoneFlag(@RequestBody WxMpUser user) {
         try{
             LOGGER.info("user = {}",JsonUtil.toJson(user));
-            Integer flag = inno72UnStandardService.joinPhoneFlag(user);
-            return Results.success(flag);
+            String gameUserId = inno72UnStandardService.joinPhoneFlag(user);
+            return Results.success(gameUserId);
         }catch (Inno72BizException e){
             return Results.failure(e.getMessage());
         }catch (Exception e){

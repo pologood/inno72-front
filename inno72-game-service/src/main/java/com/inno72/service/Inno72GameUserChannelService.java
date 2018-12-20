@@ -20,4 +20,12 @@ public interface Inno72GameUserChannelService {
     void saveWechatUser(WxMpUser user);
 
     Inno72GameUserChannel findByGameUserIdAndChannelId(String gameUserId, String id);
+
+    /**
+     * 关联微信用户和手机号用户
+     * @param openId
+     * @param phone
+     * @return
+     */
+    String joinUser(String openId, String phone);
 }
