@@ -14,10 +14,7 @@ import com.inno72.model.*;
 import com.inno72.msg.MsgUtil;
 import com.inno72.redis.IRedisUtil;
 import com.inno72.service.*;
-import com.inno72.vo.Inno72AuthInfo;
-import com.inno72.vo.Inno72MachineInformation;
-import com.inno72.vo.UserSessionVo;
-import com.inno72.vo.WxMpUser;
+import com.inno72.vo.*;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -29,6 +26,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.security.SecureRandom;
 import java.time.LocalDateTime;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Random;
 
@@ -207,6 +205,11 @@ public class Inno72UnStandardServiceImpl implements Inno72UnStandardService {
             return null;
         }
         return userChannel.getGameUserId();
+    }
+
+    @Override
+    public List<OrderVo> orderList(String gameUserId,Integer pageNum,Integer pageSize) {
+        return inno72OrderService.orderList(gameUserId,pageNum,pageSize);
     }
 
     /**

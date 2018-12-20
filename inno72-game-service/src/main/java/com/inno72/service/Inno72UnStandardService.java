@@ -1,6 +1,9 @@
 package com.inno72.service;
 
+import com.inno72.vo.OrderVo;
 import com.inno72.vo.WxMpUser;
+
+import java.util.List;
 
 public interface Inno72UnStandardService {
     /**
@@ -61,4 +64,11 @@ public interface Inno72UnStandardService {
      * @return
      */
     String joinPhoneFlag(WxMpUser user);
+
+    /**
+     * 我的订单列表
+     * @param gameUserId
+     * @return
+     */
+    List<OrderVo> orderList(String gameUserId,Integer pageNum,Integer pageSize);
 }

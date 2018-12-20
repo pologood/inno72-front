@@ -8,6 +8,7 @@ import com.inno72.common.json.JsonUtil;
 import com.inno72.redis.IRedisUtil;
 import com.inno72.service.Inno72UnStandardService;
 import com.inno72.service.Inno72WeChatService;
+import com.inno72.vo.OrderVo;
 import com.inno72.vo.UserSessionVo;
 import com.inno72.vo.WxMpUser;
 import org.apache.commons.lang.StringUtils;
@@ -201,6 +202,24 @@ public class Inno72UnStandardController {
             LOGGER.info("user = {}",JsonUtil.toJson(user));
             String gameUserId = inno72UnStandardService.joinPhoneFlag(user);
             return Results.success(gameUserId);
+        }catch (Inno72BizException e){
+            return Results.failure(e.getMessage());
+        }catch (Exception e){
+            LOGGER.error(e.getMessage(), e);
+            return Results.failure(e.getMessage());
+        }
+    }
+
+    /**
+     * 微信用户关联手机号
+     */
+    @ResponseBody
+    @RequestMapping(value = "/orderList", method = {RequestMethod.GET,RequestMethod.POST})
+    public Result<Object> orderList(String gameUserId,Integer pageNum,@RequestParam(required = false,defaultValue = "10")Integer pageSize) {
+        try{
+            LOGGER.info("orderList gameUserId = {},pageNum = {},pageSize={}",gameUserId,pageNum,pageSize);
+            List<OrderVo> list = inno72UnStandardService.orderList(gameUserId,pageNum,pageSize);
+            return Results.success(list);
         }catch (Inno72BizException e){
             return Results.failure(e.getMessage());
         }catch (Exception e){
