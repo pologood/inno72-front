@@ -65,9 +65,6 @@ public class Inno72StandardController {
 	private GameSessionRedisUtil gameSessionRedisUtil;
 
 	@Resource
-	private Inno72PaiYangService inno72PaiYangService;
-
-	@Resource
 	private IRedisUtil iRedisUtil;
 
 	@Resource
@@ -326,7 +323,7 @@ public class Inno72StandardController {
      */
     @ResponseBody
     @RequestMapping(value = "/loginRedirect", method = {RequestMethod.GET})
-    public Result loginRedirect(HttpServletResponse response, String sessionUuid, String env,Integer channelType) {
+    public Result loginRedirect(HttpServletRequest request,HttpServletResponse response, String sessionUuid, String env,Integer channelType) {
         LOGGER.info("loginRedirect sessionUuid is {}, env is {}", sessionUuid, env);
         Result result = null;
         try {
@@ -359,6 +356,10 @@ public class Inno72StandardController {
                         pointService.innerPoint(sessionUuid, Inno72MachineInformation.ENUM_INNO72_MACHINE_INFORMATION_TYPE.SCAN_LOGIN);
 						if(channelType!=null && channelType == StandardLoginTypeEnum.INNO72.getValue()){
 							redirectUrl = String.format(inno72GameServiceProperties.get("phoneLoginUrl"),sessionVo.getPlanCode(),sessionUuid);
+							String PU = request.getParameter("PU");
+							if(!StringUtils.isEmpty(PU)){
+								redirectUrl+="&PU="+PU;
+							}
 							LOGGER.info("loginRedirect loginUrl={}",redirectUrl);
 						}else{
 							redirectUrl = String.format("%s%s/%s/%s", inno72GameServiceProperties.get("tmallUrl"), sessionUuid, env, traceId);
