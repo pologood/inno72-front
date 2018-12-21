@@ -115,7 +115,7 @@ public class Inno72ALiChannelServiceImpl implements Inno72ChannelService {
     private static final String QRSTATUS_EXIST_USER = "-2"; // 存在用户登录
 
     @Override
-    public String buildQrContent(Inno72Machine inno72Machine,String sessionUuid) {
+    public String buildQrContent(Inno72Machine inno72Machine,String sessionUuid,StandardPrepareLoginReqVo req) {
         // 生成二维码流程
         String redirect = inno72GameServiceProperties.get("loginRedirect");
         String url = buildUrl(inno72Machine, redirect,sessionUuid);
