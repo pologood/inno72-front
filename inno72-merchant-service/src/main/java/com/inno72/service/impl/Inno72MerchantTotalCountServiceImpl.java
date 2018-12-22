@@ -163,8 +163,10 @@ public class Inno72MerchantTotalCountServiceImpl extends AbstractService<Inno72M
 			return Results.failure("请求错误!");
 		}
 
-		if (actId.equals("8ad75f62bca249fdac5e7b14680dde7d")){
+		if (actId.equals("03e0c821671a4d6f8fad0d47fa25f040")){
 			return defaultActInfo();
+		}else if (actId.equals("40e48662e73340a496e117653edd2ef5")){
+			return defaultActBeiXuanInfo();
 		}
 		Inno72MerchantUser user = inno72MerchantUserMapper.selectByPrimaryKey(merchantId);
 		if (user == null){
@@ -178,7 +180,7 @@ public class Inno72MerchantTotalCountServiceImpl extends AbstractService<Inno72M
 
 		Map<String, Object> param = new HashMap<>();
 		param.put("activityId", actId);
-		param.put("merchantId", merchantId);
+		param.put("merchantId", user.getMerchantId());
 		param.put("list", list);
 
 		Inno72MerchantTotalCount count = inno72MerchantTotalCountMapper.selectByActIdAndMerId(param);
@@ -235,9 +237,28 @@ public class Inno72MerchantTotalCountServiceImpl extends AbstractService<Inno72M
 	}
 
 	private Result<Inno72MerchantTotalCountVo> defaultActInfo(){
-		String startDate = "2018-12-21";
-		String endTime = "2018-12-21";
+		String startDate = "2018-12-15";
+		String endTime = "2018-12-31";
 		String status = "1";
+
+		Duration between = Duration
+				.between(LocalDateUtil.transfer(startDate), LocalDate.now());
+		String totalTime = between.toHours()+"";
+
+		Inno72MerchantTotalCountVo vo = new Inno72MerchantTotalCountVo();
+		vo.setStartTime(startDate);
+		vo.setEndTime(endTime);
+		vo.setActivityStatus(status);
+		vo.setTotalTime(totalTime);
+		vo.setGoodsNum(53689);
+		vo.setPv(69675);
+		return Results.success(vo);
+	}
+
+	private Result<Inno72MerchantTotalCountVo> defaultActBeiXuanInfo(){
+		String startDate = "2018-11-13";
+		String endTime = "2018-12-20";
+		String status = "0";
 
 		Duration between = Duration
 				.between(LocalDateUtil.transfer(startDate), LocalDate.now());

@@ -585,7 +585,6 @@ public class Inno72MerchantTotalCountByDayServiceImpl extends AbstractService<In
 				pvs.add(0);
 				uvs.add(0);
 				addDateLocal = addDateLocal.plusDays(1);
-				LOGGER.info("商品维度 日期 - {}, uvs - {}, pvs - {}", addDateLocal, uvs, pvs);
 			}
 
 			pvs.add(Integer.parseInt(pv));
@@ -656,13 +655,11 @@ public class Inno72MerchantTotalCountByDayServiceImpl extends AbstractService<In
 					num.add(0);
 					isMax(0, maxNum, minNum);
 					curLocalDate = curLocalDate.plusDays(1);
-					LOGGER.info("商品维度 日期 - {}, num - {}", curLocalDate, num);
 				}
 				Integer goodsNum = inno72MerchantTotalCountByDay.getGoodsNum();
 				isMax(goodsNum, maxNum, minNum);
 				num.add(goodsNum);
 				curLocalDate = curLocalDate.plusDays(1);
-				LOGGER.info("商品维度 日期 - {}, num - {}", curLocalDate, num);
 			}
 
 			// 日期不足，补充0直到到结束日期
@@ -714,17 +711,14 @@ public class Inno72MerchantTotalCountByDayServiceImpl extends AbstractService<In
 	}
 
 	private void isMax(Integer source, Integer large, Integer less){
-		LOGGER.info("start source - {} ; large - {}; less - {}", source, large, less);
 		if (source != null && source > large){
 			large = source;
 		}
 		if (source != null && source < less){
 			less = source;
 		}
-		LOGGER.info("end source - {} ; large - {}; less - {}", source, large, less);
 	}
 	private Map<String, Integer> isMax(List<List<Integer>> sources){
-		LOGGER.info("start source - {} ; large - {}; less - {}", sources);
 		Integer large = 0, less = 0;
 		for (List<Integer> sourceList : sources){
 			try {

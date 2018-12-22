@@ -58,7 +58,7 @@
         <foreach collection="list" separator="," open="(" close=")" item="item">
             #{item}
         </foreach>
-        group by im.interact_id;
+        group by im.interact_id
     </select>
     <select id="selectMachineNumCity" resultType="java.util.Map">
 
