@@ -11,7 +11,6 @@
         <result column="activity_status" jdbcType="VARCHAR" property="activityStatus"/>
         <result column="machine_num" jdbcType="INTEGER" property="machineNum"/>
         <result column="visitor_num" jdbcType="INTEGER" property="visitorNum"/>
-        <result column="goods_num" jdbcType="INTEGER" property="goodsNum"/>
         <result column="stay_user" jdbcType="INTEGER" property="stayUser"/>
         <result column="pv" jdbcType="INTEGER" property="pv"/>
         <result column="uv" jdbcType="INTEGER" property="uv"/>

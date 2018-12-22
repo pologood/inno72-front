@@ -103,7 +103,7 @@ public class Inno72MerchantTotalCountServiceImpl extends AbstractService<Inno72M
 				ruv += count.getUv();
 				rpv += count.getPv();
 				rvs += count.getVisitorNum();
-				rgoods += count.getGoodsNum();
+				rgoods += count.getShipment();
 			}
 		}
 		Map<String, Long> totle = new HashMap<>(5);

@@ -721,6 +721,7 @@ public class Inno72MerchantTotalCountByDayServiceImpl extends AbstractService<In
 	}
 
 	private void isMax(Integer source, Integer large, Integer less){
+		LOGGER.info("source - {} ; large - {}; less - {}", source, large, less);
 		if (source != null && source > large){
 			large = source;
 		}

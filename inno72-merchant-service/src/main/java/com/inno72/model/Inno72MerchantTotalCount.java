@@ -34,12 +34,6 @@ public class Inno72MerchantTotalCount {
 	private Integer visitorNum;
 
 	/**
-	 * 商品总数
-	 */
-	@Column(name = "goods_num")
-	private Integer goodsNum;
-
-	/**
 	 * 停留用户数(最多的点击数量)
 	 */
 	@Column(name = "stay_user")
@@ -249,11 +243,4 @@ public class Inno72MerchantTotalCount {
 		this.buyer = buyer;
 	}
 
-	public Integer getGoodsNum() {
-		return goodsNum;
-	}
-
-	public void setGoodsNum(Integer goodsNum) {
-		this.goodsNum = goodsNum;
-	}
 }
