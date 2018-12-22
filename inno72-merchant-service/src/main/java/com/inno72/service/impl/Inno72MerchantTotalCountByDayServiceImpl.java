@@ -606,6 +606,9 @@ public class Inno72MerchantTotalCountByDayServiceImpl extends AbstractService<In
 			if (byDays == null) {
 				byDays = new ArrayList<>();
 			}
+			if (day.getGoodsNum() == null || day.getGoodsNum() == 0){
+				day.setGoodsNum(day.getCouponNum());
+			}
 			byDays.add(day);
 			groupByGoodsId.put(goodsId, byDays);
 		}
@@ -622,7 +625,7 @@ public class Inno72MerchantTotalCountByDayServiceImpl extends AbstractService<In
 				if (aa == null) {
 					aa = day;
 				} else {
-					aa.setGoodsNum(aa.getGoodsNum() + (day.getCouponNum() == null ? day.getGoodsNum() : day.getCouponNum()));
+					aa.setGoodsNum(aa.getGoodsNum() + day.getGoodsNum());
 				}
 				byDay.put(date, aa);
 			}
