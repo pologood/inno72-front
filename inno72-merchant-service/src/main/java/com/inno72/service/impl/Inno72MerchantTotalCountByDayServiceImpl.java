@@ -721,13 +721,14 @@ public class Inno72MerchantTotalCountByDayServiceImpl extends AbstractService<In
 	}
 
 	private void isMax(Integer source, Integer large, Integer less){
-		LOGGER.info("source - {} ; large - {}; less - {}", source, large, less);
+		LOGGER.info("start source - {} ; large - {}; less - {}", source, large, less);
 		if (source != null && source > large){
 			large = source;
 		}
 		if (source != null && source < less){
 			less = source;
 		}
+		LOGGER.info("end source - {} ; large - {}; less - {}", source, large, less);
 	}
 
 	private void groupByGoodsAndDate(List<Inno72MerchantTotalCountByDay> days,
