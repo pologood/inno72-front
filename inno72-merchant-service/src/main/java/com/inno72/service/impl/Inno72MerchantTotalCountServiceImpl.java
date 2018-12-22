@@ -226,7 +226,7 @@ public class Inno72MerchantTotalCountServiceImpl extends AbstractService<Inno72M
 			countVo.setActivityStatus(status);
 			countVo.setStartTime(localDateStart.format(DateTimeFormatter.ofPattern("yyyy-MM-dd")));
 			countVo.setEndTime(localDateEnd.format(DateTimeFormatter.ofPattern("yyyy-MM-dd")));
-			countVo.setGoodsNum(count.getGoodsNum());
+			countVo.setGoodsNum(count.getShipment());
 			countVo.setPv(count.getPv());
 
 		}

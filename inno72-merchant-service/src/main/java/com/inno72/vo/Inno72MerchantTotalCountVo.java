@@ -19,6 +19,7 @@ public class Inno72MerchantTotalCountVo extends Inno72MerchantTotalCount {
 	private String startTime;
 	private String endTime;
 	private String totalTime;
+	private Integer goodsNum;
 
 	public String getTotalTime(){
 		if (StringUtil.notEmpty(getStartTime()) ){
