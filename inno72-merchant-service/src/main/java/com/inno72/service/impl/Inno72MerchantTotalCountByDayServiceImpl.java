@@ -415,9 +415,6 @@ public class Inno72MerchantTotalCountByDayServiceImpl extends AbstractService<In
 				percent = 0;
 			}
 			percentS.add(percent);
-			isMax(experience, maxNum, minNum);
-			isMax(concern, maxNum, minNum);
-			isMax(percent, maxNum, minNum);
 		}
 
 		// 日期不足，补充0直到到结束日期
@@ -431,9 +428,6 @@ public class Inno72MerchantTotalCountByDayServiceImpl extends AbstractService<In
 		ys.put("experienceS", experienceS);
 		ys.put("percentS", percentS);
 		ys.put("concernS", concernS);
-
-		ys.put("maxNum", maxNum);
-		ys.put("minNum", minNum);
 
 		result.put("chart", ys);
 
@@ -593,11 +587,10 @@ public class Inno72MerchantTotalCountByDayServiceImpl extends AbstractService<In
 				addDateLocal = addDateLocal.plusDays(1);
 				LOGGER.info("商品维度 日期 - {}, uvs - {}, pvs - {}", addDateLocal, uvs, pvs);
 			}
-			isMax(Integer.parseInt(pv), maxNum, minNum);
-			isMax(Integer.parseInt(uv), maxNum, minNum);
 
 			pvs.add(Integer.parseInt(pv));
 			uvs.add(Integer.parseInt(uv));
+
 			addDateLocal = addDateLocal.plusDays(1);
 		}
 		while (pvs.size() <= (endDateLocal.getDayOfYear() - startDateLocal.getDayOfYear())) {
@@ -629,14 +622,11 @@ public class Inno72MerchantTotalCountByDayServiceImpl extends AbstractService<In
 				if (aa == null) {
 					aa = day;
 				} else {
-					aa.setGoodsNum(aa.getGoodsNum() + day.getGoodsNum());
+					aa.setGoodsNum(aa.getGoodsNum() + (day.getCouponNum() == null ? day.getGoodsNum() : day.getCouponNum()));
 				}
 				byDay.put(date, aa);
 			}
-			List<Inno72MerchantTotalCountByDay> days3 = new ArrayList<>();
-			for (Inno72MerchantTotalCountByDay day : byDay.values()) {
-				days3.add(day);
-			}
+			List<Inno72MerchantTotalCountByDay> days3 = new ArrayList<>(byDay.values());
 			groupByDateGoodsId.put(entry.getKey(), days3);
 		}
 
@@ -692,8 +682,8 @@ public class Inno72MerchantTotalCountByDayServiceImpl extends AbstractService<In
 		nums.add(pvs);
 		nums.add(uvs);
 		charts.put("num", nums);
-		charts.put("maxNum", maxNum);
-		charts.put("minNum", minNum);
+		Map<String, Integer> max = isMax(nums);
+		charts.putAll(max);
 		result.put("chart", charts);
 		return result;
 	}
@@ -729,6 +719,28 @@ public class Inno72MerchantTotalCountByDayServiceImpl extends AbstractService<In
 			less = source;
 		}
 		LOGGER.info("end source - {} ; large - {}; less - {}", source, large, less);
+	}
+	private Map<String, Integer> isMax(List<List<Integer>> sources){
+		LOGGER.info("start source - {} ; large - {}; less - {}", sources);
+		Integer large = 0, less = 0;
+		for (List<Integer> sourceList : sources){
+			try {
+				for (Integer source : sourceList) {
+					if (source > large) {
+						large = source;
+					}
+					if (source < less) {
+						less = source;
+					}
+				}
+			} catch (Exception e) {
+				LOGGER.info(e.getMessage());
+			}
+		}
+		Map<String, Integer> nums = new HashMap<>();
+		nums.put("large", large);
+		nums.put("less", less);
+		return nums;
 	}
 
 	private void groupByGoodsAndDate(List<Inno72MerchantTotalCountByDay> days,
