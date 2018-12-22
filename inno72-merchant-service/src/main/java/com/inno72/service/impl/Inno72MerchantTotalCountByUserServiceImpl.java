@@ -310,37 +310,29 @@ public class Inno72MerchantTotalCountByUserServiceImpl extends AbstractService<I
 		objectMap.put("y", multiply7.floatValue());
 		ageS.add(objectMap);
 
-
-		//
-		//		List<String> ageStage = new ArrayList<>();
-		//		ageStage.add("10岁以下");
-		//		ageStage.add("11-20");
-		//		ageStage.add("21-30");
-		//		ageStage.add("31-40");
-		//		ageStage.add("41-50");
-		//		ageStage.add("51-60");
-		//		ageStage.add("60岁以上");
-		//		List<Integer> ageStageNum = new ArrayList<>();
-		//		ageStageNum.add(Optional.ofNullable(ageTotal.get("1")).orElse(0));
-		//		ageStageNum.add(Optional.ofNullable(ageTotal.get("2")).orElse(0));
-		//		ageStageNum.add(Optional.ofNullable(ageTotal.get("3")).orElse(0));
-		//		ageStageNum.add(Optional.ofNullable(ageTotal.get("4")).orElse(0));
-		//		ageStageNum.add(Optional.ofNullable(ageTotal.get("5")).orElse(0));
-		//		ageStageNum.add(Optional.ofNullable(ageTotal.get("6")).orElse(0));
-		//		ageStageNum.add(Optional.ofNullable(ageTotal.get("7")).orElse(0));
-		//		Map<String, Object> userAge = new HashMap<>();
-		//		userAge.put("x", ageStage);
-		//		userAge.put("y", ageStageNum);
-
 		List<String> tagNames = new ArrayList<>();
 		List<Integer> tagNum = new ArrayList<>();
+		List<Float> tagEx = new ArrayList<>();
+		int totalTagNum = 0;
 		for (Map.Entry<String, Integer> tag: tagTotal.entrySet()){
 			tagNames.add(tag.getKey());
-			tagNum.add(tag.getValue());
+			Integer value = tag.getValue();
+			totalTagNum+=value;
+			tagNum.add(value);
 		}
+		for (Integer tahO : tagNum){
+			BigDecimal otagex = BigDecimal.ZERO;
+			if (totalTagNum != 0){
+				otagex = BigDecimal.valueOf(tahO).divide(BigDecimal.valueOf(totalTagNum), 3, BigDecimal.ROUND_HALF_EVEN)
+						.multiply(new BigDecimal("100"));
+			}
+			tagEx.add(otagex.floatValue());
+		}
+
 		Map<String, Object> userLabel = new HashMap<>();
 		userLabel.put("x", tagNames);
-		userLabel.put("y", tagNum);
+		userLabel.put("num", tagNum);
+		userLabel.put("y", tagEx);
 
 		Map<String, Object> result = new HashMap<>();
 		result.put("userSex", userSex);

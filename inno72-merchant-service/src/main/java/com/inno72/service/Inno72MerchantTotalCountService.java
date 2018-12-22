@@ -22,4 +22,6 @@ public interface Inno72MerchantTotalCountService extends Service<Inno72MerchantT
 	Result<List<Map<String,Object>>> addressNum(String actId);
 
 	Result<List<ActMerchantLog>> actLog(String actId);
+
+	Result<Inno72MerchantTotalCountVo> actInfo(String actId, String merchantId);
 }

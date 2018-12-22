@@ -42,6 +42,11 @@ public class Inno72MerchantTotalCountController {
 		return ResultGenerator.genSuccessResult(inno72MerchantTotalCount);
 	}
 
+	@RequestMapping(value = "/actInfo")
+	public Result actInfo(String actId, String merchantId) {
+		return inno72MerchantTotalCountService.actInfo(actId, merchantId);
+	}
+
 	@RequestMapping(value = "/list")
 	public Result<List<Inno72MerchantTotalCountVo>> list(String id) {
 		return inno72MerchantTotalCountService.findAllById(id);

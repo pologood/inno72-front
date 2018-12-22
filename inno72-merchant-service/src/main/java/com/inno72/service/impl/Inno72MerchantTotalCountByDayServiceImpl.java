@@ -84,24 +84,9 @@ public class Inno72MerchantTotalCountByDayServiceImpl extends AbstractService<In
 		switch (label) {
 			case "order":
 				result = this.buildOrder(days, startDateLocal, endDateLocal);
-				if (activityId.equals("8ad75f62bca249fdac5e7b14680dde7d")){
-					String orders = "{\"orderQtySuccS\":[766,1598,1447,1363,856,738,867,1421,1203,1096,1463,1356,1343,1299,1119,1045,1053,1461,893,1534,1108,712,1491,1286,985,1456,1409,753,972,1337],\"couponNumS\":[1748,1314,1359,1549,1764,1710,1668,1521,1415,1423,1349,1520,1391,1637,1403,1768,1523,1375,1572,1388,1510,1699,1369,1551,1427,1357,1489,1747,1615,1442],\"uvS\":[1216,1442,1157,1323,1310,1216,1138,1148,1253,1130,1171,1163,1252,1352,1254,1063,1222,1318,1334,1152,1078,1339,1393,1288,1136,1120,1274,1297,1090,1249],\"orderQtyTotalS\":[2522,2923,2817,2922,2629,2459,2543,2953,2629,2531,2820,2888,2746,2944,2530,2822,2586,2844,2474,2932,2626,2423,2872,2846,2424,2822,2906,2508,2596,2787],\"pvS\":[3279,3103,3120,3109,3261,3268,3172,3126,3169,3258,3153,3280,3109,3236,3191,3279,3162,3184,3187,3207,3124,3232,3196,3224,3209,3213,3101,3114,3193,3201],\"goodsNumS\":[766,1598,1447,1363,856,738,867,1421,1203,1096,1463,1356,1343,1299,1119,1045,1053,1461,893,1534,1108,712,1491,1286,985,1456,1409,753,972,1337]}";
-					result.put("chart", JSON.parseObject(orders));
-				}else if(activityId.equals("40e48662e73340a496e117653edd2ef5")){
-					String orders = "{\"orderQtySuccS\":[945,1405,1351,1269,1252,976,1207,936,895,912,1146,1246,1093,1542,1243,1599,1398,974,1364,989,1158,1239,1318,1395,1524,1174,1123,861,996,955],\"couponNumS\":[1516,1450,1412,1301,1411,1774,1520,1473,1542,1480,1631,1550,1756,1386,1327,1319,1518,1588,1442,1792,1365,1332,1554,1378,1358,1714,1365,1683,1542,1490],\"uvS\":[1072,1111,1213,1322,1430,1188,1253,1057,1151,1331,1194,1109,1309,1236,1154,1219,1149,1377,1428,1140,1406,1253,1445,1224,1199,1158,1303,1421,1211,1252],\"orderQtyTotalS\":[2473,2864,2772,2580,2674,2758,2736,2418,2448,2402,2785,2808,2860,2939,2580,2928,2925,2570,2817,2790,2531,2583,2884,2784,2892,2897,2500,2552,2547,2457],\"pvS\":[3077,3086,3036,3038,3018,3095,3092,3022,3057,3026,3022,3052,3089,3059,3077,3081,3013,3038,3034,3078,3097,3086,3052,3005,3046,3083,3024,3089,3047,3045],\"goodsNumS\":[945,1405,1351,1269,1252,976,1207,936,895,912,1146,1246,1093,1542,1243,1599,1398,974,1364,989,1158,1239,1318,1395,1524,1174,1123,861,996,955]}";
-					result.put("chart", JSON.parseObject(orders));
-				}
-
 				break;
 			case "goods":
 				result = this.buildGoods(days, startDateLocal, endDateLocal);
-				if (activityId.equals("8ad75f62bca249fdac5e7b14680dde7d")){
-					String json = "{\"num\":[[1173,1053,1096,955,1016,1173,1095,1069,1089,974,909,1149,953,974,916,1046,1081,1085,1131,950,947,1121,1045,975,1151,973,980,1004,929,1032],[1113,1149,1000,1102,1040,1009,1086,1172,1034,1050,1104,1150,1152,1136,1002,1163,1085,1106,1078,1185,1129,1091,1131,1011,1053,1136,1028,1157,1129,1022],[1335,1314,1397,1332,1335,1387,1357,1383,1376,1385,1317,1384,1372,1334,1378,1325,1394,1376,1303,1365,1394,1347,1310,1356,1371,1371,1358,1331,1386,1349],[1272,1217,1279,1256,1292,1262,1266,1291,1283,1227,1202,1227,1272,1272,1289,1284,1266,1280,1211,1207,1298,1206,1259,1220,1275,1221,1232,1270,1294,1244]],\"name\":[{\"goodsId\":\"78276e83482b4c3c8959e3474b127669\",\"goodsName\":\"chivas芝华士12年\"},{\"goodsId\":\"d7891811cd6e4bde9a385c2e8df3d425\",\"goodsName\":\"满6元减5元\"},{\"goodsId\":\"\",\"goodsName\":\"互动次数\"},{\"goodsId\":\"\",\"goodsName\":\"互动人数\"}]}\n";
-					result.put("chart", JSON.parseObject(json));
-				}else if(activityId.equals("40e48662e73340a496e117653edd2ef5")){
-					String json = "{\"num\":[[831,798,715,781,641,684,794,875,750,872,707,691,734,697,700,867,801,801,882,732,658,807,620,745,786,893,800,873,757,747],[1113,1149,1000,1102,1040,1009,1086,1172,1034,1050,1104,1150,1152,1136,1002,1163,1085,1106,1078,1185,1129,1091,1131,1011,1053,1136,1028,1157,1129,1022],[1104,1110,1183,1021,1142,1122,1183,1191,1033,1121,1192,1092,1158,1168,1021,1170,1182,1142,1128,1142,1173,1126,1143,1024,1088,1161,1164,1137,1071,1195],[922,940,997,937,928,952,988,952,967,901,907,971,990,936,949,953,958,902,980,900,903,951,913,999,925,906,991,949,999,918]],\"name\":[{\"goodsId\":\"78276e83482b4c3c8959e3474b127669\",\"goodsName\":\"chivas芝华士12年\"},{\"goodsId\":\"d7891811cd6e4bde9a385c2e8df3d425\",\"goodsName\":\"满6元减5元\"},{\"goodsId\":\"\",\"goodsName\":\"互动次数\"},{\"goodsId\":\"\",\"goodsName\":\"互动人数\"}]}";
-					result.put("chart", JSON.parseObject(json));
-				}
 				break;
 			case "user":
 				String channel = Optional.ofNullable(inno72MerchantTotalCountMapper.selectChannelCode(activityId)).orElse("002001");
@@ -115,13 +100,6 @@ public class Inno72MerchantTotalCountByDayServiceImpl extends AbstractService<In
 					result.put("chart", result1.getData());
 				}else {
 					result = this.buildUser(days, startDateLocal, endDateLocal);
-
-					if (activityId.equals("40e48662e73340a496e117653edd2ef5")){
-						String json = "{\"percentS\":[96.0,93.0,92.0,95.0,97.0,91.0,94.0,94.0,94.0,89.0,92.0,89.0,93.0,96.0,94.0,97.0,91.0,94.0,93.0,89.0,94.0,90.0,97.0,90.0,93.0,90.0,91.0,96.0,94.0,93.0],\"concernS\":[1335,1314,1397,1332,1335,1387,1357,1383,1376,1385,1317,1384,1372,1334,1378,1325,1394,1376,1303,1365,1394,1347,1310,1356,1371,1371,1358,1331,1386,1349],\"experienceS\":[1272,1217,1279,1256,1292,1262,1266,1291,1283,1227,1202,1227,1272,1272,1289,1284,1266,1280,1211,1207,1298,1206,1259,1220,1275,1221,1232,1270,1294,1244]}";
-						result.put("chart", JSON.parseObject(json));
-					}
-
-
 				}
 
 				break;
@@ -391,6 +369,10 @@ public class Inno72MerchantTotalCountByDayServiceImpl extends AbstractService<In
 		List<Integer> percentS = new ArrayList<>();
 
 		LocalDate thisDate = startDateLocal;
+
+		Integer maxNum = 0;
+		Integer minNum = 0;
+
 		// 统计单日下所有数量的总和
 		for (Map.Entry<String, List<Map<String, String>>> k : kk.entrySet()) {
 
@@ -428,10 +410,14 @@ public class Inno72MerchantTotalCountByDayServiceImpl extends AbstractService<In
 				BigDecimal divide = new BigDecimal(concern)
 						.divide(new BigDecimal(experience), 2, BigDecimal.ROUND_CEILING)
 						.multiply(new BigDecimal("100"));
-				percentS.add(divide.intValue());
+				percent = divide.intValue();
 			} else {
-				percentS.add(0);
+				percent = 0;
 			}
+			percentS.add(percent);
+			isMax(experience, maxNum, minNum);
+			isMax(concern, maxNum, minNum);
+			isMax(percent, maxNum, minNum);
 		}
 
 		// 日期不足，补充0直到到结束日期
@@ -445,6 +431,10 @@ public class Inno72MerchantTotalCountByDayServiceImpl extends AbstractService<In
 		ys.put("experienceS", experienceS);
 		ys.put("percentS", percentS);
 		ys.put("concernS", concernS);
+
+		ys.put("maxNum", maxNum);
+		ys.put("minNum", minNum);
+
 		result.put("chart", ys);
 
 		return result;
@@ -554,6 +544,11 @@ public class Inno72MerchantTotalCountByDayServiceImpl extends AbstractService<In
 		// 按日期分组
 		this.groupByDate(days, map);
 
+		int maxNum = 0;
+		int minNum = 0;
+
+
+
 		List<Map<String, String>> pvuvMap = new ArrayList<>();
 		for (Map.Entry<String, List<Inno72MerchantTotalCountByDay>> entry : map.entrySet()) {
 			List<Inno72MerchantTotalCountByDay> value = entry.getValue();
@@ -598,6 +593,9 @@ public class Inno72MerchantTotalCountByDayServiceImpl extends AbstractService<In
 				addDateLocal = addDateLocal.plusDays(1);
 				LOGGER.info("商品维度 日期 - {}, uvs - {}, pvs - {}", addDateLocal, uvs, pvs);
 			}
+			isMax(Integer.parseInt(pv), maxNum, minNum);
+			isMax(Integer.parseInt(uv), maxNum, minNum);
+
 			pvs.add(Integer.parseInt(pv));
 			uvs.add(Integer.parseInt(uv));
 			addDateLocal = addDateLocal.plusDays(1);
@@ -663,11 +661,13 @@ public class Inno72MerchantTotalCountByDayServiceImpl extends AbstractService<In
 				LocalDate thisDate = LocalDateUtil.transfer(date, DateTimeFormatter.ofPattern("yyyy-MM-dd"));
 				while (curLocalDate.isBefore(thisDate)) {
 					num.add(0);
+					isMax(0, maxNum, minNum);
 					curLocalDate = curLocalDate.plusDays(1);
 					LOGGER.info("商品维度 日期 - {}, num - {}", curLocalDate, num);
 				}
-
-				num.add(inno72MerchantTotalCountByDay.getGoodsNum());
+				Integer goodsNum = inno72MerchantTotalCountByDay.getGoodsNum();
+				isMax(goodsNum, maxNum, minNum);
+				num.add(goodsNum);
 				curLocalDate = curLocalDate.plusDays(1);
 				LOGGER.info("商品维度 日期 - {}, num - {}", curLocalDate, num);
 			}
@@ -692,6 +692,8 @@ public class Inno72MerchantTotalCountByDayServiceImpl extends AbstractService<In
 		nums.add(pvs);
 		nums.add(uvs);
 		charts.put("num", nums);
+		charts.put("maxNum", maxNum);
+		charts.put("minNum", minNum);
 		result.put("chart", charts);
 		return result;
 	}
@@ -715,6 +717,15 @@ public class Inno72MerchantTotalCountByDayServiceImpl extends AbstractService<In
 			dayss.add(day);
 			map.put(key, dayss);
 
+		}
+	}
+
+	private void isMax(Integer source, Integer large, Integer less){
+		if (source != null && source > large){
+			large = source;
+		}
+		if (source != null && source < less){
+			less = source;
 		}
 	}
 
