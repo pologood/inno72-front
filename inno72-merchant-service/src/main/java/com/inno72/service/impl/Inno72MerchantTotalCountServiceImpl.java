@@ -140,8 +140,6 @@ public class Inno72MerchantTotalCountServiceImpl extends AbstractService<Inno72M
 	public Result<List<ActMerchantLog>> actLog(String actId) {
 
 		List<ActMerchantLog> actMerchantLogs = new ArrayList<>();
-
-
 			//点72 活动
 		if (actId.equals("03e0c821671a4d6f8fad0d47fa25f040")){
 			ActMerchantLog log = new ActMerchantLog();
@@ -274,7 +272,7 @@ public class Inno72MerchantTotalCountServiceImpl extends AbstractService<Inno72M
 		String status = "0";
 
 		Duration between = Duration
-				.between(LocalDateUtil.transfer(startDate), LocalDate.now());
+				.between(LocalDateUtil.transfer(startDate), LocalDateUtil.transfer(endTime));
 		String totalTime = between.toHours()+"";
 
 		Inno72MerchantTotalCountVo vo = new Inno72MerchantTotalCountVo();
