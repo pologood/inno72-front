@@ -140,12 +140,25 @@ public class Inno72MerchantTotalCountServiceImpl extends AbstractService<Inno72M
 	public Result<List<ActMerchantLog>> actLog(String actId) {
 
 		List<ActMerchantLog> actMerchantLogs = new ArrayList<>();
-		ActMerchantLog log = new ActMerchantLog();
-		log.setId(StringUtil.uuid());
-		log.setTime("2018-12-15");
-		log.setCount("30");
-		log.setType("新增");
-		actMerchantLogs.add(log);
+
+
+			//点72 活动
+		if (actId.equals("03e0c821671a4d6f8fad0d47fa25f040")){
+			ActMerchantLog log = new ActMerchantLog();
+			log.setId(StringUtil.uuid());
+			log.setTime("2018-12-15");
+			log.setCount("30");
+			log.setType("新增");
+			actMerchantLogs.add(log);
+			// 备选活动
+		}else if (actId.equals("40e48662e73340a496e117653edd2ef5")){
+			ActMerchantLog log = new ActMerchantLog();
+			log.setId(StringUtil.uuid());
+			log.setTime("2018-12-13");
+			log.setCount("217");
+			log.setType("新增");
+			actMerchantLogs.add(log);
+		}
 		return Results.success(actMerchantLogs);
 	}
 
