@@ -145,7 +145,7 @@ public class Inno72MerchantTotalCountServiceImpl extends AbstractService<Inno72M
 			ActMerchantLog log = new ActMerchantLog();
 			log.setId(StringUtil.uuid());
 			log.setTime("2018-12-15");
-			log.setCount("30");
+			log.setCount("新增 30 台机器");
 			log.setType("新增");
 			actMerchantLogs.add(log);
 			// 备选活动
@@ -153,8 +153,9 @@ public class Inno72MerchantTotalCountServiceImpl extends AbstractService<Inno72M
 			ActMerchantLog log = new ActMerchantLog();
 			log.setId(StringUtil.uuid());
 			log.setTime("2018-12-13");
-			log.setCount("217");
+			log.setCount("新增 217 台机器");
 			log.setType("新增");
+
 			actMerchantLogs.add(log);
 		}
 		return Results.success(actMerchantLogs);
@@ -248,36 +249,38 @@ public class Inno72MerchantTotalCountServiceImpl extends AbstractService<Inno72M
 	}
 
 	private Result<Inno72MerchantTotalCountVo> defaultActInfo(){
-		String startDate = "2018-12-15";
-		String endTime = "2018-12-31";
+		String startDate = "2018-12-15 00:00:00";
+		String endTime = "2018-12-31 23:59:59";
 		String status = "1";
 
 		Duration between = Duration
-				.between(LocalDateUtil.transfer(startDate), LocalDate.now());
+				.between(LocalDateTimeUtil.transfer(startDate, DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")), LocalDateTime.now());
 		String totalTime = between.toHours()+"";
 
 		Inno72MerchantTotalCountVo vo = new Inno72MerchantTotalCountVo();
-		vo.setStartTime(startDate);
-		vo.setEndTime(endTime);
+		vo.setStartTime(startDate.substring(0, 10));
+		vo.setEndTime(endTime.substring(0, 10));
 		vo.setActivityStatus(status);
 		vo.setTotalTime(totalTime);
 		vo.setGoodsNum(53689);
 		vo.setPv(69675);
+		vo.setActivityName("点七二互动活动");
 		return Results.success(vo);
 	}
 
 	private Result<Inno72MerchantTotalCountVo> defaultActBeiXuanInfo(){
-		String startDate = "2018-11-13";
-		String endTime = "2018-12-20";
+		String startDate = "2018-11-13 00:00:00";
+		String endTime = "2018-12-20 23:59:59";
 		String status = "0";
 
 		Duration between = Duration
-				.between(LocalDateUtil.transfer(startDate), LocalDateUtil.transfer(endTime));
+				.between(LocalDateTimeUtil.transfer(startDate), LocalDateTimeUtil.transfer(endTime));
 		String totalTime = between.toHours()+"";
 
 		Inno72MerchantTotalCountVo vo = new Inno72MerchantTotalCountVo();
-		vo.setStartTime(startDate);
-		vo.setEndTime(endTime);
+		vo.setActivityName("新芝华士备选活动");
+		vo.setStartTime(startDate.substring(0, 10));
+		vo.setEndTime(endTime.substring(0, 10));
 		vo.setActivityStatus(status);
 		vo.setTotalTime(totalTime);
 		vo.setGoodsNum(53689);
