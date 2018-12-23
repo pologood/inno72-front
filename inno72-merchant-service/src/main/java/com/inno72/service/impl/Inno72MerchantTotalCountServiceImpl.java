@@ -254,14 +254,14 @@ public class Inno72MerchantTotalCountServiceImpl extends AbstractService<Inno72M
 		String status = "1";
 
 		Duration between;
-
-		if (LocalDateTime
-				.now().isAfter(LocalDateTimeUtil.transfer(endTime, DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")))){
-			between = Duration
-					.between(LocalDateTimeUtil.transfer(startDate, DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")), LocalDateTimeUtil.transfer(endTime, DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")));
+		LocalDateTime now = LocalDateTime.now();
+		LocalDateTime parseEnd = LocalDateTime.parse(endTime, DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
+		LocalDateTime parseStart = LocalDateTime.parse(startDate, DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
+		if (now.isAfter(parseEnd)){
+			between = Duration.between(parseStart, parseEnd);
 		}else {
 			between = Duration
-					.between(LocalDateTimeUtil.transfer(startDate, DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")), LocalDateTime.now());
+					.between(parseStart, now);
 		}
 		String totalTime = between.toHours()+"";
 
@@ -282,7 +282,7 @@ public class Inno72MerchantTotalCountServiceImpl extends AbstractService<Inno72M
 		String status = "0";
 
 		Duration between = Duration
-				.between(LocalDateTimeUtil.transfer(startDate, DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")), LocalDateTimeUtil.transfer(endTime, DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")));
+				.between(LocalDateTime.parse(startDate, DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")), LocalDateTime.parse(endTime, DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")));
 		String totalTime = between.toHours()+"";
 
 		Inno72MerchantTotalCountVo vo = new Inno72MerchantTotalCountVo();
