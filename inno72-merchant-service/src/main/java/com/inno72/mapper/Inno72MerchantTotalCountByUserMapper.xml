@@ -20,8 +20,10 @@
     </resultMap>
     <select id="selectByActivityId" resultMap="BaseResultMap">
         select * from inno72.inno72_merchant_total_count_by_user
-        where date BETWEEN #{start} and #{end}
-              and activity_id = #{activityId}
+        where activity_id = #{activityId}
+              <if test="start != null and start != '' and end != null and end != ''">
+               and  date BETWEEN #{start} and #{end}
+              </if>
         GROUP BY user_id
         order by date, id
     </select>
