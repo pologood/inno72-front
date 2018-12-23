@@ -444,6 +444,12 @@ public class Inno72MerchantTotalCountByDayServiceImpl extends AbstractService<In
 		sn.add(concernS);
 		Map<String, Integer> max = isMax(sn);
 		ys.putAll(max);
+
+		String formatStart = startDateLocal.format(DateTimeFormatter.ofPattern("yyyy-MM-dd"));
+		String formatEnd = endDateLocal.format(DateTimeFormatter.ofPattern("yyyy-MM-dd"));
+		ys.put("startTime", formatStart);
+		ys.put("endTime", formatEnd);
+
 		result.put("chart", ys);
 
 		return result;
