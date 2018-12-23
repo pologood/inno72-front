@@ -61,8 +61,8 @@ public class Inno72MerchantTotalCountServiceImpl extends AbstractService<Inno72M
 
 		for (Inno72MerchantTotalCountVo countVo : inno72MerchantTotalCounts){
 			String activityId = countVo.getActivityId();
-//			Inno72MerchantTotalCountVo vo = inno72MerchantTotalCountMapper.selectMaxMinTime(activityId);
-//			BeanUtils.copyProperties(vo, countVo);
+			//			Inno72MerchantTotalCountVo vo = inno72MerchantTotalCountMapper.selectMaxMinTime(activityId);
+			//			BeanUtils.copyProperties(vo, countVo);
 			List<Map<String, Object>> addressNums = new ArrayList<>();
 			Map<String, Object> addressNum = new HashMap<>();
 			addressNum.put("address", "北京");
@@ -122,17 +122,17 @@ public class Inno72MerchantTotalCountServiceImpl extends AbstractService<Inno72M
 	public Result<List<Map<String, Object>>> addressNum(String actId) {
 		List<Map<String, Object>> addressNums = new ArrayList<>();
 		Map<String, Object> addressNum = new HashMap<>();
-			addressNum.put("address", "北京");
-			addressNum.put("num", 15);
-			addressNums.add(addressNum);
-			addressNum = new HashMap<>();
-			addressNum.put("address", "杭州");
-			addressNum.put("num", 7);
-			addressNums.add(addressNum);
-			addressNum = new HashMap<>();
-			addressNum.put("address", "上海");
-			addressNum.put("num", 8);
-			addressNums.add(addressNum);
+		addressNum.put("address", "北京");
+		addressNum.put("num", 15);
+		addressNums.add(addressNum);
+		addressNum = new HashMap<>();
+		addressNum.put("address", "杭州");
+		addressNum.put("num", 7);
+		addressNums.add(addressNum);
+		addressNum = new HashMap<>();
+		addressNum.put("address", "上海");
+		addressNum.put("num", 8);
+		addressNums.add(addressNum);
 		return Results.success(addressNums);
 	}
 
@@ -140,7 +140,7 @@ public class Inno72MerchantTotalCountServiceImpl extends AbstractService<Inno72M
 	public Result<List<ActMerchantLog>> actLog(String actId) {
 
 		List<ActMerchantLog> actMerchantLogs = new ArrayList<>();
-			//点72 活动
+		//点72 活动
 		if (actId.equals("03e0c821671a4d6f8fad0d47fa25f040")){
 			ActMerchantLog log = new ActMerchantLog();
 			log.setId(StringUtil.uuid());
@@ -253,8 +253,16 @@ public class Inno72MerchantTotalCountServiceImpl extends AbstractService<Inno72M
 		String endTime = "2018-12-31 23:59:59";
 		String status = "1";
 
-		Duration between = Duration
-				.between(LocalDateTimeUtil.transfer(startDate, DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")), LocalDateTime.now());
+		Duration between;
+
+		if (LocalDateTime
+				.now().isAfter(LocalDateTimeUtil.transfer(endTime, DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")))){
+			between = Duration
+					.between(LocalDateTimeUtil.transfer(startDate, DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")), LocalDateTimeUtil.transfer(endTime, DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")));
+		}else {
+			between = Duration
+					.between(LocalDateTimeUtil.transfer(startDate, DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")), LocalDateTime.now());
+		}
 		String totalTime = between.toHours()+"";
 
 		Inno72MerchantTotalCountVo vo = new Inno72MerchantTotalCountVo();
@@ -274,7 +282,7 @@ public class Inno72MerchantTotalCountServiceImpl extends AbstractService<Inno72M
 		String status = "0";
 
 		Duration between = Duration
-				.between(LocalDateTimeUtil.transfer(startDate), LocalDateTimeUtil.transfer(endTime));
+				.between(LocalDateTimeUtil.transfer(startDate, DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")), LocalDateTimeUtil.transfer(endTime, DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")));
 		String totalTime = between.toHours()+"";
 
 		Inno72MerchantTotalCountVo vo = new Inno72MerchantTotalCountVo();
