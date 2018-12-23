@@ -16,6 +16,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 
+import com.alibaba.fastjson.JSON;
 import com.inno72.common.AbstractService;
 import com.inno72.common.Result;
 import com.inno72.common.Results;
@@ -273,6 +274,7 @@ public class Inno72MerchantTotalCountServiceImpl extends AbstractService<Inno72M
 		vo.setGoodsNum(53689);
 		vo.setPv(69675);
 		vo.setActivityName("点七二互动活动");
+		System.out.println("默认活动返回-》"  + JSON.toJSONString(vo));
 		return Results.success(vo);
 	}
 
@@ -293,6 +295,7 @@ public class Inno72MerchantTotalCountServiceImpl extends AbstractService<Inno72M
 		vo.setTotalTime(totalTime);
 		vo.setGoodsNum(53689);
 		vo.setPv(69675);
+		System.out.println("新芝华士备选活动返回-》"  + JSON.toJSONString(vo));
 		return Results.success(vo);
 	}
 }
