@@ -43,7 +43,7 @@
     <select id="findGoodsByMerchantId" resultType="java.util.Map" parameterType="string">
         select distinct goods_id as goodsId, goods_name as goodsName
         from inno72_merchant_total_count_by_day
-        where merchant_id = #{merchantId}
+        where merchant_id = #{merchantId} and activity_id = #{activityId}
     </select>
     <select id="findActivityByMerchantId" resultType="java.util.Map" parameterType="string">
         select act.activityId, act.activityName, ifnull(interact.channel, "002001") as code

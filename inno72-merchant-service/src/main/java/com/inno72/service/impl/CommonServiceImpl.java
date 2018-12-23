@@ -28,7 +28,7 @@ public class CommonServiceImpl implements CommonService {
 	 * @return Object
 	 */
 	@Override
-	public Map<String, Object> baseApi(String type, String merchantId) {
+	public Map<String, Object> baseApi(String type, String merchantId, String activityId) {
 
 		Map<String, Object> resultMap = new HashMap<>(3);
 		switch (type) {
@@ -39,12 +39,12 @@ public class CommonServiceImpl implements CommonService {
 				resultMap.put("activity", this.getActivity(merchantId));
 				break;
 			case "goods":
-				resultMap.put("goods", this.getGoods(merchantId));
+				resultMap.put("goods", this.getGoods(merchantId, activityId));
 				break;
 			default:
 				resultMap.put("city", this.getCity(merchantId));
 				resultMap.put("activity", this.getActivity(merchantId));
-				resultMap.put("goods", this.getGoods(merchantId));
+				resultMap.put("goods", this.getGoods(merchantId, activityId));
 				break;
 		}
 
@@ -57,8 +57,8 @@ public class CommonServiceImpl implements CommonService {
 	@Resource
 	private Inno72MerchantTotalCountByDayMapper inno72MerchantTotalCountByDayMapper;
 
-	private List<Map<String, String>> getGoods(String merchantId) {
-		return inno72MerchantTotalCountByDayMapper.findGoodsByMerchantId(merchantId);
+	private List<Map<String, String>> getGoods(String merchantId, String activityId) {
+		return inno72MerchantTotalCountByDayMapper.findGoodsByMerchantId(merchantId, activityId);
 	}
 
 	private List<Map<String, String>> getActivity(String merchantId) {
