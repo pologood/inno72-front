@@ -65,8 +65,7 @@ public class Inno72MerchantTotalCountByDayServiceImpl extends AbstractService<In
 	public Result<Object> searchData(String label, String activityId, String city, String startDate, String endDate,
 			String goods, String merchantId) {
 
-		if (StringUtil.isEmpty(activityId) || StringUtil.isEmpty(startDate) || StringUtil.isEmpty(endDate)
-				|| StringUtil.isEmpty(merchantId)) {
+		if (StringUtil.isEmpty(activityId) || StringUtil.isEmpty(merchantId)) {
 			return Results.failure("参数缺失!");
 		}
 		LOGGER.info("查询列表 -> label - {}, activityId - {}, city - {}, startDate - {}, endDate - {}, goods - {}", label,
