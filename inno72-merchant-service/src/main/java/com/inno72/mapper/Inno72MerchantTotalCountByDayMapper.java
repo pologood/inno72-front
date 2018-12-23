@@ -17,4 +17,5 @@ public interface Inno72MerchantTotalCountByDayMapper extends Mapper<Inno72Mercha
 
 	List<Map<String, String>> findActivityByMerchantId(String merchantId);
 
+	Map<String,String> findMinMaxDate(@Param("activityId")String activityId,@Param("merchantId") String merchantId);
 }

@@ -58,4 +58,9 @@
         left join inno72_interact interact on interact.id = act.activityId
 
     </select>
+    <select id="findMinMaxDate" resultType="java.util.Map">
+        select date_format(min(date), '%Y-%m-%d') as min, date_format(max(date), '%Y-%m-%d') as max from inno72_merchant_total_count_by_day
+        where activity_id = #{activityId} and merchant_id = #{merchantId}
+        group by activity_id, merchant_id
+    </select>
 </mapper>
