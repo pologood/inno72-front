@@ -80,8 +80,8 @@ public class Inno72CommonController {
 	private CommonService commonService;
 
 	@RequestMapping(value = "/common/api/{type}")
-	public Result baseApi(@PathVariable(value = "type") String type, String merchantId, String activityId) {
-		return Results.success(commonService.baseApi(type, merchantId, activityId));
+	public Result baseApi(@PathVariable(value = "type") String type, String merchantId, String actId) {
+		return Results.success(commonService.baseApi(type, merchantId, actId));
 	}
 
 
