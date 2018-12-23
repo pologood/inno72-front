@@ -533,7 +533,7 @@ public class Inno72MerchantTotalCountByDayServiceImpl extends AbstractService<In
 		result.put("list", resultList);
 
 
-		map.clear();
+		map = new HashMap<>();
 
 		// 按日期分组
 		this.groupByDate(days, map);
@@ -558,10 +558,10 @@ public class Inno72MerchantTotalCountByDayServiceImpl extends AbstractService<In
 					date = day.getDate();
 				}
 			}
-			for (Inno72MerchantTotalCountByDay day : value) {
-				day.setPv(totlePv);
-				day.setUv(totleUv);
-			}
+//			for (Inno72MerchantTotalCountByDay day : value) {
+//				day.setPv(totlePv);
+//				day.setUv(totleUv);
+//			}
 			Map<String, String> pvuv = new HashMap<>(2);
 			pvuv.put("pv", totlePv + "");
 			pvuv.put("uv", totleUv + "");
