@@ -89,15 +89,15 @@ public class Inno72MerchantTotalCountServiceImpl extends AbstractService<Inno72M
 				List<Map<String, Object>> addressNums = new ArrayList<>();
 				Map<String, Object> addressNum = new HashMap<>();
 				addressNum.put("address", "北京");
-				addressNum.put("num", 30);
-				addressNums.add(addressNum);
-				addressNum = new HashMap<>();
-				addressNum.put("address", "南京");
-				addressNum.put("num", 10);
+				addressNum.put("num", 15);
 				addressNums.add(addressNum);
 				addressNum = new HashMap<>();
 				addressNum.put("address", "上海");
-				addressNum.put("num", 10);
+				addressNum.put("num", 8);
+				addressNums.add(addressNum);
+				addressNum = new HashMap<>();
+				addressNum.put("address", "杭州");
+				addressNum.put("num", 7);
 				addressNums.add(addressNum);
 				countVo.setMachineInfo(addressNums);
 
