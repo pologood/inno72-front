@@ -269,7 +269,7 @@ public class Inno72MerchantTotalCountServiceImpl extends AbstractService<Inno72M
 			ActMerchantLog log = new ActMerchantLog();
 			log.setId(StringUtil.uuid());
 			log.setTime("2018-12-13");
-			log.setCount("新增 217 台机器");
+			log.setCount("新增 265 台机器");
 			log.setType("新增");
 
 			actMerchantLogs.add(log);
