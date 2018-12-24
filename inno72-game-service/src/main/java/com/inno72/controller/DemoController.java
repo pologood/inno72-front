@@ -58,7 +58,7 @@ public class DemoController {
 	}
 
 	@ResponseBody
-	@RequestMapping("testJump")
+	@RequestMapping("/api/testJump")
 	public String testJump(String userId, HttpServletResponse response) {
 		logger.info("userId is {}", userId);
 		try {
