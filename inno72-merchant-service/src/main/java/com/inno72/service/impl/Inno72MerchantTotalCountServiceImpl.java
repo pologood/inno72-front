@@ -64,21 +64,98 @@ public class Inno72MerchantTotalCountServiceImpl extends AbstractService<Inno72M
 			String activityId = countVo.getActivityId();
 			//			Inno72MerchantTotalCountVo vo = inno72MerchantTotalCountMapper.selectMaxMinTime(activityId);
 			//			BeanUtils.copyProperties(vo, countVo);
-			List<Map<String, Object>> addressNums = new ArrayList<>();
-			Map<String, Object> addressNum = new HashMap<>();
-			addressNum.put("address", "北京");
-			addressNum.put("num", 30);
-			addressNums.add(addressNum);
-			addressNum = new HashMap<>();
-			addressNum.put("address", "南京");
-			addressNum.put("num", 10);
-			addressNums.add(addressNum);
-			addressNum = new HashMap<>();
-			addressNum.put("address", "上海");
-			addressNum.put("num", 10);
-			addressNums.add(addressNum);
-			countVo.setMachineInfo(addressNums);
+
+			//点72 活动
+			if (activityId.equals("03e0c821671a4d6f8fad0d47fa25f040")){
+
+				String startDate = "2018-12-15 00:00:00";
+				String endTime = "2018-12-31 23:59:59";
+
+				countVo.setStartTime("2018-12-15");
+				countVo.setEndTime("2018-12-31");
+				Duration between;
+				LocalDateTime now = LocalDateTime.now();
+				LocalDateTime parseEnd = LocalDateTime.parse(endTime, DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
+				LocalDateTime parseStart = LocalDateTime.parse(startDate, DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
+				if (now.isAfter(parseEnd)){
+					between = Duration.between(parseStart, parseEnd);
+				}else {
+					between = Duration
+							.between(parseStart, now);
+				}
+				String totalTime = between.toHours()+"";
+				countVo.setTotalTime(totalTime);
+
+				List<Map<String, Object>> addressNums = new ArrayList<>();
+				Map<String, Object> addressNum = new HashMap<>();
+				addressNum.put("address", "北京");
+				addressNum.put("num", 30);
+				addressNums.add(addressNum);
+				addressNum = new HashMap<>();
+				addressNum.put("address", "南京");
+				addressNum.put("num", 10);
+				addressNums.add(addressNum);
+				addressNum = new HashMap<>();
+				addressNum.put("address", "上海");
+				addressNum.put("num", 10);
+				addressNums.add(addressNum);
+				countVo.setMachineInfo(addressNums);
+
+
+				// 备选活动
+			}else if (activityId.equals("40e48662e73340a496e117653edd2ef5")){
+
+				String startDate = "2018-11-13 00:00:00";
+				String endTime = "2018-12-20 23:59:59";
+
+				countVo.setStartTime("2018-11-13");
+				countVo.setEndTime("2018-12-20");
+				Duration between;
+				LocalDateTime now = LocalDateTime.now();
+				LocalDateTime parseEnd = LocalDateTime.parse(endTime, DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
+				LocalDateTime parseStart = LocalDateTime.parse(startDate, DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
+				if (now.isAfter(parseEnd)){
+					between = Duration.between(parseStart, parseEnd);
+				}else {
+					between = Duration
+							.between(parseStart, now);
+				}
+				String totalTime = between.toHours()+"";
+				countVo.setTotalTime(totalTime);
+
+				List<Map<String, Object>> addressNums = new ArrayList<>();
+				Map<String, Object> addressNum = new HashMap<>();
+				addressNum.put("address", "北京市");
+				addressNum.put("num", 40);
+				addressNums.add(addressNum);
+				addressNum.put("address", "杭州市");
+				addressNum.put("num", 15);
+				addressNums.add(addressNum);
+				addressNum.put("address", "南京市");
+				addressNum.put("num", 59);
+				addressNums.add(addressNum);
+				addressNum.put("address", "广州市");
+				addressNum.put("num", 23);
+				addressNums.add(addressNum);
+				addressNum.put("address", "成都市");
+				addressNum.put("num", 41);
+				addressNums.add(addressNum);
+				addressNum.put("address", "深圳市");
+				addressNum.put("num", 31);
+				addressNums.add(addressNum);
+				addressNum.put("address", "重庆市");
+				addressNum.put("num", 44);
+				addressNums.add(addressNum);
+				addressNum = new HashMap<>();
+				addressNum.put("address", "上海市");
+				addressNum.put("num", 13);
+				addressNums.add(addressNum);
+				countVo.setMachineInfo(addressNums);
+
+			}
+
 		}
+
 		return Results.success(inno72MerchantTotalCounts);
 	}
 
@@ -122,18 +199,50 @@ public class Inno72MerchantTotalCountServiceImpl extends AbstractService<Inno72M
 	@Override
 	public Result<List<Map<String, Object>>> addressNum(String actId) {
 		List<Map<String, Object>> addressNums = new ArrayList<>();
-		Map<String, Object> addressNum = new HashMap<>();
-		addressNum.put("address", "北京");
-		addressNum.put("num", 15);
-		addressNums.add(addressNum);
-		addressNum = new HashMap<>();
-		addressNum.put("address", "杭州");
-		addressNum.put("num", 7);
-		addressNums.add(addressNum);
-		addressNum = new HashMap<>();
-		addressNum.put("address", "上海");
-		addressNum.put("num", 8);
-		addressNums.add(addressNum);
+		if (actId.equals("03e0c821671a4d6f8fad0d47fa25f040")){
+			Map<String, Object> addressNum = new HashMap<>();
+			addressNum.put("address", "北京");
+			addressNum.put("num", 15);
+			addressNums.add(addressNum);
+			addressNum = new HashMap<>();
+			addressNum.put("address", "杭州");
+			addressNum.put("num", 7);
+			addressNums.add(addressNum);
+			addressNum = new HashMap<>();
+			addressNum.put("address", "上海");
+			addressNum.put("num", 8);
+			addressNums.add(addressNum);
+			// 备选活动
+		}else if (actId.equals("40e48662e73340a496e117653edd2ef5")){
+			Map<String, Object> addressNum = new HashMap<>();
+			addressNum.put("address", "北京市");
+			addressNum.put("num", 15);
+			addressNums.add(addressNum);
+			addressNum = new HashMap<>();
+			addressNum.put("address", "杭州市");
+			addressNum.put("num", 7);
+			addressNums.add(addressNum);
+			addressNum.put("address", "南京市");
+			addressNum.put("num", 7);
+			addressNums.add(addressNum);
+			addressNum.put("address", "广州市");
+			addressNum.put("num", 7);
+			addressNums.add(addressNum);
+			addressNum.put("address", "成都市");
+			addressNum.put("num", 7);
+			addressNums.add(addressNum);
+			addressNum.put("address", "深圳市");
+			addressNum.put("num", 7);
+			addressNums.add(addressNum);
+			addressNum.put("address", "重庆市");
+			addressNum.put("num", 7);
+			addressNums.add(addressNum);
+			addressNum = new HashMap<>();
+			addressNum.put("address", "上海市");
+			addressNum.put("num", 8);
+			addressNums.add(addressNum);
+		}
+
 		return Results.success(addressNums);
 	}
 
