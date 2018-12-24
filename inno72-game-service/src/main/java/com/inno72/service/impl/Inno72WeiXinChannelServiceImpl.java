@@ -13,6 +13,7 @@ import com.inno72.service.Inno72ChannelService;
 import com.inno72.service.Inno72InteractMachineTimeService;
 import com.inno72.service.Inno72InteractService;
 import com.inno72.vo.GoodsVo;
+import com.inno72.vo.StandardPrepareLoginReqVo;
 import com.inno72.vo.UserSessionVo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -65,7 +66,7 @@ public class Inno72WeiXinChannelServiceImpl implements Inno72ChannelService {
     private Inno72SupplyChannelMapper inno72SupplyChannelMapper;
 
     @Override
-    public String buildQrContent(Inno72Machine inno72Machine,String sessionUuid) {
+    public String buildQrContent(Inno72Machine inno72Machine,String sessionUuid,StandardPrepareLoginReqVo req) {
         Inno72InteractMachine interactMachine = inno72InteractMachineTimeService.findActiveInteractMachine(inno72Machine.getMachineCode());
         if(interactMachine == null){
             LOGGER.info("此机器无派样活动配置machineCode={}",inno72Machine.getMachineCode());

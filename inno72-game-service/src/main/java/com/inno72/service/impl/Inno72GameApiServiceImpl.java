@@ -1162,7 +1162,7 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 		if (StandardPrepareLoginReqVo.OperTypeEnum.CREATE_QRCODE.getKey() == operType) {
 			// 生成二维码流程
 			Inno72ChannelService channelService = (Inno72ChannelService)ApplicationContextHandle.getBean(StandardLoginTypeEnum.getValue(req.getLoginType()));
-			String qrCOntent = channelService.buildQrContent(inno72Machine,sessionUuid);
+			String qrCOntent = channelService.buildQrContent(inno72Machine,sessionUuid,req);
 			// 二维码存储在本地的路径
 			String localUrl = "pre" + inno72Machine.getId() + sessionUuid +".png";
 			returnUrl = qrCodeService.createQrCode(qrCOntent, localUrl);
