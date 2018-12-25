@@ -9,6 +9,7 @@ import com.inno72.model.*;
 import com.inno72.service.*;
 import com.inno72.vo.Inno72MachineInformation;
 import com.inno72.vo.MachineApiVo;
+import com.inno72.vo.StandardPrepareLoginReqVo;
 import com.inno72.vo.UserSessionVo;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -79,9 +80,11 @@ public class Inno72Inno72ChannelServiceImpl implements Inno72ChannelService {
     private String env;
 
     @Override
-    public String buildQrContent(Inno72Machine inno72Machine, String sessionUuid) {
+    public String buildQrContent(Inno72Machine inno72Machine, String sessionUuid,StandardPrepareLoginReqVo req) {
         String redirect = inno72GameServiceProperties.get("loginRedirect");
-        String url = buildUrl(inno72Machine, redirect,sessionUuid);
+        String ext = req.getExt();
+        String PU = FastJsonUtils.getString(ext, "PU");
+        String url = buildUrl(redirect,sessionUuid,PU);
         return url;
     }
 
@@ -211,11 +214,18 @@ public class Inno72Inno72ChannelServiceImpl implements Inno72ChannelService {
         return Results.success(map);
     }
 
-    private String buildUrl(Inno72Machine inno72Machine, String redirect,String sessionUuid){
-        String url = String.format(
-                "%s/?sessionUuid=%s&env=%s&channelType=%s",
-                redirect, sessionUuid, env, StandardLoginTypeEnum.INNO72.getValue());
-        return url;
+    private String buildUrl(String redirect,String sessionUuid,String PU){
+        if(StringUtils.isEmpty(PU)){
+            String url = String.format(
+                    "%s/?sessionUuid=%s&env=%s&channelType=%s",
+                    redirect, sessionUuid, env, StandardLoginTypeEnum.INNO72.getValue());
+            return url;
+        }else{
+            String url = String.format(
+                    "%s/?sessionUuid=%s&env=%s&channelType=%s&PU=%s",
+                    redirect, sessionUuid, env, StandardLoginTypeEnum.INNO72.getValue(),PU);
+            return url;
+        }
     }
 
     @Override
