@@ -83,14 +83,14 @@ public class PointServiceImpl implements PointService {
 	/**
 	 * 内部埋点接口
 	 *
-	 * @param session 必传
+	 * @param sessionKey 必传
 	 * @param enumInno72MachineInformationType 类型
 	 * @return
 	 */
 	@Override
-	public Result<String> innerPoint(String session, Inno72MachineInformation.ENUM_INNO72_MACHINE_INFORMATION_TYPE enumInno72MachineInformationType) {
-		LOGGER.info("innerPoint param : {}", session);
-		exec.execute(new Task(new Inno72MachineInformation(enumInno72MachineInformationType.getType(), session)));
+	public Result<String> innerPoint(UserSessionVo sessionKey, Inno72MachineInformation.ENUM_INNO72_MACHINE_INFORMATION_TYPE enumInno72MachineInformationType) {
+		LOGGER.info("innerPoint param : {}", sessionKey);
+		exec.execute(new Task(new Inno72MachineInformation(enumInno72MachineInformationType.getType()), sessionKey));
 		return Results.success();
 	}
 
@@ -138,7 +138,6 @@ public class PointServiceImpl implements PointService {
 		String district = sessionKey.getInno72MachineVo().getDistrict();
 		String point = sessionKey.getInno72MachineVo().getPoint();
 		String playCode = sessionKey.getPlanCode();
-		//TODO
 		String merchantId = sessionKey.getMerchantAccountId();
 		String merchantName = sessionKey.getMerchantAccountName();
 		String channelMerchantId = sessionKey.getChannelMerchantId();
@@ -172,7 +171,12 @@ public class PointServiceImpl implements PointService {
 	class Task implements Runnable{
 
 		private Inno72MachineInformation info;
+		private UserSessionVo sessionKey;
 
+		Task(Inno72MachineInformation info, UserSessionVo sessionKey) {
+			this.info = info;
+			this.sessionKey = sessionKey;
+		}
 		Task(Inno72MachineInformation info) {
 			this.info = info;
 		}
@@ -181,8 +185,6 @@ public class PointServiceImpl implements PointService {
 		public void run() {
 			try {
 				semaphore.acquire();
-				String sessionUuid = info.getSessionUuid();
-				UserSessionVo sessionKey = gameSessionRedisUtil.getSessionKey(sessionUuid);
 				buildBaseInfoFromSession(sessionKey, info);
 				buildElseInfo(sessionKey, info);
 

@@ -3,6 +3,7 @@ package com.inno72.service;
 import com.inno72.common.Result;
 import com.inno72.vo.Inno72MachineInformation;
 import com.inno72.vo.Inno72TaoBaoCheckDataVo;
+import com.inno72.vo.UserSessionVo;
 
 public interface PointService {
 	/**
@@ -20,7 +21,7 @@ public interface PointService {
 	 * @param enumInno72MachineInformationType 类型
 	 * @return 结果
 	 */
-	Result<String> innerPoint(String session, Inno72MachineInformation.ENUM_INNO72_MACHINE_INFORMATION_TYPE enumInno72MachineInformationType);
+	Result<String> innerPoint(UserSessionVo sessionKey, Inno72MachineInformation.ENUM_INNO72_MACHINE_INFORMATION_TYPE enumInno72MachineInformationType);
 
 
 	/**

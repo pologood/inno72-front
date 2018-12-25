@@ -353,7 +353,7 @@ public class Inno72StandardController {
                         // 设置15秒内二维码不能被扫
                         gameSessionRedisUtil.setSessionEx(sessionUuid + "qrCode", sessionUuid, 15);
 
-                        pointService.innerPoint(sessionUuid, Inno72MachineInformation.ENUM_INNO72_MACHINE_INFORMATION_TYPE.SCAN_LOGIN);
+                        pointService.innerPoint(sessionVo, Inno72MachineInformation.ENUM_INNO72_MACHINE_INFORMATION_TYPE.SCAN_LOGIN);
 						if(channelType!=null && channelType == StandardLoginTypeEnum.INNO72.getValue()){
 							redirectUrl = String.format(inno72GameServiceProperties.get("phoneLoginUrl"),sessionVo.getPlanCode(),sessionUuid);
 							String PU = request.getParameter("PU");
@@ -431,7 +431,7 @@ public class Inno72StandardController {
 				String sellerId = sessionKey.getSellerId();
 				LOGGER.info("concernCallback sellerId is {}", sellerId);
 				if (!StringUtil.isEmpty(sellerId)) {
-					pointService.innerPoint(sessionUuid, Inno72MachineInformation.ENUM_INNO72_MACHINE_INFORMATION_TYPE.CONCERN);
+					pointService.innerPoint(sessionKey, Inno72MachineInformation.ENUM_INNO72_MACHINE_INFORMATION_TYPE.CONCERN);
 					inno72TopService.fllowshopLog(sessionUuid, sellerId);
 				}
 

@@ -31,6 +31,11 @@ public class Inno72MachineInformation {
 
 	/** 机器ID */
 	private String machineCode;
+
+	public Inno72MachineInformation(String type) {
+		this.type = type;
+	}
+
 	public String getMachineCode(){
 		return this.sessionUuid;
 

@@ -35,7 +35,7 @@ public class PointController {
 		String msg = "";
 		switch (type){
 			case CommonBean.POINT_TYPE_FANS:
-				pointService.innerPoint(sessionUuid, Inno72MachineInformation.ENUM_INNO72_MACHINE_INFORMATION_TYPE.MEMBERSHIP);
+				pointService.innerPoint(sessionKey, Inno72MachineInformation.ENUM_INNO72_MACHINE_INFORMATION_TYPE.MEMBERSHIP);
 				msg = "用户["+sessionKey.getUserNick()+"]入会成功.";
 				break;
 			case CommonBean.POINT_TYPE_CONCERN:
