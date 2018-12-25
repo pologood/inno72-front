@@ -30,6 +30,7 @@ import com.inno72.vo.Inno72MachineInformation;
 import com.inno72.vo.Inno72MachineVo;
 import com.inno72.vo.Inno72TaoBaoCheckDataVo;
 import com.inno72.vo.RequestMachineInfoVo;
+import com.inno72.vo.UserSessionCopyVo;
 import com.inno72.vo.UserSessionVo;
 
 @Service
@@ -88,8 +89,11 @@ public class PointServiceImpl implements PointService {
 	 * @return
 	 */
 	@Override
-	public Result<String> innerPoint(UserSessionVo sessionKey, Inno72MachineInformation.ENUM_INNO72_MACHINE_INFORMATION_TYPE enumInno72MachineInformationType) {
-		LOGGER.info("innerPoint param : {}", sessionKey);
+	public Result<String> innerPoint(String sessionJson, Inno72MachineInformation.ENUM_INNO72_MACHINE_INFORMATION_TYPE enumInno72MachineInformationType) {
+		LOGGER.info("innerPoint param : {}", sessionJson);
+
+		UserSessionCopyVo sessionKey = JSON.parseObject(sessionJson, UserSessionCopyVo.class);
+
 		exec.execute(new Task(new Inno72MachineInformation(enumInno72MachineInformationType.getType()), sessionKey));
 		return Results.success();
 	}
@@ -171,9 +175,9 @@ public class PointServiceImpl implements PointService {
 	class Task implements Runnable{
 
 		private Inno72MachineInformation info;
-		private UserSessionVo sessionKey;
+		private UserSessionCopyVo sessionKey;
 
-		Task(Inno72MachineInformation info, UserSessionVo sessionKey) {
+		Task(Inno72MachineInformation info, UserSessionCopyVo sessionKey) {
 			this.info = info;
 			this.sessionKey = sessionKey;
 		}
@@ -198,7 +202,7 @@ public class PointServiceImpl implements PointService {
 		}
 	}
 
-	private void buildElseInfo(UserSessionVo sessionKey, Inno72MachineInformation info){
+	private void buildElseInfo(UserSessionCopyVo sessionKey, Inno72MachineInformation info){
 		String type = info.getType();
 		if (type.equals(Inno72MachineInformation.ENUM_INNO72_MACHINE_INFORMATION_TYPE.SCAN_LOGIN.getType())){
 			//添加登录扫码路径
@@ -229,7 +233,7 @@ public class PointServiceImpl implements PointService {
 
 	}
 
-	private void buildBaseInfoFromSession(UserSessionVo sessionKey, Inno72MachineInformation info) {
+	private void buildBaseInfoFromSession(UserSessionCopyVo sessionKey, Inno72MachineInformation info) {
 
 		String activityId;
 		String activityName;
@@ -329,25 +333,25 @@ public class PointServiceImpl implements PointService {
 		Results.success(info);
 	}
 
-	private void buildOrderFromSession(UserSessionVo sessionKey, Inno72MachineInformation info) {
+	private void buildOrderFromSession(UserSessionCopyVo sessionKey, Inno72MachineInformation info) {
 		String refOrderId = sessionKey.getRefOrderId();
 		String inno72OrderId = sessionKey.getInno72OrderId();
 		info.setRefOrderId(refOrderId);
 		info.setOrderId(inno72OrderId);
 	}
-	private void buildCouponFromSession(UserSessionVo sessionKey, Inno72MachineInformation info) {
+	private void buildCouponFromSession(UserSessionCopyVo sessionKey, Inno72MachineInformation info) {
 		info.setInteractId(sessionKey.getInteractId());
 		info.setOrderId(sessionKey.getInno72CouponOrderId());
 	}
 
-	private void buildShipmentFromSession(UserSessionVo sessionKey, Inno72MachineInformation info) {
+	private void buildShipmentFromSession(UserSessionCopyVo sessionKey, Inno72MachineInformation info) {
 		String channelId = sessionKey.getChannelId();
 		info.setChannel(channelId);
 		String shipmentNum = sessionKey.getShipmentNum();
 		info.setShipmentNum(shipmentNum);
 	}
 
-	private void buildLockChannelFromSession(UserSessionVo sessionKey, Inno72MachineInformation info) {
+	private void buildLockChannelFromSession(UserSessionCopyVo sessionKey, Inno72MachineInformation info) {
 		String channelId = Optional.ofNullable(sessionKey.getChannelId()).orElse("");
 		String refOrderId = Optional.ofNullable(sessionKey.getRefOrderId()).orElse("");
 		String inno72OrderId = Optional.ofNullable(sessionKey.getInno72OrderId()).orElse("");
@@ -364,13 +368,13 @@ public class PointServiceImpl implements PointService {
 		info.setGoodsName(goodsName);
 	}
 
-	private void buildScanLoginFromSession(UserSessionVo sessionKey, Inno72MachineInformation info) {
+	private void buildScanLoginFromSession(UserSessionCopyVo sessionKey, Inno72MachineInformation info) {
 		info.setScanUrl(sessionKey.getScanLoginUrl());
 	}
-	private void buildScanPayFromSession(UserSessionVo sessionKey, Inno72MachineInformation info) {
+	private void buildScanPayFromSession(UserSessionCopyVo sessionKey, Inno72MachineInformation info) {
 		info.setScanUrl(sessionKey.getScanPayUrl());
 	}
-	private void buildPayFromSession(UserSessionVo sessionKey, Inno72MachineInformation info) {
+	private void buildPayFromSession(UserSessionCopyVo sessionKey, Inno72MachineInformation info) {
 		info.setOrderId(sessionKey.getInno72OrderId());
 		info.setRefOrderStatus(sessionKey.getRefOrderStatus());
 	}

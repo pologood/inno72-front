@@ -2,6 +2,7 @@ package com.inno72.controller;
 
 import javax.annotation.Resource;
 
+import com.alibaba.fastjson.JSON;
 import com.inno72.vo.Inno72MachineInformation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -35,7 +36,7 @@ public class PointController {
 		String msg = "";
 		switch (type){
 			case CommonBean.POINT_TYPE_FANS:
-				pointService.innerPoint(sessionKey, Inno72MachineInformation.ENUM_INNO72_MACHINE_INFORMATION_TYPE.MEMBERSHIP);
+				pointService.innerPoint(JSON.toJSONString(sessionKey), Inno72MachineInformation.ENUM_INNO72_MACHINE_INFORMATION_TYPE.MEMBERSHIP);
 				msg = "用户["+sessionKey.getUserNick()+"]入会成功.";
 				break;
 			case CommonBean.POINT_TYPE_CONCERN:

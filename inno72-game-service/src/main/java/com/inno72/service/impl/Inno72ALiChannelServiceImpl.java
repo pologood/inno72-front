@@ -476,7 +476,7 @@ public class Inno72ALiChannelServiceImpl implements Inno72ChannelService {
                     inno72OrderGoodsMapper.updateByPrimaryKeySelective(goods);
 
                     userSessionVo.setRefOrderStatus(inno72Order.getRefOrderStatus());
-                    pointService.innerPoint(userSessionVo, Inno72MachineInformation.ENUM_INNO72_MACHINE_INFORMATION_TYPE.PAY);
+                    pointService.innerPoint(JSON.toJSONString(userSessionVo), Inno72MachineInformation.ENUM_INNO72_MACHINE_INFORMATION_TYPE.PAY);
                     this.taoBaoDataSyn(vo.getSessionUuid(), JSON.toJSONString(requestForm), respJson, Inno72TaoBaoCheckDataVo.ENUM_INNO72_TAOBAO_CHECK_DATA_VO_TYPE.ORDER);
                 }
             }

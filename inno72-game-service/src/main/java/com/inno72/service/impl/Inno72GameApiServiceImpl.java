@@ -633,7 +633,7 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
         Inno72ChannelService channelService = (Inno72ChannelService)ApplicationContextHandle.getBean(StandardLoginTypeEnum.getValue(userSessionVo.getChannelType()));
 
         Result<Object> r =  channelService.order(userSessionVo,itemId,inno72OrderId);
-		pointService.innerPoint(userSessionVo, Inno72MachineInformation.ENUM_INNO72_MACHINE_INFORMATION_TYPE.ORDER_GOODS);
+		pointService.innerPoint(JSON.toJSONString(userSessionVo), Inno72MachineInformation.ENUM_INNO72_MACHINE_INFORMATION_TYPE.ORDER_GOODS);
 
 //        gameSessionRedisUtil.setSession(sessionUuid, JSON.toJSONString(userSessionVo));
         return r;
@@ -871,7 +871,7 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 
 		LOGGER.info("调用聚石塔接口  【抽奖】返回 ===> {}", respJson);
 
-		pointService.innerPoint(vo, Inno72MachineInformation.ENUM_INNO72_MACHINE_INFORMATION_TYPE.ORDER_COUPON);
+		pointService.innerPoint(JSON.toJSONString(vo), Inno72MachineInformation.ENUM_INNO72_MACHINE_INFORMATION_TYPE.ORDER_COUPON);
 		// TODO 奖券下单
 		String orderId = "";
 		try {
@@ -975,7 +975,7 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 			userSessionVo.setFailChannelIds(failChannelIds);
 //			gameSessionRedisUtil.setSession(sessionUuid, JSON.toJSONString(userSessionVo));
 
-			pointService.innerPoint(userSessionVo, Inno72MachineInformation.ENUM_INNO72_MACHINE_INFORMATION_TYPE.LOCK_CHANNEL);
+			pointService.innerPoint(JSON.toJSONString(userSessionVo), Inno72MachineInformation.ENUM_INNO72_MACHINE_INFORMATION_TYPE.LOCK_CHANNEL);
 
 			Result<String> failChannelResult = this.shipmentFail(machineCode, failChannelIds, "");
 			LOGGER.info("machineCode is {}, orderId is {}, failChannelIds is {}, code is {} ", machineCode, userSessionVo.getRefOrderId(), failChannelIds,
@@ -1069,7 +1069,7 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 		Inno72ChannelService channelService = (Inno72ChannelService)ApplicationContextHandle.getBean(StandardLoginTypeEnum.getValue(channelType == null ? 0 : channelType));
 		channelService.feedBackInTime(userSessionVo.getInno72OrderId(),machineCode);
 
-		pointService.innerPoint(userSessionVo, Inno72MachineInformation.ENUM_INNO72_MACHINE_INFORMATION_TYPE.SHIPMENT);
+		pointService.innerPoint(JSON.toJSONString(userSessionVo), Inno72MachineInformation.ENUM_INNO72_MACHINE_INFORMATION_TYPE.SHIPMENT);
 		inno72UnStandardService.gamePointTime(sessionUuid,Inno72GameUserLife.SHIPMENT_TIME_TYPE);
 		/* 埋点 */
 		CommonBean.logger(
@@ -1227,9 +1227,9 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 
 		LOGGER.info("goodsId {}, sellerId {}", userSessionVo.getGoodsId(), userSessionVo.getSellerId());
 		if (StringUtil.isNotEmpty(userSessionVo.getGoodsId())) {
-			pointService.innerPoint(userSessionVo, Inno72MachineInformation.ENUM_INNO72_MACHINE_INFORMATION_TYPE.PRODUCT_CLICK);
+			pointService.innerPoint(JSON.toJSONString(userSessionVo), Inno72MachineInformation.ENUM_INNO72_MACHINE_INFORMATION_TYPE.PRODUCT_CLICK);
 		} else if (StringUtil.isNotEmpty(userSessionVo.getSellerId())) {
-			pointService.innerPoint(userSessionVo, Inno72MachineInformation.ENUM_INNO72_MACHINE_INFORMATION_TYPE.PRODUCT_CLICK);
+			pointService.innerPoint(JSON.toJSONString(userSessionVo), Inno72MachineInformation.ENUM_INNO72_MACHINE_INFORMATION_TYPE.PRODUCT_CLICK);
 		}
 	}
 
