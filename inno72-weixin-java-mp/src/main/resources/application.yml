@@ -19,5 +19,5 @@ server:
   port: 8080
 
 gameserver: http://localhost:10080/api/unstandard
-login_url: http://wx.72solo.com/login.html
-order_url: http://wx.72solo.com/order.html
+refund_url: http://wx.72solo.com/login.html
+error_page_url: http://wx.72solo.com/order.html

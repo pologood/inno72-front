@@ -168,6 +168,10 @@ public class Inno72UnStandardServiceImpl implements Inno72UnStandardService {
         if(Result.SUCCESS == Integer.parseInt(retCode)){
             inno72OrderService.updateOrderStatusAndPayStatus(outTradeNo,Inno72Order.INNO72ORDER_ORDERSTATUS.PAY.getKey(),Inno72Order.INNO72ORDER_PAYSTATUS.SUCC.getKey());
         }
+
+        //绑定用户信息
+        Inno72Order order = inno72OrderMapper.selectByPrimaryKey(outTradeNo);
+        inno72GameUserChannelService.bindWeChatAndPhoneUser(buyerId,order.getUserId());
     }
 
     @Override
@@ -198,6 +202,8 @@ public class Inno72UnStandardServiceImpl implements Inno72UnStandardService {
             //插入微信用户
             inno72GameUserChannelService.saveWechatUser(user);
             return null;
+        }else{
+            inno72GameUserChannelService.updateWechatUser(user,userChannel.getId());
         }
         channel = inno72ChannelMapper.findByCode(Inno72Channel.CHANNELCODE_INNO72);
         userChannel = inno72GameUserChannelService.findByGameUserIdAndChannelId(userChannel.getGameUserId(),channel.getId());

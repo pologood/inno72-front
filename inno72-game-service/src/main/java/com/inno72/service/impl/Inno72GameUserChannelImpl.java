@@ -1,35 +1,48 @@
 package com.inno72.service.impl;
 
 import com.alibaba.fastjson.JSON;
+import com.google.gson.Gson;
+import com.inno72.common.Result;
 import com.inno72.common.StandardLoginTypeEnum;
 import com.inno72.common.json.JsonUtil;
+import com.inno72.common.util.FastJsonUtils;
 import com.inno72.mapper.Inno72ChannelMapper;
 import com.inno72.mapper.Inno72GameUserChannelMapper;
 import com.inno72.mapper.Inno72GameUserMapper;
 import com.inno72.model.Inno72Channel;
 import com.inno72.model.Inno72GameUser;
 import com.inno72.model.Inno72GameUserChannel;
+import com.inno72.plugin.http.HttpClient;
 import com.inno72.service.Inno72GameUserChannelService;
 import com.inno72.vo.WxMpUser;
 import org.apache.commons.lang.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @Service
 @Transactional
 public class Inno72GameUserChannelImpl implements Inno72GameUserChannelService {
 
+    private Logger LOGGER = LoggerFactory.getLogger(this.getClass());
     @Autowired
     private Inno72GameUserChannelMapper inno72GameUserChannelMapper;
     @Autowired
     private Inno72GameUserMapper inno72GameUserMapper;
     @Autowired
     private Inno72ChannelMapper inno72ChannelMapper;
+    @Autowired
+    private Inno72GameUserChannelService inno72GameUserChannelService;
+    @Value("${wechat_server.preurl}")
+    private String wechatServerPreurl;
 
     @Value("${duduji.appid}")
     private String dudujiAppId;
@@ -103,6 +116,80 @@ public class Inno72GameUserChannelImpl implements Inno72GameUserChannelService {
             inno72GameUserChannelMapper.updateByPrimaryKeySelective(param);
         }
         return weixinUser.getGameUserId();
+    }
+
+    @Override
+    public void updateWechatUser(WxMpUser user,String gameUserChannelId) {
+        Inno72GameUserChannel param = new Inno72GameUserChannel();
+        param.setExt(JsonUtil.toJson(user));
+        param.setUserNick(user.getNickname());
+        param.setId(gameUserChannelId);
+        inno72GameUserChannelMapper.updateByPrimaryKeySelective(param);
+    }
+
+    @Override
+    public void bindWeChatAndPhoneUser(String openId,String gameUserId) {
+        //获取微信用户
+        WxMpUser user = getWeChatUserByOpenId(openId);
+        if(user == null) {
+            LOGGER.error("无法查找到微信用户openId= {}",openId);
+            user = new WxMpUser();
+            user.setOpenId(openId);
+        }
+        user.setAppId(dudujiAppId);
+        Inno72Channel channel = inno72ChannelMapper.findByCode(Inno72Channel.CHANNELCODE_WECHAT);
+        Inno72GameUserChannel userChannel = inno72GameUserChannelService.findInno72GameUserChannel(channel.getId(),user.getOpenId(),dudujiAppId);
+        if(userChannel == null) {
+            //插入微信用户
+            Inno72GameUserChannel gameUserChannel = buildWechatUser(user);
+            gameUserChannel.setGameUserId(gameUserId);
+            save(gameUserChannel);
+        }else{
+            if(!gameUserId.equals(userChannel.getGameUserId())){
+                userChannel.setGameUserId(gameUserId);
+                update(userChannel);
+            }
+        }
+    }
+
+    private WxMpUser getWeChatUserByOpenId(String openId) {
+        Map<String, String> requestForm = new HashMap<>(1);
+        requestForm.put("openId",openId);
+        String result = HttpClient.form(wechatServerPreurl+"/getUserByOpenId",requestForm,null);
+        String code = FastJsonUtils.getString(result,"code");
+        if(!StringUtils.isEmpty(code)&&Integer.parseInt(code) == Result.SUCCESS){
+            String data = FastJsonUtils.getString(result,"data");
+            Gson gson = new Gson();
+            return gson.fromJson(data,WxMpUser.class);
+        }else{
+            LOGGER.error("getWeChatUserByOpenId error result = {}",result);
+        }
+        return null;
+    }
+
+    @Override
+    public Inno72GameUserChannel buildWechatUser(WxMpUser user) {
+        Inno72Channel channel = inno72ChannelMapper.findByCode(Inno72Channel.CHANNELCODE_WECHAT);
+        Inno72GameUserChannel gameUserChannel = new Inno72GameUserChannel();
+        gameUserChannel.setChannelId(channel.getId());
+        gameUserChannel.setChannelUserKey(user.getOpenId());
+        gameUserChannel.setSellerId(user.getAppId());
+        gameUserChannel.setChannelName(channel.getChannelName());
+        gameUserChannel.setExt(JsonUtil.toJson(user));
+        gameUserChannel.setUserNick(user.getNickname());
+        gameUserChannel.setLoginType(StandardLoginTypeEnum.WEIXIN.getValue());
+        gameUserChannel.setCreateTime(LocalDateTime.now());
+        return gameUserChannel;
+    }
+
+    @Override
+    public void save(Inno72GameUserChannel gameUserChannel) {
+        inno72GameUserChannelMapper.insert(gameUserChannel);
+    }
+
+    @Override
+    public void update(Inno72GameUserChannel userChannel) {
+        inno72GameUserChannelMapper.updateByPrimaryKeySelective(userChannel);
     }
 
     private void savePhoneUser(Inno72Channel inno72Channel, String phone,String gameUserId) {

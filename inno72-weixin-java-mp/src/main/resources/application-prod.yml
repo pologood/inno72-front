@@ -18,5 +18,5 @@ wx:
 server:
   port: 8080
 gameserver: https://api.game.inno72.com/api/unstandard
-login_url: http://wechat.inno72.com/front/order/#/login
-order_url: http://wechat.inno72.com/front/order/#/orderList
+refund_url: http://wx.72solo.com/login.html
+error_page_url: http://wx.72solo.com/order.html

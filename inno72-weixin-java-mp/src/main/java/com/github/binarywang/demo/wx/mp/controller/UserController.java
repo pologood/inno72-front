@@ -3,6 +3,7 @@ package com.github.binarywang.demo.wx.mp.controller;
 import com.github.binarywang.demo.wx.mp.config.WxMpConfiguration;
 import com.github.binarywang.demo.wx.mp.service.GameServcie;
 import com.github.binarywang.demo.wx.mp.service.impl.GameServiceImpl;
+import com.github.binarywang.demo.wx.mp.vo.Result;
 import com.github.binarywang.demo.wx.mp.vo.WinXinEntity;
 import com.google.gson.Gson;
 import com.inno72.plugin.http.HttpClient;
@@ -86,5 +87,22 @@ public class UserController {
             e.printStackTrace();
             return null;
         }
+    }
+
+    @RequestMapping(value = "/getUserByOpenId")
+    public Result getUserByOpenId(String openId){
+        Result r = new Result();
+        try{
+            String appid = "wxd2d020e170a05549";
+            log.info("getUserByOpenId openId={}",openId);
+            final WxMpService wxMpService = WxMpConfiguration.getMpServices().get(appid);
+            WxMpUser user = wxMpService.getUserService().userInfo(openId);
+            r.setData(user);
+        }catch(Exception e){
+            e.printStackTrace();
+            r.setCode(Result.FAILURE);
+            r.setMsg(e.getMessage());
+        }
+        return r;
     }
 }

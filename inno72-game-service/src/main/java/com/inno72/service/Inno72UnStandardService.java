@@ -71,4 +71,5 @@ public interface Inno72UnStandardService {
      * @return
      */
     List<OrderVo> orderList(String gameUserId,Integer pageNum,Integer pageSize);
+
 }
