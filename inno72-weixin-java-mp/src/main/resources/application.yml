@@ -16,7 +16,7 @@ wx:
         token: inno72
         aesKey: 3i0up31qMYPRjPpAtyx4lDcUJGVlyfJ95Bvt4Mw27lR
 server:
-  port: 8080
+  port: 7071
 
 gameserver: http://localhost:10080/api/unstandard
 refund_url: http://wx.72solo.com/login.html
