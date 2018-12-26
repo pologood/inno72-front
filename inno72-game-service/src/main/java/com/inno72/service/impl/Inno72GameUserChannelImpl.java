@@ -41,8 +41,6 @@ public class Inno72GameUserChannelImpl implements Inno72GameUserChannelService {
     private Inno72ChannelMapper inno72ChannelMapper;
     @Autowired
     private Inno72GameUserChannelService inno72GameUserChannelService;
-    @Value("${wechat_server.preurl}")
-    private String wechatServerPreurl;
 
     @Value("${duduji.appid}")
     private String dudujiAppId;

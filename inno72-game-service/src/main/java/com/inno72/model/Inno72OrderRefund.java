@@ -1,12 +1,13 @@
 package com.inno72.model;
 
 import javax.persistence.*;
+import java.math.BigDecimal;
 import java.util.Date;
 
 @Table(name = "inno72_order_refund")
 public class Inno72OrderRefund {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.IDENTITY, generator = "select uuid()")
     private String id;
 
     /**
@@ -29,7 +30,7 @@ public class Inno72OrderRefund {
     /**
      * 退款金额
      */
-    private Short amount;
+    private BigDecimal amount;
 
     /**
      * 退款原因
@@ -76,6 +77,64 @@ public class Inno72OrderRefund {
      */
     @Column(name = "refund_time")
     private Date refundTime;
+
+    public enum REFUND_AUDITSTATUS {
+        //0待审核，1已通过，2未通过
+        UNAUDIT((byte)0, "待审核"),SUCCESS((byte)1, "审核通过"),FAIL((byte)2, "审核未通过");
+
+        private Byte key;
+        private String desc;
+
+        REFUND_AUDITSTATUS(Byte key, String desc) {
+            this.key = key;
+            this.desc = desc;
+        }
+
+        public Byte getKey() {
+            return key;
+        }
+
+        public void setKey(Byte key) {
+            this.key = key;
+        }
+
+        public String getDesc() {
+            return desc;
+        }
+
+        public void setDesc(String desc) {
+            this.desc = desc;
+        }
+    }
+
+    public enum REFUND_STATUS {
+        //状态：0 新退款订单，1退款中，2退款成功，3退款失败
+        NEW((byte)0, "待审核"),INREFUND((byte)1, "退款中"),SUCCESS((byte)2, "退款成功"),FAIL((byte)3, "退款失败");
+
+        private Byte key;
+        private String desc;
+
+        REFUND_STATUS(Byte key, String desc) {
+            this.key = key;
+            this.desc = desc;
+        }
+
+        public Byte getKey() {
+            return key;
+        }
+
+        public void setKey(Byte key) {
+            this.key = key;
+        }
+
+        public String getDesc() {
+            return desc;
+        }
+
+        public void setDesc(String desc) {
+            this.desc = desc;
+        }
+    }
 
     /**
      * @return id
@@ -150,7 +209,7 @@ public class Inno72OrderRefund {
      *
      * @return amount - 退款金额
      */
-    public Short getAmount() {
+    public BigDecimal getAmount() {
         return amount;
     }
 
@@ -159,7 +218,7 @@ public class Inno72OrderRefund {
      *
      * @param amount 退款金额
      */
-    public void setAmount(Short amount) {
+    public void setAmount(BigDecimal amount) {
         this.amount = amount;
     }
 

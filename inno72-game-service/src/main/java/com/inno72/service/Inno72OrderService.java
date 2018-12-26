@@ -44,4 +44,11 @@ public interface Inno72OrderService {
 	 * @return
 	 */
     List<OrderVo> orderList(String gameUserId, Integer pageNum, Integer pageSize);
+
+	/**
+	 * 查找未掉货订单
+	 * @param gameUserId
+	 * @return
+	 */
+    List<Inno72Order> findUnShipmentOrder(String gameUserId);
 }

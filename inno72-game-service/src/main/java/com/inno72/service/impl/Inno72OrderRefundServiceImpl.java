@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
+import java.util.List;
 
 
 /**
@@ -20,4 +21,10 @@ public class Inno72OrderRefundServiceImpl extends AbstractService<Inno72OrderRef
     @Resource
     private Inno72OrderRefundMapper inno72OrderRefundMapper;
 
+    @Override
+    public List<Inno72OrderRefund> findByOrderId(String orderId) {
+        Inno72OrderRefund param = new Inno72OrderRefund();
+        param.setOrderId(orderId);
+        return inno72OrderRefundMapper.select(param);
+    }
 }

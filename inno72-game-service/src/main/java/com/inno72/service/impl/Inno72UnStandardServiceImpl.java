@@ -25,10 +25,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.security.SecureRandom;
 import java.time.LocalDateTime;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Random;
+import java.util.*;
 
 @Service
 @Transactional
@@ -37,6 +34,9 @@ public class Inno72UnStandardServiceImpl implements Inno72UnStandardService {
 
     @Autowired
     private MsgUtil msgUtil;
+
+    @Autowired
+    private Inno72OrderRefundService inno72OrderRefundService;
 
     @Autowired
     private IRedisUtil iRedisUtil;
@@ -212,6 +212,42 @@ public class Inno72UnStandardServiceImpl implements Inno72UnStandardService {
     @Override
     public List<OrderVo> orderList(String gameUserId,Integer pageNum,Integer pageSize) {
         return inno72OrderService.orderList(gameUserId,pageNum,pageSize);
+    }
+    @Override
+    public void refundAsk(String gameUserId) {
+        //查找未掉货的订单
+        List<Inno72Order> list = inno72OrderService.findUnShipmentOrder(gameUserId);
+        if(list.size()>0){
+            List<Inno72OrderRefund> saveRefundList = new ArrayList<Inno72OrderRefund>();
+            for(Inno72Order order : list){
+                List<Inno72OrderRefund> refundList = inno72OrderRefundService.findByOrderId(order.getId());
+                if(refundList.size() == 0){
+                    //Inno72OrderRefund
+                    Inno72OrderRefund inno72OrderRefund = new Inno72OrderRefund();
+                    inno72OrderRefund.setAmount(order.getOrderPrice());
+                    inno72OrderRefund.setAuditStatus(Inno72OrderRefund.REFUND_AUDITSTATUS.UNAUDIT.getKey());
+                    inno72OrderRefund.setCreateTime(new Date());
+                    inno72OrderRefund.setOrderId(order.getId());
+                    Inno72Channel channel = inno72ChannelMapper.findByCode(Inno72Channel.CHANNELCODE_INNO72);
+                    Inno72GameUserChannel user = inno72GameUserChannelService.findByGameUserIdAndChannelId(order.getUserId(),channel.getId());
+                    if(user!=null){
+                        inno72OrderRefund.setPhone(user.getPhone());
+                    }
+                    inno72OrderRefund.setStatus(Inno72OrderRefund.REFUND_STATUS.NEW.getKey());
+                    inno72OrderRefund.setUpdateTime(inno72OrderRefund.getCreateTime());
+                    inno72OrderRefund.setUserId(order.getUserId());
+                    saveRefundList.add(inno72OrderRefund);
+                }
+            }
+            if(saveRefundList.size()>0){
+                for(Inno72OrderRefund refund:saveRefundList){
+                    inno72OrderRefundService.save(refund);
+                }
+            }
+        }else{
+            LOGGER.info("无支付未掉货订单，gameUserId={}",gameUserId);
+            throw new Inno72BizException("无支付未掉货订单");
+        }
     }
 
     /**

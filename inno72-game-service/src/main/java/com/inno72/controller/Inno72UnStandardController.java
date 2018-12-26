@@ -228,4 +228,22 @@ public class Inno72UnStandardController {
         }
     }
 
+    /**
+     * 申请退款
+     */
+    @ResponseBody
+    @RequestMapping(value = "/refundAsk", method = {RequestMethod.GET,RequestMethod.POST})
+    public Result<Object> refundAsk(String gameUserId) {
+        try{
+            LOGGER.info("refundAsk gameUserId = {}",gameUserId);
+            inno72UnStandardService.refundAsk(gameUserId);
+            return Results.success();
+        }catch (Inno72BizException e){
+            return Results.failure(e.getMessage());
+        }catch (Exception e){
+            LOGGER.error(e.getMessage(), e);
+            return Results.failure(e.getMessage());
+        }
+    }
+
 }

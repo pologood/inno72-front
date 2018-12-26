@@ -248,6 +248,14 @@ public class Inno72OrderServiceImpl implements Inno72OrderService {
 		return orderList;
 	}
 
+	@Override
+	public List<Inno72Order> findUnShipmentOrder(String gameUserId) {
+		Inno72Order param = new Inno72Order();
+		param.setUserId(gameUserId);
+		param.setOrderStatus(Inno72Order.INNO72ORDER_ORDERSTATUS.PAY.getKey());
+		return inno72OrderMapper.select(param);
+	}
+
 	private void manageOrderList(List<OrderVo> orderList) {
 		if(orderList.size()>0){
 			for(OrderVo orderVo:orderList){

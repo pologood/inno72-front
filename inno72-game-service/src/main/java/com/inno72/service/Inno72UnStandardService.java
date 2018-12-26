@@ -72,4 +72,9 @@ public interface Inno72UnStandardService {
      */
     List<OrderVo> orderList(String gameUserId,Integer pageNum,Integer pageSize);
 
+    /**
+     * 退款申请
+     * @param gameUserId
+     */
+    void refundAsk(String gameUserId);
 }
