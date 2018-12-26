@@ -2,11 +2,9 @@ package com.github.binarywang.demo.wx.mp.controller;
 
 import com.github.binarywang.demo.wx.mp.config.WxMpConfiguration;
 import com.github.binarywang.demo.wx.mp.service.GameServcie;
-import com.github.binarywang.demo.wx.mp.service.impl.GameServiceImpl;
 import com.github.binarywang.demo.wx.mp.vo.Result;
 import com.github.binarywang.demo.wx.mp.vo.WinXinEntity;
 import com.google.gson.Gson;
-import com.inno72.plugin.http.HttpClient;
 import lombok.extern.slf4j.Slf4j;
 import me.chanjar.weixin.common.bean.WxJsapiSignature;
 import me.chanjar.weixin.common.error.WxErrorException;
@@ -18,9 +16,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
-import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.util.Map;
 
 @RestController
 @RequestMapping("/")

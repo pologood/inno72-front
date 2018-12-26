@@ -168,10 +168,6 @@ public class Inno72UnStandardServiceImpl implements Inno72UnStandardService {
         if(Result.SUCCESS == Integer.parseInt(retCode)){
             inno72OrderService.updateOrderStatusAndPayStatus(outTradeNo,Inno72Order.INNO72ORDER_ORDERSTATUS.PAY.getKey(),Inno72Order.INNO72ORDER_PAYSTATUS.SUCC.getKey());
         }
-
-        //绑定用户信息
-        Inno72Order order = inno72OrderMapper.selectByPrimaryKey(outTradeNo);
-        inno72GameUserChannelService.bindWeChatAndPhoneUser(buyerId,order.getUserId());
     }
 
     @Override

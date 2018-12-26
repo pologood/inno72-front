@@ -72,8 +72,13 @@
             <groupId>com.inno72</groupId>
             <artifactId>inno72-http</artifactId>
             <version>${plugin.version}</version>
+            <exclusions>
+                <exclusion>
+                    <artifactId>spring-boot-starter-log4j2</artifactId>
+                    <groupId>org.springframework.boot</groupId>
+                </exclusion>
+            </exclusions>
         </dependency>
-
         <dependency>
             <groupId>redis.clients</groupId>
             <artifactId>jedis</artifactId>

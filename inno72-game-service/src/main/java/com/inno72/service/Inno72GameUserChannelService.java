@@ -35,12 +35,6 @@ public interface Inno72GameUserChannelService {
      */
     void updateWechatUser(WxMpUser user,String userChannelId);
 
-    /**
-     * 微信用户和手机号用户绑定
-     * @param openId
-     */
-    void bindWeChatAndPhoneUser(String openId,String gameUserId);
-
     Inno72GameUserChannel buildWechatUser(WxMpUser user);
 
     void save(Inno72GameUserChannel gameUserChannel);

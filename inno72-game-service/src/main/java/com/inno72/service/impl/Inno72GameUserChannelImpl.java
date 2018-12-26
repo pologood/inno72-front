@@ -128,46 +128,6 @@ public class Inno72GameUserChannelImpl implements Inno72GameUserChannelService {
     }
 
     @Override
-    public void bindWeChatAndPhoneUser(String openId,String gameUserId) {
-        //获取微信用户
-        WxMpUser user = getWeChatUserByOpenId(openId);
-        if(user == null) {
-            LOGGER.error("无法查找到微信用户openId= {}",openId);
-            user = new WxMpUser();
-            user.setOpenId(openId);
-        }
-        user.setAppId(dudujiAppId);
-        Inno72Channel channel = inno72ChannelMapper.findByCode(Inno72Channel.CHANNELCODE_WECHAT);
-        Inno72GameUserChannel userChannel = inno72GameUserChannelService.findInno72GameUserChannel(channel.getId(),user.getOpenId(),dudujiAppId);
-        if(userChannel == null) {
-            //插入微信用户
-            Inno72GameUserChannel gameUserChannel = buildWechatUser(user);
-            gameUserChannel.setGameUserId(gameUserId);
-            save(gameUserChannel);
-        }else{
-            if(!gameUserId.equals(userChannel.getGameUserId())){
-                userChannel.setGameUserId(gameUserId);
-                update(userChannel);
-            }
-        }
-    }
-
-    private WxMpUser getWeChatUserByOpenId(String openId) {
-        Map<String, String> requestForm = new HashMap<>(1);
-        requestForm.put("openId",openId);
-        String result = HttpClient.form(wechatServerPreurl+"/getUserByOpenId",requestForm,null);
-        String code = FastJsonUtils.getString(result,"code");
-        if(!StringUtils.isEmpty(code)&&Integer.parseInt(code) == Result.SUCCESS){
-            String data = FastJsonUtils.getString(result,"data");
-            Gson gson = new Gson();
-            return gson.fromJson(data,WxMpUser.class);
-        }else{
-            LOGGER.error("getWeChatUserByOpenId error result = {}",result);
-        }
-        return null;
-    }
-
-    @Override
     public Inno72GameUserChannel buildWechatUser(WxMpUser user) {
         Inno72Channel channel = inno72ChannelMapper.findByCode(Inno72Channel.CHANNELCODE_WECHAT);
         Inno72GameUserChannel gameUserChannel = new Inno72GameUserChannel();

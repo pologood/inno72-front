@@ -17,12 +17,13 @@ public class GameServiceImpl implements GameServcie {
 
     @Value("${gameserver}")
     private String gameServerUrl;
-//    @Value("${login_url}")
-//    private String loginUrl;
-    @Value("${refund_url}")
-    private String refundUrl;
-    @Value("${error_page_url}")
-    private String errorPageUrl;
+
+    private static final Integer REDIRECT_FLAG_ORDER = 1;
+    private static final Integer REDIRECT_FLAG_JOIN = 0;
+    @Value("${login_url}")
+    private String loginUrl;
+    @Value("${order_url}")
+    private String orderUrl;
     @Override
     public String redirectAdapter(WxMpUser user) {
         Gson gson = new Gson();
@@ -33,11 +34,9 @@ public class GameServiceImpl implements GameServcie {
             if(res.getCode() == Result.SUCCESS){
                 if(res.getData() != null){
                     String gameUserId = (String)res.getData();
-                    return refundUrl+"?gameUserId="+gameUserId;
+                    return orderUrl+"?gameUserId="+gameUserId;
                 }else{
-//                    return loginUrl+"?openId="+user.getOpenId();
-                    //其他扫描暂时不处理
-                    return errorPageUrl;
+                    return loginUrl+"?openId="+user.getOpenId();
                 }
             }else{
                 log.error("joinPhoneFlag error msg = {}",res.getMsg());
