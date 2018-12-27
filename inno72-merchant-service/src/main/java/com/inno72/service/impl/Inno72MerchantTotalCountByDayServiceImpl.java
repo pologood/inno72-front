@@ -7,6 +7,7 @@ import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
@@ -741,15 +742,23 @@ public class Inno72MerchantTotalCountByDayServiceImpl extends AbstractService<In
 	}
 	private Map<String, Integer> isMax(List<List<Integer>> sources){
 		Integer large = 0, less = 0;
+		int i = 0;
 		for (List<Integer> sourceList : sources){
 			try {
-				for (Integer source : sourceList) {
-					if (source > large) {
-						large = source;
-					}
-					if (source < less) {
-						less = source;
-					}
+				int cLarge = Collections.max(sourceList);
+				int cLess = Collections.min(sourceList);
+
+				if (i == 0){
+					large = cLarge;
+					less = cLess;
+					i++;
+				}
+
+				if (cLarge > large){
+					large = cLarge;
+				}
+				if (cLess < less){
+					less = cLess;
 				}
 			} catch (Exception e) {
 				LOGGER.info(e.getMessage());
