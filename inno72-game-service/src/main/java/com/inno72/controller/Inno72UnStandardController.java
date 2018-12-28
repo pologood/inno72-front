@@ -1,16 +1,15 @@
 package com.inno72.controller;
 
-import com.inno72.common.Inno72BizException;
-import com.inno72.common.RedisConstants;
-import com.inno72.common.Result;
-import com.inno72.common.Results;
+import com.inno72.common.*;
 import com.inno72.redis.IRedisUtil;
+import com.inno72.service.Inno72QrCodeService;
 import com.inno72.service.Inno72UnStandardService;
 import com.inno72.service.Inno72WeChatService;
 import com.inno72.vo.UserSessionVo;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -18,8 +17,6 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.annotation.Resource;
-import javax.servlet.http.HttpServletRequest;
-import java.util.Enumeration;
 import java.util.List;
 
 /**
@@ -39,6 +36,8 @@ public class Inno72UnStandardController {
     private Integer phoneverificationcodeLimitTime;
     @Value("${phoneverificationcode_limit_times}")
     private Integer phoneverificationcodeLimitTimes;
+    @Resource
+    private Inno72GameServiceProperties inno72GameServiceProperties;
     /**
      * 获取微信二维码列表
      */
@@ -181,6 +180,62 @@ public class Inno72UnStandardController {
     public Result<Object> gamePointTime(String sessionUuid,Integer type) {
         try{
             inno72UnStandardService.gamePointTime(sessionUuid,type);
+            return Results.success();
+        }catch (Inno72BizException e){
+            return Results.failure(e.getMessage());
+        }catch (Exception e){
+            LOGGER.error(e.getMessage(), e);
+            return Results.failure(e.getMessage());
+        }
+    }
+
+    @Autowired
+    private Inno72QrCodeService qrCodeService;
+    /**
+     * 生成维达二维码
+     */
+    @ResponseBody
+    @RequestMapping(value = "/buildWeiDaQrCode", method = {RequestMethod.GET,RequestMethod.POST})
+    public Result<Object> buildWeiDaQrCode(String sessionUuid) {
+        try{
+            String localUrl = "weida/" + sessionUuid +".png";
+            String qrCOntent = inno72GameServiceProperties.get("gameServerUrl")+"/api/unstandard/weidaRedirect?sessionUuid="+sessionUuid;
+            String returnUrl = qrCodeService.createQrCode(qrCOntent, localUrl);
+            UserSessionVo sessionVo = new UserSessionVo(sessionUuid);
+            sessionVo.setWeidaScanFlag(false);
+            return Results.success(returnUrl);
+        }catch (Inno72BizException e){
+            return Results.failure(e.getMessage());
+        }catch (Exception e){
+            LOGGER.error(e.getMessage(), e);
+            return Results.failure(e.getMessage());
+        }
+    }
+
+    /**
+     * 获取是否扫描维达二维码
+     */
+    @ResponseBody
+    @RequestMapping(value = "/weidaScanFlagPolling", method = {RequestMethod.GET,RequestMethod.POST})
+    public Result<Object> weidaScanFlagPolling(String sessionUuid) {
+        try{
+            UserSessionVo sessionVo = new UserSessionVo(sessionUuid);
+            return Results.success(sessionVo.getWeidaScanFlag());
+        }catch (Inno72BizException e){
+            return Results.failure(e.getMessage());
+        }catch (Exception e){
+            LOGGER.error(e.getMessage(), e);
+            return Results.failure(e.getMessage());
+        }
+    }
+
+    /**
+     * 支付回调
+     */
+    @ResponseBody
+    @RequestMapping(value = "/weidaRedirect", method = {RequestMethod.GET,RequestMethod.POST})
+    public Result<Object> weidaRedirect(String sessionUuid) {
+        try{
             return Results.success();
         }catch (Inno72BizException e){
             return Results.failure(e.getMessage());

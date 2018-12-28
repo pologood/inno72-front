@@ -59,6 +59,7 @@ public final class SessionConstants {
     public final static String FAILCHANNELIDS = "failChannelIds";
     public final static String ORDERPRICE = "orderPrice";
     public final static String GAMEUSERLOGINID = "gameUserLoginId";
+    public final static String WEIDASCANFLAG = "weidaScanFlag";
 
 
 
