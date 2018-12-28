@@ -101,4 +101,23 @@ public class UserController {
         }
         return r;
     }
+
+    @RequestMapping(value = "/getUserByCode")
+    public Result getUserByCode(String code){
+        Result r = new Result();
+        try{
+            String appid = "wxd2d020e170a05549";
+            log.info("getUserByCode code={}",code);
+            final WxMpService wxMpService = WxMpConfiguration.getMpServices().get(appid);
+            WxMpOAuth2AccessToken wxMpOAuth2AccessToken = wxMpService.oauth2getAccessToken(code);
+            //获取用户详情
+            WxMpUser user = wxMpService.oauth2getUserInfo(wxMpOAuth2AccessToken,null);
+            r.setData(user);
+        }catch(Exception e){
+            e.printStackTrace();
+            r.setCode(Result.FAILURE);
+            r.setMsg(e.getMessage());
+        }
+        return r;
+    }
 }
