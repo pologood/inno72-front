@@ -60,6 +60,7 @@ public final class SessionConstants {
     public final static String ORDERPRICE = "orderPrice";
     public final static String GAMEUSERLOGINID = "gameUserLoginId";
     public final static String WEIDASCANFLAG = "weidaScanFlag";
+    public final static String PHONE = "phone";
 
 
 

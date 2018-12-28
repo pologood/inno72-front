@@ -1,11 +1,13 @@
 package com.inno72.controller;
 
 import com.inno72.common.*;
+import com.inno72.mongo.MongoUtil;
 import com.inno72.redis.IRedisUtil;
 import com.inno72.service.Inno72QrCodeService;
 import com.inno72.service.Inno72UnStandardService;
 import com.inno72.service.Inno72WeChatService;
 import com.inno72.vo.UserSessionVo;
+import com.inno72.vo.WedaScanLog;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -17,6 +19,8 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.annotation.Resource;
+import javax.servlet.http.HttpServletResponse;
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -38,6 +42,8 @@ public class Inno72UnStandardController {
     private Integer phoneverificationcodeLimitTimes;
     @Resource
     private Inno72GameServiceProperties inno72GameServiceProperties;
+    @Autowired
+    private MongoUtil mongoUtil;
     /**
      * 获取微信二维码列表
      */
@@ -198,8 +204,8 @@ public class Inno72UnStandardController {
     @RequestMapping(value = "/buildWeiDaQrCode", method = {RequestMethod.GET,RequestMethod.POST})
     public Result<Object> buildWeiDaQrCode(String sessionUuid) {
         try{
-            String localUrl = "weida/" + sessionUuid +".png";
-            String qrCOntent = inno72GameServiceProperties.get("gameServerUrl")+"/api/unstandard/weidaRedirect?sessionUuid="+sessionUuid;
+            String localUrl = "weida" + sessionUuid +".png";
+            String qrCOntent = inno72GameServiceProperties.get("wedaLoginRedirect")+"api/unstandard/weidaRedirect?sessionUuid="+sessionUuid;
             String returnUrl = qrCodeService.createQrCode(qrCOntent, localUrl);
             UserSessionVo sessionVo = new UserSessionVo(sessionUuid);
             sessionVo.setWeidaScanFlag(false);
@@ -230,18 +236,23 @@ public class Inno72UnStandardController {
     }
 
     /**
-     * 支付回调
+     * 跳转
      */
-    @ResponseBody
     @RequestMapping(value = "/weidaRedirect", method = {RequestMethod.GET,RequestMethod.POST})
-    public Result<Object> weidaRedirect(String sessionUuid) {
+    public void weidaRedirect(String sessionUuid, HttpServletResponse response) {
         try{
-            return Results.success();
-        }catch (Inno72BizException e){
-            return Results.failure(e.getMessage());
+            UserSessionVo userSessionVo = new UserSessionVo(sessionUuid);
+            WedaScanLog wedaScanLog = new WedaScanLog();
+            wedaScanLog.setUserId(userSessionVo.getUserId());
+            wedaScanLog.setCreateTime(new Date());
+            wedaScanLog.setMachineCode(sessionUuid);
+            wedaScanLog.setPhone(userSessionVo.getPhone());
+            mongoUtil.save(wedaScanLog);
+            userSessionVo.setWeidaScanFlag(true);
+            response.sendRedirect("https://m.tb.cn/.TgPHzP");
+
         }catch (Exception e){
             LOGGER.error(e.getMessage(), e);
-            return Results.failure(e.getMessage());
         }
     }
 
