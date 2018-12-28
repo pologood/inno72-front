@@ -91,6 +91,8 @@ public class SuperOpenServiceImpl implements SuperOpenService {
 
 		WEIDAREDIRECT("029", "weidaRedirect", "/api/unstandard/weidaRedirect", "跳转到维达页面", "1.0.0"),
 
+		saveWeidaScanLog("030", "saveWeidaScanLog", "/api/unstandard/saveWeidaScanLog", "保存维达扫描日志", "1.0.0"),
+
 		STANDARD_PREPARELOGIN("100", "standardPrepareLogin", "/api/standard/prepareLogin", "预登陆", "1.0.0"),
 		
 		STANDARD_REDIRECTLOGIN("101", "standardRedirectLogin", "/api/standard/redirectLogin", "跳转登陆", "1.0.0"),

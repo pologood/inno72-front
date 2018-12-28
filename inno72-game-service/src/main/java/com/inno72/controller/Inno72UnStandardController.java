@@ -256,5 +256,26 @@ public class Inno72UnStandardController {
         }
     }
 
+    /**
+     * 跳转
+     */
+    @RequestMapping(value = "/saveWeidaScanLog", method = {RequestMethod.GET,RequestMethod.POST})
+    public Result<Object> saveWeidaScanLog(String sessionUuid) {
+        try{
+            UserSessionVo userSessionVo = new UserSessionVo(sessionUuid);
+            WedaScanLog wedaScanLog = new WedaScanLog();
+            wedaScanLog.setUserId(userSessionVo.getUserId());
+            wedaScanLog.setCreateTime(new Date());
+            wedaScanLog.setMachineCode(sessionUuid);
+            wedaScanLog.setPhone(userSessionVo.getPhone());
+            mongoUtil.save(wedaScanLog);
+            userSessionVo.setWeidaScanFlag(true);
+            return Results.success();
+        }catch (Exception e){
+            LOGGER.error(e.getMessage(), e);
+            return Results.failure(e.getMessage());
+        }
+    }
+
 
 }
