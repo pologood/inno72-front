@@ -111,9 +111,10 @@ public class Inno72UnStandardController {
                                                      @RequestParam(required = false) Integer operatingSystem,
                                                      @RequestParam(required = false) String phoneModel,
                                                      @RequestParam(required = false) String sacnSoftware,
-                                                     @RequestParam(required = false) String clientInfo) {
+                                                     @RequestParam(required = false) String clientInfo,
+                                                     @RequestParam(required = false) String code) {
         try{
-            String gameUserId = inno72UnStandardService.checkPhoneVerificationCode(sessionUuid,phone,verificationCode,operatingSystem,phoneModel,sacnSoftware,clientInfo,type,openId);
+            String gameUserId = inno72UnStandardService.checkPhoneVerificationCode(sessionUuid,phone,verificationCode,operatingSystem,phoneModel,sacnSoftware,clientInfo,type,openId,code);
             return Results.success(gameUserId);
         }catch (Inno72BizException e){
             return Results.failure(e.getMessage());

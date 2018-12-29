@@ -2,6 +2,7 @@ package com.inno72.service.impl;
 
 import com.alibaba.fastjson.JSON;
 import com.google.gson.Gson;
+import com.inno72.common.Inno72GameServiceProperties;
 import com.inno72.common.Result;
 import com.inno72.common.StandardLoginTypeEnum;
 import com.inno72.common.json.JsonUtil;
@@ -39,6 +40,9 @@ public class Inno72GameUserChannelImpl implements Inno72GameUserChannelService {
     private Inno72GameUserMapper inno72GameUserMapper;
     @Autowired
     private Inno72ChannelMapper inno72ChannelMapper;
+
+    @Autowired
+    private Inno72GameServiceProperties inno72GameServiceProperties;
     @Autowired
     private Inno72GameUserChannelService inno72GameUserChannelService;
 
@@ -60,10 +64,13 @@ public class Inno72GameUserChannelImpl implements Inno72GameUserChannelService {
     }
 
     @Override
-    public void saveWechatUser(WxMpUser user) {
+    public void saveWechatUser(WxMpUser user,String gameUserId) {
         //插入
-        Inno72GameUser inno72GameUser = new Inno72GameUser();
-        inno72GameUserMapper.insert(inno72GameUser);
+        if(gameUserId == null){
+            Inno72GameUser inno72GameUser = new Inno72GameUser();
+            inno72GameUserMapper.insert(inno72GameUser);
+            gameUserId = inno72GameUser.getId();
+        }
         Inno72Channel channel = inno72ChannelMapper.findByCode(Inno72Channel.CHANNELCODE_WECHAT);
         Inno72GameUserChannel gameUserChannel = new Inno72GameUserChannel();
         gameUserChannel.setChannelId(channel.getId());
@@ -73,7 +80,7 @@ public class Inno72GameUserChannelImpl implements Inno72GameUserChannelService {
         gameUserChannel.setExt(JsonUtil.toJson(user));
         gameUserChannel.setUserNick(user.getNickname());
         gameUserChannel.setLoginType(StandardLoginTypeEnum.WEIXIN.getValue());
-        gameUserChannel.setGameUserId(inno72GameUser.getId());
+        gameUserChannel.setGameUserId(gameUserId);
         gameUserChannel.setCreateTime(LocalDateTime.now());
         inno72GameUserChannelMapper.insert(gameUserChannel);
     }
@@ -121,6 +128,7 @@ public class Inno72GameUserChannelImpl implements Inno72GameUserChannelService {
         Inno72GameUserChannel param = new Inno72GameUserChannel();
         param.setExt(JsonUtil.toJson(user));
         param.setUserNick(user.getNickname());
+        param.setChannelUserKey(user.getUnionId());
         param.setId(gameUserChannelId);
         inno72GameUserChannelMapper.updateByPrimaryKeySelective(param);
     }
@@ -148,6 +156,32 @@ public class Inno72GameUserChannelImpl implements Inno72GameUserChannelService {
     @Override
     public void update(Inno72GameUserChannel userChannel) {
         inno72GameUserChannelMapper.updateByPrimaryKeySelective(userChannel);
+    }
+
+    @Override
+    public WxMpUser getWeChatUserByCode(String code) {
+        Map<String, String> requestForm = new HashMap<>();
+        requestForm.put("code", code);
+        String url = inno72GameServiceProperties.get("wxServiceUrl") + "/getUserByCode";
+        LOGGER.info("getWeChatUserByCode url = {},code={}",url,code);
+        String result =  HttpClient.form(url, requestForm, null);
+        LOGGER.info("getWeChatUserByCode result = {}",result);
+        String data = FastJsonUtils.getString(result,"data");
+        if(!org.apache.commons.lang3.StringUtils.isEmpty(data)){
+            Gson gson = new Gson();
+            return gson.fromJson(data,WxMpUser.class);
+        }
+        return null;
+    }
+
+    @Override
+    public Inno72GameUserChannel findWeChatUser(String unionId) {
+        Inno72GameUserChannel param = new Inno72GameUserChannel();
+        param.setChannelUserKey(unionId);
+        param.setSellerId(dudujiAppId);
+        List<Inno72GameUserChannel> list = inno72GameUserChannelMapper.select(param);
+        if(list.size()==0) return null;
+        return list.get(0);
     }
 
     private void savePhoneUser(Inno72Channel inno72Channel, String phone,String gameUserId) {

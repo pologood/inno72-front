@@ -17,7 +17,7 @@ public interface Inno72GameUserChannelService {
      * 保存微信用户
      * @param user
      */
-    void saveWechatUser(WxMpUser user);
+    void saveWechatUser(WxMpUser user,String gameUserId);
 
     Inno72GameUserChannel findByGameUserIdAndChannelId(String gameUserId, String id);
 
@@ -40,4 +40,18 @@ public interface Inno72GameUserChannelService {
     void save(Inno72GameUserChannel gameUserChannel);
 
     void update(Inno72GameUserChannel userChannel);
+
+    /**
+     * 调用微信服务查询微信用户信息
+     * @param code
+     * @return
+     */
+    WxMpUser getWeChatUserByCode(String code);
+
+    /**
+     * 查找微信用户信息
+     * @param unionId
+     * @return
+     */
+    Inno72GameUserChannel findWeChatUser(String unionId);
 }

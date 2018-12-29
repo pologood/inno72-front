@@ -106,7 +106,7 @@ public class Inno72UnStandardServiceImpl implements Inno72UnStandardService {
     }
 
     @Override
-    public String checkPhoneVerificationCode(String sessionUuid, String phone, String verificationCode,Integer operatingSystem,String phoneModel,String scanSoftware,String clientInfo,Integer type,String openId) {
+    public String checkPhoneVerificationCode(String sessionUuid, String phone, String verificationCode,Integer operatingSystem,String phoneModel,String scanSoftware,String clientInfo,Integer type,String openId,String wechatCode) {
         LOGGER.info("checkPhoneVerificationCode sessionUuid = {}, phone = {}, verificationCode ={} ",sessionUuid,phone,verificationCode);
         String key = RedisConstants.PHONEVERIFICATIONCODE_REDIS_KEY+phone;
         String code = iRedisUtil.get(key);
@@ -124,6 +124,7 @@ public class Inno72UnStandardServiceImpl implements Inno72UnStandardService {
                 ai.setPhoneModel(phoneModel);
                 ai.setScanSoftware(scanSoftware);
                 ai.setClientInfo(clientInfo);
+                ai.setCode(wechatCode);
                 String authInfo = JsonUtil.toJson(ai);
                 Result result = inno72AuthInfoService.processBeforeLogged(sessionUuid, authInfo, traceId);
                 if(result.getCode() != Result.SUCCESS){
@@ -196,7 +197,7 @@ public class Inno72UnStandardServiceImpl implements Inno72UnStandardService {
         Inno72GameUserChannel userChannel = inno72GameUserChannelService.findInno72GameUserChannel(channel.getId(),user.getOpenId(),dudujiAppId);
         if(userChannel == null){
             //插入微信用户
-            inno72GameUserChannelService.saveWechatUser(user);
+            inno72GameUserChannelService.saveWechatUser(user,null);
             return null;
         }else{
             inno72GameUserChannelService.updateWechatUser(user,userChannel.getId());

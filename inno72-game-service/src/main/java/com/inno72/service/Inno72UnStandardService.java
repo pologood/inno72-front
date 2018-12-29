@@ -19,7 +19,7 @@ public interface Inno72UnStandardService {
      * @param phone
      * @param verificationCode
      */
-    String checkPhoneVerificationCode(String sessionUuid, String phone, String verificationCode,Integer operatingSystem,String phoneModel,String sacnSoftware,String clientInfo,Integer type,String openId);
+    String checkPhoneVerificationCode(String sessionUuid, String phone, String verificationCode,Integer operatingSystem,String phoneModel,String sacnSoftware,String clientInfo,Integer type,String openId, String code);
 
     /**
      * 选择支付方式
