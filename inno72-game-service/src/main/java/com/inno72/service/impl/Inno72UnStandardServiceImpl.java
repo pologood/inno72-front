@@ -200,7 +200,7 @@ public class Inno72UnStandardServiceImpl implements Inno72UnStandardService {
             inno72GameUserChannelService.saveWechatUser(user,null);
             return null;
         }else{
-            inno72GameUserChannelService.updateWechatUser(user,userChannel.getId());
+            inno72GameUserChannelService.updateWechatUser(user,userChannel.getId(),null);
         }
         channel = inno72ChannelMapper.findByCode(Inno72Channel.CHANNELCODE_INNO72);
         userChannel = inno72GameUserChannelService.findByGameUserIdAndChannelId(userChannel.getGameUserId(),channel.getId());

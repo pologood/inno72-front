@@ -81,6 +81,9 @@ public class Inno72Inno72ChannelServiceImpl implements Inno72ChannelService {
     @Value("${env}")
     private String env;
 
+    @Value("${duduji.appid}")
+    private String dudujiAppId;
+
     @Override
     public String buildQrContent(Inno72Machine inno72Machine, String sessionUuid,StandardPrepareLoginReqVo req) {
         String redirect = inno72GameServiceProperties.get("loginRedirect");
@@ -214,12 +217,13 @@ public class Inno72Inno72ChannelServiceImpl implements Inno72ChannelService {
         //根据code获取微信用户
         WxMpUser user = inno72GameUserChannelService.getWeChatUserByCode(code);
         if(user != null){
+            user.setAppId(dudujiAppId);
             Inno72GameUserChannel gameUserChannel = inno72GameUserChannelService.findWeChatUser(user.getUnionId());
             if(gameUserChannel == null){
                 inno72GameUserChannelService.saveWechatUser(user,gameUserId);
             }else{
                 if(!gameUserChannel.getGameUserId().equals(gameUserId)){
-                    inno72GameUserChannelService.updateWechatUser(user,gameUserChannel.getId());
+                    inno72GameUserChannelService.updateWechatUser(user,gameUserChannel.getId(),gameUserId);
                 }
             }
         }else{

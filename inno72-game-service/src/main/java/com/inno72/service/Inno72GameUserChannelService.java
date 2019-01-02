@@ -33,7 +33,7 @@ public interface Inno72GameUserChannelService {
      * 更新用户信息
      * @param user
      */
-    void updateWechatUser(WxMpUser user,String userChannelId);
+    void updateWechatUser(WxMpUser user,String userChannelId, String gameUserId);
 
     Inno72GameUserChannel buildWechatUser(WxMpUser user);
 

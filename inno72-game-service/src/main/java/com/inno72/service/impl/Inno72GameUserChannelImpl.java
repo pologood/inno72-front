@@ -74,7 +74,7 @@ public class Inno72GameUserChannelImpl implements Inno72GameUserChannelService {
         Inno72Channel channel = inno72ChannelMapper.findByCode(Inno72Channel.CHANNELCODE_WECHAT);
         Inno72GameUserChannel gameUserChannel = new Inno72GameUserChannel();
         gameUserChannel.setChannelId(channel.getId());
-        gameUserChannel.setChannelUserKey(user.getOpenId());
+        gameUserChannel.setChannelUserKey(user.getUnionId());
         gameUserChannel.setSellerId(user.getAppId());
         gameUserChannel.setChannelName(channel.getChannelName());
         gameUserChannel.setExt(JsonUtil.toJson(user));
@@ -124,8 +124,11 @@ public class Inno72GameUserChannelImpl implements Inno72GameUserChannelService {
     }
 
     @Override
-    public void updateWechatUser(WxMpUser user,String gameUserChannelId) {
+    public void updateWechatUser(WxMpUser user,String gameUserChannelId, String gameUserId) {
         Inno72GameUserChannel param = new Inno72GameUserChannel();
+        if(!StringUtils.isEmpty(gameUserId)){
+            param.setGameUserId(gameUserId);
+        }
         param.setExt(JsonUtil.toJson(user));
         param.setUserNick(user.getNickname());
         param.setChannelUserKey(user.getUnionId());
