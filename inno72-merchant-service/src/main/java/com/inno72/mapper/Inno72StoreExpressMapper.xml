@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.inno72.mapper.Inno72StoreExpressMapper">
+  <resultMap id="BaseResultMap" type="com.inno72.model.Inno72StoreExpress">
+    <!--
+      WARNING - @mbg.generated
+    -->
+    <id column="id" jdbcType="VARCHAR" property="id" />
+    <result column="order_id" jdbcType="VARCHAR" property="orderId" />
+    <result column="express_num" jdbcType="VARCHAR" property="expressNum" />
+    <result column="express_company" jdbcType="VARCHAR" property="expressCompany" />
+    <result column="number" jdbcType="INTEGER" property="number" />
+    <result column="receive_number" jdbcType="INTEGER" property="receiveNumber" />
+    <result column="receive_capacity" jdbcType="INTEGER" property="receiveCapacity" />
+    <result column="receive_time" jdbcType="TIMESTAMP" property="receiveTime" javaType="java.time.LocalDateTime"
+            typeHandler="org.apache.ibatis.type.LocalDateTimeTypeHandler"/>
+    <result column="receiver" jdbcType="VARCHAR" property="receiver" />
+    <result column="status" jdbcType="INTEGER" property="status" />
+    <result column="is_delete" jdbcType="INTEGER" property="isDelete" />
+    <result column="remark" jdbcType="VARCHAR" property="remark" />
+    <result column="creater" jdbcType="VARCHAR" property="creater" />
+    <result column="create_time" jdbcType="TIMESTAMP" property="createTime" javaType="java.time.LocalDateTime"
+            typeHandler="org.apache.ibatis.type.LocalDateTimeTypeHandler"/>
+    <result column="updater" jdbcType="VARCHAR" property="updater" />
+    <result column="update_time" jdbcType="TIMESTAMP" property="updateTime" javaType="java.time.LocalDateTime"
+            typeHandler="org.apache.ibatis.type.LocalDateTimeTypeHandler"/>
+  </resultMap>
+</mapper>

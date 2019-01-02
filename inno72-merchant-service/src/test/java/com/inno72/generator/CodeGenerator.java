@@ -60,8 +60,7 @@ public class CodeGenerator {
 	private static final String DATE = new SimpleDateFormat("yyyy/MM/dd").format(new Date());// @date
 
 	public static void main(String[] args) {
-		genCode("inno72_merchant_total_count_by_user");
-
+		genCode("inno72_interact");
 	}
 
 	/**
@@ -83,8 +82,8 @@ public class CodeGenerator {
 	 */
 	public static void genCodeByCustomModelName(String tableName, String modelName) {
 		genModelAndMapper(tableName, modelName);
-		// genService(tableName, modelName);
-		// genController(tableName, modelName);
+		genService(tableName, modelName);
+		genController(tableName, modelName);
 	}
 
 
