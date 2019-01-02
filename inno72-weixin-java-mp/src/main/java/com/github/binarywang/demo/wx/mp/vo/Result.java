@@ -1,7 +1,5 @@
 package com.github.binarywang.demo.wx.mp.vo;
 
-import com.alibaba.fastjson.JSON;
-
 import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
@@ -27,10 +25,6 @@ public class Result implements Serializable {
 
     public boolean success() {
         return this.code == SUCCESS;
-    }
-
-    public String json() {
-        return JSON.toJSONString(this);
     }
 
     public int getCode() {

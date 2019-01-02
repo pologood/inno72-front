@@ -16,8 +16,4 @@ wx:
         token: inno72
         aesKey: 3i0up31qMYPRjPpAtyx4lDcUJGVlyfJ95Bvt4Mw27lR
 server:
-  port: 8080
-
-gameserver: https://api.game.36solo.com/api/unstandard
-refund_url: http://wx.72solo.com/login.html
-error_page_url: http://wx.72solo.com/order.html
+  port: 7071

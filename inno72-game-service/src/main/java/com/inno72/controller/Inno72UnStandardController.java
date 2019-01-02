@@ -234,10 +234,10 @@ public class Inno72UnStandardController {
      */
     @ResponseBody
     @RequestMapping(value = "/refundAsk", method = {RequestMethod.GET,RequestMethod.POST})
-    public Result<Object> refundAsk(String gameUserId) {
+    public Result<Object> refundAsk(String gameUserId,String code) {
         try{
             LOGGER.info("refundAsk gameUserId = {}",gameUserId);
-            inno72UnStandardService.refundAsk(gameUserId);
+            inno72UnStandardService.refundAsk(code);
             return Results.success();
         }catch (Inno72BizException e){
             return Results.failure(e.getMessage());

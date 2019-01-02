@@ -17,9 +17,3 @@ wx:
         aesKey: 3i0up31qMYPRjPpAtyx4lDcUJGVlyfJ95Bvt4Mw27lR
 server:
   port: 7071
-
-gameserver: http://localhost:10080/api/unstandard
-
-login_url: http://wechat.36solo.com/front/order/#/login
-order_url: http://wechat.36solo.com/front/order/#/orderList
-

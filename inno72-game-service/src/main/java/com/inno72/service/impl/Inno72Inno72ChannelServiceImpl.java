@@ -224,6 +224,7 @@ public class Inno72Inno72ChannelServiceImpl implements Inno72ChannelService {
             }
         }else{
             LOGGER.error("根据code={},查询微信用户为空",code);
+            throw new Inno72BizException("无法获取微信用户");
         }
     }
 

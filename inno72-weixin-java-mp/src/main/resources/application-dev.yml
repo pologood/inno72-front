@@ -16,8 +16,4 @@ wx:
         token: inno72
         aesKey: 3i0up31qMYPRjPpAtyx4lDcUJGVlyfJ95Bvt4Mw27lR
 server:
-  port: 8080
-
-gameserver: https://api.game.72solo.com/api/unstandard
-login_url: http://wechat.32solo.com/front/order/#/login
-order_url: http://wechat.36solo.com/front/order/#/orderList
+  port: 7071

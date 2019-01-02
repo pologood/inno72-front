@@ -76,5 +76,5 @@ public interface Inno72UnStandardService {
      * 退款申请
      * @param gameUserId
      */
-    void refundAsk(String gameUserId);
+    void refundAsk(String code);
 }

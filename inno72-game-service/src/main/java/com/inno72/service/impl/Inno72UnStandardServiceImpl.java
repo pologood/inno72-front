@@ -215,9 +215,20 @@ public class Inno72UnStandardServiceImpl implements Inno72UnStandardService {
         return inno72OrderService.orderList(gameUserId,pageNum,pageSize);
     }
     @Override
-    public void refundAsk(String gameUserId) {
+    public void refundAsk(String code) {
+        WxMpUser wxuser = inno72GameUserChannelService.getWeChatUserByCode(code);
+        if(wxuser == null) {
+            LOGGER.error("无法获取微信用户code={}",code);
+            throw new Inno72BizException("无法获取微信用户");
+        }
+        //
+        Inno72GameUserChannel inno72GameUserChannel = inno72GameUserChannelService.findWeChatUser(wxuser.getUnionId());
+        if(inno72GameUserChannel == null){
+            LOGGER.error("无法获取点72用户unionId={}",wxuser.getUnionId());
+            throw new Inno72BizException("无法获取点72用户");
+        }
         //查找未掉货的订单
-        List<Inno72Order> list = inno72OrderService.findUnShipmentOrder(gameUserId);
+        List<Inno72Order> list = inno72OrderService.findUnShipmentOrder(inno72GameUserChannel.getGameUserId());
         if(list.size()>0){
             List<Inno72OrderRefund> saveRefundList = new ArrayList<Inno72OrderRefund>();
             for(Inno72Order order : list){
@@ -246,7 +257,7 @@ public class Inno72UnStandardServiceImpl implements Inno72UnStandardService {
                 }
             }
         }else{
-            LOGGER.info("无支付未掉货订单，gameUserId={}",gameUserId);
+            LOGGER.info("无支付未掉货订单，gameUserId={}",inno72GameUserChannel.getGameUserId());
             throw new Inno72BizException("无支付未掉货订单");
         }
     }
