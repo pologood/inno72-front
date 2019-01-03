@@ -5,6 +5,7 @@ import com.inno72.common.RedisConstants;
 import com.inno72.common.Result;
 import com.inno72.common.StandardLoginTypeEnum;
 import com.inno72.common.json.JsonUtil;
+import com.inno72.common.util.Inno72OrderNumGenUtil;
 import com.inno72.common.utils.StringUtil;
 import com.inno72.mapper.Inno72ChannelMapper;
 import com.inno72.mapper.Inno72GameUserLifeMapper;
@@ -238,6 +239,7 @@ public class Inno72UnStandardServiceImpl implements Inno72UnStandardService {
                 if(refundList.size() == 0){
                     //Inno72OrderRefund
                     Inno72OrderRefund inno72OrderRefund = new Inno72OrderRefund();
+                    inno72OrderRefund.setRefundNum(Inno72OrderNumGenUtil.genRefundNum(order.getOrderNum()));
                     inno72OrderRefund.setAmount(order.getOrderPrice());
                     inno72OrderRefund.setAuditStatus(Inno72OrderRefund.REFUND_AUDITSTATUS.UNAUDIT.getKey());
                     inno72OrderRefund.setCreateTime(new Date());
