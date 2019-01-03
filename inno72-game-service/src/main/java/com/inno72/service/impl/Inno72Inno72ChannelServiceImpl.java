@@ -84,7 +84,8 @@ public class Inno72Inno72ChannelServiceImpl implements Inno72ChannelService {
         String redirect = inno72GameServiceProperties.get("loginRedirect");
         String ext = req.getExt();
         String PU = FastJsonUtils.getString(ext, "PU");
-        String url = buildUrl(redirect,sessionUuid,PU);
+        String tmalFlag = FastJsonUtils.getString(ext, "tmalFlag");
+        String url = buildUrl(redirect,sessionUuid,PU,tmalFlag);
         return url;
     }
 
@@ -214,18 +215,21 @@ public class Inno72Inno72ChannelServiceImpl implements Inno72ChannelService {
         return Results.success(map);
     }
 
-    private String buildUrl(String redirect,String sessionUuid,String PU){
+    private String buildUrl(String redirect,String sessionUuid,String PU,String tmalFlag){
+        String url = "";
         if(StringUtils.isEmpty(PU)){
-            String url = String.format(
+            url = String.format(
                     "%s/?sessionUuid=%s&env=%s&channelType=%s",
                     redirect, sessionUuid, env, StandardLoginTypeEnum.INNO72.getValue());
-            return url;
         }else{
-            String url = String.format(
+            url = String.format(
                     "%s/?sessionUuid=%s&env=%s&channelType=%s&PU=%s",
                     redirect, sessionUuid, env, StandardLoginTypeEnum.INNO72.getValue(),PU);
-            return url;
         }
+        if(!StringUtils.isEmpty(tmalFlag)){
+            url+="&tmalFlag="+tmalFlag;
+        }
+        return url;
     }
 
     @Override

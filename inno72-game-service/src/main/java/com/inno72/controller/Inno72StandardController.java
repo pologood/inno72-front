@@ -309,7 +309,12 @@ public class Inno72StandardController {
 
                         pointService.innerPoint(JSON.toJSONString(sessionVo), Inno72MachineInformation.ENUM_INNO72_MACHINE_INFORMATION_TYPE.SCAN_LOGIN);
 						if(channelType!=null && channelType == StandardLoginTypeEnum.INNO72.getValue()){
-							redirectUrl = String.format(inno72GameServiceProperties.get("phoneLoginUrl"),sessionVo.getPlanCode(),sessionUuid);
+							String tmalFlag = request.getParameter("tmalFlag");
+							if(!StringUtils.isEmpty(tmalFlag)&&"1".equals(tmalFlag)){
+								redirectUrl = String.format(inno72GameServiceProperties.get("phoneLoginUrlTmal"),sessionVo.getPlanCode(),sessionUuid);
+							}else{
+								redirectUrl = String.format(inno72GameServiceProperties.get("phoneLoginUrl"),sessionVo.getPlanCode(),sessionUuid);
+							}
 							String PU = request.getParameter("PU");
 							if(!StringUtils.isEmpty(PU)){
 								redirectUrl+="&PU="+PU;
