@@ -367,7 +367,7 @@ public class Inno72MerchantTotalCountServiceImpl extends AbstractService<Inno72M
 	private Result<Inno72MerchantTotalCountVo> defaultActInfo(){
 		String startDate = "2018-12-15 00:00:00";
 		String endTime = "2018-12-31 23:59:59";
-		String status = "1";
+		String status = "0";
 
 		Duration between;
 		LocalDateTime now = LocalDateTime.now();
