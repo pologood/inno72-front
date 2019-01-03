@@ -1,6 +1,7 @@
 package com.inno72.controller;
 
 import java.util.List;
+import java.util.Map;
 
 import javax.annotation.Resource;
 
@@ -16,6 +17,7 @@ import com.inno72.common.Result;
 import com.inno72.common.ResultGenerator;
 import com.inno72.model.Inno72MerchantTotalCount;
 import com.inno72.service.Inno72MerchantTotalCountService;
+import com.inno72.vo.ActMerchantLog;
 import com.inno72.vo.Inno72MerchantTotalCountVo;
 
 /**
@@ -40,10 +42,28 @@ public class Inno72MerchantTotalCountController {
 		return ResultGenerator.genSuccessResult(inno72MerchantTotalCount);
 	}
 
+	@RequestMapping(value = "/actInfo")
+	public Result actInfo(String actId, String merchantId) {
+		return inno72MerchantTotalCountService.actInfo(actId, merchantId);
+	}
+
 	@RequestMapping(value = "/list")
 	public Result<List<Inno72MerchantTotalCountVo>> list(String id) {
 		return inno72MerchantTotalCountService.findAllById(id);
 	}
+
+
+	@RequestMapping(value = "/addressNum")
+	public Result<List<Map<String, Object>>> addressNum(String actId) {
+		return inno72MerchantTotalCountService.addressNum(actId);
+	}
+
+	@RequestMapping(value = "/actLog")
+	public Result<List<ActMerchantLog>> actLog(String actId) {
+		return inno72MerchantTotalCountService.actLog(actId);
+	}
+
+
 
 	@RequestMapping(value = "/totle")
 	public Result<Object> totle(String id) {

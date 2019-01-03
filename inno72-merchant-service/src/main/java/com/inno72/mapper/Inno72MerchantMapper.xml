@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.inno72.mapper.Inno72MerchantMapper">
+    <resultMap id="BaseResultMap" type="com.inno72.model.Inno72Merchant">
+        <!--
+          WARNING - @mbg.generated
+        -->
+        <id column="id" jdbcType="VARCHAR" property="id"/>
+        <result column="merchant_code" jdbcType="VARCHAR" property="merchantCode"/>
+        <result column="merchant_name" jdbcType="VARCHAR" property="merchantName"/>
+        <result column="origin_flag" jdbcType="VARCHAR" property="originFlag"/>
+        <result column="brand_name" jdbcType="VARCHAR" property="brandName"/>
+        <result column="channel_id" jdbcType="VARCHAR" property="channelId"/>
+        <result column="is_delete" jdbcType="INTEGER" property="isDelete"/>
+        <result column="create_id" jdbcType="VARCHAR" property="createId"/>
+        <result column="update_id" jdbcType="VARCHAR" property="updateId"/>
+        <result column="sell_session_key" jdbcType="VARCHAR" property="sellSessionKey"/>
+        <result column="merchant_id" jdbcType="VARCHAR" property="merchantId"/>
+        <result column="wechat_qrcode_url" jdbcType="VARCHAR" property="wechatQrcodeUrl"/>
+        <result column="wechat_user_api_url" jdbcType="VARCHAR" property="wechatUserApiUrl"/>
+        <result column="create_time" jdbcType="TIMESTAMP" property="createTime" javaType="java.time.LocalDateTime"
+                typeHandler="org.apache.ibatis.type.LocalDateTimeTypeHandler"/>
+        <result column="update_time" jdbcType="TIMESTAMP" property="updateTime" javaType="java.time.LocalDateTime"
+                typeHandler="org.apache.ibatis.type.LocalDateTimeTypeHandler"/>
+    </resultMap>
+
+    <select id="selectMerchantId" parameterType="string" resultType="string">
+        select id from inno72.inno72_merchant
+        where merchant_account_id = #{merchantId}
+    </select>
+
+</mapper>

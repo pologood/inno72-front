@@ -13,8 +13,9 @@ public interface Inno72MerchantTotalCountByDayMapper extends Mapper<Inno72Mercha
 			@Param("startDate") String startDate, @Param("endDate") String endDate, @Param("goods") String goods,
 			@Param("merchantId") String merchantId);
 
-	List<Map<String, String>> findGoodsByMerchantId(String merchantId);
+	List<Map<String, String>> findGoodsByMerchantId(@Param("merchantId") String merchantId, @Param("activityId")String activityId);
 
 	List<Map<String, String>> findActivityByMerchantId(String merchantId);
 
+	Map<String,String> findMinMaxDate(@Param("activityId")String activityId,@Param("merchantId") String merchantId);
 }

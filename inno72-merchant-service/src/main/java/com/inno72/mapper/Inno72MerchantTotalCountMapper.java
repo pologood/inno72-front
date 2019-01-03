@@ -20,4 +20,10 @@ public interface Inno72MerchantTotalCountMapper extends Mapper<Inno72MerchantTot
 	void updateActivityType(@Param("activityId") String activityId, @Param("activityType")String activityType);
 
 	String selectChannelCode(String activityId);
+
+	Inno72MerchantTotalCountVo selectMaxMinTime(Map<String, Object> params);
+
+	List<Map<String,String>> selectMachineNumCity( @Param("activityId")String activityId,  @Param("merchantId")String merchantId);
+
+	Inno72MerchantTotalCount selectByActIdAndMerId(Map<String, Object> param);
 }

@@ -65,22 +65,24 @@ public class Inno72MerchantTotalCountByDayServiceImpl extends AbstractService<In
 	public Result<Object> searchData(String label, String activityId, String city, String startDate, String endDate,
 			String goods, String merchantId) {
 
-		if (StringUtil.isEmpty(activityId) || StringUtil.isEmpty(startDate) || StringUtil.isEmpty(endDate)
-				|| StringUtil.isEmpty(merchantId)) {
+		if (StringUtil.isEmpty(activityId) || StringUtil.isEmpty(merchantId)) {
 			return Results.failure("参数缺失!");
 		}
 		LOGGER.info("查询列表 -> label - {}, activityId - {}, city - {}, startDate - {}, endDate - {}, goods - {}", label,
 				activityId, city, startDate, endDate, goods);
-		LocalDate startDateLocal = LocalDateUtil.transfer(startDate, DateTimeFormatter.ofPattern("yyyy-MM-dd"));
-		LocalDate endDateLocal = LocalDateUtil.transfer(endDate, DateTimeFormatter.ofPattern("yyyy-MM-dd"));
-		if (endDateLocal.getDayOfYear() - startDateLocal.getDayOfYear() > 90) {
-			return Results.failure("不能大于三个月!");
+		LocalDate startDateLocal = null;
+		LocalDate endDateLocal = null;
+		if (StringUtil.notEmpty(startDate) && StringUtil.notEmpty(endDate)){
+			startDateLocal = LocalDateUtil.transfer(startDate, DateTimeFormatter.ofPattern("yyyy-MM-dd"));
+			endDateLocal = LocalDateUtil.transfer(endDate, DateTimeFormatter.ofPattern("yyyy-MM-dd"));
+			if (endDateLocal.getDayOfYear() - startDateLocal.getDayOfYear() > 90) {
+				return Results.failure("不能大于三个月!");
+			}
 		}
-
 		List<Inno72MerchantTotalCountByDay> days = inno72MerchantTotalCountByDayMapper.selectList(activityId, city,
 				startDate, endDate, goods, merchantId);
 
-		Map<String, Object> result;
+		Map<String, Object> result = new HashMap<>();
 		switch (label) {
 			case "order":
 				result = this.buildOrder(days, startDateLocal, endDateLocal);
@@ -89,7 +91,6 @@ public class Inno72MerchantTotalCountByDayServiceImpl extends AbstractService<In
 				result = this.buildGoods(days, startDateLocal, endDateLocal);
 				break;
 			case "user":
-				result = this.buildUser(days, startDateLocal, endDateLocal);
 				String channel = Optional.ofNullable(inno72MerchantTotalCountMapper.selectChannelCode(activityId)).orElse("002001");
 				result.put("channel", channel);
 				if (StringUtil.notEmpty(channel) && channel.equals("002003")) {
@@ -98,11 +99,10 @@ public class Inno72MerchantTotalCountByDayServiceImpl extends AbstractService<In
 					if (result1.getCode() != Result.SUCCESS) {
 						return Results.failure(result1.getMsg());
 					}
-					Map<String, Object> o = (Map<String, Object>) result.get("chart");
-					o.putAll(result1.getData());
-					result.put("chart", o);
+					result.put("chart", result1.getData());
+				}else {
+					result = this.buildUser(days, startDateLocal, endDateLocal, activityId, merchantId);
 				}
-
 
 				break;
 			default:
@@ -327,7 +327,16 @@ public class Inno72MerchantTotalCountByDayServiceImpl extends AbstractService<In
 
 
 	private Map<String, Object> buildUser(List<Inno72MerchantTotalCountByDay> days, LocalDate startDateLocal,
-			LocalDate endDateLocal) {
+			LocalDate endDateLocal, String activityId, String merchantId) {
+
+		if (startDateLocal == null){
+			Map<String, String> date = inno72MerchantTotalCountByDayMapper.findMinMaxDate(activityId, merchantId);
+			String min = date.get("min");
+			startDateLocal = LocalDate.parse(min, DateTimeFormatter.ofPattern("yyyy-MM-dd"));
+			String max = date.get("max");
+			endDateLocal = LocalDate.parse(max, DateTimeFormatter.ofPattern("yyyy-MM-dd"));
+		}
+
 		Map<String, Object> result = new HashMap<>(2);
 		Map<String, List<Inno72MerchantTotalCountByDay>> map = new HashMap<>();
 		this.groupByCityAndDate(days, map);
@@ -371,6 +380,10 @@ public class Inno72MerchantTotalCountByDayServiceImpl extends AbstractService<In
 		List<Integer> percentS = new ArrayList<>();
 
 		LocalDate thisDate = startDateLocal;
+
+		Integer maxNum = 0;
+		Integer minNum = 0;
+
 		// 统计单日下所有数量的总和
 		for (Map.Entry<String, List<Map<String, String>>> k : kk.entrySet()) {
 
@@ -408,10 +421,11 @@ public class Inno72MerchantTotalCountByDayServiceImpl extends AbstractService<In
 				BigDecimal divide = new BigDecimal(concern)
 						.divide(new BigDecimal(experience), 2, BigDecimal.ROUND_CEILING)
 						.multiply(new BigDecimal("100"));
-				percentS.add(divide.intValue());
+				percent = divide.intValue();
 			} else {
-				percentS.add(0);
+				percent = 0;
 			}
+			percentS.add(percent);
 		}
 
 		// 日期不足，补充0直到到结束日期
@@ -425,6 +439,17 @@ public class Inno72MerchantTotalCountByDayServiceImpl extends AbstractService<In
 		ys.put("experienceS", experienceS);
 		ys.put("percentS", percentS);
 		ys.put("concernS", concernS);
+		List<List<Integer>> sn = new ArrayList<>();
+		sn.add(percentS);
+		sn.add(concernS);
+		Map<String, Integer> max = isMax(sn);
+		ys.putAll(max);
+
+		String formatStart = startDateLocal.format(DateTimeFormatter.ofPattern("yyyy-MM-dd"));
+		String formatEnd = endDateLocal.format(DateTimeFormatter.ofPattern("yyyy-MM-dd"));
+		ys.put("startTime", formatStart);
+		ys.put("endTime", formatEnd);
+
 		result.put("chart", ys);
 
 		return result;
@@ -529,10 +554,15 @@ public class Inno72MerchantTotalCountByDayServiceImpl extends AbstractService<In
 		result.put("list", resultList);
 
 
-		map.clear();
+		map = new HashMap<>();
 
 		// 按日期分组
 		this.groupByDate(days, map);
+
+		int maxNum = 0;
+		int minNum = 0;
+
+
 
 		List<Map<String, String>> pvuvMap = new ArrayList<>();
 		for (Map.Entry<String, List<Inno72MerchantTotalCountByDay>> entry : map.entrySet()) {
@@ -549,10 +579,10 @@ public class Inno72MerchantTotalCountByDayServiceImpl extends AbstractService<In
 					date = day.getDate();
 				}
 			}
-			for (Inno72MerchantTotalCountByDay day : value) {
-				day.setPv(totlePv);
-				day.setUv(totleUv);
-			}
+//			for (Inno72MerchantTotalCountByDay day : value) {
+//				day.setPv(totlePv);
+//				day.setUv(totleUv);
+//			}
 			Map<String, String> pvuv = new HashMap<>(2);
 			pvuv.put("pv", totlePv + "");
 			pvuv.put("uv", totleUv + "");
@@ -576,10 +606,11 @@ public class Inno72MerchantTotalCountByDayServiceImpl extends AbstractService<In
 				pvs.add(0);
 				uvs.add(0);
 				addDateLocal = addDateLocal.plusDays(1);
-				LOGGER.info("商品维度 日期 - {}, uvs - {}, pvs - {}", addDateLocal, uvs, pvs);
 			}
+
 			pvs.add(Integer.parseInt(pv));
 			uvs.add(Integer.parseInt(uv));
+
 			addDateLocal = addDateLocal.plusDays(1);
 		}
 		while (pvs.size() <= (endDateLocal.getDayOfYear() - startDateLocal.getDayOfYear())) {
@@ -594,6 +625,9 @@ public class Inno72MerchantTotalCountByDayServiceImpl extends AbstractService<In
 			List<Inno72MerchantTotalCountByDay> byDays = groupByGoodsId.get(goodsId);
 			if (byDays == null) {
 				byDays = new ArrayList<>();
+			}
+			if (day.getGoodsNum() == null || day.getGoodsNum() == 0){
+				day.setGoodsNum(day.getCouponNum());
 			}
 			byDays.add(day);
 			groupByGoodsId.put(goodsId, byDays);
@@ -615,10 +649,7 @@ public class Inno72MerchantTotalCountByDayServiceImpl extends AbstractService<In
 				}
 				byDay.put(date, aa);
 			}
-			List<Inno72MerchantTotalCountByDay> days3 = new ArrayList<>();
-			for (Inno72MerchantTotalCountByDay day : byDay.values()) {
-				days3.add(day);
-			}
+			List<Inno72MerchantTotalCountByDay> days3 = new ArrayList<>(byDay.values());
 			groupByDateGoodsId.put(entry.getKey(), days3);
 		}
 
@@ -643,13 +674,13 @@ public class Inno72MerchantTotalCountByDayServiceImpl extends AbstractService<In
 				LocalDate thisDate = LocalDateUtil.transfer(date, DateTimeFormatter.ofPattern("yyyy-MM-dd"));
 				while (curLocalDate.isBefore(thisDate)) {
 					num.add(0);
+					isMax(0, maxNum, minNum);
 					curLocalDate = curLocalDate.plusDays(1);
-					LOGGER.info("商品维度 日期 - {}, num - {}", curLocalDate, num);
 				}
-
-				num.add(inno72MerchantTotalCountByDay.getGoodsNum());
+				Integer goodsNum = inno72MerchantTotalCountByDay.getGoodsNum();
+				isMax(goodsNum, maxNum, minNum);
+				num.add(goodsNum);
 				curLocalDate = curLocalDate.plusDays(1);
-				LOGGER.info("商品维度 日期 - {}, num - {}", curLocalDate, num);
 			}
 
 			// 日期不足，补充0直到到结束日期
@@ -672,6 +703,8 @@ public class Inno72MerchantTotalCountByDayServiceImpl extends AbstractService<In
 		nums.add(pvs);
 		nums.add(uvs);
 		charts.put("num", nums);
+		Map<String, Integer> max = isMax(nums);
+		charts.putAll(max);
 		result.put("chart", charts);
 		return result;
 	}
@@ -696,6 +729,36 @@ public class Inno72MerchantTotalCountByDayServiceImpl extends AbstractService<In
 			map.put(key, dayss);
 
 		}
+	}
+
+	private void isMax(Integer source, Integer large, Integer less){
+		if (source != null && source > large){
+			large = source;
+		}
+		if (source != null && source < less){
+			less = source;
+		}
+	}
+	private Map<String, Integer> isMax(List<List<Integer>> sources){
+		Integer large = 0, less = 0;
+		for (List<Integer> sourceList : sources){
+			try {
+				for (Integer source : sourceList) {
+					if (source > large) {
+						large = source;
+					}
+					if (source < less) {
+						less = source;
+					}
+				}
+			} catch (Exception e) {
+				LOGGER.info(e.getMessage());
+			}
+		}
+		Map<String, Integer> nums = new HashMap<>();
+		nums.put("large", large);
+		nums.put("less", less);
+		return nums;
 	}
 
 	private void groupByGoodsAndDate(List<Inno72MerchantTotalCountByDay> days,

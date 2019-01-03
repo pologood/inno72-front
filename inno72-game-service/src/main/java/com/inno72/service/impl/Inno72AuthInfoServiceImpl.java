@@ -601,7 +601,7 @@ public class Inno72AuthInfoServiceImpl implements Inno72AuthInfoService {
 			if (!userSessionVo.getLogged()) {
 				userSessionVo.setLogged(true);
 				logged = true;
-				pointService.innerPoint(sessionUuid, Inno72MachineInformation.ENUM_INNO72_MACHINE_INFORMATION_TYPE.LOGIN);
+				pointService.innerPoint(JSON.toJSONString(userSessionVo), Inno72MachineInformation.ENUM_INNO72_MACHINE_INFORMATION_TYPE.LOGIN);
 			} else {
 				LOGGER.info("sessionUuid {} 用户已经登录，不能继续登录！", sessionUuid);
 			}
