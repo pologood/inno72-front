@@ -10,6 +10,9 @@ public class Inno72StoreOrderVo {
 	@NotNull(message = "仓库ID为空!")
 	private String storeId;
 
+	@NotNull(message = "仓库名称为空!")
+	private String storeName;
+
 	@NotNull(message = "物流名称为空!")
 	private String logisticsName;
 

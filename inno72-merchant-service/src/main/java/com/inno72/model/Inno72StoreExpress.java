@@ -11,6 +11,7 @@ import javax.persistence.Table;
 import org.springframework.format.annotation.DateTimeFormat;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.inno72.common.util.UuidUtil;
 
 @Table(name = "inno72_store_express")
 public class Inno72StoreExpress {
@@ -70,7 +71,7 @@ public class Inno72StoreExpress {
     private String receiver;
 
     /**
-     * 状态：0未签收，1签收
+     * 状态：0未签收，1签收 填写
      */
     private Integer status;
 
@@ -111,7 +112,33 @@ public class Inno72StoreExpress {
 	@DateTimeFormat(pattern="yyyy-MM-dd HH:mm:ss")
     private LocalDateTime updateTime;
 
-    /**
+	public Inno72StoreExpress() {
+	}
+
+	/*
+	 * @param orderId 出入库单ID
+	 * @param expressNum 物流单号
+	 * @param expressCompany 物流公司
+	 * @param number 数量
+	 * @param creater
+	 */
+	public Inno72StoreExpress(String orderId, String expressNum, String expressCompany, Integer number,
+			String creater) {
+		LocalDateTime now = LocalDateTime.now();
+		this.id = UuidUtil.getUUID32();
+		this.orderId = orderId;
+		this.expressNum = expressNum;//单号
+		this.expressCompany = expressCompany;//公司
+		this.number = number;
+		this.creater = creater;
+		this.updater = creater;
+		this.status = 0;
+		this.isDelete = 0;
+		this.createTime = now;
+		this.updateTime = now;
+	}
+
+	/**
      * 获取ID
      *
      * @return id - ID

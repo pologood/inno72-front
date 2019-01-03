@@ -8,6 +8,7 @@ import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import com.inno72.vo.Inno72StoreVo;
 
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -15,6 +16,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import javax.annotation.Resource;
 import java.util.List;
+import java.util.Map;
 
 /**
 * Created by CodeGenerator on 2019/01/02.
@@ -31,9 +33,19 @@ public class Inno72StoreOrderController {
         return ResultGenerator.genSuccessResult();
     }
     @RequestMapping(value = "/save", method = { RequestMethod.POST,  RequestMethod.GET})
-    public Result<String> save(Inno72StoreVo vo) {
+    public Result<String> save(@RequestBody Inno72StoreVo vo) {
 
         return inno72StoreOrderService.addOrder(vo);
+    }
+
+	/**
+	 * @param merchantId 商户号
+	 * @param activityId 活动ID
+	 * @return
+	 */
+    @RequestMapping(value = "/findStoreOrder", method = { RequestMethod.POST,  RequestMethod.GET})
+    public Result<List<Map<String, String>>> findStoreOrder(String merchantId, String activityId) {
+        return inno72StoreOrderService.findStoreOrder(merchantId, activityId);
     }
     @RequestMapping(value = "/delete", method = { RequestMethod.POST,  RequestMethod.GET})
     public Result delete(@RequestParam String id) {

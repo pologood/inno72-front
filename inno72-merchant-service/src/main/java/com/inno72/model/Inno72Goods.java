@@ -46,12 +46,6 @@ public class Inno72Goods {
     private Integer number;
 
     /**
-     * 商品发放数量
-     */
-    @Column(name = "send_number")
-    private Integer sendNumber;
-
-    /**
      * 商户ID
      */
     @Column(name = "seller_id")
@@ -241,24 +235,6 @@ public class Inno72Goods {
      */
     public void setNumber(Integer number) {
         this.number = number;
-    }
-
-    /**
-     * 获取商品发放数量
-     *
-     * @return send_number - 商品发放数量
-     */
-    public Integer getSendNumber() {
-        return sendNumber;
-    }
-
-    /**
-     * 设置商品发放数量
-     *
-     * @param sendNumber 商品发放数量
-     */
-    public void setSendNumber(Integer sendNumber) {
-        this.sendNumber = sendNumber;
     }
 
     /**

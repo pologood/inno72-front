@@ -12,7 +12,6 @@
     <result column="code" jdbcType="VARCHAR" property="code" />
     <result column="price" jdbcType="DECIMAL" property="price" />
     <result column="number" jdbcType="INTEGER" property="number" />
-    <result column="send_number" jdbcType="INTEGER" property="sendNumber" />
     <result column="seller_id" jdbcType="VARCHAR" property="sellerId" />
     <result column="shop_id" jdbcType="VARCHAR" property="shopId" />
     <result column="img" jdbcType="VARCHAR" property="img" />

@@ -25,4 +25,24 @@
     <result column="update_time" jdbcType="TIMESTAMP" property="updateTime" javaType="java.time.LocalDateTime"
             typeHandler="org.apache.ibatis.type.LocalDateTimeTypeHandler"/>
   </resultMap>
+    <insert id="insertS">
+        insert into `inno72`.`inno72_store_express`
+        ( `id`, `order_id`, `express_num`,
+          `express_company`, `number`, `receive_number`,
+          `receive_capacity`, `receive_time`, `receiver`,
+          `status`, `is_delete`, `remark`,
+          `creater`, `create_time`, `updater`,
+          `update_time`)
+        values
+            <foreach collection="list" separator="," item="item">
+                (
+                #{item.id}, #{item.orderId}, #{item.expressNum},
+                #{item.expressCompany}, #{item.number}, #{item.receiveNumber},
+                #{item.receiveCapacity}, #{item.receiveTime}, #{item.receiver},
+                #{item.status}, #{item.isDelete}, #{item.remark},
+                #{item.creater}, #{item.createTime}, #{item.updater},
+                #{item.updateTime}
+                )
+            </foreach>
+    </insert>
 </mapper>

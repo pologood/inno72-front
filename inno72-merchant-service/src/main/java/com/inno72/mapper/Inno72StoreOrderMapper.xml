@@ -8,6 +8,7 @@
     <id column="id" jdbcType="VARCHAR" property="id" />
     <result column="order_num" jdbcType="VARCHAR" property="orderNum" />
     <result column="order_type" jdbcType="INTEGER" property="orderType" />
+    <result column="activity" jdbcType="VARCHAR" property="activity" />
     <result column="goods" jdbcType="VARCHAR" property="goods" />
     <result column="merchant" jdbcType="VARCHAR" property="merchant" />
     <result column="sender" jdbcType="VARCHAR" property="sender" />
@@ -32,4 +33,42 @@
     <result column="update_time" jdbcType="TIMESTAMP" property="updateTime" javaType="java.time.LocalDateTime"
             typeHandler="org.apache.ibatis.type.LocalDateTimeTypeHandler"/>
   </resultMap>
+    <insert id="insertS" parameterType="list">
+        INSERT INTO inno72_store_order  (
+        id, order_num,order_type,
+        goods,activity,merchant,
+        sender,send_id,send_type,
+        receiver,receive_id,receive_type,
+        number,capacity,receive_number,
+        receive_capacity,receive_time,status,
+        is_delete,remark,creater,
+        create_time,updater,update_time )
+        VALUES
+        <foreach collection="list" separator="," item="item">
+            (
+            #{item.id}, #{item.orderNum},#{item.orderType},
+            #{item.goods}, #{item.activity}, #{item.merchant},
+            #{item.sender}, #{item.sendId}, #{item.sendType},
+            #{item.receiver}, #{item.receiveId}, #{item.receiveType},
+            #{item.number}, #{item.capacity}, #{item.receiveNumber},
+            #{item.receiveCapacity}, #{item.receiveTime}, #{item.status},
+            #{item.isDelete}, #{item.remark}, #{item.creater},
+            #{item.createTime}, #{item.updater}, #{item.updateTime}
+            )
+        </foreach>
+    </insert>
+    <select id="findStoreOrder" resultType="java.util.Map">
+        select
+            date_format(storeOrder.create_time, '%Y-%m-%d %H:%i:%S') as createTime,
+            concat("发货 ", goods.name, " 到 ", storeOrder.receiver, "共", storeOrder.number, "个")  as description,
+            case storeOrder.status
+            when 0 then "待入库"
+            when 1 then "已入库"
+            when 2 then "已废弃"
+            end as status
+        from inno72_store_order storeOrder
+            left join inno72_goods goods on goods.id = storeOrder.goods
+        where storeOrder.is_delete = 0 and storeOrder.send_type = 0
+              and storeOrder.activity = #{activityId} and storeOrder.merchant = #{merchantId}
+    </select>
 </mapper>
