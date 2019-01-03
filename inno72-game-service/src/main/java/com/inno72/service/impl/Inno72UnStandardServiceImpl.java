@@ -122,6 +122,8 @@ public class Inno72UnStandardServiceImpl implements Inno72UnStandardService {
             if(!success){
                 throw new Inno72BizException("设置登陆异常");
             }
+            UserSessionVo userSessionVo = new UserSessionVo(sessionUuid);
+            userSessionVo.setPhone(phone);
         }else{
             throw new Inno72BizException("验证码错误");
         }
