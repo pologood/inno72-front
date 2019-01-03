@@ -86,6 +86,14 @@ public class SuperOpenServiceImpl implements SuperOpenService {
 		GAMEPOINTTIME("026", "gamePointTime", "/api/unstandard/gamePointTime", "记录游戏时间点", "1.0.0"),
 		REFUNDASK("027", "refundAsk", "/api/unstandard/refundAsk", "申请退款", "1.0.0"),
 
+		BUILDWEIDAQRCODE("027", "buildWeiDaQrCode", "/api/unstandard/buildWeiDaQrCode", "创建维达二维码", "1.0.0"),
+
+		WEIDASCANFLAGPOLLING("028", "weidaScanFlagPolling", "/api/unstandard/weidaScanFlagPolling", "获取维达二维码扫描状态", "1.0.0"),
+
+		WEIDAREDIRECT("029", "weidaRedirect", "/api/unstandard/weidaRedirect", "跳转到维达页面", "1.0.0"),
+
+		saveWeidaScanLog("030", "saveWeidaScanLog", "/api/unstandard/saveWeidaScanLog", "保存维达扫描日志", "1.0.0"),
+
 		STANDARD_PREPARELOGIN("100", "standardPrepareLogin", "/api/standard/prepareLogin", "预登陆", "1.0.0"),
 		
 		STANDARD_REDIRECTLOGIN("101", "standardRedirectLogin", "/api/standard/redirectLogin", "跳转登陆", "1.0.0"),

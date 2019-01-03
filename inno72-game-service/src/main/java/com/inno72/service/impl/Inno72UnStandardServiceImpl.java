@@ -139,6 +139,8 @@ public class Inno72UnStandardServiceImpl implements Inno72UnStandardService {
                 String gameUserId = inno72GameUserChannelService.joinUser(openId,phone);
                 return gameUserId;
             }
+            UserSessionVo userSessionVo = new UserSessionVo(sessionUuid);
+            userSessionVo.setPhone(phone);
         }else{
             throw new Inno72BizException("验证码错误");
         }
