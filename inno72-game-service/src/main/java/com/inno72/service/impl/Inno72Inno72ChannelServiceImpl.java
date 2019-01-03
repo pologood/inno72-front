@@ -174,7 +174,7 @@ public class Inno72Inno72ChannelServiceImpl implements Inno72ChannelService {
         sessionVo.setGameId(gameId);
         sessionVo.setSessionUuid(sessionUuid);
         sessionVo.setActivityPlanId(interact.getId());
-        boolean canOrder = inno72AuthInfoService.findCanOrder(interact,sessionVo,userId);
+        boolean canOrder = inno72AuthInfoService.findCanOrder(interact,sessionVo,userChannel.getGameUserId());
         sessionVo.setCanOrder(canOrder);
         if(sessionVo.getGoodsType()!=null && UserSessionVo.GOODSTYPE_COUPON.compareTo(sessionVo.getGoodsType())==0){
             sessionVo.setCountGoods(true);
