@@ -109,14 +109,9 @@ public class Inno72OrderRefundController {
 			smsContent.append("退款");
 			smsContent.append(orderRefund.getAmount() + "元");
 			smsContent.append("已退还至您账户，请注意查收！");
-		} else if (status == Inno72OrderRefund.REFUND_STATUS.FAIL) {
-			smsContent.append("您的退款申请失败，失败原因");
-			smsContent.append(msg);
+			Map<String, String> params = new HashMap<>();
+			params.put("content", smsContent.toString());
+			msgUtil.sendSMS(SMSCODE, params, orderRefund.getPhone(), APPNAME);
 		}
-
-		Map<String, String> params = new HashMap<>();
-		params.put("content", smsContent.toString());
-		msgUtil.sendSMS(SMSCODE, params, orderRefund.getPhone(), APPNAME);
-
 	}
 }
