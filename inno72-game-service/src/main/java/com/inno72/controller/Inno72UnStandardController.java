@@ -333,7 +333,7 @@ public class Inno72UnStandardController {
             inno72UnStandardService.refundAsk(code);
             return Results.success();
         }catch (Inno72BizException e){
-            return Results.failure(e.getMessage());
+            return Results.warn(e.getMessage(),-1);
         }catch (Exception e){
             LOGGER.error(e.getMessage(), e);
             return Results.failure(e.getMessage());

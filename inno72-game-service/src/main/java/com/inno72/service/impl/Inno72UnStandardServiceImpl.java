@@ -259,6 +259,9 @@ public class Inno72UnStandardServiceImpl implements Inno72UnStandardService {
                 for(Inno72OrderRefund refund:saveRefundList){
                     inno72OrderRefundService.save(refund);
                 }
+            }else{
+                LOGGER.info("无支付未掉货订单，gameUserId={}",inno72GameUserChannel.getGameUserId());
+                throw new Inno72BizException("无支付未掉货订单");
             }
         }else{
             LOGGER.info("无支付未掉货订单，gameUserId={}",inno72GameUserChannel.getGameUserId());
