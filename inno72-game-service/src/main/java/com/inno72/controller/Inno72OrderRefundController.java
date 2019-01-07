@@ -72,12 +72,11 @@ public class Inno72OrderRefundController {
 			Inno72OrderRefund.REFUND_STATUS status = Inno72OrderRefund.REFUND_STATUS.INREFUND;
 			if (StringUtil.isNotEmpty(retCode) && Integer.valueOf(retCode) == Result.SUCCESS) {
 				if (retCodeVal == Result.SUCCESS) {
-					status = Inno72OrderRefund.REFUND_STATUS.SUCCESS;
 					BigDecimal amount = inno72OrderRefund.getAmount();
 					if (amount.multiply(hundred).compareTo(feeVal) == 0) {
-						status = Inno72OrderRefund.REFUND_STATUS.FAIL;
-					} else {
 						status = Inno72OrderRefund.REFUND_STATUS.SUCCESS;
+					} else {
+						status = Inno72OrderRefund.REFUND_STATUS.FAIL;
 					}
 				} else if (retCodeVal == Result.FAILURE) {
 					status = Inno72OrderRefund.REFUND_STATUS.FAIL;
@@ -112,6 +111,16 @@ public class Inno72OrderRefundController {
 			Map<String, String> params = new HashMap<>();
 			params.put("content", smsContent.toString());
 			msgUtil.sendSMS(SMSCODE, params, orderRefund.getPhone(), APPNAME);
+		}
+	}
+
+	public static void main(String[] args) {
+		BigDecimal amount = new BigDecimal("0.01");
+		BigDecimal hundred = new BigDecimal(100);
+		BigDecimal feeVal = new BigDecimal(1);
+		if (amount.multiply(hundred).compareTo(feeVal) == 0) {
+			System.out.println("1");
+		} else {
 		}
 	}
 }
