@@ -21,6 +21,6 @@
     </select>
     <select id="findByCode" resultMap="BaseResultMap">
       select * from inno72_channel c
-        where c.channel_code = #{channelCode}
+        where c.channel_code = #{channelCode} and c.is_delete=0
     </select>
 </mapper>
