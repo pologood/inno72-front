@@ -6,6 +6,7 @@ import java.util.Map;
 import com.inno72.common.Mapper;
 import com.inno72.model.Inno72Order;
 import com.inno72.vo.OrderOrderGoodsVo;
+import com.inno72.vo.OrderVo;
 import org.apache.ibatis.annotations.Param;
 
 public interface Inno72OrderMapper extends Mapper<Inno72Order> {
@@ -18,4 +19,6 @@ public interface Inno72OrderMapper extends Mapper<Inno72Order> {
 	Integer findGoodsStatusSuccWithoutUserId(Map<String, String> orderParams);
 
     List<OrderOrderGoodsVo> findSuccessOrderByMerchantId(@Param("merchantId") String merchantId);
+
+    List<OrderVo> orderList(@Param("gameUserId") String gameUserId);
 }

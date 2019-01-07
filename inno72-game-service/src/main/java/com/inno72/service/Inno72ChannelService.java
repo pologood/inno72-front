@@ -1,6 +1,7 @@
 package com.inno72.service;
 
 import com.inno72.common.Result;
+import com.inno72.model.Inno72Channel;
 import com.inno72.model.Inno72Machine;
 import com.inno72.vo.MachineApiVo;
 import com.inno72.vo.StandardPrepareLoginReqVo;

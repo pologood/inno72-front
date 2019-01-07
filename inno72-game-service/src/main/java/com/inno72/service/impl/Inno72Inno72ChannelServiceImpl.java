@@ -1,16 +1,15 @@
 package com.inno72.service.impl;
 
 import com.alibaba.fastjson.JSON;
+import com.google.gson.Gson;
 import com.inno72.common.*;
 import com.inno72.common.util.FastJsonUtils;
 import com.inno72.common.utils.StringUtil;
 import com.inno72.mapper.*;
 import com.inno72.model.*;
+import com.inno72.plugin.http.HttpClient;
 import com.inno72.service.*;
-import com.inno72.vo.Inno72MachineInformation;
-import com.inno72.vo.MachineApiVo;
-import com.inno72.vo.StandardPrepareLoginReqVo;
-import com.inno72.vo.UserSessionVo;
+import com.inno72.vo.*;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -29,6 +28,9 @@ public class Inno72Inno72ChannelServiceImpl implements Inno72ChannelService {
 
     @Autowired
     private Inno72GameServiceProperties inno72GameServiceProperties;
+
+    @Autowired
+    private Inno72GameUserChannelService inno72GameUserChannelService ;
 
     @Autowired
     private PointService pointService;
@@ -78,6 +80,9 @@ public class Inno72Inno72ChannelServiceImpl implements Inno72ChannelService {
 
     @Value("${env}")
     private String env;
+
+    @Value("${duduji.appid}")
+    private String dudujiAppId;
 
     @Override
     public String buildQrContent(Inno72Machine inno72Machine, String sessionUuid,StandardPrepareLoginReqVo req) {
@@ -134,6 +139,12 @@ public class Inno72Inno72ChannelServiceImpl implements Inno72ChannelService {
             userChannel.setChannelId(channelId);
             inno72GameUserChannelMapper.insert(userChannel);
             LOGGER.info("插入游戏用户渠道表 完成 ===> {}", JSON.toJSONString(userChannel));
+        }
+
+        //关联微信
+        String code = FastJsonUtils.getString(authInfo, "code");
+        if(!StringUtils.isEmpty(code)){
+            joinPhoneWechatUser(code,userChannel.getGameUserId());
         }
 
         //插入gameLife表
@@ -197,6 +208,32 @@ public class Inno72Inno72ChannelServiceImpl implements Inno72ChannelService {
 
         return Results.success();
     }
+
+    /**
+     * 关联手机号和微信用户
+     * @param code
+     * @param gameUserId
+     */
+    private void joinPhoneWechatUser(String code, String gameUserId) {
+        //根据code获取微信用户
+        WxMpUser user = inno72GameUserChannelService.getWeChatUserByCode(code);
+        if(user != null){
+            user.setAppId(dudujiAppId);
+            Inno72GameUserChannel gameUserChannel = inno72GameUserChannelService.findWeChatUser(user.getUnionId());
+            if(gameUserChannel == null){
+                inno72GameUserChannelService.saveWechatUser(user,gameUserId);
+            }else{
+                if(!gameUserChannel.getGameUserId().equals(gameUserId)){
+                    inno72GameUserChannelService.updateWechatUser(user,gameUserChannel.getId(),gameUserId);
+                }
+            }
+        }else{
+            LOGGER.error("根据code={},查询微信用户为空",code);
+            throw new Inno72BizException("无法获取微信用户");
+        }
+    }
+
+
 
     @Override
     public Result<Object> order(UserSessionVo userSessionVo, String itemId, String inno72OrderId) {

@@ -3,6 +3,7 @@ package com.inno72.common.util;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.HashSet;
+import java.util.Random;
 import java.util.Set;
 
 import javax.annotation.PostConstruct;
@@ -21,6 +22,39 @@ public class Inno72OrderNumGenUtil {
 	private IRedisUtil $redisUtil;
 
 	private static IRedisUtil redisUtil;
+
+    public static String genRefundNum(String orderNum) {
+    	//取订单号后六位
+		String start = orderNum.substring(orderNum.length()-6);
+		String end = randomStr(4);
+		String random = start+end;
+
+		String redisKey = "inno72_common:order_refund_num";
+		Set<Object> smembers = redisUtil.smembers(redisKey);
+
+		if (smembers == null || smembers.size() == 0){
+			redisUtil.del(redisKey+"*");
+			smembers = new HashSet<>();
+		}
+
+		while (smembers.contains(random)){
+			end = randomStr(4);
+			random = start+end;
+		}
+		redisUtil.sadd(redisKey,random);
+		return random;
+    }
+
+	private static String randomStr(int num) {
+		String[] radmon = { "0", "1", "2", "3", "4", "5", "6", "7", "8", "9" };
+		StringBuffer sb = new StringBuffer();
+		Random rd = new Random();
+		for (int i = 0; i < num; i++) {
+			String s = radmon[rd.nextInt(10)];
+			sb.append(s);
+		}
+		return sb.toString();
+	}
 
 	@PostConstruct
 	public void init(){

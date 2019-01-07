@@ -1,7 +1,9 @@
 package com.inno72.controller;
 
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
+import java.net.URLEncoder;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
@@ -310,10 +312,12 @@ public class Inno72StandardController {
                         pointService.innerPoint(JSON.toJSONString(sessionVo), Inno72MachineInformation.ENUM_INNO72_MACHINE_INFORMATION_TYPE.SCAN_LOGIN);
 						if(channelType!=null && channelType == StandardLoginTypeEnum.INNO72.getValue()){
 							String tmalFlag = request.getParameter("tmalFlag");
+							boolean wrapFlag = false;
 							if(!StringUtils.isEmpty(tmalFlag)&&"1".equals(tmalFlag)){
 								redirectUrl = String.format(inno72GameServiceProperties.get("phoneLoginUrlTmal"),sessionVo.getPlanCode(),sessionUuid);
 							}else{
 								redirectUrl = String.format(inno72GameServiceProperties.get("phoneLoginUrl"),sessionVo.getPlanCode(),sessionUuid);
+								wrapFlag = true;
 							}
 							String PU = request.getParameter("PU");
 							if(!StringUtils.isEmpty(PU)){
@@ -321,6 +325,9 @@ public class Inno72StandardController {
 							}
 							redirectUrl+="&activityId="+sessionVo.getActivityId();
 							LOGGER.info("loginRedirect loginUrl={}",redirectUrl);
+							if(wrapFlag){
+								redirectUrl = wrapWechatUrl(redirectUrl);
+							}
 						}else{
 							redirectUrl = String.format("%s%s/%s/%s", inno72GameServiceProperties.get("tmallUrl"), sessionUuid, env, traceId);
 						}
@@ -337,6 +344,13 @@ public class Inno72StandardController {
         }
         return result;
     }
+
+	private String wrapWechatUrl(String redirectUrl) throws UnsupportedEncodingException {
+		String url = URLEncoder.encode(redirectUrl,"UTF-8");
+		String retUrl = "https://open.weixin.qq.com/connect/oauth2/authorize?appid=wxd2d020e170a05549&redirect_uri="+url+"&response_type=code&scope=snsapi_userinfo&state=STATE#wechat_redirect";
+		LOGGER.info("wrapWechatUrl ={}",retUrl);
+		return retUrl;
+	}
 
 	/**
 	 * 支付跳转

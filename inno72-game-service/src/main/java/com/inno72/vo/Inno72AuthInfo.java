@@ -10,6 +10,7 @@ public class Inno72AuthInfo implements Serializable {
     private String scanSoftware;//扫描软件
     private Integer operatingSystem;//操作系统 0ios 1 android
     private String clientInfo;
+    private String code;
 
     public String getPhone() {
         return phone;
@@ -57,5 +58,13 @@ public class Inno72AuthInfo implements Serializable {
 
     public void setClientInfo(String clientInfo) {
         this.clientInfo = clientInfo;
+    }
+
+    public String getCode() {
+        return code;
+    }
+
+    public void setCode(String code) {
+        this.code = code;
     }
 }

@@ -1,12 +1,17 @@
 package com.inno72.service;
 
+import com.inno72.vo.OrderVo;
+import com.inno72.vo.WxMpUser;
+
+import java.util.List;
+
 public interface Inno72UnStandardService {
     /**
      * 获取手机验证码
      * @param sessionUuid
      * @param phone
      */
-    void getPhoneVerificationCode(String sessionUuid, String phone);
+    void getPhoneVerificationCode(String sessionUuid, String phone,Integer type);
 
     /**
      * 校验验证码
@@ -14,7 +19,7 @@ public interface Inno72UnStandardService {
      * @param phone
      * @param verificationCode
      */
-    void checkPhoneVerificationCode(String sessionUuid, String phone, String verificationCode,Integer operatingSystem,String phoneModel,String sacnSoftware,String clientInfo);
+    String checkPhoneVerificationCode(String sessionUuid, String phone, String verificationCode,Integer operatingSystem,String phoneModel,String sacnSoftware,String clientInfo,Integer type,String openId, String code);
 
     /**
      * 选择支付方式
@@ -52,4 +57,24 @@ public interface Inno72UnStandardService {
      * @param type
      */
     void gamePointTime(String sessionUuid, Integer type);
+
+    /**
+     * 获取微信是否关联手机号
+     * @param user
+     * @return
+     */
+    String joinPhoneFlag(WxMpUser user);
+
+    /**
+     * 我的订单列表
+     * @param gameUserId
+     * @return
+     */
+    List<OrderVo> orderList(String gameUserId,Integer pageNum,Integer pageSize);
+
+    /**
+     * 退款申请
+     * @param gameUserId
+     */
+    void refundAsk(String code);
 }

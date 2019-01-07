@@ -84,6 +84,7 @@ public class SuperOpenServiceImpl implements SuperOpenService {
 		UPFILE("024", "upfile", "/api/unstandard/upfile", "上传拍照图片", "1.0.0"),
 		CHANGEPAYTYPE("025", "changePayType", "/api/unstandard/changePayType", "修改支付方式", "1.0.0"),
 		GAMEPOINTTIME("026", "gamePointTime", "/api/unstandard/gamePointTime", "记录游戏时间点", "1.0.0"),
+		REFUNDASK("027", "refundAsk", "/api/unstandard/refundAsk", "申请退款", "1.0.0"),
 
 		BUILDWEIDAQRCODE("027", "buildWeiDaQrCode", "/api/unstandard/buildWeiDaQrCode", "创建维达二维码", "1.0.0"),
 
