@@ -69,6 +69,6 @@
         from inno72_store_order storeOrder
             left join inno72_goods goods on goods.id = storeOrder.goods
         where storeOrder.is_delete = 0 and storeOrder.send_type = 0
-              and storeOrder.activity = #{activityId} and storeOrder.receiver = #{merchantId}
+              and storeOrder.activity = #{activityId} and storeOrder.send_id = #{merchantId}
     </select>
 </mapper>
