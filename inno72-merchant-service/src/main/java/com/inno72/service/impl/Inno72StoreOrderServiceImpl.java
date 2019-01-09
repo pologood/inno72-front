@@ -129,8 +129,10 @@ public class Inno72StoreOrderServiceImpl extends AbstractService<Inno72StoreOrde
 			 * @param creater
 			 * @param updater
 			 */
-			Inno72StoreOrder inno72StoreOrder = new Inno72StoreOrder(activityId, goodsId, sellerId, user.getMerchantName(),
-					user.getMerchantId(), "", "", 0, user.getLoginName());
+			Inno72StoreOrder inno72StoreOrder = new Inno72StoreOrder(
+					activityId, goodsId, sellerId,
+					user.getMerchantName(), user.getMerchantId(), "",
+					"", 0, user.getLoginName());
 
 			List<Inno72StoreOrderVo> value = store.getValue();
 
