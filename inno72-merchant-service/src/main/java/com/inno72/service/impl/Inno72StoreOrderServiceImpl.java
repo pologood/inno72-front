@@ -88,7 +88,7 @@ public class Inno72StoreOrderServiceImpl extends AbstractService<Inno72StoreOrde
 		}
 		String sellerId = inno72Goods.getSellerId();
 
-		Inno72MerchantUser user = inno72MerchantUserMapper.selectByPrimaryKey(merchantId);
+		Inno72MerchantUser user = inno72MerchantUserMapper.selectByMerchantId(merchantId);
 		if (user == null) {
 			LOGGER.info("ID【{}】的商户用户 不存在！！！", merchantId);
 			return Results.failure("用户错误!");
@@ -96,7 +96,7 @@ public class Inno72StoreOrderServiceImpl extends AbstractService<Inno72StoreOrde
 
 		Inno72Interact inno72Interact = inno72InteractMapper.selectByPrimaryKey(activityId);
 		if (inno72Interact == null) {
-			LOGGER.info("ID【{}】的活动 不存在！！！", merchantId);
+			LOGGER.info("ID【{}】的活动 不存在！！！", activityId);
 			return Results.failure("活动错误!");
 		}
 

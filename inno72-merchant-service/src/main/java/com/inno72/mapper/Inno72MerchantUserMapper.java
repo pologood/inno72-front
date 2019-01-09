@@ -18,4 +18,6 @@ public interface Inno72MerchantUserMapper extends Mapper<Inno72MerchantUser> {
 	Inno72MerchantUser selectByLoginNameAndPhone(@Param("phone") String phone, @Param("loginName") String loginName);
 
 	Inno72MerchantUser selectByMerchantName(String loginName);
+
+	Inno72MerchantUser selectByMerchantId(String merchantId);
 }
