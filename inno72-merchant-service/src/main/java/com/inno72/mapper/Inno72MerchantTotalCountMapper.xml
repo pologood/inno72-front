@@ -50,7 +50,10 @@
         select channel from inno72.inno72_interact where id = #{activityId}
     </select>
     <select id="selectMaxMinTime" resultMap="BaseResultVoMap" parameterType="map">
-        select min(imt.start_time) as start_time,max(imt.end_time) as end_time from inno72_interact_machine im
+        select
+        DATE_FORMAT(min(imt.start_time), '%Y-%m-%d %H:%i:%S') as start_time,
+        DATE_FORMAT(max(imt.end_time), '%Y-%m-%d %H:%i:%S') as end_time
+        from inno72_interact_machine im
             join `inno72_interact_machine_goods` img on im.id = img.interact_machine_id
             join inno72_goods ig on img.goods_id=ig.id
             left join `inno72_interact_machine_time` imt on im.id = imt.interact_machine_id
