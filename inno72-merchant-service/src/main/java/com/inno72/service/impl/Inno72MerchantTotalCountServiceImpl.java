@@ -61,7 +61,7 @@ public class Inno72MerchantTotalCountServiceImpl extends AbstractService<Inno72M
 		}
 		List<Inno72MerchantTotalCountVo> inno72MerchantTotalCounts = inno72MerchantTotalCountMapper
 				.selectByMerchantId(merchantId);
-
+		LocalDateTime now = LocalDateTime.now();
 		for (Inno72MerchantTotalCountVo countVo : inno72MerchantTotalCounts){
 			String activityId = countVo.getActivityId();
 			List<String> list = inno72MerchantMapper.selectMerchantId(user.getId());
@@ -77,6 +77,18 @@ public class Inno72MerchantTotalCountServiceImpl extends AbstractService<Inno72M
 
 			countVo.setStartTime(vo.getStartTime());
 			countVo.setEndTime(vo.getEndTime());
+			if (StringUtil.notEmpty(vo.getStartTime()) && StringUtil.notEmpty(vo.getEndTime())){
+				LocalDateTime parseEnd = LocalDateTime.parse(vo.getEndTime(), DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
+				LocalDateTime parseStart = LocalDateTime.parse(vo.getStartTime(), DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
+				Duration between;
+				if (now.isAfter(parseEnd)){
+					between = Duration.between(parseStart, parseEnd);
+				}else {
+					between = Duration
+							.between(parseStart, now);
+				}
+				countVo.setTotalTime(between.toHours()+"");
+			}
 
 			List<Map<String, Object>> maps = inno72MerchantTotalCountMapper.selectMachineNumCity(param);
 			countVo.setMachineInfo(maps);
@@ -90,7 +102,6 @@ public class Inno72MerchantTotalCountServiceImpl extends AbstractService<Inno72M
 				countVo.setStartTime("2018-12-15");
 				countVo.setEndTime("2018-12-31");
 				Duration between;
-				LocalDateTime now = LocalDateTime.now();
 				LocalDateTime parseEnd = LocalDateTime.parse(endTime, DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
 				LocalDateTime parseStart = LocalDateTime.parse(startDate, DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
 				if (now.isAfter(parseEnd)){
@@ -127,7 +138,6 @@ public class Inno72MerchantTotalCountServiceImpl extends AbstractService<Inno72M
 				countVo.setStartTime("2018-11-13");
 				countVo.setEndTime("2018-12-20");
 				Duration between;
-				LocalDateTime now = LocalDateTime.now();
 				LocalDateTime parseEnd = LocalDateTime.parse(endTime, DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
 				LocalDateTime parseStart = LocalDateTime.parse(startDate, DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
 				if (now.isAfter(parseEnd)){
@@ -335,6 +345,9 @@ public class Inno72MerchantTotalCountServiceImpl extends AbstractService<Inno72M
 		if (countVo == null){
 			return Results.failure("没有这个活动的配置!");
 		}
+		countVo.setActivityName(count.getActivityName());
+		countVo.setActivityId(actId);
+		countVo.setMerchantId(user.getMerchantId());
 		String startTime = countVo.getStartTime();
 		String endTime = countVo.getEndTime();
 
