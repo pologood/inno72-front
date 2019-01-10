@@ -75,7 +75,7 @@ public class Inno72MerchantTotalCountServiceImpl extends AbstractService<Inno72M
 
 			Inno72MerchantTotalCountVo vo = inno72MerchantTotalCountMapper.selectMaxMinTime(param);
 
-			if (StringUtil.notEmpty(vo.getStartTime()) && StringUtil.notEmpty(vo.getEndTime())){
+			if (vo != null && StringUtil.notEmpty(vo.getStartTime()) && StringUtil.notEmpty(vo.getEndTime())){
 
 				countVo.setStartTime(vo.getStartTime());
 				countVo.setEndTime(vo.getEndTime());
