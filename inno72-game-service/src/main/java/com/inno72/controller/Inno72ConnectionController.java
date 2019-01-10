@@ -5,6 +5,7 @@ import com.inno72.common.Inno72GameServiceProperties;
 import com.inno72.common.Result;
 import com.inno72.common.Results;
 import com.inno72.common.json.JsonUtil;
+import com.inno72.model.Inno72MachineConnectionMsg;
 import com.inno72.plugin.http.HttpClient;
 import com.inno72.service.Inno72ConnectionService;
 import com.inno72.vo.PushRequestVo;
@@ -47,20 +48,15 @@ public class Inno72ConnectionController {
      */
     @ResponseBody
     @RequestMapping(value = "/callBack", method = {RequestMethod.GET,RequestMethod.POST},produces = "application/json;charset=utf-8")
-    public Result<Object> callBack(@RequestParam("machineCode") String machineCode,@RequestParam("activityId") String activityId,@RequestParam("type") Integer type,@RequestParam("version") Long version) {
+    public Result<Object> callBack(@RequestBody Inno72MachineConnectionMsg msg) {
         try{
-            LOGGER.info("callBack machineCode = {},activityId={},type={},version={}",machineCode,activityId,type,version);
-//            inno72ConnectionService.callBack(machineCode,activityId,type,version);
+            LOGGER.info("callBack machineCode = {},activityId={},type={},version={}",msg.getMachineCode(),msg.getActivityId(),msg.getType(),msg.getVersion());
+//            inno72ConnectionService.callBack(msg.getMachineCode(),msg.getActivityId(),msg.getType(),msg.getVersion());
             //发送长连接
             String pushServerUrl = inno72GameServiceProperties.get("pushServerUrl")+"/pusher/push/one";
             PushRequestVo vo = new PushRequestVo();
-            Map map = new HashMap();
-            map.put("machineCode",machineCode);
-            map.put("activityId",activityId);
-            map.put("type",type);
-            map.put("version",version);
-            vo.setData(JsonUtil.toJson(map));
-            vo.setTargetCode(machineCode);
+            vo.setData(JsonUtil.toJson(msg));
+            vo.setTargetCode(msg.getMachineCode());
             String request = JsonUtil.toJson(vo);
             LOGGER.info("send msg url = {},data={}",pushServerUrl,request);
             String response = HttpClient.post(pushServerUrl,request);
