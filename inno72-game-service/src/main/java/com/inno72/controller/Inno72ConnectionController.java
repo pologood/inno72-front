@@ -11,10 +11,7 @@ import com.inno72.vo.PushRequestVo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.ResponseBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -49,8 +46,8 @@ public class Inno72ConnectionController {
      * 申请退款
      */
     @ResponseBody
-    @RequestMapping(value = "/callBack", method = {RequestMethod.GET,RequestMethod.POST})
-    public Result<Object> callBack(String machineCode, String activityId, Integer type,Long version) {
+    @RequestMapping(value = "/callBack", method = {RequestMethod.GET,RequestMethod.POST},produces = "application/json;charset=utf-8")
+    public Result<Object> callBack(@RequestParam("machineCode") String machineCode,@RequestParam("activityId") String activityId,@RequestParam("type") Integer type,@RequestParam("version") Long version) {
         try{
             LOGGER.info("callBack machineCode = {},activityId={},type={},version={}",machineCode,activityId,type,version);
 //            inno72ConnectionService.callBack(machineCode,activityId,type,version);
