@@ -353,6 +353,7 @@ public class Inno72StandardController {
     }
 
 	private void sendMsg(String sessionUuid,Integer type) {
+    	LOGGER.info("sendMsg sessionUuid={},type={}",sessionUuid,type);
 		UserSessionVo sessionVo = new UserSessionVo(sessionUuid);
 		Long version = System.currentTimeMillis();
 		String machineCode = sessionVo.getMachineCode();
