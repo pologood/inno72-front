@@ -30,7 +30,7 @@ public class Inno72PayServiceImpl implements Inno72PayService {
     @Resource
     private Inno72QrCodeService qrCodeService;
     @Override
-    public String pay(Inno72Order order) {
+    public String pay(Inno72Order order,String sessionUuid) {
         //spid =1001
         Map<String,String> param = new HashMap<String,String>();
         param.put("notifyUrl",properties.get("notifyUrl"));
@@ -40,6 +40,7 @@ public class Inno72PayServiceImpl implements Inno72PayService {
         param.put("spId",properties.get("spId"));
         param.put("subject","北京点七二创意互动传媒文化有限公司");
         param.put("terminalType",properties.get("terminalType"));
+        param.put("extra",sessionUuid);
         BigDecimal temp = new BigDecimal(100);
         param.put("totalFee",order.getOrderPrice().multiply(temp).longValue()+"");
         param.put("transTimeout",properties.get("transTimeout"));

@@ -74,6 +74,8 @@ public class Inno72UnStandardServiceImpl implements Inno72UnStandardService {
     private final String SYMBOLS = "0123456789"; // 数字
 
     private final Random RANDOM = new SecureRandom();
+    @Autowired
+    private Inno72ConnectionService inno72ConnectionService;
 
     @Override
     public void getPhoneVerificationCode(String sessionUuid, String phone,Integer type) {
@@ -152,7 +154,7 @@ public class Inno72UnStandardServiceImpl implements Inno72UnStandardService {
     public String changePayType(String sessionUuid, Integer payType) {
         //修改订单支付方式
         Inno72Order order = inno72OrderService.changePayType(sessionUuid,payType);
-        return inno72PayService.pay(order);
+        return inno72PayService.pay(order,sessionUuid);
     }
 
     @Override
@@ -171,7 +173,21 @@ public class Inno72UnStandardServiceImpl implements Inno72UnStandardService {
         //更新订单状态为一支付
         if(Result.SUCCESS == Integer.parseInt(retCode)){
             inno72OrderService.updateOrderStatusAndPayStatus(outTradeNo,Inno72Order.INNO72ORDER_ORDERSTATUS.PAY.getKey(),Inno72Order.INNO72ORDER_PAYSTATUS.SUCC.getKey());
+            sendMsg(extra,Inno72MachineConnectionMsg.TYPE_ENUM.PAY.getKey());
         }
+    }
+    private void sendMsg(String sessionUuid,Integer type) {
+        UserSessionVo sessionVo = new UserSessionVo(sessionUuid);
+        Long version = System.currentTimeMillis();
+        String machineCode = sessionVo.getMachineCode();
+        String activityId = sessionVo.getActivityId();
+
+        Inno72ConnectionPayVo inno72ConnectionScanVo = new Inno72ConnectionPayVo();
+        inno72ConnectionScanVo.setActivityId(activityId);
+        inno72ConnectionScanVo.setMachineCode(machineCode);
+        inno72ConnectionScanVo.setVersion(version);
+        inno72ConnectionScanVo.setType(type);
+        inno72ConnectionService.send(machineCode,activityId,version,type,JsonUtil.toJson(inno72ConnectionScanVo));
     }
 
     @Override

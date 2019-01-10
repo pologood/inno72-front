@@ -14,8 +14,10 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
 import com.inno72.common.CommonBean;
+import com.inno72.common.json.JsonUtil;
 import com.inno72.mapper.Inno72CouponMapper;
 import com.inno72.model.Inno72Coupon;
+import com.inno72.model.Inno72MachineConnectionMsg;
 import com.inno72.redis.IRedisUtil;
 import com.inno72.service.*;
 import com.alibaba.fastjson.JSON;
@@ -56,6 +58,8 @@ public class Inno72StandardController {
 
 	@Resource
 	private Inno72AuthInfoService inno72AuthInfoService;
+	@Resource
+	private Inno72ConnectionService inno72ConnectionService;
 
 	@Resource
 	private Inno72GameApiService inno72GameApiService;
@@ -251,6 +255,7 @@ public class Inno72StandardController {
 		boolean result = inno72AuthInfoService.setLogged(sessionUuid);
 		LOGGER.info("setLogged result is {}", result);
 		if (result) {
+			sendMsg(sessionUuid,Inno72MachineConnectionMsg.TYPE_ENUM.LOGIN.getKey());
 			return Results.success();
 		} else {
 			return Results.failure("登录失败");
@@ -303,6 +308,8 @@ public class Inno72StandardController {
                         redirectUrl = String.format(topH5ErrUrl, env) + "/?status="+ TopH5ErrorTypeEnum.IS_SCANNED.getValue();
                     } else {
                         sessionVo.setIsScanned(true);
+                        //发送推送消息
+						sendMsg(sessionUuid,Inno72MachineConnectionMsg.TYPE_ENUM.SCANQRCODE.getKey());
                         String traceId = UuidUtil.getUUID32();
                         sessionVo.setTraceId(traceId);
                         sessionVo.setScanUrl(redirectUrl);
@@ -344,6 +351,43 @@ public class Inno72StandardController {
         }
         return result;
     }
+
+	private void sendMsg(String sessionUuid,Integer type) {
+		UserSessionVo sessionVo = new UserSessionVo(sessionUuid);
+		Long version = System.currentTimeMillis();
+		String machineCode = sessionVo.getMachineCode();
+		String activityId = sessionVo.getActivityId();
+    	switch(type){
+			case 1:
+				Inno72ConnectionScanVo inno72ConnectionScanVo = new Inno72ConnectionScanVo();
+				inno72ConnectionScanVo.setActivityId(activityId);
+				inno72ConnectionScanVo.setMachineCode(machineCode);
+				inno72ConnectionScanVo.setVersion(version);
+				inno72ConnectionScanVo.setType(type);
+				inno72ConnectionService.send(machineCode,activityId,version,type,JsonUtil.toJson(inno72ConnectionScanVo));
+				break;
+			case 2:
+				Inno72ConnectionLoginVo data = new Inno72ConnectionLoginVo();
+				data.setActivityId(activityId);
+				data.setMachineCode(machineCode);
+				data.setVersion(version);
+				data.setCanOrder(sessionVo.getCanOrder());
+				data.setCountGoods(sessionVo.getCountGoods());
+				data.setUserNick(sessionVo.getUserNick());
+				data.setType(type);
+				inno72ConnectionService.send(machineCode,activityId,version,type,JsonUtil.toJson(data));
+				break;
+			case 3:
+				Inno72ConnectionFollowVo inno72ConnectionFollowVo = new Inno72ConnectionFollowVo();
+				inno72ConnectionFollowVo.setActivityId(activityId);
+				inno72ConnectionFollowVo.setMachineCode(machineCode);
+				inno72ConnectionFollowVo.setVersion(version);
+				inno72ConnectionFollowVo.setType(type);
+				inno72ConnectionService.send(machineCode,activityId,version,type,JsonUtil.toJson(inno72ConnectionFollowVo));
+				break;
+
+		}
+	}
 
 	private String wrapWechatUrl(String redirectUrl) throws UnsupportedEncodingException {
 		String url = URLEncoder.encode(redirectUrl,"UTF-8");
@@ -418,6 +462,7 @@ public class Inno72StandardController {
             }
 
 			inno72AuthInfoService.setFollowed(sessionUuid);
+            sendMsg(sessionUuid,Inno72MachineConnectionMsg.TYPE_ENUM.FOLLOW.getKey());
 
             response.sendRedirect(URLDecoder.decode(redirectUrl, java.nio.charset.StandardCharsets.UTF_8.toString()));
         } catch (IOException e) {
