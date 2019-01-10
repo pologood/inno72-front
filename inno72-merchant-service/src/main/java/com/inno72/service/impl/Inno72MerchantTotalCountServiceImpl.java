@@ -21,7 +21,6 @@ import com.inno72.common.AbstractService;
 import com.inno72.common.Result;
 import com.inno72.common.Results;
 import com.inno72.common.datetime.LocalDateTimeUtil;
-import com.inno72.common.datetime.LocalDateUtil;
 import com.inno72.common.utils.StringUtil;
 import com.inno72.mapper.Inno72MerchantMapper;
 import com.inno72.mapper.Inno72MerchantTotalCountMapper;
@@ -62,8 +61,17 @@ public class Inno72MerchantTotalCountServiceImpl extends AbstractService<Inno72M
 
 		for (Inno72MerchantTotalCountVo countVo : inno72MerchantTotalCounts){
 			String activityId = countVo.getActivityId();
-			//			Inno72MerchantTotalCountVo vo = inno72MerchantTotalCountMapper.selectMaxMinTime(activityId);
-			//			BeanUtils.copyProperties(vo, countVo);
+			List<String> list = inno72MerchantMapper.selectMerchantId(user.getId());
+			if (list.size() == 0){
+				return Results.failure("商户没有任何的商家!");
+			}
+
+			Map<String, Object> param = new HashMap<>();
+			param.put("activityId", activityId);
+			param.put("list", list);
+
+			Inno72MerchantTotalCountVo vo = inno72MerchantTotalCountMapper.selectMaxMinTime(param);
+			BeanUtils.copyProperties(vo, countVo);
 
 			//点72 活动
 			if (activityId.equals("03e0c821671a4d6f8fad0d47fa25f040")){
@@ -325,8 +333,8 @@ public class Inno72MerchantTotalCountServiceImpl extends AbstractService<Inno72M
 
 		if (StringUtil.isNotEmpty(startTime) && StringUtil.isNotEmpty(endTime)){
 
-			LocalDateTime startLocalTime = LocalDateTimeUtil.transfer(startTime);
-			LocalDateTime endLocalTime = LocalDateTimeUtil.transfer(endTime);
+			LocalDateTime startLocalTime = LocalDateTimeUtil.transfer(startTime, DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
+			LocalDateTime endLocalTime = LocalDateTimeUtil.transfer(endTime, DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
 
 
 			String status = "";
