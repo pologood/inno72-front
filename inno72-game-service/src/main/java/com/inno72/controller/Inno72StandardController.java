@@ -255,7 +255,6 @@ public class Inno72StandardController {
 		boolean result = inno72AuthInfoService.setLogged(sessionUuid);
 		LOGGER.info("setLogged result is {}", result);
 		if (result) {
-			sendMsg(sessionUuid,Inno72MachineConnectionMsg.TYPE_ENUM.LOGIN.getKey());
 			return Results.success();
 		} else {
 			return Results.failure("登录失败");
