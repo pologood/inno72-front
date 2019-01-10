@@ -75,9 +75,11 @@ public class Inno72MerchantTotalCountServiceImpl extends AbstractService<Inno72M
 
 			Inno72MerchantTotalCountVo vo = inno72MerchantTotalCountMapper.selectMaxMinTime(param);
 
-			countVo.setStartTime(vo.getStartTime());
-			countVo.setEndTime(vo.getEndTime());
 			if (StringUtil.notEmpty(vo.getStartTime()) && StringUtil.notEmpty(vo.getEndTime())){
+
+				countVo.setStartTime(vo.getStartTime());
+				countVo.setEndTime(vo.getEndTime());
+
 				LocalDateTime parseEnd = LocalDateTime.parse(vo.getEndTime(), DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
 				LocalDateTime parseStart = LocalDateTime.parse(vo.getStartTime(), DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
 				Duration between;
