@@ -71,7 +71,9 @@ public class Inno72MerchantTotalCountServiceImpl extends AbstractService<Inno72M
 			param.put("list", list);
 
 			Inno72MerchantTotalCountVo vo = inno72MerchantTotalCountMapper.selectMaxMinTime(param);
-			BeanUtils.copyProperties(vo, countVo);
+
+			countVo.setStartTime(vo.getStartTime());
+			countVo.setEndTime(vo.getEndTime());
 
 			//点72 活动
 			if (activityId.equals("03e0c821671a4d6f8fad0d47fa25f040")){
