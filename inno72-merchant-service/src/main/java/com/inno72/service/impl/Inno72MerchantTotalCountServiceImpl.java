@@ -78,6 +78,9 @@ public class Inno72MerchantTotalCountServiceImpl extends AbstractService<Inno72M
 			countVo.setStartTime(vo.getStartTime());
 			countVo.setEndTime(vo.getEndTime());
 
+			List<Map<String, Object>> maps = inno72MerchantTotalCountMapper.selectMachineNumCity(param);
+			countVo.setMachineInfo(maps);
+
 			//点72 活动
 			if (activityId.equals("03e0c821671a4d6f8fad0d47fa25f040")){
 
@@ -170,7 +173,6 @@ public class Inno72MerchantTotalCountServiceImpl extends AbstractService<Inno72M
 				addressNum.put("num", 13);
 				addressNums.add(addressNum);
 				countVo.setMachineInfo(addressNums);
-
 			}
 
 		}

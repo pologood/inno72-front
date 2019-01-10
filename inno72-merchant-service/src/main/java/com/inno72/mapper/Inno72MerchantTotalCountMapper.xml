@@ -57,13 +57,28 @@
             join `inno72_interact_machine_goods` img on im.id = img.interact_machine_id
             join inno72_goods ig on img.goods_id=ig.id
             left join `inno72_interact_machine_time` imt on im.id = imt.interact_machine_id
-        where im.interact_id=#{activityId} and ig.seller_id in
+        where im.interact_id = #{activityId} and ig.seller_id in
         <foreach collection="list" separator="," open="(" close=")" item="item">
             #{item}
         </foreach>
         group by im.interact_id
     </select>
-    <select id="selectMachineNumCity" resultType="java.util.Map">
+    <select id="selectMachineNumCity" resultType="java.util.Map" parameterType="map">
+
+        SELECT count(distinct im.machine_id) as num, area.city as address
+        FROM inno72_interact_machine im
+        JOIN `inno72_interact_machine_goods` img ON im.id = img.interact_machine_id
+        JOIN inno72_goods ig ON img.goods_id = ig.id
+        LEFT JOIN inno72_machine machine on machine.id = im.machine_id
+        LEFT JOIN inno72_locale ilocal on ilocal.id = machine.locale_id
+        LEFT JOIN inno72_admin_area area on area.`code` = ilocal.area_code
+        LEFT JOIN `inno72_interact_machine_time` imt ON im.id = imt.interact_machine_id
+        WHERE im.interact_id = #{activityId}
+        AND ig.seller_id IN
+        <foreach collection="list" separator="," open="(" close=")" item="item">
+            #{item}
+        </foreach>
+        group by area.`city`
 
     </select>
     <select id="selectByActIdAndMerId" resultMap="BaseResultMap" parameterType="map">
