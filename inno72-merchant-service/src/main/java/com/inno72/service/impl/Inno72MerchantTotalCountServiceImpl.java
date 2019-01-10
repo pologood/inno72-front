@@ -296,7 +296,7 @@ public class Inno72MerchantTotalCountServiceImpl extends AbstractService<Inno72M
 		}else if (actId.equals("40e48662e73340a496e117653edd2ef5")){
 			return defaultActBeiXuanInfo();
 		}
-		Inno72MerchantUser user = inno72MerchantUserMapper.selectByPrimaryKey(merchantId);
+		Inno72MerchantUser user = inno72MerchantUserMapper.selectByMerchantId(merchantId);
 		if (user == null){
 			return Results.failure("没有这个商户商户!");
 		}
