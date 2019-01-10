@@ -1,7 +1,6 @@
 package com.inno72.service.impl;
 
 import java.time.Duration;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
@@ -11,7 +10,8 @@ import java.util.Map;
 
 import javax.annotation.Resource;
 
-import org.springframework.beans.BeanUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
@@ -39,6 +39,9 @@ import com.inno72.vo.Inno72MerchantTotalCountVo;
 @Transactional
 public class Inno72MerchantTotalCountServiceImpl extends AbstractService<Inno72MerchantTotalCount>
 		implements Inno72MerchantTotalCountService {
+
+	private static final Logger LOGGER = LoggerFactory.getLogger(Inno72MerchantTotalCountServiceImpl.class);
+
 	@Resource
 	private Inno72MerchantTotalCountMapper inno72MerchantTotalCountMapper;
 	@Resource
@@ -335,17 +338,17 @@ public class Inno72MerchantTotalCountServiceImpl extends AbstractService<Inno72M
 
 		if (StringUtil.isNotEmpty(startTime) && StringUtil.isNotEmpty(endTime)){
 
+			LOGGER.info("查询活动{},和商家{},的用户下{} 活动开始结束时间", actId, JSON.toJSONString(user), JSON.toJSONString(list), JSON.toJSONString(countVo));
+
 			LocalDateTime startLocalTime = LocalDateTimeUtil.transfer(startTime, DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
 			LocalDateTime endLocalTime = LocalDateTimeUtil.transfer(endTime, DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
 
 
 			String status = "";
 
-			LocalDate localDateStart = startLocalTime.toLocalDate();
-			LocalDate localDateEnd = endLocalTime.toLocalDate();
-			LocalDate now = LocalDate.now();
-			boolean before = localDateStart.isBefore(now);
-			boolean before1 = now.isBefore(localDateEnd);
+			LocalDateTime now = LocalDateTime.now();
+			boolean before = startLocalTime.isBefore(now);
+			boolean before1 = now.isBefore(endLocalTime);
 			if (before && before1){
 				status = "1";
 			}
@@ -364,8 +367,8 @@ public class Inno72MerchantTotalCountServiceImpl extends AbstractService<Inno72M
 
 			countVo.setTotalTime(totalTime+"");
 			countVo.setActivityStatus(status);
-			countVo.setStartTime(localDateStart.format(DateTimeFormatter.ofPattern("yyyy-MM-dd")));
-			countVo.setEndTime(localDateEnd.format(DateTimeFormatter.ofPattern("yyyy-MM-dd")));
+			countVo.setStartTime(startLocalTime.toLocalDate().format(DateTimeFormatter.ofPattern("yyyy-MM-dd")));
+			countVo.setEndTime(endLocalTime.toLocalDate().format(DateTimeFormatter.ofPattern("yyyy-MM-dd")));
 			countVo.setGoodsNum(count.getShipment());
 			countVo.setPv(count.getPv());
 
