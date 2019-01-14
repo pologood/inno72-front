@@ -66,12 +66,17 @@ public class Inno72ConnectionServiceImpl implements Inno72ConnectionService {
     }
     @Override
     public void send(String machineCode, String activityId, Long version, Integer type, String data) {
+        PushRequestVo vo = new PushRequestVo();
+        vo.setData(data);
+        vo.setTargetCode(machineCode);
+        String request = JsonUtil.toJson(vo);
+
         Inno72MachineConnectionMsg msg = new Inno72MachineConnectionMsg();
         msg.setActivityId(activityId);
         msg.setCreateTime(new Date());
         msg.setUpdateTime(msg.getCreateTime());
         msg.setMachineCode(machineCode);
-        msg.setMsg(data);
+        msg.setMsg(request);
         msg.setStatus(Inno72MachineConnectionMsg.STATUS_ENUM.COMMIT.getKey());
         msg.setTimes(1);
         msg.setType(type);
@@ -79,10 +84,6 @@ public class Inno72ConnectionServiceImpl implements Inno72ConnectionService {
         inno72MachineConnectionMsgMapper.insert(msg);
         //发送长连接
         String pushServerUrl = inno72GameServiceProperties.get("pushServerUrl")+"/pusher/push/one";
-        PushRequestVo vo = new PushRequestVo();
-        vo.setData(data);
-        vo.setTargetCode(machineCode);
-        String request = JsonUtil.toJson(vo);
         LOGGER.info("send msg url = {},data={}",pushServerUrl,request);
         String response = HttpClient.post(pushServerUrl,request);
         LOGGER.info("send msg response={}",response);
