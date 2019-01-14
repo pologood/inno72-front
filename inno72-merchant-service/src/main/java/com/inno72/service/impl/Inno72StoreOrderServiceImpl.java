@@ -1,6 +1,5 @@
 package com.inno72.service.impl;
 
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -77,7 +76,7 @@ public class Inno72StoreOrderServiceImpl extends AbstractService<Inno72StoreOrde
 		String merchantId = vo.getMerchantId();// 商户用户ID
 		List<Inno72StoreOrderVo> order = vo.getOrder();
 
-		if (order.size() == 0){
+		if (order.size() == 0) {
 			return Results.failure("物流单不存在!");
 		}
 
@@ -101,64 +100,73 @@ public class Inno72StoreOrderServiceImpl extends AbstractService<Inno72StoreOrde
 		}
 
 		Map<String, List<Inno72StoreOrderVo>> storeGroup = new HashMap<>();
-		for (Inno72StoreOrderVo orderVo : order){
+		for (Inno72StoreOrderVo orderVo : order) {
 			String storeId = orderVo.getStoreId();
 			List<Inno72StoreOrderVo> inno72StoreOrderVos = storeGroup.get(storeId);
-			if (inno72StoreOrderVos == null){
+			if (inno72StoreOrderVos == null) {
 				inno72StoreOrderVos = new ArrayList<>();
 			}
 			inno72StoreOrderVos.add(orderVo);
 			storeGroup.put(storeId, inno72StoreOrderVos);
 		}
 
-		LocalDateTime now = LocalDateTime.now();
-
 		List<Inno72StoreOrder> insertOrders = new ArrayList<>();
 		List<Inno72StoreExpress> insertExpress = new ArrayList<>();
 
-		for (Map.Entry<String, List<Inno72StoreOrderVo>> store : storeGroup.entrySet()){
+		for (Map.Entry<String, List<Inno72StoreOrderVo>> store : storeGroup.entrySet()) {
 
 			/*
 			 * @param goods
+			 * 
 			 * @param merchant sellerId
+			 * 
 			 * @param sender 商户名称
+			 * 
 			 * @param sendId 商户ID
+			 * 
 			 * @param receiver 仓库名称
+			 * 
 			 * @param receiveId 仓库ID
+			 * 
 			 * @param number 商品数量
+			 * 
 			 * @param creater
+			 * 
 			 * @param updater
 			 */
-			Inno72StoreOrder inno72StoreOrder = new Inno72StoreOrder(
-					activityId, goodsId, sellerId,
-					user.getMerchantName(), user.getMerchantId(), "",
-					"", 0, user.getLoginName());
+			Inno72StoreOrder inno72StoreOrder = new Inno72StoreOrder(activityId, goodsId, sellerId,
+					user.getMerchantName(), user.getMerchantId(), "", "", 0, user.getLoginName());
 
 			List<Inno72StoreOrderVo> value = store.getValue();
 
 			String storeName = null;
 			String storeId = null;
 			Integer totalGoodsNum = 0;
-			for (Inno72StoreOrderVo storeOrderVo : value){
+			for (Inno72StoreOrderVo storeOrderVo : value) {
 				Integer goodsNum = storeOrderVo.getGoodsNum();
 				String logisticsName = storeOrderVo.getLogisticsName();
 				String logisticsNo = storeOrderVo.getLogisticsNo();
 				if (StringUtil.isEmpty(storeId)) {
 					storeId = storeOrderVo.getStoreId();
 				}
-				if (StringUtil.isEmpty(storeName)){
+				if (StringUtil.isEmpty(storeName)) {
 					storeName = storeOrderVo.getStoreName();
 				}
 				totalGoodsNum += goodsNum;
 
 				/*
 				 * @param orderId 出入库单ID
+				 * 
 				 * @param expressNum 物流单号
+				 * 
 				 * @param expressCompany 物流公司
+				 * 
 				 * @param number 数量
+				 * 
 				 * @param creater
 				 */
-				insertExpress.add(new Inno72StoreExpress(inno72StoreOrder.getId(), logisticsNo, logisticsName, goodsNum, user.getLoginName()));
+				insertExpress.add(new Inno72StoreExpress(inno72StoreOrder.getId(), logisticsNo, logisticsName, goodsNum,
+						user.getLoginName()));
 			}
 			inno72StoreOrder.setReceiveId(storeId);
 			inno72StoreOrder.setNumber(totalGoodsNum);

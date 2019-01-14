@@ -5,16 +5,14 @@ import java.util.Map;
 
 import javax.annotation.Resource;
 
-import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.github.pagehelper.PageHelper;
-import com.github.pagehelper.PageInfo;
 import com.inno72.common.Result;
 import com.inno72.common.ResultGenerator;
+import com.inno72.common.Results;
 import com.inno72.model.Inno72MerchantTotalCount;
 import com.inno72.service.Inno72MerchantTotalCountService;
 import com.inno72.vo.ActMerchantLog;
@@ -31,19 +29,19 @@ public class Inno72MerchantTotalCountController {
 	private Inno72MerchantTotalCountService inno72MerchantTotalCountService;
 
 	@RequestMapping(value = "/update")
-	public Result update(Inno72MerchantTotalCount inno72MerchantTotalCount) {
+	public Result<String> update(Inno72MerchantTotalCount inno72MerchantTotalCount) {
 		inno72MerchantTotalCountService.update(inno72MerchantTotalCount);
-		return ResultGenerator.genSuccessResult();
+		return Results.success();
 	}
 
 	@RequestMapping(value = "/detail")
-	public Result detail(@RequestParam String id) {
+	public Result<Inno72MerchantTotalCount> detail(@RequestParam String id) {
 		Inno72MerchantTotalCount inno72MerchantTotalCount = inno72MerchantTotalCountService.findById(id);
 		return ResultGenerator.genSuccessResult(inno72MerchantTotalCount);
 	}
 
 	@RequestMapping(value = "/actInfo")
-	public Result actInfo(String actId, String merchantId) {
+	public Result<Inno72MerchantTotalCountVo> actInfo(String actId, String merchantId) {
 		return inno72MerchantTotalCountService.actInfo(actId, merchantId);
 	}
 
@@ -62,7 +60,6 @@ public class Inno72MerchantTotalCountController {
 	public Result<List<ActMerchantLog>> actLog(String actId) {
 		return inno72MerchantTotalCountService.actLog(actId);
 	}
-
 
 
 	@RequestMapping(value = "/totle")

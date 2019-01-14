@@ -32,6 +32,7 @@ public class CheckParamImpl {
 			Object[] args = proceedingJoinPoint.getArgs();
 			for (Object o : args) {
 				if (o == null) {
+					logger.info("参数{}为空", o);
 					return Results.failure("参数缺失!");
 				}
 			}

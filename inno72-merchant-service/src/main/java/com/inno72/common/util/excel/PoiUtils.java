@@ -62,9 +62,10 @@ public class PoiUtils {
 					"调用PoiUtil.copySheet()方法时，targetSheet、sourceSheet、targetWork、sourceWork都不能为空，故抛出该异常！");
 		}
 
-		//复制源表中的行
+		// 复制源表中的行
 		int maxColumnNum = 0;
 
+		@SuppressWarnings("rawtypes")
 		Map styleMap = (copyStyle) ? new HashMap() : null;
 
 		for (int i = sourceSheet.getFirstRowNum(); i <= sourceSheet.getLastRowNum(); i++) {
@@ -79,10 +80,10 @@ public class PoiUtils {
 			}
 		}
 
-		//复制源表中的合并单元格
+		// 复制源表中的合并单元格
 		mergerRegion(targetSheet, sourceSheet);
 
-		//设置目标sheet的列宽
+		// 设置目标sheet的列宽
 		for (int i = 0; i <= maxColumnNum; i++) {
 			targetSheet.setColumnWidth(i, sourceSheet.getColumnWidth(i));
 		}
@@ -97,13 +98,13 @@ public class PoiUtils {
 	 * @param sourceWork
 	 */
 	public static void copyRow(XSSFRow targetRow, XSSFRow sourceRow, XSSFWorkbook targetWork, XSSFWorkbook sourceWork,
-			Map styleMap) {
+			@SuppressWarnings("rawtypes") Map styleMap) {
 		if (targetRow == null || sourceRow == null || targetWork == null || sourceWork == null) {
 			throw new IllegalArgumentException(
 					"调用PoiUtil.copyRow()方法时，targetRow、sourceRow、targetWork、sourceWork、targetPatriarch都不能为空，故抛出该异常！");
 		}
 
-		//设置行高
+		// 设置行高
 		targetRow.setHeight(sourceRow.getHeight());
 
 		for (int i = sourceRow.getFirstCellNum(); i >= 0 && i <= sourceRow.getLastCellNum(); i++) {
@@ -118,10 +119,10 @@ public class PoiUtils {
 					targetCell = targetRow.createCell(i);
 				}
 
-				//拷贝单元格，包括内容和样式
+				// 拷贝单元格，包括内容和样式
 				copyCell(targetCell, sourceCell, targetWork, sourceWork, styleMap);
 
-				//拷贝单元格注释
+				// 拷贝单元格注释
 				copyComment(targetCell, sourceCell);
 			}
 		}
@@ -135,14 +136,15 @@ public class PoiUtils {
 	 * @param sourceWork            不能为空
 	 * @param styleMap              可以为空
 	 */
+	@SuppressWarnings("unchecked")
 	public static void copyCell(XSSFCell targetCell, XSSFCell sourceCell, XSSFWorkbook targetWork,
-			XSSFWorkbook sourceWork, Map styleMap) {
+			XSSFWorkbook sourceWork, @SuppressWarnings("rawtypes") Map styleMap) {
 		if (targetCell == null || sourceCell == null || targetWork == null || sourceWork == null) {
 			throw new IllegalArgumentException(
 					"调用PoiUtil.copyCell()方法时，targetCell、sourceCell、targetWork、sourceWork都不能为空，故抛出该异常！");
 		}
 
-		//处理单元格样式
+		// 处理单元格样式
 		if (styleMap != null) {
 			if (targetWork == sourceWork) {
 				targetCell.setCellStyle(sourceCell.getCellStyle());
@@ -159,7 +161,7 @@ public class PoiUtils {
 			}
 		}
 
-		//处理单元格内容
+		// 处理单元格内容
 		switch (sourceCell.getCellType()) {
 			case XSSFCell.CELL_TYPE_STRING:
 				targetCell.setCellValue(sourceCell.getRichStringCellValue());

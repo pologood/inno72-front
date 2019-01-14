@@ -71,7 +71,7 @@ public class Inno72MerchantUserServiceImpl extends AbstractService<Inno72Merchan
 
 	@Override
 	@CheckParams
-	public Result resetPwd(String password, String userName, String phone, String code) {
+	public Result<String> resetPwd(String password, String userName, String phone, String code) {
 		String s = redisUtil.get(CommonBean.REDIS_MERCHANT_RESET_PWD_KEY + userName);
 		if (s == null || !s.equals(code)) {
 			return Results.failure("请求异常！");
@@ -86,14 +86,14 @@ public class Inno72MerchantUserServiceImpl extends AbstractService<Inno72Merchan
 		newUser.setPassword(CommonBean.pwd(password));
 		newUser.setPhone(phone);
 		int i = inno72MerchantUserMapper.updatePwdByPhone(newUser);
-		LOGGER.info("更新用户密码完成 ===> {}", JSON.toJSONString(user));
+		LOGGER.info("更新用户密码完成 ===> {}, {}", JSON.toJSONString(user), i);
 		return Results.success();
 	}
 
 
 	@Override
 	@CheckParams
-	public Result resetPhone(String id, String phone, String token) {
+	public Result<String> resetPhone(String id, String phone, String token) {
 		Inno72MerchantUser user = inno72MerchantUserMapper.selectByPrimaryKey(id);
 		if (user == null) {
 			return Results.failure("用户不存在!");
@@ -101,12 +101,12 @@ public class Inno72MerchantUserServiceImpl extends AbstractService<Inno72Merchan
 		LOGGER.info("更新用户手机号码前 ===> {}", JSON.toJSONString(user));
 		user.setPhone(phone);
 		int i = inno72MerchantUserMapper.updateByPrimaryKeySelective(user);
-		LOGGER.info("更新用户手机号码完成 ===> {}", JSON.toJSONString(user));
+		LOGGER.info("更新用户手机号码完成 ===> {}, {}", JSON.toJSONString(user), i);
 		return Results.success();
 	}
 
 	@Override
-	public Result alterPwd(String id, String password, String oPassword) {
+	public Result<String> alterPwd(String id, String password, String oPassword) {
 		Inno72MerchantUser user = inno72MerchantUserMapper.selectByPrimaryKey(id);
 		if (user == null) {
 			return Results.failure("用户不存在!");
@@ -116,7 +116,7 @@ public class Inno72MerchantUserServiceImpl extends AbstractService<Inno72Merchan
 		}
 		user.setPassword(CommonBean.pwd(password));
 		int i = inno72MerchantUserMapper.updateByPrimaryKeySelective(user);
-		LOGGER.info("更新用户密码完成 ===> {}", JSON.toJSONString(user));
+		LOGGER.info("更新用户密码完成 ===> {}, {}", JSON.toJSONString(user), i);
 		return Results.success();
 	}
 
@@ -135,7 +135,7 @@ public class Inno72MerchantUserServiceImpl extends AbstractService<Inno72Merchan
 	}
 
 	@Override
-	public Result checkPhone(String phone, String code) {
+	public Result<String> checkPhone(String phone, String code) {
 
 		if (StringUtil.isEmpty(phone) || StringUtil.isEmpty(code)) {
 			return Results.failure("参数为空 !");
@@ -148,7 +148,7 @@ public class Inno72MerchantUserServiceImpl extends AbstractService<Inno72Merchan
 	}
 
 	@Override
-	public Result checkUser(String phone, String userName) {
+	public Result<String> checkUser(String phone, String userName) {
 		Inno72MerchantUser user = inno72MerchantUserMapper.selectByLoginNameAndPhone(userName, phone);
 		if (user == null) {
 			return Results.failure("用户不存在!");
@@ -157,7 +157,7 @@ public class Inno72MerchantUserServiceImpl extends AbstractService<Inno72Merchan
 	}
 
 	@Override
-	public Result selectUser(String phone, String userName) {
+	public Result<String> selectUser(String phone, String userName) {
 		if (StringUtil.isEmpty(phone) || StringUtil.isEmpty(userName)) {
 			return Results.failure("用户不存在!");
 		}

@@ -60,12 +60,12 @@ public class Encodes {
 		}
 	}
 
-	//	/**
-	//	 * Base64编码, URL安全(将Base64中的URL非法字符'+'和'/'转为'-'和'_', 见RFC3548).
-	//	 */
-	//	public static String encodeUrlSafeBase64(byte[] input) {
-	//		return Base64.encodeBase64URLSafe(input);
-	//	}
+	// /**
+	// * Base64编码, URL安全(将Base64中的URL非法字符'+'和'/'转为'-'和'_', 见RFC3548).
+	// */
+	// public static String encodeUrlSafeBase64(byte[] input) {
+	// return Base64.encodeBase64URLSafe(input);
+	// }
 
 	/**
 	 * Base64解码.
@@ -113,6 +113,7 @@ public class Encodes {
 	/**
 	 * Xml 转码.
 	 */
+	@SuppressWarnings("deprecation")
 	public static String escapeXml(String xml) {
 		return StringEscapeUtils.escapeXml(xml);
 	}
