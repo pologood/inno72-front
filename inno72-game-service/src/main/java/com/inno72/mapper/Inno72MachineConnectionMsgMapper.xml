@@ -17,6 +17,6 @@
     <result column="msg" jdbcType="LONGVARCHAR" property="msg" />
   </resultMap>
   <update id="updateMsgStatus">
-    update inno72_machine_connection_msg set status = 1,update_time=CURRENT_TIMESTAMP() where machine_code='${machineCode}' and activity_id='${activityId}' and type=${type} and version=${version}
+    update inno72_machine_connection_msg set status = 1,update_time=CURRENT_TIMESTAMP() where machine_code='${machineCode}' and activity_id='${activityId}' and type=${type} and version=${version} and status = 0
   </update>
 </mapper>

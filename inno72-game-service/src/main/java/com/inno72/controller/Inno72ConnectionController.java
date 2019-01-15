@@ -51,16 +51,16 @@ public class Inno72ConnectionController {
     public Result<Object> callBack(@RequestBody Inno72MachineConnectionMsg msg) {
         try{
             LOGGER.info("callBack machineCode = {},activityId={},type={},version={}",msg.getMachineCode(),msg.getActivityId(),msg.getType(),msg.getVersion());
-//            inno72ConnectionService.callBack(msg.getMachineCode(),msg.getActivityId(),msg.getType(),msg.getVersion());
+            inno72ConnectionService.callBack(msg.getMachineCode(),msg.getActivityId(),msg.getType(),msg.getVersion());
             //发送长连接
-            String pushServerUrl = inno72GameServiceProperties.get("pushServerUrl")+"/pusher/push/one";
-            PushRequestVo vo = new PushRequestVo();
-            vo.setData(JsonUtil.toJson(msg));
-            vo.setTargetCode(msg.getMachineCode());
-            String request = JsonUtil.toJson(vo);
-            LOGGER.info("send msg url = {},data={}",pushServerUrl,request);
-            String response = HttpClient.post(pushServerUrl,request);
-            LOGGER.info("send msg response={}",response);
+//            String pushServerUrl = inno72GameServiceProperties.get("pushServerUrl")+"/pusher/push/one";
+//            PushRequestVo vo = new PushRequestVo();
+//            vo.setData(JsonUtil.toJson(msg));
+//            vo.setTargetCode(msg.getMachineCode());
+//            String request = JsonUtil.toJson(vo);
+//            LOGGER.info("send msg url = {},data={}",pushServerUrl,request);
+//            String response = HttpClient.post(pushServerUrl,request);
+//            LOGGER.info("send msg response={}",response);
             return Results.success();
         }catch (Inno72BizException e){
             return Results.warn(e.getMessage(),-1);
