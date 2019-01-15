@@ -1,6 +1,7 @@
 package com.inno72.service.impl;
 
 import java.time.Duration;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
@@ -22,9 +23,13 @@ import com.inno72.common.Result;
 import com.inno72.common.Results;
 import com.inno72.common.datetime.LocalDateTimeUtil;
 import com.inno72.common.utils.StringUtil;
+import com.inno72.mapper.Inno72ActivityIndexMapper;
+import com.inno72.mapper.Inno72ActivityInfoDescMapper;
 import com.inno72.mapper.Inno72MerchantMapper;
 import com.inno72.mapper.Inno72MerchantTotalCountMapper;
 import com.inno72.mapper.Inno72MerchantUserMapper;
+import com.inno72.model.Inno72ActivityIndex;
+import com.inno72.model.Inno72ActivityInfoDesc;
 import com.inno72.model.Inno72MerchantTotalCount;
 import com.inno72.model.Inno72MerchantUser;
 import com.inno72.service.Inno72MerchantTotalCountService;
@@ -48,6 +53,10 @@ public class Inno72MerchantTotalCountServiceImpl extends AbstractService<Inno72M
 	private Inno72MerchantUserMapper inno72MerchantUserMapper;
 	@Resource
 	private Inno72MerchantMapper inno72MerchantMapper;
+	@Resource
+	private Inno72ActivityInfoDescMapper inno72ActivityInfoDescMapper;
+	@Resource
+	private Inno72ActivityIndexMapper inno72ActivityIndexMapper;
 
 	@Override
 	public Result<List<Inno72MerchantTotalCountVo>> findAllById(String id) {
@@ -283,12 +292,35 @@ public class Inno72MerchantTotalCountServiceImpl extends AbstractService<Inno72M
 	}
 
 	@Override
-	public Result<List<ActMerchantLog>> actLog(String actId) {
+	public Result<List<ActMerchantLog>> actLog(String actId, String merchantId) {
+
+		Map<String, String> param = new HashMap<>();
+		param.put("actId", actId);
+		param.put("merchantId", merchantId);
+		List<Inno72ActivityInfoDesc> descS = inno72ActivityInfoDescMapper.selectActInfoDesc(param);
 
 		List<ActMerchantLog> actMerchantLogs = new ArrayList<>();
+		ActMerchantLog log;
+
+		for (Inno72ActivityInfoDesc desc : descS){
+
+			LocalDate infoDate = desc.getInfoDate();
+			String infoDesc = desc.getInfoDesc();
+			Integer infoType = desc.getInfoType();
+
+			log = new ActMerchantLog();
+			log.setId(StringUtil.uuid());
+			log.setTime(infoDate.format(DateTimeFormatter.ofPattern("yyyy-MM-dd")));
+			log.setCount(infoDesc);
+			log.setType(infoType == 1 ? "新增" : "其他");
+
+			actMerchantLogs.add(log);
+
+		}
+
 		// 点72 活动
 		if (actId.equals("03e0c821671a4d6f8fad0d47fa25f040")) {
-			ActMerchantLog log = new ActMerchantLog();
+			log = new ActMerchantLog();
 			log.setId(StringUtil.uuid());
 			log.setTime("2018-12-15");
 			log.setCount("新增 30 台机器");
@@ -296,7 +328,7 @@ public class Inno72MerchantTotalCountServiceImpl extends AbstractService<Inno72M
 			actMerchantLogs.add(log);
 			// 备选活动
 		} else if (actId.equals("40e48662e73340a496e117653edd2ef5")) {
-			ActMerchantLog log = new ActMerchantLog();
+			log = new ActMerchantLog();
 			log.setId(StringUtil.uuid());
 			log.setTime("2018-12-13");
 			log.setCount("新增 265 台机器");
@@ -351,6 +383,10 @@ public class Inno72MerchantTotalCountServiceImpl extends AbstractService<Inno72M
 			return Results.failure("没有这个活动的配置!");
 		}
 
+		List<Inno72ActivityIndex> indexList = inno72ActivityIndexMapper.selectIndex(param);
+
+		countVo.setIndexList(indexList);
+
 		countVo.setActivityName(count.getActivityName());
 		countVo.setActivityId(actId);
 		countVo.setMerchantId(user.getMerchantId());
@@ -358,6 +394,7 @@ public class Inno72MerchantTotalCountServiceImpl extends AbstractService<Inno72M
 		countVo.setUv(count.getUv());
 		countVo.setShipment(count.getShipment());
 		countVo.setOrder(count.getOrder());
+		countVo.setGoodsNum(count.getShipment());
 
 		String startTime = countVo.getStartTime();
 		String endTime = countVo.getEndTime();
@@ -398,8 +435,6 @@ public class Inno72MerchantTotalCountServiceImpl extends AbstractService<Inno72M
 			countVo.setActivityStatus(status);
 			countVo.setStartTime(startLocalTime.toLocalDate().format(DateTimeFormatter.ofPattern("yyyy-MM-dd")));
 			countVo.setEndTime(endLocalTime.toLocalDate().format(DateTimeFormatter.ofPattern("yyyy-MM-dd")));
-			countVo.setGoodsNum(count.getShipment());
-			countVo.setPv(count.getPv());
 
 		}
 

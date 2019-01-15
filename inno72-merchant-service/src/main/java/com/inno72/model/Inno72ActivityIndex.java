@@ -34,8 +34,8 @@ public class Inno72ActivityIndex {
 	/**
 	 * 商户ID inno72_merchant_user.merchant_id
 	 */
-	@Column(name = "machine_id")
-	private String machineId;
+	@Column(name = "merchant_id")
+	private String merchantId;
 
 	/**
 	 * 核心指标类型 1: 参与人数; 2: 商品订单数；3: 商品掉货数
@@ -125,19 +125,19 @@ public class Inno72ActivityIndex {
 	/**
 	 * 获取商户ID inno72_merchant_user.merchant_id
 	 *
-	 * @return machine_id - 商户ID inno72_merchant_user.merchant_id
+	 * @return merchant_id - 商户ID inno72_merchant_user.merchant_id
 	 */
-	public String getMachineId() {
-		return machineId;
+	public String getMerchantId() {
+		return merchantId;
 	}
 
 	/**
 	 * 设置商户ID inno72_merchant_user.merchant_id
 	 *
-	 * @param machineId 商户ID inno72_merchant_user.merchant_id
+	 * @param merchantId 商户ID inno72_merchant_user.merchant_id
 	 */
-	public void setMachineId(String machineId) {
-		this.machineId = machineId;
+	public void setMerchantId(String merchantId) {
+		this.merchantId = merchantId;
 	}
 
 	/**

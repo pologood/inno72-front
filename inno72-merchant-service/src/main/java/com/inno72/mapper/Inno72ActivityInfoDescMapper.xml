@@ -8,7 +8,7 @@
     <id column="id" jdbcType="VARCHAR" property="id" />
     <result column="activity_id" jdbcType="VARCHAR" property="activityId" />
     <result column="activity_name" jdbcType="VARCHAR" property="activityName" />
-    <result column="machine_id" jdbcType="VARCHAR" property="machineId" />
+    <result column="merchant_id" jdbcType="VARCHAR" property="merchantId" />
     <result column="info_type" jdbcType="INTEGER" property="infoType" />
     <result column="info_date" jdbcType="DATE" property="infoDate" javaType="java.time.LocalDate"
                 typeHandler="org.apache.ibatis.type.LocalDateTypeHandler"/>
@@ -17,4 +17,8 @@
                 typeHandler="org.apache.ibatis.type.LocalDateTimeTypeHandler"/>
     <result column="creator" jdbcType="VARCHAR" property="creator" />
   </resultMap>
+    <select id="selectActInfoDesc" resultMap="BaseResultMap" parameterType="map">
+      select * from inno72.inno72_activity_info_desc
+        where activity_id = #{actId} and merchant_id = #{merchantId}
+    </select>
 </mapper>

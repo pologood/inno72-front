@@ -36,8 +36,8 @@ public class Inno72ActivityInfoDesc {
 	/**
 	 * 商户ID inno72_merchant_user.merchant_id
 	 */
-	@Column(name = "machine_id")
-	private String machineId;
+	@Column(name = "merchant_id")
+	private String merchantId;
 
 	/**
 	 * 活动信息类型 1：新增；
@@ -115,17 +115,17 @@ public class Inno72ActivityInfoDesc {
 	 *
 	 * @return machine_id - 商户ID inno72_merchant_user.merchant_id
 	 */
-	public String getMachineId() {
-		return machineId;
+	public String getMerchantId() {
+		return merchantId;
 	}
 
 	/**
 	 * 设置商户ID inno72_merchant_user.merchant_id
 	 *
-	 * @param machineId 商户ID inno72_merchant_user.merchant_id
+	 * @param merchantId 商户ID inno72_merchant_user.merchant_id
 	 */
-	public void setMachineId(String machineId) {
-		this.machineId = machineId;
+	public void setMerchantId(String merchantId) {
+		this.merchantId = merchantId;
 	}
 
 	/**

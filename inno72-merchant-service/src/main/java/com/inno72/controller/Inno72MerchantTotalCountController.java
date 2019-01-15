@@ -57,8 +57,8 @@ public class Inno72MerchantTotalCountController {
 	}
 
 	@RequestMapping(value = "/actLog")
-	public Result<List<ActMerchantLog>> actLog(String actId) {
-		return inno72MerchantTotalCountService.actLog(actId);
+	public Result<List<ActMerchantLog>> actLog(String actId, String merchantId) {
+		return inno72MerchantTotalCountService.actLog(actId, merchantId);
 	}
 
 
