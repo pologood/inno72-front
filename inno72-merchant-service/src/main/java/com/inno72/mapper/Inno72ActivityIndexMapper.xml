@@ -21,5 +21,6 @@
     <select id="selectIndex" resultMap="BaseResultMap" parameterType="map">
       select * from inno72.inno72_activity_index
         where activity_id = #{activityId} and merchant_id = #{merchantId}
+        order by create_time asc
     </select>
 </mapper>
