@@ -323,7 +323,7 @@ public class Inno72StandardController {
 								redirectUrl = String.format(inno72GameServiceProperties.get("phoneLoginUrlTmal"),sessionVo.getPlanCode(),sessionUuid);
 							}else{
 								redirectUrl = String.format(inno72GameServiceProperties.get("phoneLoginUrl"),sessionVo.getPlanCode(),sessionUuid);
-								wrapFlag = true;
+								if(env.equals("prod")) wrapFlag = true;
 							}
 							String PU = request.getParameter("PU");
 							if(!StringUtils.isEmpty(PU)){
