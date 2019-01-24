@@ -622,7 +622,6 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 					Inno72Order.INNO72ORDER_GOODSTYPE.PRODUCT);
 		}
 
-        String accessToken = userSessionVo.getAccessToken();
         LOGGER.info("更新的session =====> {}", JSON.toJSONString(userSessionVo));
         if (inno72OrderId.equals("0")) {
             LOGGER.info("已经超过最大游戏数量啦 QAQ!");
@@ -686,8 +685,8 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 
 		return returnUrl;
 	}
-
-	private String genPaiyangInno72Order(UserSessionVo userSessionVo,String sessionUuid, boolean canOrder ,String channelId, String activityPlanId, String machineId, String goodsId, String channelUserKey, Inno72Order.INNO72ORDER_GOODSTYPE product) {
+	@Override
+	public String genPaiyangInno72Order(UserSessionVo userSessionVo,String sessionUuid, boolean canOrder ,String channelId, String activityPlanId, String machineId, String goodsId, String channelUserKey, Inno72Order.INNO72ORDER_GOODSTYPE product) {
 		Inno72GameUserChannel userChannel = null;
 		if(StandardLoginTypeEnum.ALIBABA.getValue().compareTo(userSessionVo.getChannelType()) == 0 || StandardLoginTypeEnum.INNO72.getValue().compareTo(userSessionVo.getChannelType()) == 0){
 			userChannel =  inno72GameUserChannelService.findInno72GameUserChannel(channelId,channelUserKey,null);
@@ -1172,6 +1171,7 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 			this.startSession(inno72Machine, ext, sessionUuid);
 			UserSessionVo userSessionVo =  new UserSessionVo(inno72Machine.getMachineCode());
 			userSessionVo.setLoginType(req.getLoginType());
+			userSessionVo.setChannelType(req.getLoginType());
 		} catch(Exception e){
 			LOGGER.error("prepareLoginQrCode",e);
 			return Results.failure("系统异常");

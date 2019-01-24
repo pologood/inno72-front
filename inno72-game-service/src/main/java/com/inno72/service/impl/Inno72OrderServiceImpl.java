@@ -256,6 +256,22 @@ public class Inno72OrderServiceImpl implements Inno72OrderService {
 		return inno72OrderMapper.select(param);
 	}
 
+	@Override
+	public void updateOrderStatusAndPayStatusByRefOrderNum(String orderNum, Integer orderStatus, Integer payStatus) {
+		Inno72Order param = new Inno72Order();
+		param.setRefOrderId(orderNum);
+		param = inno72OrderMapper.selectOne(param);
+		if(param!=null){
+			param.setOrderStatus(orderStatus);
+			param.setPayStatus(payStatus);
+			param.setPayTime(LocalDateTime.now());
+			inno72OrderMapper.updateByPrimaryKeySelective(param);
+			param = inno72OrderMapper.selectByPrimaryKey(param.getId());
+			inno72OrderHistoryMapper.insert(new Inno72OrderHistory(param.getId(), param.getOrderNum(),
+					JSON.toJSONString(param), "支付成功"));
+		}
+	}
+
 	private void manageOrderList(List<OrderVo> orderList) {
 		if(orderList.size()>0){
 			for(OrderVo orderVo:orderList){
