@@ -312,7 +312,16 @@ public class Inno72MerchantTotalCountServiceImpl extends AbstractService<Inno72M
 			log.setId(StringUtil.uuid());
 			log.setTime(infoDate.format(DateTimeFormatter.ofPattern("yyyy-MM-dd")));
 			log.setCount(infoDesc);
-			log.setType(infoType == 1 ? "新增" : "其他");
+			String type = "";
+			switch (infoType){
+				case 1:
+					type = "新增"; break;
+				case 2:
+					type = "变更"; break;
+				default:
+					type = "其他";
+			}
+			log.setType(type);
 
 			actMerchantLogs.add(log);
 
