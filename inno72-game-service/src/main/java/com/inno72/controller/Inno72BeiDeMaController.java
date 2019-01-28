@@ -1,10 +1,7 @@
 package com.inno72.controller;
 
 import com.alibaba.fastjson.JSON;
-import com.inno72.common.Inno72BizException;
-import com.inno72.common.MachentSecureKeyCache;
-import com.inno72.common.Result;
-import com.inno72.common.Results;
+import com.inno72.common.*;
 import com.inno72.common.json.JsonUtil;
 import com.inno72.common.util.GameSessionRedisUtil;
 import com.inno72.common.util.SignUtil;
@@ -70,7 +67,7 @@ public class Inno72BeiDeMaController {
 
                     AuthInfoWechatVo authInfo = new AuthInfoWechatVo();
                     authInfo.setChannelType(2);
-                    authInfo.setAppId("wxd2d020e170a05549");
+                    authInfo.setAppId(BeidemaConstants.appId);
                     authInfo.setNickname("beidema");
                     authInfo.setOpenId(vo.getOpenid());
                     Result r = inno72AuthInfoService.processBeforeLogged(vo.getMachineCode(), JsonUtil.toJson(authInfo), UuidUtil.getUUID32());

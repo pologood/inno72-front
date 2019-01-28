@@ -22,6 +22,7 @@ import com.inno72.vo.*;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
@@ -77,7 +78,8 @@ import com.taobao.api.ApiException;
 public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(Inno72GameApiServiceImpl.class);
-
+	@Autowired
+	private BeideMaClient beideMaClient;
 	@Resource
 	private Inno72GameServiceProperties inno72GameServiceProperties;
 	@Resource
@@ -945,9 +947,9 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 		if (userSessionVo == null) {
 			return Results.failure("登录失效!");
 		}
-
+		Result<String> succChannelResult = null;
 		if (StringUtil.isNotEmpty(vo.getChannelId())) {
-			Result<String> succChannelResult = shipmentReport(vo);
+			succChannelResult = shipmentReport(vo);
 			LOGGER.info("succChannelResult code is {} ", succChannelResult.getCode());
 		}
 
@@ -980,7 +982,15 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 			LOGGER.info("machineCode is {}, orderId is {}, failChannelIds is {}, code is {} ", machineCode, userSessionVo.getRefOrderId(), failChannelIds,
 					failChannelResult.getCode());
 		}
-
+		if(BeidemaConstants.appId.equals(userSessionVo.getSellerId())){
+			if(succChannelResult.getCode() == Result.SUCCESS){
+				//出货成功
+				beideMaClient.shipment(userSessionVo.getUserId(),userSessionVo.getRefOrderId(),1);
+			}else{
+				//出货失败
+				beideMaClient.shipment(userSessionVo.getUserId(),userSessionVo.getRefOrderId(),0);
+			}
+		}
 		return Results.success();
 	}
 
