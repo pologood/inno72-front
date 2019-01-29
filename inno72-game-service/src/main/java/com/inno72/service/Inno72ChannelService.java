@@ -25,4 +25,6 @@ public interface Inno72ChannelService {
     }
 
     default Result<Object> orderPolling(UserSessionVo userSessionVo, MachineApiVo vo){ return null;}
+
+    default void shipment(String channelId, String machineCode, UserSessionVo userSessionVo,String orderId,MachineApiVo vo){}
 }

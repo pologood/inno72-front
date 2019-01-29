@@ -30,17 +30,21 @@ public class BeideMaClientImpl implements BeideMaClient{
         try {
             String principal = getPrincipal();
             //调用贝德玛出货接口
-            Map<String,Object> map = new HashMap<String,Object>();
-            map.put("OpenId",openId);
-            map.put("OrderNo",orderNo);
-            map.put("IsSuccess",isSuccess);
-            LOGGER.info("SendCallBack request = {}",JsonUtil.toJson(map));
+            Map<String,Object> datajson = new HashMap<String,Object>();
+            datajson.put("OpenId",openId);
+            datajson.put("OrderNo",orderNo);
+            datajson.put("IsSuccess",isSuccess);
+            Map<String,String> request = new HashMap<String,String>();
+            request.put("requestEntity",JsonUtil.toJson(datajson));
+            LOGGER.info("SendCallBack request = {}",JsonUtil.toJson(request));
             Map<String,String> header = new HashMap<String,String>();
             header.put("Principal",principal);
-            String response = HttpClient.post(getDomain()+"/VendingMachine/SendCallBack", MediaType.parse("application/json; charset=utf-8"), JsonUtil.toJson(map), HttpClient.Request_Type.String, HttpClient.Response_Type.String, header).toString();
+            String response = HttpClient.form(getDomain()+"/VendingMachine/SendCallBack",request,header);
+//            String response = HttpClient.post(getDomain()+"/VendingMachine/SendCallBack", MediaType.parse("application/json; charset=utf-8"), JsonUtil.toJson(map), HttpClient.Request_Type.String, HttpClient.Response_Type.String, header).toString();
             LOGGER.info("SendCallBack response = {}",response);
         } catch (IOException e) {
             LOGGER.error(e.getMessage(),e);
+            throw new RuntimeException();
         }
         return null;
     }
