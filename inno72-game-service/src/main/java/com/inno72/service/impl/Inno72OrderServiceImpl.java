@@ -2,10 +2,13 @@ package com.inno72.service.impl;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
+import com.github.pagehelper.Page;
+import com.github.pagehelper.PageHelper;
 import com.inno72.common.Inno72GameServiceProperties;
 import com.inno72.common.Result;
 import com.inno72.common.Results;
 import com.inno72.common.json.JsonUtil;
+import com.inno72.common.util.DateUtil;
 import com.inno72.common.util.FastJsonUtils;
 import com.inno72.common.util.GameSessionRedisUtil;
 import com.inno72.common.util.Inno72OrderNumGenUtil;
@@ -18,6 +21,7 @@ import com.inno72.service.Inno72OrderService;
 import com.inno72.service.Inno72TopService;
 import com.inno72.vo.GoodsVo;
 import com.inno72.vo.MachineApiVo;
+import com.inno72.vo.OrderVo;
 import com.inno72.vo.UserSessionVo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -234,6 +238,59 @@ public class Inno72OrderServiceImpl implements Inno72OrderService {
 		param = inno72OrderMapper.selectByPrimaryKey(orderId);
 		inno72OrderHistoryMapper.insert(new Inno72OrderHistory(param.getId(), param.getOrderNum(),
 				JSON.toJSONString(param), "支付成功"));
+	}
+
+	@Override
+	public List<OrderVo> orderList(String gameUserId, Integer pageNum, Integer pageSize) {
+		PageHelper.startPage(pageNum, pageSize, true);
+		List<OrderVo> orderList = inno72OrderMapper.orderList(gameUserId);
+		manageOrderList(orderList);
+		return orderList;
+	}
+
+	@Override
+	public List<Inno72Order> findUnShipmentOrder(String gameUserId) {
+		Inno72Order param = new Inno72Order();
+		param.setUserId(gameUserId);
+		param.setOrderStatus(Inno72Order.INNO72ORDER_ORDERSTATUS.PAY.getKey());
+		return inno72OrderMapper.select(param);
+	}
+
+	private void manageOrderList(List<OrderVo> orderList) {
+		if(orderList.size()>0){
+			for(OrderVo orderVo:orderList){
+				//处理时间
+				orderVo.setOrderTimeStr(DateUtil.format(orderVo.getOrderTime()));
+				orderVo.setRefundCreateTimeStr(DateUtil.format(orderVo.getRefundCreateTime()));
+				orderVo.setRefundTimeStr(DateUtil.format(orderVo.getRefundTime()));
+				//处理订单掉货状态
+				Integer orderStatus = orderVo.getOrderStatus();
+				if(orderStatus == Inno72Order.INNO72ORDER_ORDERSTATUS.COMPLETE.getKey()){
+					orderVo.setOrderStatusName("已掉货");
+				}else{
+					//已经掉货其他状态都显示为掉货
+					orderVo.setOrderStatusName("未掉货");
+				}
+				//处理退款状态
+				Integer refundStatus = orderVo.getRefundStatus();
+				if(refundStatus != null){
+					//状态：0 新退款订单，1退款中，
+					//
+					//2退款成功，3退款失败
+					if(refundStatus == OrderVo.REFUND_STATUS.NEW.getKey()){
+						orderVo.setRefundStatusStr("退款待处理");
+					}else if(refundStatus == OrderVo.REFUND_STATUS.REFUND_SUCCESS.getKey()){
+						orderVo.setRefundStatusStr("退款成功");
+					}else if(refundStatus == OrderVo.REFUND_STATUS.REFUND_FAIL.getKey()){
+						orderVo.setRefundStatusStr("退款失败");
+					}else{
+						orderVo.setRefundStatusStr("退款待处理");
+					}
+				}else{
+					orderVo.setRefundStatusStr("下单后4小时内可退款");
+				}
+			}
+		}
 	}
 
 	private void saveOrder(Inno72Order order) {

@@ -37,6 +37,8 @@ public class UserSessionVo {
 	private BigDecimal orderPrice;
 	private Inno72MachineVo inno72MachineVo;
 	private String gameUserLoginId;
+	private Boolean weidaScanFlag;
+	private String phone;
 	/**
 	 * 商户总ID - table -> inno72_merchant_user.merchant_id
 	 */
@@ -854,6 +856,28 @@ public class UserSessionVo {
 	public void setGameUserLoginId(String gameUserLoginId) {
 		this.gameUserLoginId = gameUserLoginId;
 		httpSession.setAttribute(SessionConstants.GAMEUSERLOGINID,gameUserLoginId);
+	}
+
+	public Boolean getWeidaScanFlag() {
+		Object obj = httpSession.getAttribute(SessionConstants.WEIDASCANFLAG);
+		if(obj == null) return false;
+		return (Boolean)obj ;
+	}
+
+	public void setWeidaScanFlag(Boolean weidaScanFlag) {
+		this.weidaScanFlag = weidaScanFlag;
+		httpSession.setAttribute(SessionConstants.WEIDASCANFLAG,weidaScanFlag);
+	}
+
+	public String getPhone() {
+		Object obj = httpSession.getAttribute(SessionConstants.PHONE);
+		if(obj == null) return null;
+		return (String)obj ;
+	}
+
+	public void setPhone(String phone) {
+		this.phone = phone;
+		httpSession.setAttribute(SessionConstants.PHONE,phone);
 	}
 
 	public boolean findPaiyangFlag() {

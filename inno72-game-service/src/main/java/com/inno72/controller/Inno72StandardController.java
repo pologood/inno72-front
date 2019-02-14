@@ -1,7 +1,9 @@
 package com.inno72.controller;
 
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
+import java.net.URLEncoder;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
@@ -272,52 +274,6 @@ public class Inno72StandardController {
 		return result;
 	}
 
-	/**
-	 * 登录跳转
-	 */
-//	@ResponseBody
-//	@RequestMapping(value = "/loginRedirect", method = {RequestMethod.GET})
-//	public void loginRedirect(HttpServletResponse response, String sessionUuid, String env) {
-//		LOGGER.info("loginRedirect sessionUuid is {}, env is {}", sessionUuid, env);
-//		try {
-//			synchronized (this) {
-//				String redirectUrl = "";
-//				// 判断是否已经有人扫过了，如果扫过 直接跳转
-//				UserSessionVo sessionVo = gameSessionRedisUtil.getSessionKey(sessionUuid);
-//
-//				if (sessionVo != null) {
-//					LOGGER.info("loginRedirect isScanned is {}", sessionVo.getIsScanned());
-//
-//					// 判断二维码是否已经超时, 恢复isScanned 状态 为false，允许二维码继续被扫
-//					boolean qrCode = gameSessionRedisUtil.exists(sessionUuid + "qrCode");
-//					LOGGER.info("loginRedirect qrCode is {}", qrCode);
-//					if (!qrCode) {
-//						sessionVo.setIsScanned(false);
-//					}
-//					if (sessionVo.getIsScanned()) {
-//						LOGGER.info("loginRedirect 二维码已经被扫描");
-//						redirectUrl = String.format(topH5ErrUrl, env) + "/?status="+ TopH5ErrorTypeEnum.IS_SCANNED.getValue();
-//					} else {
-//						sessionVo.setIsScanned(true);
-//						String traceId = UuidUtil.getUUID32();
-//						sessionVo.setTraceId(traceId);
-//						sessionVo.setScanUrl(redirectUrl);
-//						gameSessionRedisUtil.setSession(sessionUuid, JSON.toJSONString(sessionVo));
-//						// 设置15秒内二维码不能被扫
-//						gameSessionRedisUtil.setSessionEx(sessionUuid + "qrCode", sessionUuid, 15);
-//
-//						pointService.innerPoint(sessionUuid, Inno72MachineInformation.ENUM_INNO72_MACHINE_INFORMATION_TYPE.SCAN_LOGIN);
-//						redirectUrl = String.format("%s%s/%s/%s", inno72GameServiceProperties.get("tmallUrl"), sessionUuid, env, traceId);
-//					}
-//				}
-//				LOGGER.info("loginRedirect redirectUrl is {} ", redirectUrl);
-//				response.sendRedirect(redirectUrl);
-//			}
-//		} catch (IOException e) {
-//			e.printStackTrace();
-//		}
-//	}
-
     /**
      * 登录跳转
      */
@@ -355,12 +311,23 @@ public class Inno72StandardController {
 
                         pointService.innerPoint(JSON.toJSONString(sessionVo), Inno72MachineInformation.ENUM_INNO72_MACHINE_INFORMATION_TYPE.SCAN_LOGIN);
 						if(channelType!=null && channelType == StandardLoginTypeEnum.INNO72.getValue()){
-							redirectUrl = String.format(inno72GameServiceProperties.get("phoneLoginUrl"),sessionVo.getPlanCode(),sessionUuid);
+							String tmalFlag = request.getParameter("tmalFlag");
+							boolean wrapFlag = false;
+							if(!StringUtils.isEmpty(tmalFlag)&&"1".equals(tmalFlag)){
+								redirectUrl = String.format(inno72GameServiceProperties.get("phoneLoginUrlTmal"),sessionVo.getPlanCode(),sessionUuid);
+							}else{
+								redirectUrl = String.format(inno72GameServiceProperties.get("phoneLoginUrl"),sessionVo.getPlanCode(),sessionUuid);
+								wrapFlag = true;
+							}
 							String PU = request.getParameter("PU");
 							if(!StringUtils.isEmpty(PU)){
 								redirectUrl+="&PU="+PU;
 							}
+							redirectUrl+="&activityId="+sessionVo.getActivityId();
 							LOGGER.info("loginRedirect loginUrl={}",redirectUrl);
+							if(wrapFlag){
+								redirectUrl = wrapWechatUrl(redirectUrl);
+							}
 						}else{
 							redirectUrl = String.format("%s%s/%s/%s", inno72GameServiceProperties.get("tmallUrl"), sessionUuid, env, traceId);
 						}
@@ -377,6 +344,13 @@ public class Inno72StandardController {
         }
         return result;
     }
+
+	private String wrapWechatUrl(String redirectUrl) throws UnsupportedEncodingException {
+		String url = URLEncoder.encode(redirectUrl,"UTF-8");
+		String retUrl = "https://open.weixin.qq.com/connect/oauth2/authorize?appid=wxd2d020e170a05549&redirect_uri="+url+"&response_type=code&scope=snsapi_userinfo&state=STATE#wechat_redirect";
+		LOGGER.info("wrapWechatUrl ={}",retUrl);
+		return retUrl;
+	}
 
 	/**
 	 * 支付跳转

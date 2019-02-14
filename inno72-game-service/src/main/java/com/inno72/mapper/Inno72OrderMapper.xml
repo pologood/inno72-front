@@ -73,4 +73,17 @@
                 where  o.merchant_id=#{merchantId} and o.goods_status=1 and o.goods_type = 1 and g.seller_id=#{merchantId}
     </select>
 
+    <select id="orderList" resultType="com.inno72.vo.OrderVo" parameterType="string">
+        select o.id as id,o.order_num as orderNum,o.order_time as orderTime,
+        og.goods_name as goodsName,o.order_price as orderPrice,
+        o.order_status as orderStatus,fund.create_time as refundCreateTime,
+        fund.refund_time as refundTime,fund.refund_num as refundNum,fund.reason as reason,
+        fund.status as refundStatus
+        from inno72_order o
+        left join inno72_order_refund fund on o.id = fund.order_id
+        left join inno72_order_goods og on o.id = og.order_id
+        where o.pay_status=1 and o.user_id =#{gameUserId}
+        order by o.order_time
+    </select>
+
 </mapper>

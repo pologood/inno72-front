@@ -1,16 +1,15 @@
 package com.inno72.service.impl;
 
 import com.alibaba.fastjson.JSON;
+import com.google.gson.Gson;
 import com.inno72.common.*;
 import com.inno72.common.util.FastJsonUtils;
 import com.inno72.common.utils.StringUtil;
 import com.inno72.mapper.*;
 import com.inno72.model.*;
+import com.inno72.plugin.http.HttpClient;
 import com.inno72.service.*;
-import com.inno72.vo.Inno72MachineInformation;
-import com.inno72.vo.MachineApiVo;
-import com.inno72.vo.StandardPrepareLoginReqVo;
-import com.inno72.vo.UserSessionVo;
+import com.inno72.vo.*;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -29,6 +28,9 @@ public class Inno72Inno72ChannelServiceImpl implements Inno72ChannelService {
 
     @Autowired
     private Inno72GameServiceProperties inno72GameServiceProperties;
+
+    @Autowired
+    private Inno72GameUserChannelService inno72GameUserChannelService ;
 
     @Autowired
     private PointService pointService;
@@ -79,12 +81,16 @@ public class Inno72Inno72ChannelServiceImpl implements Inno72ChannelService {
     @Value("${env}")
     private String env;
 
+    @Value("${duduji.appid}")
+    private String dudujiAppId;
+
     @Override
     public String buildQrContent(Inno72Machine inno72Machine, String sessionUuid,StandardPrepareLoginReqVo req) {
         String redirect = inno72GameServiceProperties.get("loginRedirect");
         String ext = req.getExt();
         String PU = FastJsonUtils.getString(ext, "PU");
-        String url = buildUrl(redirect,sessionUuid,PU);
+        String tmalFlag = FastJsonUtils.getString(ext, "tmalFlag");
+        String url = buildUrl(redirect,sessionUuid,PU,tmalFlag);
         return url;
     }
 
@@ -135,6 +141,12 @@ public class Inno72Inno72ChannelServiceImpl implements Inno72ChannelService {
             LOGGER.info("插入游戏用户渠道表 完成 ===> {}", JSON.toJSONString(userChannel));
         }
 
+        //关联微信
+        String code = FastJsonUtils.getString(authInfo, "code");
+        if(!StringUtils.isEmpty(code)){
+            joinPhoneWechatUser(code,userChannel.getGameUserId());
+        }
+
         //插入gameLife表
         Inno72Locale inno72Locale = inno72LocaleMapper.selectByPrimaryKey(inno72Machine.getLocaleId());
         Inno72GameUserLife life = new Inno72GameUserLife(userChannel == null ? null : userChannel.getGameUserId(),
@@ -173,7 +185,7 @@ public class Inno72Inno72ChannelServiceImpl implements Inno72ChannelService {
         sessionVo.setGameId(gameId);
         sessionVo.setSessionUuid(sessionUuid);
         sessionVo.setActivityPlanId(interact.getId());
-        boolean canOrder = inno72AuthInfoService.findCanOrder(interact,sessionVo,userId);
+        boolean canOrder = inno72AuthInfoService.findCanOrder(interact,sessionVo,userChannel.getGameUserId());
         sessionVo.setCanOrder(canOrder);
         if(sessionVo.getGoodsType()!=null && UserSessionVo.GOODSTYPE_COUPON.compareTo(sessionVo.getGoodsType())==0){
             sessionVo.setCountGoods(true);
@@ -197,6 +209,32 @@ public class Inno72Inno72ChannelServiceImpl implements Inno72ChannelService {
         return Results.success();
     }
 
+    /**
+     * 关联手机号和微信用户
+     * @param code
+     * @param gameUserId
+     */
+    private void joinPhoneWechatUser(String code, String gameUserId) {
+        //根据code获取微信用户
+        WxMpUser user = inno72GameUserChannelService.getWeChatUserByCode(code);
+        if(user != null){
+            user.setAppId(dudujiAppId);
+            Inno72GameUserChannel gameUserChannel = inno72GameUserChannelService.findWeChatUser(user.getUnionId());
+            if(gameUserChannel == null){
+                inno72GameUserChannelService.saveWechatUser(user,gameUserId);
+            }else{
+                if(!gameUserChannel.getGameUserId().equals(gameUserId)){
+                    inno72GameUserChannelService.updateWechatUser(user,gameUserChannel.getId(),gameUserId);
+                }
+            }
+        }else{
+            LOGGER.error("根据code={},查询微信用户为空",code);
+            throw new Inno72BizException("无法获取微信用户");
+        }
+    }
+
+
+
     @Override
     public Result<Object> order(UserSessionVo userSessionVo, String itemId, String inno72OrderId) {
         // 如果有支付链接则返回支付链接
@@ -214,18 +252,21 @@ public class Inno72Inno72ChannelServiceImpl implements Inno72ChannelService {
         return Results.success(map);
     }
 
-    private String buildUrl(String redirect,String sessionUuid,String PU){
+    private String buildUrl(String redirect,String sessionUuid,String PU,String tmalFlag){
+        String url = "";
         if(StringUtils.isEmpty(PU)){
-            String url = String.format(
+            url = String.format(
                     "%s/?sessionUuid=%s&env=%s&channelType=%s",
                     redirect, sessionUuid, env, StandardLoginTypeEnum.INNO72.getValue());
-            return url;
         }else{
-            String url = String.format(
+            url = String.format(
                     "%s/?sessionUuid=%s&env=%s&channelType=%s&PU=%s",
                     redirect, sessionUuid, env, StandardLoginTypeEnum.INNO72.getValue(),PU);
-            return url;
         }
+        if(!StringUtils.isEmpty(tmalFlag)){
+            url+="&tmalFlag="+tmalFlag;
+        }
+        return url;
     }
 
     @Override

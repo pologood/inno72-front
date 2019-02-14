@@ -3,6 +3,11 @@
     <title>inno72</title>
     <script type="text/javascript" src="http://res.wx.qq.com/open/js/jweixin-1.4.0.js"></script>
 </head>
+
+<body>
+
+<input id="code"/>
+</body>
 <script type="text/javascript">
     var serverUri="http://api.activity.36solo.com";
     // var serverUri="http://wx.72solo.com";
@@ -13,77 +18,14 @@
             return unescape(r[2]);
         return null;
     }
-    if (!window.initUrl) {
-        window.initUrl = location.href.split('#')[0]
-    }
     code = getUrlParms("code");
     state = getUrlParms("state");
-    alert("state="+state)
-    //步骤一:创建异步对象
-    var ajax = new XMLHttpRequest();
-    //步骤二:设置请求的url参数,参数一是请求的类型,参数二是请求的url,可以带参数,动态的传递参数starName到服务端
-    url = location.href.split('#')[0];
-    ajax.open('get',serverUri+'/user?url='+encodeURIComponent(url)+"&code="+code+"&appid="+state);
-    //步骤三:发送请求
-    ajax.send();
-    //步骤四:注册事件 onreadystatechange 状态改变就会调用
-    ajax.onreadystatechange = function () {
-        if (ajax.readyState==4 &&ajax.status==200) {
-            //步骤五 如果能够进到这个判断 说明 数据 完美的回来了,并且请求的页面是存在的
-            result = ajax.responseText;
-            console.log(result);//输入相应的内容
-            var obj = eval('(' + result + ')');
-            wx.config({
-                debug: true, // 开启调试模式,调用的所有api的返回值会在客户端alert出来，若要查看传入的参数，可以在pc端打开，参数信息会通过log打出，仅在pc端时才会打印。
-                appId: obj.signature.appId, // 必填，公众号的唯一标识
-                timestamp: obj.signature.timestamp, // 必填，生成签名的时间戳
-                nonceStr: obj.signature.nonceStr, // 必填，生成签名的随机串
-                signature: obj.signature.signature,// 必填，签名
-                jsApiList: ['scanQRCode'] // 必填，需要使用的JS接口列表
-            });
-            wx.error(function(res) {
-                alert("出错了：" + res.errMsg);
-            });
-
-            //步骤四
-            wx.ready(function() {
-                wx.checkJsApi({
-                    jsApiList : ['scanQRCode'],
-                    success : function(res) {
-                    }
-                });
-
-                //扫描二维码
-                wx.scanQRCode({
-                    needResult : 1, // 默认为0，扫描结果由微信处理，1则直接返回扫描结果，
-                    scanType : [ "qrCode", "barCode" ], // 可以指定扫二维码还是一维码，默认二者都有
-                    success : function(res) {
-                        var result = res.resultStr; // 当needResult 为 1 时，扫码返回的结果
-                        alert("扫描成功::扫描码=" + result);
-                        //http://4ff2d489.ngrok.io/user/test?machineCode=1
-                        var xhr = new XMLHttpRequest();
-                        //步骤二:设置请求的url参数,参数一是请求的类型,参数二是请求的url,可以带参数,动态的传递参数starName到服务端
-                        xhr.open('post','http://api.game.inno72.com/api/standard/setLogged?sessionUuid=123');
-                        xhr.setRequestHeader("Content-type","application/x-www-form-urlencoded");
-                        //步骤三:发送请求
-                        xhr.send();
-                        xhr.onreadystatechange = function () {
-                            if (xhr.readyState==4 &&xhr.status==200) {
-                                alert(xhr.responseText);
-                            }else{
-                                alert('error')
-                            }
-                        }
-                    }
-                });
-
-            });//end_ready
-        }else{
-        }
-    }
+    aa = getUrlParms("aa");
+    bb = getUrlParms("bb");
+    document.getElementById('code').value=code;
+    // alert("code="+code)
+    // alert("state="+state)
+    // alert("aa="+aa)
+    // alert("bb="+bb)
 </script>
-<body>
-
-nihao
-</body>
 </html>

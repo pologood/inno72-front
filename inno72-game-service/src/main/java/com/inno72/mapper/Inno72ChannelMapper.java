@@ -6,4 +6,6 @@ import org.apache.ibatis.annotations.Param;
 
 public interface Inno72ChannelMapper extends Mapper<Inno72Channel> {
     Inno72Channel findChannelBySellerId(@Param("sellerId")String sellerId);
+
+    Inno72Channel findByCode(@Param("channelCode") String channelCode);
 }

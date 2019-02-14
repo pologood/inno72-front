@@ -5,22 +5,17 @@ import com.inno72.common.RedisConstants;
 import com.inno72.common.Result;
 import com.inno72.common.StandardLoginTypeEnum;
 import com.inno72.common.json.JsonUtil;
+import com.inno72.common.util.Inno72OrderNumGenUtil;
 import com.inno72.common.utils.StringUtil;
+import com.inno72.mapper.Inno72ChannelMapper;
 import com.inno72.mapper.Inno72GameUserLifeMapper;
 import com.inno72.mapper.Inno72GameUserLoginMapper;
 import com.inno72.mapper.Inno72OrderMapper;
-import com.inno72.model.Inno72GameUserLife;
-import com.inno72.model.Inno72GameUserLogin;
-import com.inno72.model.Inno72Order;
+import com.inno72.model.*;
 import com.inno72.msg.MsgUtil;
 import com.inno72.redis.IRedisUtil;
-import com.inno72.service.Inno72AuthInfoService;
-import com.inno72.service.Inno72OrderService;
-import com.inno72.service.Inno72PayService;
-import com.inno72.service.Inno72UnStandardService;
-import com.inno72.vo.Inno72AuthInfo;
-import com.inno72.vo.Inno72MachineInformation;
-import com.inno72.vo.UserSessionVo;
+import com.inno72.service.*;
+import com.inno72.vo.*;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -31,9 +26,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.security.SecureRandom;
 import java.time.LocalDateTime;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Random;
+import java.util.*;
 
 @Service
 @Transactional
@@ -44,7 +37,16 @@ public class Inno72UnStandardServiceImpl implements Inno72UnStandardService {
     private MsgUtil msgUtil;
 
     @Autowired
+    private Inno72OrderRefundService inno72OrderRefundService;
+
+    @Autowired
     private IRedisUtil iRedisUtil;
+
+    @Autowired
+    private Inno72ChannelMapper inno72ChannelMapper;
+
+    @Autowired
+    private Inno72GameUserChannelService inno72GameUserChannelService;
 
     @Autowired
     private Inno72AuthInfoService inno72AuthInfoService;
@@ -66,13 +68,16 @@ public class Inno72UnStandardServiceImpl implements Inno72UnStandardService {
     @Value("${phoneverificationcode_limit_time}")
     private Integer phoneverificationcodeLimitTime;
 
+    @Value("${duduji.appid}")
+    private String dudujiAppId;
+
     private final String SYMBOLS = "0123456789"; // 数字
 
     private final Random RANDOM = new SecureRandom();
 
     @Override
-    public void getPhoneVerificationCode(String sessionUuid, String phone) {
-        LOGGER.info("getPhoneVerificationCode sessionUuid = {}, phone = {}",sessionUuid,phone);
+    public void getPhoneVerificationCode(String sessionUuid, String phone,Integer type) {
+        LOGGER.info("getPhoneVerificationCode sessionUuid = {}, phone = {}, type ={}",sessionUuid,phone,type);
         String code = getNonceStr();
         LOGGER.info("getPhoneVerificationCode phone = {},code={}",phone,code);
         //发送短信
@@ -84,9 +89,15 @@ public class Inno72UnStandardServiceImpl implements Inno72UnStandardService {
         key = RedisConstants.PHONEVERIFICATIONCODE_TIME_LIMIT_REDIS_KEY+phone;
         iRedisUtil.setex(key,60,"1");
         //记录redis次数
-        UserSessionVo sessionVo = new UserSessionVo(sessionUuid);
-        String activityId = sessionVo.getActivityId();
-        key = RedisConstants.PHONEVERIFICATIONCODE_TIMES_LIMIT_REDIS_KEY+activityId +":"+phone;
+        if(type == null){
+            UserSessionVo sessionVo = new UserSessionVo(sessionUuid);
+            String activityId = sessionVo.getActivityId();
+            key = RedisConstants.PHONEVERIFICATIONCODE_TIMES_LIMIT_REDIS_KEY+activityId +":"+phone;
+        }else{
+            //不根据活动限制
+            key = RedisConstants.PHONEVERIFICATIONCODE_TIMES_LIMIT_REDIS_KEY+phone;
+        }
+
         if(iRedisUtil.exists(key)){
             iRedisUtil.incrBy(key,1);
         }else{
@@ -96,7 +107,7 @@ public class Inno72UnStandardServiceImpl implements Inno72UnStandardService {
     }
 
     @Override
-    public void checkPhoneVerificationCode(String sessionUuid, String phone, String verificationCode,Integer operatingSystem,String phoneModel,String scanSoftware,String clientInfo) {
+    public String checkPhoneVerificationCode(String sessionUuid, String phone, String verificationCode,Integer operatingSystem,String phoneModel,String scanSoftware,String clientInfo,Integer type,String openId,String wechatCode) {
         LOGGER.info("checkPhoneVerificationCode sessionUuid = {}, phone = {}, verificationCode ={} ",sessionUuid,phone,verificationCode);
         String key = RedisConstants.PHONEVERIFICATIONCODE_REDIS_KEY+phone;
         String code = iRedisUtil.get(key);
@@ -104,27 +115,37 @@ public class Inno72UnStandardServiceImpl implements Inno72UnStandardService {
             throw new Inno72BizException("验证码过期");
         }
         if(code.equals(verificationCode)){
-            //登陆
-            String traceId = StringUtil.getUUID();
-            Inno72AuthInfo ai = new Inno72AuthInfo();
-            ai.setPhone(phone);
-            ai.setChannelType(StandardLoginTypeEnum.INNO72.getValue()+"");
-            ai.setOperatingSystem(operatingSystem);
-            ai.setPhoneModel(phoneModel);
-            ai.setScanSoftware(scanSoftware);
-            ai.setClientInfo(clientInfo);
-            String authInfo = JsonUtil.toJson(ai);
-            Result result = inno72AuthInfoService.processBeforeLogged(sessionUuid, authInfo, traceId);
-            if(result.getCode() != Result.SUCCESS){
-                throw new Inno72BizException(result.getMsg());
+            if(type == null){
+                //登陆
+                String traceId = StringUtil.getUUID();
+                Inno72AuthInfo ai = new Inno72AuthInfo();
+                ai.setPhone(phone);
+                ai.setChannelType(StandardLoginTypeEnum.INNO72.getValue()+"");
+                ai.setOperatingSystem(operatingSystem);
+                ai.setPhoneModel(phoneModel);
+                ai.setScanSoftware(scanSoftware);
+                ai.setClientInfo(clientInfo);
+                ai.setCode(wechatCode);
+                String authInfo = JsonUtil.toJson(ai);
+                Result result = inno72AuthInfoService.processBeforeLogged(sessionUuid, authInfo, traceId);
+                if(result.getCode() != Result.SUCCESS){
+                    throw new Inno72BizException(result.getMsg());
+                }
+                boolean success = inno72AuthInfoService.setLogged(sessionUuid);
+                if(!success){
+                    throw new Inno72BizException("设置登陆异常");
+                }
+            }else{
+                //关联微信用户和手机号用户
+                String gameUserId = inno72GameUserChannelService.joinUser(openId,phone);
+                return gameUserId;
             }
-            boolean success = inno72AuthInfoService.setLogged(sessionUuid);
-            if(!success){
-                throw new Inno72BizException("设置登陆异常");
-            }
+            UserSessionVo userSessionVo = new UserSessionVo(sessionUuid);
+            userSessionVo.setPhone(phone);
         }else{
             throw new Inno72BizException("验证码错误");
         }
+        return null;
     }
 
     @Override
@@ -168,6 +189,84 @@ public class Inno72UnStandardServiceImpl implements Inno72UnStandardService {
         }
         inno72GameUserLifeMapper.updateByPrimaryKeySelective(userLife);
 
+    }
+
+    @Override
+    public String joinPhoneFlag(WxMpUser user) {
+
+        if(user == null) return null;
+        user.setAppId(dudujiAppId);
+        Inno72Channel channel = inno72ChannelMapper.findByCode(Inno72Channel.CHANNELCODE_WECHAT);
+        Inno72GameUserChannel userChannel = inno72GameUserChannelService.findInno72GameUserChannel(channel.getId(),user.getOpenId(),dudujiAppId);
+        if(userChannel == null){
+            //插入微信用户
+            inno72GameUserChannelService.saveWechatUser(user,null);
+            return null;
+        }else{
+            inno72GameUserChannelService.updateWechatUser(user,userChannel.getId(),null);
+        }
+        channel = inno72ChannelMapper.findByCode(Inno72Channel.CHANNELCODE_INNO72);
+        userChannel = inno72GameUserChannelService.findByGameUserIdAndChannelId(userChannel.getGameUserId(),channel.getId());
+        if(userChannel == null){
+            return null;
+        }
+        return userChannel.getGameUserId();
+    }
+
+    @Override
+    public List<OrderVo> orderList(String gameUserId,Integer pageNum,Integer pageSize) {
+        return inno72OrderService.orderList(gameUserId,pageNum,pageSize);
+    }
+    @Override
+    public void refundAsk(String code) {
+        WxMpUser wxuser = inno72GameUserChannelService.getWeChatUserByCode(code);
+        if(wxuser == null) {
+            LOGGER.error("无法获取微信用户code={}",code);
+            throw new Inno72BizException("无法获取微信用户");
+        }
+        //
+        Inno72GameUserChannel inno72GameUserChannel = inno72GameUserChannelService.findWeChatUser(wxuser.getUnionId());
+        if(inno72GameUserChannel == null){
+            LOGGER.error("无法获取点72用户unionId={}",wxuser.getUnionId());
+            throw new Inno72BizException("无法获取点72用户");
+        }
+        //查找未掉货的订单
+        List<Inno72Order> list = inno72OrderService.findUnShipmentOrder(inno72GameUserChannel.getGameUserId());
+        if(list.size()>0){
+            List<Inno72OrderRefund> saveRefundList = new ArrayList<Inno72OrderRefund>();
+            for(Inno72Order order : list){
+                List<Inno72OrderRefund> refundList = inno72OrderRefundService.findByOrderId(order.getId());
+                if(refundList.size() == 0){
+                    //Inno72OrderRefund
+                    Inno72OrderRefund inno72OrderRefund = new Inno72OrderRefund();
+                    inno72OrderRefund.setRefundNum(Inno72OrderNumGenUtil.genRefundNum(order.getOrderNum()));
+                    inno72OrderRefund.setAmount(order.getOrderPrice());
+                    inno72OrderRefund.setAuditStatus(Inno72OrderRefund.REFUND_AUDITSTATUS.UNAUDIT.getKey());
+                    inno72OrderRefund.setCreateTime(new Date());
+                    inno72OrderRefund.setOrderId(order.getId());
+                    Inno72Channel channel = inno72ChannelMapper.findByCode(Inno72Channel.CHANNELCODE_INNO72);
+                    Inno72GameUserChannel user = inno72GameUserChannelService.findByGameUserIdAndChannelId(order.getUserId(),channel.getId());
+                    if(user!=null){
+                        inno72OrderRefund.setPhone(user.getPhone());
+                    }
+                    inno72OrderRefund.setStatus(Inno72OrderRefund.REFUND_STATUS.NEW.getKey());
+                    inno72OrderRefund.setUpdateTime(inno72OrderRefund.getCreateTime());
+                    inno72OrderRefund.setUserId(order.getUserId());
+                    saveRefundList.add(inno72OrderRefund);
+                }
+            }
+            if(saveRefundList.size()>0){
+                for(Inno72OrderRefund refund:saveRefundList){
+                    inno72OrderRefundService.save(refund);
+                }
+            }else{
+                LOGGER.info("无支付未掉货订单，gameUserId={}",inno72GameUserChannel.getGameUserId());
+                throw new Inno72BizException("无支付未掉货订单");
+            }
+        }else{
+            LOGGER.info("无支付未掉货订单，gameUserId={}",inno72GameUserChannel.getGameUserId());
+            throw new Inno72BizException("无支付未掉货订单");
+        }
     }
 
     /**
