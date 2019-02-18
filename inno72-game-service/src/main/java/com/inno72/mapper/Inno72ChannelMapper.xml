@@ -19,4 +19,8 @@
       select c.* from inno72_channel c join inno72_merchant m
         on c.id = m.channel_id where m.merchant_code=#{sellerId}
     </select>
+    <select id="findByCode" resultMap="BaseResultMap">
+      select * from inno72_channel c
+        where c.channel_code = #{channelCode} and c.is_delete=0
+    </select>
 </mapper>

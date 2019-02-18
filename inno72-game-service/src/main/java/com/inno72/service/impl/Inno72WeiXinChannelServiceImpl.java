@@ -201,18 +201,6 @@ public class Inno72WeiXinChannelServiceImpl implements Inno72ChannelService {
         return Results.success(map);
     }
 
-    private void parseAuthInfo(String authInfo) {
-        String openId = FastJsonUtils.getString(authInfo, "openId");
-        String nickname = FastJsonUtils.getString(authInfo, "nickname");
-        String sexDesc = FastJsonUtils.getString(authInfo, "sexDesc");
-        String sex = FastJsonUtils.getString(authInfo, "sex");
-        String language = FastJsonUtils.getString(authInfo, "language");
-        String city = FastJsonUtils.getString(authInfo, "city");
-        String province = FastJsonUtils.getString(authInfo, "province");
-        String country = FastJsonUtils.getString(authInfo, "country");
-        String headImgUrl = FastJsonUtils.getString(authInfo, "headImgUrl");
-    }
-
     private String buildParam(String machineCode,String activityId,String sessionUuid){
         StringBuilder sb = new StringBuilder("&machineCode=");
         sb.append(machineCode);
