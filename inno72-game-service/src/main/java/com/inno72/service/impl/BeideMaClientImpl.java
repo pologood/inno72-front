@@ -62,7 +62,7 @@ public class BeideMaClientImpl implements BeideMaClient{
                     Response response =HttpClient.form(getDomain()+"/Common/Login",map);
                     principal = response.header("Principal");
                     LOGGER.info("getPrincipal response = {},principal={}",response.body().string(),principal);
-                    iRedisUtil.setex(PRINCIPAL_REDIS_KEY,2*60*60*1000,principal);
+                    iRedisUtil.setex(PRINCIPAL_REDIS_KEY,2*60*60,principal);
                 }
             }
         }
