@@ -983,7 +983,7 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 					failChannelResult.getCode());
 		}
 		if(BeidemaConstants.appId.equals(userSessionVo.getSellerId())){
-			if(succChannelResult.getCode() == Result.SUCCESS){
+			if(succChannelResult!=null&&succChannelResult.getCode() == Result.SUCCESS){
 				//出货成功
 				beideMaClient.shipment(userSessionVo.getUserId(),userSessionVo.getRefOrderId(),1);
 			}else{
