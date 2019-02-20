@@ -334,10 +334,12 @@ public class Inno72MerchantTotalCountByDayServiceImpl extends AbstractService<In
 
 		if (startDateLocal == null) {
 			Map<String, String> date = inno72MerchantTotalCountByDayMapper.findMinMaxDate(activityId, merchantId);
-			String min = date.get("min");
-			startDateLocal = LocalDate.parse(min, DateTimeFormatter.ofPattern("yyyy-MM-dd"));
-			String max = date.get("max");
-			endDateLocal = LocalDate.parse(max, DateTimeFormatter.ofPattern("yyyy-MM-dd"));
+			if (date != null){
+				String min = date.get("min");
+				startDateLocal = LocalDate.parse(min, DateTimeFormatter.ofPattern("yyyy-MM-dd"));
+				String max = date.get("max");
+				endDateLocal = LocalDate.parse(max, DateTimeFormatter.ofPattern("yyyy-MM-dd"));
+			}
 		}
 
 		Map<String, Object> result = new HashMap<>(2);
