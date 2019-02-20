@@ -332,6 +332,10 @@ public class Inno72MerchantTotalCountByDayServiceImpl extends AbstractService<In
 	private Map<String, Object> buildUser(List<Inno72MerchantTotalCountByDay> days, LocalDate startDateLocal,
 			LocalDate endDateLocal, String activityId, String merchantId) {
 
+		LOGGER.info("构建用户维度 - 参数 - List<Inno72MerchantTotalCountByDay> days - {}, LocalDate startDateLocal - {}"
+				+ "LocalDate endDateLocal - {} String activityId - {} String merchantId", days, startDateLocal,
+				endDateLocal, activityId, merchantId);
+
 		if (startDateLocal == null) {
 			Map<String, String> date = inno72MerchantTotalCountByDayMapper.findMinMaxDate(activityId, merchantId);
 			if (date != null){
