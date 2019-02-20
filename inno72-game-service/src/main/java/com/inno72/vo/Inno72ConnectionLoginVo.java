@@ -7,6 +7,7 @@ public class Inno72ConnectionLoginVo  extends Inno72ConnectionBaseResultVo imple
     private String userNick;
     private Boolean canOrder;
     private Boolean countGoods;
+    private String userId;
 
     public String getUserNick() {
         return userNick;
@@ -30,5 +31,13 @@ public class Inno72ConnectionLoginVo  extends Inno72ConnectionBaseResultVo imple
 
     public void setCountGoods(Boolean countGoods) {
         this.countGoods = countGoods;
+    }
+
+    public String getUserId() {
+        return userId;
+    }
+
+    public void setUserId(String userId) {
+        this.userId = userId;
     }
 }
