@@ -25,11 +25,13 @@ import com.inno72.common.datetime.LocalDateTimeUtil;
 import com.inno72.common.utils.StringUtil;
 import com.inno72.mapper.Inno72ActivityIndexMapper;
 import com.inno72.mapper.Inno72ActivityInfoDescMapper;
+import com.inno72.mapper.Inno72InteractMapper;
 import com.inno72.mapper.Inno72MerchantMapper;
 import com.inno72.mapper.Inno72MerchantTotalCountMapper;
 import com.inno72.mapper.Inno72MerchantUserMapper;
 import com.inno72.model.Inno72ActivityIndex;
 import com.inno72.model.Inno72ActivityInfoDesc;
+import com.inno72.model.Inno72Interact;
 import com.inno72.model.Inno72MerchantTotalCount;
 import com.inno72.model.Inno72MerchantUser;
 import com.inno72.service.Inno72MerchantTotalCountService;
@@ -57,6 +59,9 @@ public class Inno72MerchantTotalCountServiceImpl extends AbstractService<Inno72M
 	private Inno72ActivityInfoDescMapper inno72ActivityInfoDescMapper;
 	@Resource
 	private Inno72ActivityIndexMapper inno72ActivityIndexMapper;
+	@Resource
+	private Inno72InteractMapper inno72InteractMapper;
+
 
 	@Override
 	public Result<List<Inno72MerchantTotalCountVo>> findAllById(String id) {
@@ -377,6 +382,12 @@ public class Inno72MerchantTotalCountServiceImpl extends AbstractService<Inno72M
 			return Results.failure("商户没有任何的商家!");
 		}
 
+		Inno72Interact inno72Interact = inno72InteractMapper.selectByPrimaryKey(actId);
+		if (inno72Interact == null){
+			return Results.failure("活动错误!");
+		}
+
+
 		Map<String, Object> param = new HashMap<>();
 		param.put("activityId", actId);
 		param.put("merchantId", user.getMerchantId());
@@ -396,7 +407,7 @@ public class Inno72MerchantTotalCountServiceImpl extends AbstractService<Inno72M
 
 		countVo.setIndexList(indexList);
 
-		countVo.setActivityName(count.getActivityName());
+		countVo.setActivityName(inno72Interact.getName());
 		countVo.setActivityId(actId);
 		countVo.setMerchantId(user.getMerchantId());
 		countVo.setPv(count.getPv());
