@@ -36,7 +36,9 @@ public class Inno72BeidemaServiceImpl implements Inno72BeidemaService {
         //订单号判断
         Inno72Order order = findOrderByRefOrderNum(vo.getOrderNum());
         if(order!=null){
-            return Results.failure("订单号重复:"+vo.getOrderNum());
+//            return Results.failure("订单号重复:"+vo.getOrderNum());
+            //重复订单返回成功 愿订单不做处理
+            return Results.success(0);
         }
         //计算canorder
         Inno72ChannelService channelService = (Inno72ChannelService)ApplicationContextHandle.getBean(StandardLoginTypeEnum.getValue(userSessionVo.getChannelType()));
