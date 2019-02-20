@@ -400,7 +400,7 @@ public class Inno72MerchantTotalCountServiceImpl extends AbstractService<Inno72M
 
 		Inno72MerchantTotalCountVo countVo = inno72MerchantTotalCountMapper.selectMaxMinTime(param);
 		if (countVo == null) {
-			return Results.failure("没有这个活动的配置!");
+			countVo = new Inno72MerchantTotalCountVo();
 		}
 
 		List<Inno72ActivityIndex> indexList = inno72ActivityIndexMapper.selectIndex(param);
