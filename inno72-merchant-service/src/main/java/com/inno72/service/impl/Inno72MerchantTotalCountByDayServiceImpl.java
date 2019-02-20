@@ -4,6 +4,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -81,9 +82,10 @@ public class Inno72MerchantTotalCountByDayServiceImpl extends AbstractService<In
 			if (endDateLocal.getDayOfYear() - startDateLocal.getDayOfYear() > 90) {
 				return Results.failure("不能大于三个月!");
 			}
-			LOGGER.info("开始日期 startDateLocal - {} , endDateLocal - {}", startDateLocal, endDateLocal);
+		}else {
+			startDateLocal = LocalDate.now().plusMonths(-1);
+			endDateLocal = LocalDate.now();
 		}
-		LOGGER.info("开始日期 startDateLocal - {} , endDateLocal - {}", startDateLocal, endDateLocal);
 		List<Inno72MerchantTotalCountByDay> days = inno72MerchantTotalCountByDayMapper.selectList(activityId, city,
 				startDate, endDate, goods, merchantId);
 
