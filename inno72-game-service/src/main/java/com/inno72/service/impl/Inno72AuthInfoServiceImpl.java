@@ -605,6 +605,7 @@ public class Inno72AuthInfoServiceImpl implements Inno72AuthInfoService {
 		data.setCountGoods(sessionVo.getCountGoods());
 		data.setUserNick(sessionVo.getUserNick());
 		data.setType(type);
+		data.setUserId(sessionVo.getGameUserId());
 		inno72ConnectionService.send(machineCode,activityId,version,type,JsonUtil.toJson(data));
 	}
 	@Override
