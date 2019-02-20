@@ -75,12 +75,15 @@ public class Inno72MerchantTotalCountByDayServiceImpl extends AbstractService<In
 		LocalDate startDateLocal = null;
 		LocalDate endDateLocal = null;
 		if (StringUtil.notEmpty(startDate) && StringUtil.notEmpty(endDate)) {
+			LOGGER.info("开始日期 startDateLocal - {} , endDateLocal - {}", startDateLocal, endDateLocal);
 			startDateLocal = LocalDateUtil.transfer(startDate, DateTimeFormatter.ofPattern("yyyy-MM-dd"));
 			endDateLocal = LocalDateUtil.transfer(endDate, DateTimeFormatter.ofPattern("yyyy-MM-dd"));
 			if (endDateLocal.getDayOfYear() - startDateLocal.getDayOfYear() > 90) {
 				return Results.failure("不能大于三个月!");
 			}
+			LOGGER.info("开始日期 startDateLocal - {} , endDateLocal - {}", startDateLocal, endDateLocal);
 		}
+		LOGGER.info("开始日期 startDateLocal - {} , endDateLocal - {}", startDateLocal, endDateLocal);
 		List<Inno72MerchantTotalCountByDay> days = inno72MerchantTotalCountByDayMapper.selectList(activityId, city,
 				startDate, endDate, goods, merchantId);
 
