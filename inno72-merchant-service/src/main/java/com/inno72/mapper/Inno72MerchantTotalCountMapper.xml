@@ -104,10 +104,14 @@
         LEFT JOIN inno72_admin_area area on area.`code` = ilocal.area_code
         LEFT JOIN `inno72_interact_machine_time` imt ON im.id = imt.interact_machine_id
         WHERE im.interact_id = #{activityId}
-        AND ig.seller_id IN
-        <foreach collection="list" separator="," open="(" close=")" item="item">
-            #{item}
-        </foreach>
+        AND ig.seller_id IN (SELECT id
+                            FROM inno72_merchant
+                            WHERE merchant_account_id = (
+                                SELECT id
+                                FROM inno72_merchant_user
+                                WHERE merchant_id =  #{merchantId}
+                            )
+        )
         group by area.`city`
 
     </select>
