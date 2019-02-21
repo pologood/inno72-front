@@ -35,12 +35,18 @@
 
     <select id="selectByMerchantId" resultMap="BaseResultVoMap" parameterType="string">
 
-        select a.*, IFNULL(interact.channel,'002001') as code from
-            (select * from inno72_merchant_total_count where merchant_id is not null and merchant_id != '' order by last_update_time desc limit 100000) a
+        select
+            a.`id`, interact.name as`activity_name`, a.`activity_id`,
+            a.`activity_type`, a.`activity_status`, a.`machine_num`,
+            a.`visitor_num`, a.`stay_user`, a.`pv`,
+            a.`uv`, `order`, a.`shipment`,
+            a.`merchant_id`, a.`buyer`, a.`last_update_time`,
+                    IFNULL(interact.channel,'002001') as code from
+            (select * from inno72_merchant_total_count where merchant_id  = #{merchantId} order by last_update_time desc limit 100000) a
             left join inno72_interact interact on interact.id  = a.activity_id
-        where merchant_id  = #{merchantId}
-        group by merchant_id, activity_id
         order by id desc
+
+
     </select>
     <select id="selectActivityType" resultType="java.lang.String" parameterType="string">
         select activity_type from inno72.inno72_merchant_total_count where activity_id = #{activityId} limit 1
