@@ -1,6 +1,7 @@
 package com.inno72.vo;
 
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Map;
 
@@ -9,6 +10,7 @@ import org.springframework.format.annotation.DateTimeFormat;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.inno72.common.CustomLocalDateSerializer;
 import com.inno72.common.CustomLocalDateTimeSerializer;
+import com.inno72.common.datetime.LocalDateTimeUtil;
 import com.inno72.model.Inno72ActivityIndex;
 import com.inno72.model.Inno72MerchantTotalCount;
 
@@ -23,13 +25,17 @@ public class Inno72MerchantTotalCountVo extends Inno72MerchantTotalCount {
 	private List<Map<String, Object>> machineInfo;
 
 	//活动开始时间
-	@JsonSerialize(using = CustomLocalDateSerializer.class)
-	@DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
-	private LocalDateTime startTime;
+	private String startTime;
 	//活动结束时间
-	@JsonSerialize(using = CustomLocalDateSerializer.class)
+	private String endTime;
+	//活动开始时间
+	@JsonSerialize(using = CustomLocalDateTimeSerializer.class)
 	@DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
-	private LocalDateTime endTime;
+	private LocalDateTime startTimeLocal;
+	//活动结束时间
+	@JsonSerialize(using = CustomLocalDateTimeSerializer.class)
+	@DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+	private LocalDateTime endTimeLocal;
 	//总耗时
 	private String totalTime;
 	//出货数量
@@ -62,20 +68,42 @@ public class Inno72MerchantTotalCountVo extends Inno72MerchantTotalCount {
 		this.machineInfo = machineInfo;
 	}
 
-	public LocalDateTime getStartTime() {
+	public String getStartTime() {
+		if ( startTimeLocal!= null){
+			return startTimeLocal.toLocalDate().format(DateTimeFormatter.ofPattern("yyyy-MM-dd"));
+		}
 		return startTime;
 	}
 
-	public void setStartTime(LocalDateTime startTime) {
+	public void setStartTime(String startTime) {
 		this.startTime = startTime;
 	}
 
-	public LocalDateTime getEndTime() {
+	public String getEndTime() {
+		if ( endTimeLocal!= null){
+			return endTimeLocal.toLocalDate().format(DateTimeFormatter.ofPattern("yyyy-MM-dd"));
+		}
 		return endTime;
 	}
 
-	public void setEndTime(LocalDateTime endTime) {
+	public void setEndTime(String endTime) {
 		this.endTime = endTime;
+	}
+
+	public LocalDateTime getStartTimeLocal() {
+		return startTimeLocal;
+	}
+
+	public void setStartTimeLocal(LocalDateTime startTimeLocal) {
+		this.startTimeLocal = startTimeLocal;
+	}
+
+	public LocalDateTime getEndTimeLocal() {
+		return endTimeLocal;
+	}
+
+	public void setEndTimeLocal(LocalDateTime endTimeLocal) {
+		this.endTimeLocal = endTimeLocal;
 	}
 
 	public String getTotalTime() {

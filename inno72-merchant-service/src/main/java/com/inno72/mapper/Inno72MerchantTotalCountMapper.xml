@@ -23,9 +23,9 @@
           WARNING - @mbg.generated
         -->
         <result column="code" jdbcType="VARCHAR" property="code"/>
-        <result column="start_time" jdbcType="VARCHAR" property="startTime" javaType="java.time.LocalDateTime"
+        <result column="start_time" jdbcType="VARCHAR" property="startTimeLocal" javaType="java.time.LocalDateTime"
                 typeHandler="org.apache.ibatis.type.LocalDateTimeTypeHandler"/>
-        <result column="end_time" jdbcType="VARCHAR" property="endTime" javaType="java.time.LocalDateTime"
+        <result column="end_time" jdbcType="VARCHAR" property="endTimeLocal" javaType="java.time.LocalDateTime"
                 typeHandler="org.apache.ibatis.type.LocalDateTimeTypeHandler"/>
     </resultMap>
     <update id="updateActivityType">

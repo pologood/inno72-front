@@ -90,8 +90,8 @@ public class Inno72MerchantTotalCountServiceImpl extends AbstractService<Inno72M
 				countVo.setStartTime(vo.getStartTime());
 				countVo.setEndTime(vo.getEndTime());
 
-				LocalDateTime parseEnd = vo.getEndTime();
-				LocalDateTime parseStart = vo.getStartTime();
+				LocalDateTime parseEnd = vo.getEndTimeLocal();
+				LocalDateTime parseStart = vo.getStartTimeLocal();
 				Duration between;
 				if (now.isAfter(parseEnd)) {
 					between = Duration.between(parseStart, parseEnd);
@@ -110,8 +110,8 @@ public class Inno72MerchantTotalCountServiceImpl extends AbstractService<Inno72M
 				String startDate = "2018-12-15 00:00:00";
 				String endTime = "2018-12-31 23:59:59";
 
-				countVo.setStartTime(LocalDateTimeUtil.transfer(startDate, DateTimeFormatter.ofPattern("yyyy-MM-dd")));
-				countVo.setEndTime(LocalDateTimeUtil.transfer(endTime, DateTimeFormatter.ofPattern("yyyy-MM-dd")));
+				countVo.setStartTime("2018-12-15");
+				countVo.setEndTime("2018-12-31");
 				Duration between;
 				LocalDateTime parseEnd = LocalDateTime.parse(endTime,
 						DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
@@ -147,8 +147,8 @@ public class Inno72MerchantTotalCountServiceImpl extends AbstractService<Inno72M
 				String startDate = "2018-11-13 00:00:00";
 				String endTime = "2018-12-20 23:59:59";
 
-				countVo.setStartTime(LocalDateTimeUtil.transfer(startDate, DateTimeFormatter.ofPattern("yyyy-MM-dd")));
-				countVo.setEndTime(LocalDateTimeUtil.transfer(endTime, DateTimeFormatter.ofPattern("yyyy-MM-dd")));
+				countVo.setStartTime("2018-11-13");
+				countVo.setEndTime("2018-11-20");
 				Duration between;
 				LocalDateTime parseEnd = LocalDateTime.parse(endTime,
 						DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
@@ -410,8 +410,8 @@ public class Inno72MerchantTotalCountServiceImpl extends AbstractService<Inno72M
 		countVo.setOrder(count.getOrder());
 		countVo.setGoodsNum(count.getShipment());
 
-		LocalDateTime startTime = countVo.getStartTime();
-		LocalDateTime endTime = countVo.getEndTime();
+		LocalDateTime startTime = countVo.getStartTimeLocal();
+		LocalDateTime endTime = countVo.getEndTimeLocal();
 
 		if (startTime != null && endTime != null) {
 
@@ -441,8 +441,6 @@ public class Inno72MerchantTotalCountServiceImpl extends AbstractService<Inno72M
 
 			countVo.setTotalTime(totalTime + "");
 			countVo.setActivityStatus(status);
-			countVo.setStartTime(startTime);
-			countVo.setEndTime(endTime);
 
 		}
 
@@ -466,8 +464,8 @@ public class Inno72MerchantTotalCountServiceImpl extends AbstractService<Inno72M
 		String totalTime = between.toHours() + "";
 
 		Inno72MerchantTotalCountVo vo = new Inno72MerchantTotalCountVo();
-		vo.setStartTime(parseStart);
-		vo.setEndTime(parseEnd);
+		vo.setStartTimeLocal(parseStart);
+		vo.setEndTimeLocal(parseEnd);
 		vo.setActivityStatus(status);
 		vo.setTotalTime(totalTime);
 		vo.setGoodsNum(53689);
@@ -490,8 +488,8 @@ public class Inno72MerchantTotalCountServiceImpl extends AbstractService<Inno72M
 
 		Inno72MerchantTotalCountVo vo = new Inno72MerchantTotalCountVo();
 		vo.setActivityName("新芝华士备选活动");
-		vo.setStartTime(parseStart);
-		vo.setEndTime(parseEnd);
+		vo.setStartTimeLocal(parseStart);
+		vo.setEndTimeLocal(parseEnd);
 		vo.setActivityStatus(status);
 		vo.setTotalTime(totalTime);
 		vo.setGoodsNum(53689);
