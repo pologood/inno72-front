@@ -94,8 +94,10 @@ public class Inno72MerchantTotalCountServiceImpl extends AbstractService<Inno72M
 				Duration between;
 				if (now.isAfter(parseEnd)) {
 					between = Duration.between(parseStart, parseEnd);
-				} else {
+				} else if (now.isAfter(parseStart)){
 					between = Duration.between(parseStart, now);
+				}else {
+					between = Duration.ZERO;
 				}
 				countVo.setTotalTime(between.toHours() + "");
 			}
