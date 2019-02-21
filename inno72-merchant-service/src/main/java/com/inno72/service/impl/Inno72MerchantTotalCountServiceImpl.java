@@ -78,14 +78,10 @@ public class Inno72MerchantTotalCountServiceImpl extends AbstractService<Inno72M
 		LocalDateTime now = LocalDateTime.now();
 		for (Inno72MerchantTotalCountVo countVo : inno72MerchantTotalCounts) {
 			String activityId = countVo.getActivityId();
-			List<String> list = inno72MerchantMapper.selectMerchantId(user.getId());
-			if (list.size() == 0) {
-				return Results.failure("商户没有任何的商家!");
-			}
 
 			Map<String, Object> param = new HashMap<>();
 			param.put("activityId", activityId);
-			param.put("list", list);
+			param.put("merchantId", merchantId);
 
 			Inno72MerchantTotalCountVo vo = inno72MerchantTotalCountMapper.selectMaxMinTime(param);
 
