@@ -19,4 +19,8 @@
   <update id="updateMsgStatus">
     update inno72_machine_connection_msg set status = 1,update_time=CURRENT_TIMESTAMP() where machine_code='${machineCode}' and activity_id='${activityId}' and type=${type} and version=${version} and status = 0
   </update>
+
+  <update id="invalidBeforeMsg">
+    update inno72_machine_connection_msg set status = 3,update_time=CURRENT_TIMESTAMP() where machine_code='${machineCode}' and activity_id='${activityId}' and type=${type} and <![CDATA[ version < ${version} ]]> and status = 0
+  </update>
 </mapper>

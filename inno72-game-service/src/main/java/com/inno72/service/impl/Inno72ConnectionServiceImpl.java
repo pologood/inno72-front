@@ -97,6 +97,11 @@ public class Inno72ConnectionServiceImpl implements Inno72ConnectionService {
                 findActivityCallBack(machineCode,activityId,type,version);
                 break;
         }
+        invalidBeforeMsg(machineCode,activityId,type,version);
+    }
+
+    private void invalidBeforeMsg(String machineCode, String activityId, Integer type, Long version) {
+        inno72MachineConnectionMsgMapper.invalidBeforeMsg(machineCode,activityId,type,version);
     }
 
     private void findActivityCallBack(String machineCode, String activityId, Integer type, Long version) {
