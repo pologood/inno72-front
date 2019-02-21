@@ -23,8 +23,10 @@
           WARNING - @mbg.generated
         -->
         <result column="code" jdbcType="VARCHAR" property="code"/>
-        <result column="start_time" jdbcType="VARCHAR" property="startTime"/>
-        <result column="end_time" jdbcType="VARCHAR" property="endTime"/>
+        <result column="start_time" jdbcType="VARCHAR" property="startTime" javaType="java.time.LocalDateTime"
+                typeHandler="org.apache.ibatis.type.LocalDateTimeTypeHandler"/>
+        <result column="end_time" jdbcType="VARCHAR" property="endTime" javaType="java.time.LocalDateTime"
+                typeHandler="org.apache.ibatis.type.LocalDateTimeTypeHandler"/>
     </resultMap>
     <update id="updateActivityType">
         update inno72.inno72_merchant_total_count set inno72.inno72_merchant_total_count.activity_type = #{activityType}

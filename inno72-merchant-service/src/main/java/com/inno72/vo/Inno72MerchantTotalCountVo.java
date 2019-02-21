@@ -1,8 +1,14 @@
 package com.inno72.vo;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
 
+import org.springframework.format.annotation.DateTimeFormat;
+
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.inno72.common.CustomLocalDateSerializer;
+import com.inno72.common.CustomLocalDateTimeSerializer;
 import com.inno72.model.Inno72ActivityIndex;
 import com.inno72.model.Inno72MerchantTotalCount;
 
@@ -17,9 +23,13 @@ public class Inno72MerchantTotalCountVo extends Inno72MerchantTotalCount {
 	private List<Map<String, Object>> machineInfo;
 
 	//活动开始时间
-	private String startTime;
+	@JsonSerialize(using = CustomLocalDateSerializer.class)
+	@DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+	private LocalDateTime startTime;
 	//活动结束时间
-	private String endTime;
+	@JsonSerialize(using = CustomLocalDateSerializer.class)
+	@DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+	private LocalDateTime endTime;
 	//总耗时
 	private String totalTime;
 	//出货数量
@@ -52,19 +62,19 @@ public class Inno72MerchantTotalCountVo extends Inno72MerchantTotalCount {
 		this.machineInfo = machineInfo;
 	}
 
-	public String getStartTime() {
+	public LocalDateTime getStartTime() {
 		return startTime;
 	}
 
-	public void setStartTime(String startTime) {
+	public void setStartTime(LocalDateTime startTime) {
 		this.startTime = startTime;
 	}
 
-	public String getEndTime() {
+	public LocalDateTime getEndTime() {
 		return endTime;
 	}
 
-	public void setEndTime(String endTime) {
+	public void setEndTime(LocalDateTime endTime) {
 		this.endTime = endTime;
 	}
 
