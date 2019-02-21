@@ -36,7 +36,7 @@
     <select id="selectByMerchantId" resultMap="BaseResultVoMap" parameterType="string">
 
         select
-            a.`id`, interact.name as`activity_name`, a.`activity_id`,
+            a.`id`, IFNULL(interact.name, a.activity_name) as`activity_name`, a.`activity_id`,
             a.`activity_type`, a.`activity_status`, a.`machine_num`,
             a.`visitor_num`, a.`stay_user`, a.`pv`,
             a.`uv`, `order`, a.`shipment`,
