@@ -8,13 +8,8 @@ import com.inno72.common.util.GameSessionRedisUtil;
 import com.inno72.common.utils.StringUtil;
 import com.inno72.mapper.*;
 import com.inno72.model.*;
-import com.inno72.service.Inno72AuthInfoService;
-import com.inno72.service.Inno72ChannelService;
-import com.inno72.service.Inno72InteractMachineTimeService;
-import com.inno72.service.Inno72InteractService;
-import com.inno72.vo.GoodsVo;
-import com.inno72.vo.StandardPrepareLoginReqVo;
-import com.inno72.vo.UserSessionVo;
+import com.inno72.service.*;
+import com.inno72.vo.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,10 +18,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @Service("WEIXIN")
 @Transactional
@@ -64,6 +56,12 @@ public class Inno72WeiXinChannelServiceImpl implements Inno72ChannelService {
     private GameSessionRedisUtil gameSessionRedisUtil;
     @Autowired
     private Inno72SupplyChannelMapper inno72SupplyChannelMapper;
+    @Autowired
+    private Inno72OrderMapper inno72OrderMapper;
+    @Autowired
+    private Inno72GameApiService inno72GameApiService;
+    @Autowired
+    private PointService pointService;
 
     @Override
     public String buildQrContent(Inno72Machine inno72Machine,String sessionUuid,StandardPrepareLoginReqVo req) {
@@ -221,5 +219,23 @@ public class Inno72WeiXinChannelServiceImpl implements Inno72ChannelService {
         gameUserChannel.setGameUserId(sessionVo.getGameUserId());
         gameUserChannel =inno72GameUserChannelMapper.selectOne(gameUserChannel);
         return inno72AuthInfoService.findCanOrder(interact,sessionVo,gameUserChannel.getGameUserId());
+    }
+
+    @Override
+    public Result<Object> orderPolling(UserSessionVo userSessionVo, MachineApiVo vo) {
+        String orderId = userSessionVo.getInno72OrderId();
+        Inno72Order order = inno72OrderMapper.selectByPrimaryKey(orderId);
+        Map<String, Object> result = new HashMap<>();
+        boolean model = false;
+        if(Inno72Order.INNO72ORDER_ORDERSTATUS.PAY.getKey() == order.getOrderStatus()){
+            String goodsId = userSessionVo.getGoodsId();
+            model = true;
+            List<String> goodsIds = new ArrayList<>();
+            goodsIds.add(goodsId);
+            inno72GameApiService.setChannelInfo(userSessionVo, result, goodsIds);
+            pointService.innerPoint(JSON.toJSONString(userSessionVo), Inno72MachineInformation.ENUM_INNO72_MACHINE_INFORMATION_TYPE.PAY);
+        }
+        result.put("model", model);
+        return Results.success(result);
     }
 }
