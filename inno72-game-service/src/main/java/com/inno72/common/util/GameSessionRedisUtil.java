@@ -43,7 +43,7 @@ public class GameSessionRedisUtil {
 	 * @param sessionUuid
 	 */
 	public void delSession(String sessionUuid) {
-		LOGGER.debug("delSession sessionUuid is {}", sessionUuid);
+		LOGGER.info("delSession sessionUuid is {}", sessionUuid);
 //		template.delete(SESSION_KEY + sessionUuid);
 		SessionUtils.removeSession(sessionUuid);
 	}
