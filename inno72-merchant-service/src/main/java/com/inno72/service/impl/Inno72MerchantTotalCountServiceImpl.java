@@ -11,7 +11,8 @@ import java.util.Map;
 
 import javax.annotation.Resource;
 
-import org.springframework.beans.BeanUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
@@ -21,11 +22,14 @@ import com.inno72.common.AbstractService;
 import com.inno72.common.Result;
 import com.inno72.common.Results;
 import com.inno72.common.datetime.LocalDateTimeUtil;
-import com.inno72.common.datetime.LocalDateUtil;
 import com.inno72.common.utils.StringUtil;
+import com.inno72.mapper.Inno72ActivityIndexMapper;
+import com.inno72.mapper.Inno72ActivityInfoDescMapper;
 import com.inno72.mapper.Inno72MerchantMapper;
 import com.inno72.mapper.Inno72MerchantTotalCountMapper;
 import com.inno72.mapper.Inno72MerchantUserMapper;
+import com.inno72.model.Inno72ActivityIndex;
+import com.inno72.model.Inno72ActivityInfoDesc;
 import com.inno72.model.Inno72MerchantTotalCount;
 import com.inno72.model.Inno72MerchantUser;
 import com.inno72.service.Inno72MerchantTotalCountService;
@@ -40,12 +44,19 @@ import com.inno72.vo.Inno72MerchantTotalCountVo;
 @Transactional
 public class Inno72MerchantTotalCountServiceImpl extends AbstractService<Inno72MerchantTotalCount>
 		implements Inno72MerchantTotalCountService {
+
+	private static final Logger LOGGER = LoggerFactory.getLogger(Inno72MerchantTotalCountServiceImpl.class);
+
 	@Resource
 	private Inno72MerchantTotalCountMapper inno72MerchantTotalCountMapper;
 	@Resource
 	private Inno72MerchantUserMapper inno72MerchantUserMapper;
 	@Resource
 	private Inno72MerchantMapper inno72MerchantMapper;
+	@Resource
+	private Inno72ActivityInfoDescMapper inno72ActivityInfoDescMapper;
+	@Resource
+	private Inno72ActivityIndexMapper inno72ActivityIndexMapper;
 
 	@Override
 	public Result<List<Inno72MerchantTotalCountVo>> findAllById(String id) {
@@ -59,14 +70,43 @@ public class Inno72MerchantTotalCountServiceImpl extends AbstractService<Inno72M
 		}
 		List<Inno72MerchantTotalCountVo> inno72MerchantTotalCounts = inno72MerchantTotalCountMapper
 				.selectByMerchantId(merchantId);
-
-		for (Inno72MerchantTotalCountVo countVo : inno72MerchantTotalCounts){
+		LocalDateTime now = LocalDateTime.now();
+		for (Inno72MerchantTotalCountVo countVo : inno72MerchantTotalCounts) {
 			String activityId = countVo.getActivityId();
-			//			Inno72MerchantTotalCountVo vo = inno72MerchantTotalCountMapper.selectMaxMinTime(activityId);
-			//			BeanUtils.copyProperties(vo, countVo);
+			List<String> list = inno72MerchantMapper.selectMerchantId(user.getId());
+			if (list.size() == 0) {
+				return Results.failure("商户没有任何的商家!");
+			}
 
-			//点72 活动
-			if (activityId.equals("03e0c821671a4d6f8fad0d47fa25f040")){
+			Map<String, Object> param = new HashMap<>();
+			param.put("activityId", activityId);
+			param.put("list", list);
+
+			Inno72MerchantTotalCountVo vo = inno72MerchantTotalCountMapper.selectMaxMinTime(param);
+
+			if (vo != null && StringUtil.notEmpty(vo.getStartTime()) && StringUtil.notEmpty(vo.getEndTime())) {
+
+				countVo.setStartTime(vo.getStartTime());
+				countVo.setEndTime(vo.getEndTime());
+
+				LocalDateTime parseEnd = LocalDateTime.parse(vo.getEndTime(),
+						DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
+				LocalDateTime parseStart = LocalDateTime.parse(vo.getStartTime(),
+						DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
+				Duration between;
+				if (now.isAfter(parseEnd)) {
+					between = Duration.between(parseStart, parseEnd);
+				} else {
+					between = Duration.between(parseStart, now);
+				}
+				countVo.setTotalTime(between.toHours() + "");
+			}
+
+			List<Map<String, Object>> maps = inno72MerchantTotalCountMapper.selectMachineNumCity(param);
+			countVo.setMachineInfo(maps);
+
+			// 点72 活动
+			if (activityId.equals("03e0c821671a4d6f8fad0d47fa25f040")) {
 
 				String startDate = "2018-12-15 00:00:00";
 				String endTime = "2018-12-31 23:59:59";
@@ -74,16 +114,16 @@ public class Inno72MerchantTotalCountServiceImpl extends AbstractService<Inno72M
 				countVo.setStartTime("2018-12-15");
 				countVo.setEndTime("2018-12-31");
 				Duration between;
-				LocalDateTime now = LocalDateTime.now();
-				LocalDateTime parseEnd = LocalDateTime.parse(endTime, DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
-				LocalDateTime parseStart = LocalDateTime.parse(startDate, DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
-				if (now.isAfter(parseEnd)){
+				LocalDateTime parseEnd = LocalDateTime.parse(endTime,
+						DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
+				LocalDateTime parseStart = LocalDateTime.parse(startDate,
+						DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
+				if (now.isAfter(parseEnd)) {
 					between = Duration.between(parseStart, parseEnd);
-				}else {
-					between = Duration
-							.between(parseStart, now);
+				} else {
+					between = Duration.between(parseStart, now);
 				}
-				String totalTime = between.toHours()+"";
+				String totalTime = between.toHours() + "";
 				countVo.setTotalTime(totalTime);
 
 				List<Map<String, Object>> addressNums = new ArrayList<>();
@@ -103,7 +143,7 @@ public class Inno72MerchantTotalCountServiceImpl extends AbstractService<Inno72M
 
 
 				// 备选活动
-			}else if (activityId.equals("40e48662e73340a496e117653edd2ef5")){
+			} else if (activityId.equals("40e48662e73340a496e117653edd2ef5")) {
 
 				String startDate = "2018-11-13 00:00:00";
 				String endTime = "2018-12-20 23:59:59";
@@ -111,16 +151,16 @@ public class Inno72MerchantTotalCountServiceImpl extends AbstractService<Inno72M
 				countVo.setStartTime("2018-11-13");
 				countVo.setEndTime("2018-12-20");
 				Duration between;
-				LocalDateTime now = LocalDateTime.now();
-				LocalDateTime parseEnd = LocalDateTime.parse(endTime, DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
-				LocalDateTime parseStart = LocalDateTime.parse(startDate, DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
-				if (now.isAfter(parseEnd)){
+				LocalDateTime parseEnd = LocalDateTime.parse(endTime,
+						DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
+				LocalDateTime parseStart = LocalDateTime.parse(startDate,
+						DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
+				if (now.isAfter(parseEnd)) {
 					between = Duration.between(parseStart, parseEnd);
-				}else {
-					between = Duration
-							.between(parseStart, now);
+				} else {
+					between = Duration.between(parseStart, now);
 				}
-				String totalTime = between.toHours()+"";
+				String totalTime = between.toHours() + "";
 				countVo.setTotalTime(totalTime);
 
 				List<Map<String, Object>> addressNums = new ArrayList<>();
@@ -157,7 +197,6 @@ public class Inno72MerchantTotalCountServiceImpl extends AbstractService<Inno72M
 				addressNum.put("num", 13);
 				addressNums.add(addressNum);
 				countVo.setMachineInfo(addressNums);
-
 			}
 
 		}
@@ -205,7 +244,7 @@ public class Inno72MerchantTotalCountServiceImpl extends AbstractService<Inno72M
 	@Override
 	public Result<List<Map<String, Object>>> addressNum(String actId) {
 		List<Map<String, Object>> addressNums = new ArrayList<>();
-		if (actId.equals("03e0c821671a4d6f8fad0d47fa25f040")){
+		if (actId.equals("03e0c821671a4d6f8fad0d47fa25f040")) {
 			Map<String, Object> addressNum = new HashMap<>();
 			addressNum.put("address", "北京");
 			addressNum.put("num", 15);
@@ -219,7 +258,7 @@ public class Inno72MerchantTotalCountServiceImpl extends AbstractService<Inno72M
 			addressNum.put("num", 8);
 			addressNums.add(addressNum);
 			// 备选活动
-		}else if (actId.equals("40e48662e73340a496e117653edd2ef5")){
+		} else if (actId.equals("40e48662e73340a496e117653edd2ef5")) {
 			Map<String, Object> addressNum = new HashMap<>();
 			addressNum.put("address", "北京市");
 			addressNum.put("num", 15);
@@ -253,20 +292,52 @@ public class Inno72MerchantTotalCountServiceImpl extends AbstractService<Inno72M
 	}
 
 	@Override
-	public Result<List<ActMerchantLog>> actLog(String actId) {
+	public Result<List<ActMerchantLog>> actLog(String actId, String merchantId) {
+
+		Map<String, String> param = new HashMap<>();
+		param.put("actId", actId);
+		param.put("merchantId", merchantId);
+		List<Inno72ActivityInfoDesc> descS = inno72ActivityInfoDescMapper.selectActInfoDesc(param);
 
 		List<ActMerchantLog> actMerchantLogs = new ArrayList<>();
-		//点72 活动
-		if (actId.equals("03e0c821671a4d6f8fad0d47fa25f040")){
-			ActMerchantLog log = new ActMerchantLog();
+		ActMerchantLog log;
+
+		for (Inno72ActivityInfoDesc desc : descS){
+
+			LocalDate infoDate = desc.getInfoDate();
+			String infoDesc = desc.getInfoDesc();
+			Integer infoType = desc.getInfoType();
+
+			log = new ActMerchantLog();
+			log.setId(StringUtil.uuid());
+			log.setTime(infoDate.format(DateTimeFormatter.ofPattern("yyyy-MM-dd")));
+			log.setCount(infoDesc);
+			String type = "";
+			switch (infoType){
+				case 1:
+					type = "新增"; break;
+				case 2:
+					type = "变更"; break;
+				default:
+					type = "其他";
+			}
+			log.setType(type);
+
+			actMerchantLogs.add(log);
+
+		}
+
+		// 点72 活动
+		if (actId.equals("03e0c821671a4d6f8fad0d47fa25f040")) {
+			log = new ActMerchantLog();
 			log.setId(StringUtil.uuid());
 			log.setTime("2018-12-15");
 			log.setCount("新增 30 台机器");
 			log.setType("新增");
 			actMerchantLogs.add(log);
 			// 备选活动
-		}else if (actId.equals("40e48662e73340a496e117653edd2ef5")){
-			ActMerchantLog log = new ActMerchantLog();
+		} else if (actId.equals("40e48662e73340a496e117653edd2ef5")) {
+			log = new ActMerchantLog();
 			log.setId(StringUtil.uuid());
 			log.setTime("2018-12-13");
 			log.setCount("新增 265 台机器");
@@ -287,22 +358,22 @@ public class Inno72MerchantTotalCountServiceImpl extends AbstractService<Inno72M
 	 */
 	@Override
 	public Result<Inno72MerchantTotalCountVo> actInfo(String actId, String merchantId) {
-		if (StringUtil.isEmpty(actId) || StringUtil.isEmpty(merchantId)){
+		if (StringUtil.isEmpty(actId) || StringUtil.isEmpty(merchantId)) {
 			return Results.failure("请求错误!");
 		}
 
-		if (actId.equals("03e0c821671a4d6f8fad0d47fa25f040")){
+		if (actId.equals("03e0c821671a4d6f8fad0d47fa25f040")) {
 			return defaultActInfo();
-		}else if (actId.equals("40e48662e73340a496e117653edd2ef5")){
+		} else if (actId.equals("40e48662e73340a496e117653edd2ef5")) {
 			return defaultActBeiXuanInfo();
 		}
-		Inno72MerchantUser user = inno72MerchantUserMapper.selectByPrimaryKey(merchantId);
-		if (user == null){
+		Inno72MerchantUser user = inno72MerchantUserMapper.selectByMerchantId(merchantId);
+		if (user == null) {
 			return Results.failure("没有这个商户商户!");
 		}
 
 		List<String> list = inno72MerchantMapper.selectMerchantId(user.getId());
-		if (list.size() == 0){
+		if (list.size() == 0) {
 			return Results.failure("商户没有任何的商家!");
 		}
 
@@ -312,74 +383,88 @@ public class Inno72MerchantTotalCountServiceImpl extends AbstractService<Inno72M
 		param.put("list", list);
 
 		Inno72MerchantTotalCount count = inno72MerchantTotalCountMapper.selectByActIdAndMerId(param);
-		if (count == null){
+		if (count == null) {
 			return Results.failure("商户下没有这个活动!");
 		}
 
 		Inno72MerchantTotalCountVo countVo = inno72MerchantTotalCountMapper.selectMaxMinTime(param);
-		if (countVo == null){
+		if (countVo == null) {
 			return Results.failure("没有这个活动的配置!");
 		}
+
+		List<Inno72ActivityIndex> indexList = inno72ActivityIndexMapper.selectIndex(param);
+
+		countVo.setIndexList(indexList);
+
+		countVo.setActivityName(count.getActivityName());
+		countVo.setActivityId(actId);
+		countVo.setMerchantId(user.getMerchantId());
+		countVo.setPv(count.getPv());
+		countVo.setUv(count.getUv());
+		countVo.setShipment(count.getShipment());
+		countVo.setOrder(count.getOrder());
+		countVo.setGoodsNum(count.getShipment());
+
 		String startTime = countVo.getStartTime();
 		String endTime = countVo.getEndTime();
 
-		if (StringUtil.isNotEmpty(startTime) && StringUtil.isNotEmpty(endTime)){
+		if (StringUtil.isNotEmpty(startTime) && StringUtil.isNotEmpty(endTime)) {
 
-			LocalDateTime startLocalTime = LocalDateTimeUtil.transfer(startTime);
-			LocalDateTime endLocalTime = LocalDateTimeUtil.transfer(endTime);
+			LOGGER.info("查询活动{},和商家{},的用户下{} 活动开始结束时间", actId, JSON.toJSONString(user), JSON.toJSONString(list),
+					JSON.toJSONString(countVo));
+
+			LocalDateTime startLocalTime = LocalDateTimeUtil.transfer(startTime,
+					DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
+			LocalDateTime endLocalTime = LocalDateTimeUtil.transfer(endTime,
+					DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
 
 
 			String status = "";
 
-			LocalDate localDateStart = startLocalTime.toLocalDate();
-			LocalDate localDateEnd = endLocalTime.toLocalDate();
-			LocalDate now = LocalDate.now();
-			boolean before = localDateStart.isBefore(now);
-			boolean before1 = now.isBefore(localDateEnd);
-			if (before && before1){
+			LocalDateTime now = LocalDateTime.now();
+			boolean before = startLocalTime.isBefore(now);
+			boolean before1 = now.isBefore(endLocalTime);
+			if (before && before1) {
 				status = "1";
 			}
-			if (!before){
+			if (!before) {
 				status = "2";
 			}
-			if (!before1){
+			if (!before1) {
 				status = "0";
 			}
 			long totalTime = 0;
-			if (status.equals("1")){
+			if (status.equals("1")) {
 				totalTime = Duration.between(startLocalTime, now).toHours();
-			}else {
+			} else {
 				totalTime = Duration.between(startLocalTime, endLocalTime).toHours();
 			}
 
-			countVo.setTotalTime(totalTime+"");
+			countVo.setTotalTime(totalTime + "");
 			countVo.setActivityStatus(status);
-			countVo.setStartTime(localDateStart.format(DateTimeFormatter.ofPattern("yyyy-MM-dd")));
-			countVo.setEndTime(localDateEnd.format(DateTimeFormatter.ofPattern("yyyy-MM-dd")));
-			countVo.setGoodsNum(count.getShipment());
-			countVo.setPv(count.getPv());
+			countVo.setStartTime(startLocalTime.toLocalDate().format(DateTimeFormatter.ofPattern("yyyy-MM-dd")));
+			countVo.setEndTime(endLocalTime.toLocalDate().format(DateTimeFormatter.ofPattern("yyyy-MM-dd")));
 
 		}
 
 		return Results.success(countVo);
 	}
 
-	private Result<Inno72MerchantTotalCountVo> defaultActInfo(){
+	private Result<Inno72MerchantTotalCountVo> defaultActInfo() {
 		String startDate = "2018-12-15 00:00:00";
 		String endTime = "2018-12-31 23:59:59";
-		String status = "1";
+		String status = "0";
 
 		Duration between;
 		LocalDateTime now = LocalDateTime.now();
 		LocalDateTime parseEnd = LocalDateTime.parse(endTime, DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
 		LocalDateTime parseStart = LocalDateTime.parse(startDate, DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
-		if (now.isAfter(parseEnd)){
+		if (now.isAfter(parseEnd)) {
 			between = Duration.between(parseStart, parseEnd);
-		}else {
-			between = Duration
-					.between(parseStart, now);
+		} else {
+			between = Duration.between(parseStart, now);
 		}
-		String totalTime = between.toHours()+"";
+		String totalTime = between.toHours() + "";
 
 		Inno72MerchantTotalCountVo vo = new Inno72MerchantTotalCountVo();
 		vo.setStartTime(startDate.substring(0, 10));
@@ -389,18 +474,19 @@ public class Inno72MerchantTotalCountServiceImpl extends AbstractService<Inno72M
 		vo.setGoodsNum(53689);
 		vo.setPv(69675);
 		vo.setActivityName("点七二互动活动");
-		System.out.println("默认活动返回-》"  + JSON.toJSONString(vo));
+		System.out.println("默认活动返回-》" + JSON.toJSONString(vo));
 		return Results.success(vo);
 	}
 
-	private Result<Inno72MerchantTotalCountVo> defaultActBeiXuanInfo(){
+	private Result<Inno72MerchantTotalCountVo> defaultActBeiXuanInfo() {
 		String startDate = "2018-11-13 00:00:00";
 		String endTime = "2018-12-20 23:59:59";
 		String status = "0";
 
-		Duration between = Duration
-				.between(LocalDateTime.parse(startDate, DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")), LocalDateTime.parse(endTime, DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")));
-		String totalTime = between.toHours()+"";
+		Duration between = Duration.between(
+				LocalDateTime.parse(startDate, DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")),
+				LocalDateTime.parse(endTime, DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")));
+		String totalTime = between.toHours() + "";
 
 		Inno72MerchantTotalCountVo vo = new Inno72MerchantTotalCountVo();
 		vo.setActivityName("新芝华士备选活动");
@@ -410,7 +496,7 @@ public class Inno72MerchantTotalCountServiceImpl extends AbstractService<Inno72M
 		vo.setTotalTime(totalTime);
 		vo.setGoodsNum(53689);
 		vo.setPv(69675);
-		System.out.println("新芝华士备选活动返回-》"  + JSON.toJSONString(vo));
+		System.out.println("新芝华士备选活动返回-》" + JSON.toJSONString(vo));
 		return Results.success(vo);
 	}
 }

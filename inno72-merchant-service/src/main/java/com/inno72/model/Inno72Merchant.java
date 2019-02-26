@@ -9,6 +9,10 @@ import javax.persistence.Id;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 
+import org.springframework.format.annotation.DateTimeFormat;
+
+import com.fasterxml.jackson.annotation.JsonFormat;
+
 @Table(name = "inno72_merchant")
 public class Inno72Merchant {
 	@Id
@@ -84,12 +88,16 @@ public class Inno72Merchant {
 	 * 创建时间
 	 */
 	@Column(name = "create_time")
+	@JsonFormat(pattern="yyyy-MM-dd HH:mm:ss")
+	@DateTimeFormat(pattern="yyyy-MM-dd HH:mm:ss")
 	private LocalDateTime createTime;
 
 	/**
 	 * 更新时间
 	 */
 	@Column(name = "update_time")
+	@JsonFormat(pattern="yyyy-MM-dd HH:mm:ss")
+	@DateTimeFormat(pattern="yyyy-MM-dd HH:mm:ss")
 	private LocalDateTime updateTime;
 
 	/**

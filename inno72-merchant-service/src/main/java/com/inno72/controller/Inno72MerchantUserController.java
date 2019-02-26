@@ -10,10 +10,10 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.inno72.common.Result;
-import com.inno72.common.ResultGenerator;
 import com.inno72.common.Results;
 import com.inno72.model.Inno72MerchantUser;
 import com.inno72.service.Inno72MerchantUserService;
+import com.inno72.vo.UserSessionVo;
 
 /**
  * Created by CodeGenerator on 2018/11/07.
@@ -26,7 +26,7 @@ public class Inno72MerchantUserController {
 	private Inno72MerchantUserService inno72MerchantUserService;
 
 	@RequestMapping(value = "/inno72/merchant/login")
-	public Result login(String userName, String password) {
+	public Result<UserSessionVo> login(String userName, String password) {
 		return inno72MerchantUserService.login(userName, password);
 	}
 
@@ -37,29 +37,29 @@ public class Inno72MerchantUserController {
 	 * @return 结果
 	 */
 	@RequestMapping(value = "/inno72/merchant/resetPwd")
-	public Result resetPwd(String password, String userName, String phone, String token) {
+	public Result<String> resetPwd(String password, String userName, String phone, String token) {
 		return inno72MerchantUserService.resetPwd(password, userName, phone, token);
 	}
 
 	@RequestMapping(value = "/inno72/merchant/alterPwd")
-	public Result alterPwd(String id, String password, String oPassword) {
+	public Result<String> alterPwd(String id, String password, String oPassword) {
 		return inno72MerchantUserService.alterPwd(id, password, oPassword);
 	}
 
 	@RequestMapping(value = "/inno72/merchant/resetPhone")
-	public Result resetPhone(String id, String newMobile, String token) {
+	public Result<String> resetPhone(String id, String newMobile, String token) {
 		return inno72MerchantUserService.resetPhone(id, newMobile, token);
 	}
 
 	@RequestMapping(value = "/inno72/merchant/user/detail")
-	public Result detail(@RequestParam String id) {
-		Inno72MerchantUser inno72MerchantUser = inno72MerchantUserService.findById(id);
-		return ResultGenerator.genSuccessResult(inno72MerchantUser);
+	public Result<Inno72MerchantUser> detail(@RequestParam String id) {
+		return Results.success(inno72MerchantUserService.findById(id));
 	}
 
 	@RequestMapping(value = "/inno72/merchant/checkUser")
-	public Result checkUser(String phone, String userName, HttpServletRequest request, HttpServletResponse response) {
-		Result result = inno72MerchantUserService.checkUser(phone, userName);
+	public Result<String> checkUser(String phone, String userName, HttpServletRequest request,
+			HttpServletResponse response) {
+		Result<String> result = inno72MerchantUserService.checkUser(phone, userName);
 		if (result.getCode() == Result.SUCCESS) {
 			try {
 				request.getRequestDispatcher("/common/code/3?phone=" + phone).forward(request, response);
@@ -71,20 +71,21 @@ public class Inno72MerchantUserController {
 	}
 
 	@RequestMapping(value = "/inno72/merchant/checkCode")
-	public Result checkCode(String phone, String code) {
+	public Result<String> checkCode(String phone, String code) {
 
 		return inno72MerchantUserService.checkPhone(phone, code);
 	}
 
 	@RequestMapping(value = "/inno72/merchant/checkMerchant")
-	public Result checkMerchant(String phone, String userName) {
+	public Result<String> checkMerchant(String phone, String userName) {
 		return inno72MerchantUserService.checkMerchant(phone, userName);
 	}
 
 
 	@RequestMapping(value = "/inno72/merchant/selectUser")
-	public Result selectUser(String phone, String userName, HttpServletRequest request, HttpServletResponse response) {
-		Result result = inno72MerchantUserService.selectUser(phone, userName);
+	public Result<String> selectUser(String phone, String userName, HttpServletRequest request,
+			HttpServletResponse response) {
+		Result<String> result = inno72MerchantUserService.selectUser(phone, userName);
 		if (result.getCode() == Result.FAILURE) {
 			return result;
 		}

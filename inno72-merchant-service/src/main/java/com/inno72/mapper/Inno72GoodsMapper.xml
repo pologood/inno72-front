@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.inno72.mapper.Inno72GoodsMapper">
+  <resultMap id="BaseResultMap" type="com.inno72.model.Inno72Goods">
+    <!--
+      WARNING - @mbg.generated
+    -->
+    <id column="id" jdbcType="VARCHAR" property="id" />
+    <result column="name" jdbcType="VARCHAR" property="name" />
+    <result column="goods_type" jdbcType="VARCHAR" property="goodsType" />
+    <result column="brand_name" jdbcType="VARCHAR" property="brandName" />
+    <result column="code" jdbcType="VARCHAR" property="code" />
+    <result column="price" jdbcType="DECIMAL" property="price" />
+    <result column="number" jdbcType="INTEGER" property="number" />
+    <result column="seller_id" jdbcType="VARCHAR" property="sellerId" />
+    <result column="shop_id" jdbcType="VARCHAR" property="shopId" />
+    <result column="img" jdbcType="VARCHAR" property="img" />
+    <result column="banner" jdbcType="VARCHAR" property="banner" />
+    <result column="is_delete" jdbcType="INTEGER" property="isDelete" />
+    <result column="remark" jdbcType="VARCHAR" property="remark" />
+    <result column="spec_remark" jdbcType="VARCHAR" property="specRemark" />
+    <result column="create_id" jdbcType="VARCHAR" property="createId" />
+    <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
+    <result column="update_id" jdbcType="VARCHAR" property="updateId" />
+    <result column="update_time" jdbcType="TIMESTAMP" property="updateTime" />
+    <result column="use_type" jdbcType="INTEGER" property="useType" />
+  </resultMap>
+</mapper>

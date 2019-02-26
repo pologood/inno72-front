@@ -64,7 +64,7 @@ public class Inno72CommonController {
 
 		String s = CommonBean.genCode(4);
 
-		String cacheCode = redisUtil.setex(redisHost + phone, CommonBean.REDIS_MERCHANT_MOBILE_CODE_TIMEOUT, s);
+		redisUtil.setex(redisHost + phone, CommonBean.REDIS_MERCHANT_MOBILE_CODE_TIMEOUT, s);
 
 		Map<String, String> param = new HashMap<>(1);
 		param.put("code", s);
@@ -80,7 +80,8 @@ public class Inno72CommonController {
 	private CommonService commonService;
 
 	@RequestMapping(value = "/common/api/{type}")
-	public Result baseApi(@PathVariable(value = "type") String type, String merchantId, String actId) {
+	public Result<Map<String, Object>> baseApi(@PathVariable(value = "type") String type, String merchantId,
+			String actId) {
 		return Results.success(commonService.baseApi(type, merchantId, actId));
 	}
 
@@ -90,12 +91,10 @@ public class Inno72CommonController {
 
 	@RequestMapping(value = "/test")
 	public Result<Map<String, Object>> test(String actId, String start, String end) {
-		Result<Map<String, Object>> mapResult = inno72MerchantTotalCountByUserService
-				.selectByActivityId(actId, start, end);
+		Result<Map<String, Object>> mapResult = inno72MerchantTotalCountByUserService.selectByActivityId(actId, start,
+				end);
 		return mapResult;
 	}
-
-
 
 
 }

@@ -40,4 +40,8 @@
       select * from inno72_merchant_user
           where login_name = #{loginName}
     </select>
+    <select id="selectByMerchantId" resultMap="BaseResultMap" parameterType="string">
+        select * from inno72_merchant_user
+        where merchant_id = #{merchantId}
+    </select>
 </mapper>
