@@ -13,10 +13,7 @@ import com.inno72.model.*;
 import com.inno72.oss.OSSUtil;
 import com.inno72.redis.IRedisUtil;
 import com.inno72.service.*;
-import com.inno72.vo.GoodsVo;
-import com.inno72.vo.Inno72MachineInformation;
-import com.inno72.vo.Inno72MachineVo;
-import com.inno72.vo.UserSessionVo;
+import com.inno72.vo.*;
 import net.coobird.thumbnailator.Thumbnails;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -92,6 +89,8 @@ public class Inno72AuthInfoServiceImpl implements Inno72AuthInfoService {
 	private Inno72CouponMapper inno72CouponMapper;
 	@Resource
 	private RedisTemplate redisTemplate;
+	@Resource
+	private Inno72ConnectionService inno72ConnectionService;
 
 	@Resource
 	private PointService pointService;
@@ -592,7 +591,23 @@ public class Inno72AuthInfoServiceImpl implements Inno72AuthInfoService {
 		return life;
 
 	}
-
+	private void sendMsg(String sessionUuid,Integer type) {
+		LOGGER.info("sendMsg sessionUuid={},type={}",sessionUuid,type);
+		UserSessionVo sessionVo = new UserSessionVo(sessionUuid);
+		Long version = System.currentTimeMillis();
+		String machineCode = sessionVo.getMachineCode();
+		String activityId = sessionVo.getActivityId();
+		Inno72ConnectionLoginVo data = new Inno72ConnectionLoginVo();
+		data.setActivityId(activityId);
+		data.setMachineCode(machineCode);
+		data.setVersion(version);
+		data.setCanOrder(sessionVo.getCanOrder());
+		data.setCountGoods(sessionVo.getCountGoods());
+		data.setUserNick(sessionVo.getUserNick());
+		data.setType(type);
+		data.setUserId(sessionVo.getGameUserId());
+		inno72ConnectionService.send(machineCode,activityId,version,type,JsonUtil.toJson(data));
+	}
 	@Override
 	public boolean setLogged(String sessionUuid) {
 		boolean logged = false;
@@ -602,6 +617,7 @@ public class Inno72AuthInfoServiceImpl implements Inno72AuthInfoService {
 				userSessionVo.setLogged(true);
 				logged = true;
 				pointService.innerPoint(JSON.toJSONString(userSessionVo), Inno72MachineInformation.ENUM_INNO72_MACHINE_INFORMATION_TYPE.LOGIN);
+				sendMsg(sessionUuid,Inno72MachineConnectionMsg.TYPE_ENUM.LOGIN.getKey());
 			} else {
 				LOGGER.info("sessionUuid {} 用户已经登录，不能继续登录！", sessionUuid);
 			}

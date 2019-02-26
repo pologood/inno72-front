@@ -22,10 +22,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @Service("ALI")
 @Transactional
@@ -108,6 +105,9 @@ public class Inno72ALiChannelServiceImpl implements Inno72ChannelService {
 
     @Value("${env}")
     private String env;
+
+    @Resource
+    private Inno72OrderAlipayMapper inno72OrderAlipayMapper;
 
     // todo gxg 使用枚举
     private static final String QRSTATUS_NORMAL = "0"; // 二维码正常
@@ -307,6 +307,13 @@ public class Inno72ALiChannelServiceImpl implements Inno72ChannelService {
                     payQrcodeImage = _payQrcodeImage;
 //					payQrcodeImage = this.getPayQrUrl(_payQrcodeImage ,sessionUuid, userSessionVo);
 //					userSessionVo.setScanPayUrl(payQrcodeImage);
+                    Inno72OrderAlipay inno72OrderAlipay = new Inno72OrderAlipay();
+                    inno72OrderAlipay.setOrderId(userSessionVo.getInno72OrderId());
+                    inno72OrderAlipay.setMachineCode(userSessionVo.getMachineCode());
+                    inno72OrderAlipay.setCreateTime(new Date());
+                    inno72OrderAlipay.setActivityId(userSessionVo.getActivityId());
+                    inno72OrderAlipay.setStatus(Inno72OrderAlipay.STATUS_ENUM.CREATE.getKey());
+                    inno72OrderAlipayMapper.insert(inno72OrderAlipay);
                 }
 
             } else {
