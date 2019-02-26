@@ -110,7 +110,8 @@ public class DemoController {
 
 	@ResponseBody
 	@RequestMapping("test1")
-	public String test1() {
+	public String test1(String code) {
+		UserSessionVo vo = new UserSessionVo(code);
 		return "123";
 	}
 
