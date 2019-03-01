@@ -10,24 +10,31 @@ import com.inno72.model.Inno72ActivityPlanGameResult;
 import com.inno72.model.Inno72Goods;
 import com.inno72.model.Inno72Order;
 import com.inno72.model.Inno72SupplyChannel;
+import com.inno72.mongo.MongoUtil;
 import com.inno72.vo.GameResultVo;
 import com.inno72.vo.UserSessionVo;
+import com.inno72.vo.mongo.ActivityVisitLog;
 import org.apache.commons.collections.CollectionUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.annotation.Resource;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
+import java.util.*;
 
 @RestController
 @RequestMapping(value = "/api/activity")
 public class Inno72ActivityController {
 
+	private static final Logger LOGGER = LoggerFactory.getLogger(Inno72ActivityController.class);
+	@Autowired
+	private MongoUtil mongoUtil;
 	@Resource
 	private GameSessionRedisUtil gameSessionRedisUtil;
 
@@ -101,6 +108,18 @@ public class Inno72ActivityController {
 			gameResultVoList.add(gameResultVo);
 		}
 		return Results.success(gameResultVoList);
+	}
+
+	@RequestMapping(value = "/jdredirect", method = {RequestMethod.POST, RequestMethod.GET})
+	public void jdredirect(String machineCode,HttpServletResponse response) throws IOException {
+		LOGGER.info("jdredirect machineCode = {}",machineCode);
+		UserSessionVo userSessionVo = new UserSessionVo(machineCode);
+		ActivityVisitLog log = new ActivityVisitLog();
+		log.setActivityId(userSessionVo.getActivityId());
+		log.setCreateTime(new Date());
+		mongoUtil.save(log);
+		String url = "https://union-click.jd.com/jdc?e=&p=AyIGZRprFDJWWA1FBCVbV0IUWVALHFNECwQHCllHGAdFBwteQloIBQtHR0pAAQUPdn5uDyJ8OmdBEXAgXgBnV1NPCxNcS0RbXAYFA0pXRk5KQh5JXyJ8VlhZY35tZzBlE30AR10PGUVlfXl3WRdrEAEVBV0rWxQDEgVcHFMXByI3VRhrXmwTN1UdWxcGFwddHl0lAhYDVRhfEwQWAl0fWyUFEg5lwva41qaiAVhrJTIRN2UrWSUCIlgRRgYlABMGURI%3D&t=W1dCFFlQCxxTRAsEBwpZRxgHRQcLXkJaCAULR0dKQAEFD3Z%2Bbg8ifDpnQRFwIF4AZ1dTTwsTXEtEW1wGBQNKV0ZOSkIeSV8%3D";
+		response.sendRedirect(url);
 	}
 
 }
