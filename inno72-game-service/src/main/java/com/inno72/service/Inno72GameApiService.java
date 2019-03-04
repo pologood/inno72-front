@@ -5,6 +5,7 @@ import java.util.Map;
 
 import com.inno72.common.Result;
 import com.inno72.model.Inno72Machine;
+import com.inno72.model.Inno72Order;
 import com.inno72.vo.Inno72SamplingGoods;
 import com.inno72.vo.MachineApiVo;
 import com.inno72.vo.StandardPrepareLoginReqVo;
@@ -33,6 +34,8 @@ public interface Inno72GameApiService {
 	Result<String> setHeartbeat(String machineCode, String page, String planCode, String activity, String desc);
 
     Result<Object> setChannelInfo(UserSessionVo userSessionVo, Map<String, Object> result, List<String> resultGoodsId);
+
+    String genPaiyangInno72Order(UserSessionVo userSessionVo, String sessionUuid, boolean canOrder, String channelId, String activityPlanId, String machineId, String goodsId, String channelUserKey, Inno72Order.INNO72ORDER_GOODSTYPE product);
 
     Result<Object> lottery(UserSessionVo vo, String ua, String umid, String prizeId);
 

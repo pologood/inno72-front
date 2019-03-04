@@ -6,6 +6,7 @@ import com.inno72.common.Result;
 import com.inno72.common.json.JsonUtil;
 import com.inno72.common.util.Encrypt;
 import com.inno72.common.util.FastJsonUtils;
+import com.inno72.common.util.SignUtil;
 import com.inno72.common.utils.StringUtil;
 import com.inno72.model.Inno72Order;
 import com.inno72.plugin.http.HttpClient;
@@ -87,31 +88,11 @@ public class Inno72PayServiceImpl implements Inno72PayService {
     }
 
     private String genSign(Map<String,String> param) {
-        String paramStr =  createLinkString(param);
+        String paramStr =  SignUtil.createLinkString(param);
         String secureKey = properties.get("secureKey");
         String sign = paramStr + "&" + secureKey;
         sign = Encrypt.md5(sign);
         return sign;
     }
 
-    public static String createLinkString(Map<String, String> params) {
-
-        List<String> keys = new ArrayList<String>(params.keySet());
-        Collections.sort(keys);
-
-        String prestr = "";
-
-        for (int i = 0; i < keys.size(); i++) {
-            String key = keys.get(i);
-            String value = params.get(key);
-
-            if (i == keys.size() - 1) {
-                prestr = prestr + key + "=" + value;
-            } else {
-                prestr = prestr + key + "=" + value + "&";
-            }
-        }
-
-        return prestr;
-    }
 }

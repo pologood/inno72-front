@@ -51,4 +51,6 @@ public interface Inno72OrderService {
 	 * @return
 	 */
     List<Inno72Order> findUnShipmentOrder(String gameUserId);
+
+	void updateOrderStatusAndPayStatusByRefOrderNum(String orderNum, Integer key, Integer key1);
 }

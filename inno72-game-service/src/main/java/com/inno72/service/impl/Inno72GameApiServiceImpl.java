@@ -22,6 +22,7 @@ import com.inno72.vo.*;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
@@ -77,7 +78,8 @@ import com.taobao.api.ApiException;
 public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(Inno72GameApiServiceImpl.class);
-
+	@Autowired
+	private BeideMaClient beideMaClient;
 	@Resource
 	private Inno72GameServiceProperties inno72GameServiceProperties;
 	@Resource
@@ -622,7 +624,6 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 					Inno72Order.INNO72ORDER_GOODSTYPE.PRODUCT);
 		}
 
-        String accessToken = userSessionVo.getAccessToken();
         LOGGER.info("更新的session =====> {}", JSON.toJSONString(userSessionVo));
         if (inno72OrderId.equals("0")) {
             LOGGER.info("已经超过最大游戏数量啦 QAQ!");
@@ -686,8 +687,8 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 
 		return returnUrl;
 	}
-
-	private String genPaiyangInno72Order(UserSessionVo userSessionVo,String sessionUuid, boolean canOrder ,String channelId, String activityPlanId, String machineId, String goodsId, String channelUserKey, Inno72Order.INNO72ORDER_GOODSTYPE product) {
+	@Override
+	public String genPaiyangInno72Order(UserSessionVo userSessionVo,String sessionUuid, boolean canOrder ,String channelId, String activityPlanId, String machineId, String goodsId, String channelUserKey, Inno72Order.INNO72ORDER_GOODSTYPE product) {
 		Inno72GameUserChannel userChannel = null;
 		if(StandardLoginTypeEnum.ALIBABA.getValue().compareTo(userSessionVo.getChannelType()) == 0 || StandardLoginTypeEnum.INNO72.getValue().compareTo(userSessionVo.getChannelType()) == 0){
 			userChannel =  inno72GameUserChannelService.findInno72GameUserChannel(channelId,channelUserKey,null);
@@ -946,9 +947,9 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 		if (userSessionVo == null) {
 			return Results.failure("登录失效!");
 		}
-
+		Result<String> succChannelResult = null;
 		if (StringUtil.isNotEmpty(vo.getChannelId())) {
-			Result<String> succChannelResult = shipmentReport(vo);
+			succChannelResult = shipmentReport(vo);
 			LOGGER.info("succChannelResult code is {} ", succChannelResult.getCode());
 		}
 
@@ -981,7 +982,15 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 			LOGGER.info("machineCode is {}, orderId is {}, failChannelIds is {}, code is {} ", machineCode, userSessionVo.getRefOrderId(), failChannelIds,
 					failChannelResult.getCode());
 		}
-
+		if(BeidemaConstants.appId.equals(userSessionVo.getSellerId())){
+			if(succChannelResult!=null&&succChannelResult.getCode() == Result.SUCCESS){
+				//出货成功
+				beideMaClient.shipment(userSessionVo.getUserId(),userSessionVo.getRefOrderId(),1);
+			}else{
+				//出货失败
+				beideMaClient.shipment(userSessionVo.getUserId(),userSessionVo.getRefOrderId(),0);
+			}
+		}
 		return Results.success();
 	}
 
@@ -1053,20 +1062,16 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 		} catch (Exception e) {
 			LOGGER.info("调用 saveLackGoodsBean 异常", e);
 		}
-
-		if (StringUtil.isNotEmpty(orderId)) {
-			new Thread(new DeliveryRecord(channelId, machineCode, userSessionVo)).run();
-		} else {
-			LOGGER.info("调用出货无orderId 请求参数=>{}", JSON.toJSONString(vo));
-		}
-
-		Inno72Goods inno72Goods = inno72GoodsMapper.selectByChannelId(inno72SupplyChannel.getId());
-
-		// todo gxg 观察代码执行情况
 		Integer channelType = userSessionVo.getChannelType();
 		LOGGER.info("shipmentReport channelType is {}", channelType);
 
 		Inno72ChannelService channelService = (Inno72ChannelService)ApplicationContextHandle.getBean(StandardLoginTypeEnum.getValue(channelType == null ? 0 : channelType));
+		channelService.shipment(channelId,machineCode,userSessionVo,orderId,vo);
+
+		Inno72Goods inno72Goods = inno72GoodsMapper.selectByChannelId(inno72SupplyChannel.getId());
+
+		// todo gxg 观察代码执行情况
+
 		channelService.feedBackInTime(userSessionVo.getInno72OrderId(),machineCode);
 
 		pointService.innerPoint(JSON.toJSONString(userSessionVo), Inno72MachineInformation.ENUM_INNO72_MACHINE_INFORMATION_TYPE.SHIPMENT);
@@ -1102,50 +1107,6 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 		return Results.success();
 	}
 
-	class DeliveryRecord implements Runnable {
-
-		private String channelId;
-		private UserSessionVo userSessionVo;
-		private String machineCode;
-
-		public DeliveryRecord(String channelId, String machineCode, UserSessionVo userSessionVo) {
-			this.channelId = channelId;
-			this.machineCode = machineCode;
-			this.userSessionVo = userSessionVo;
-		}
-
-		@Override
-		public void run() {
-			// todo gxg 抽到聚石塔 出货
-			Map<String, String> requestForm = new HashMap<>();
-
-			requestForm.put("accessToken", userSessionVo.getAccessToken());
-			requestForm.put("orderId", userSessionVo.getRefOrderId()); // 安全ua
-			requestForm.put("mid", machineCode);// umid 实际为code
-			requestForm.put("channelId", channelId);// 互动实例ID
-
-			String respJson = "";
-			try {
-				respJson = HttpClient
-						.form(CommonBean.TopUrl.DELIVERY_RECORD, requestForm, null);
-			} catch (Exception e) {
-				LOGGER.info("");
-			}
-			if (StringUtil.isEmpty(respJson)) {
-				LOGGER.info("聚石塔无返回数据!");
-			}
-
-			LOGGER.info("调用聚石塔接口  【通知出货】返回 ===> {}", JSON.toJSONString(respJson));
-
-			String msg_code = FastJsonUtils.getString(respJson, "msg_code");
-			if (!msg_code.equals("SUCCESS")) {
-				String msg_info = FastJsonUtils.getString(respJson, "msg_info");
-				LOGGER.info("返回非成功状态，不能更细订单状态为成功 {}", respJson);
-			}
-
-		}
-	}
-
 	@Override
 	public Result<Object> prepareLoginQrCode(StandardPrepareLoginReqVo req) {
 		String machineCode = req.getMachineCode();
@@ -1172,6 +1133,7 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 			this.startSession(inno72Machine, ext, sessionUuid);
 			UserSessionVo userSessionVo =  new UserSessionVo(inno72Machine.getMachineCode());
 			userSessionVo.setLoginType(req.getLoginType());
+			userSessionVo.setChannelType(req.getLoginType());
 		} catch(Exception e){
 			LOGGER.error("prepareLoginQrCode",e);
 			return Results.failure("系统异常");
