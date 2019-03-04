@@ -40,13 +40,21 @@
         </if>
         order by `date`, city
     </select>
+
     <select id="findGoodsByMerchantId" resultType="java.util.Map" parameterType="string">
-        select distinct a.goods_id as goodsId, a.goods_name as goodsName
-        from inno72_merchant_total_count_by_day a
-        left join inno72_goods g
-		on a.goods_id = g.id and g.is_delete = 0
-        where a.merchant_id = #{merchantId} and a.activity_id = #{activityId}
+        SELECT ig.id as goodsId, ig.name as goodsName
+        FROM inno72_interact_machine im
+            JOIN `inno72_interact_machine_goods` img ON im.id = img.interact_machine_id
+            JOIN inno72_goods ig ON img.goods_id = ig.id
+        WHERE im.interact_id = #{activityId}
+              AND ig.seller_id IN (SELECT id
+                                   FROM inno72.inno72_merchant
+                                   WHERE merchant_account_id =
+                                         (select id from inno72_merchant_user where merchant_id = #{merchantId}))
+              AND ig.is_delete = 0
+        GROUP BY im.interact_id
     </select>
+
     <select id="findActivityByMerchantId" resultType="java.util.Map" parameterType="string">
         select act.activityId, act.activityName, ifnull(interact.channel, "002001") as code
         from (
@@ -54,7 +62,7 @@
                 activity_id   as activityId,
                 activity_name as activityName,
                 merchant_id
-            from inno72_merchant_total_count_by_day
+            from inno72_merchant_total_count
             where merchant_id = #{merchantId}
         ) act
         left join inno72_interact interact on interact.id = act.activityId

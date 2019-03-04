@@ -21,15 +21,16 @@ import com.alibaba.fastjson.JSON;
 import com.inno72.common.AbstractService;
 import com.inno72.common.Result;
 import com.inno72.common.Results;
-import com.inno72.common.datetime.LocalDateTimeUtil;
 import com.inno72.common.utils.StringUtil;
 import com.inno72.mapper.Inno72ActivityIndexMapper;
 import com.inno72.mapper.Inno72ActivityInfoDescMapper;
+import com.inno72.mapper.Inno72InteractMapper;
 import com.inno72.mapper.Inno72MerchantMapper;
 import com.inno72.mapper.Inno72MerchantTotalCountMapper;
 import com.inno72.mapper.Inno72MerchantUserMapper;
 import com.inno72.model.Inno72ActivityIndex;
 import com.inno72.model.Inno72ActivityInfoDesc;
+import com.inno72.model.Inno72Interact;
 import com.inno72.model.Inno72MerchantTotalCount;
 import com.inno72.model.Inno72MerchantUser;
 import com.inno72.service.Inno72MerchantTotalCountService;
@@ -57,6 +58,9 @@ public class Inno72MerchantTotalCountServiceImpl extends AbstractService<Inno72M
 	private Inno72ActivityInfoDescMapper inno72ActivityInfoDescMapper;
 	@Resource
 	private Inno72ActivityIndexMapper inno72ActivityIndexMapper;
+	@Resource
+	private Inno72InteractMapper inno72InteractMapper;
+
 
 	@Override
 	public Result<List<Inno72MerchantTotalCountVo>> findAllById(String id) {
@@ -73,14 +77,10 @@ public class Inno72MerchantTotalCountServiceImpl extends AbstractService<Inno72M
 		LocalDateTime now = LocalDateTime.now();
 		for (Inno72MerchantTotalCountVo countVo : inno72MerchantTotalCounts) {
 			String activityId = countVo.getActivityId();
-			List<String> list = inno72MerchantMapper.selectMerchantId(user.getId());
-			if (list.size() == 0) {
-				return Results.failure("商户没有任何的商家!");
-			}
 
 			Map<String, Object> param = new HashMap<>();
 			param.put("activityId", activityId);
-			param.put("list", list);
+			param.put("merchantId", merchantId);
 
 			Inno72MerchantTotalCountVo vo = inno72MerchantTotalCountMapper.selectMaxMinTime(param);
 
@@ -89,15 +89,15 @@ public class Inno72MerchantTotalCountServiceImpl extends AbstractService<Inno72M
 				countVo.setStartTime(vo.getStartTime());
 				countVo.setEndTime(vo.getEndTime());
 
-				LocalDateTime parseEnd = LocalDateTime.parse(vo.getEndTime(),
-						DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
-				LocalDateTime parseStart = LocalDateTime.parse(vo.getStartTime(),
-						DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
+				LocalDateTime parseEnd = vo.getEndTimeLocal();
+				LocalDateTime parseStart = vo.getStartTimeLocal();
 				Duration between;
 				if (now.isAfter(parseEnd)) {
 					between = Duration.between(parseStart, parseEnd);
-				} else {
+				} else if (now.isAfter(parseStart)){
 					between = Duration.between(parseStart, now);
+				}else {
+					between = Duration.ZERO;
 				}
 				countVo.setTotalTime(between.toHours() + "");
 			}
@@ -149,7 +149,7 @@ public class Inno72MerchantTotalCountServiceImpl extends AbstractService<Inno72M
 				String endTime = "2018-12-20 23:59:59";
 
 				countVo.setStartTime("2018-11-13");
-				countVo.setEndTime("2018-12-20");
+				countVo.setEndTime("2018-11-20");
 				Duration between;
 				LocalDateTime parseEnd = LocalDateTime.parse(endTime,
 						DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
@@ -312,7 +312,7 @@ public class Inno72MerchantTotalCountServiceImpl extends AbstractService<Inno72M
 			log.setId(StringUtil.uuid());
 			log.setTime(infoDate.format(DateTimeFormatter.ofPattern("yyyy-MM-dd")));
 			log.setCount(infoDesc);
-			String type = "";
+			String type;
 			switch (infoType){
 				case 1:
 					type = "新增"; break;
@@ -350,7 +350,7 @@ public class Inno72MerchantTotalCountServiceImpl extends AbstractService<Inno72M
 
 	/**
 	 *
-	 * @param actId
+	 * @param actId 活动ID
 	 * @return startTime
 	 * 		   endTime
 	 * 		   status
@@ -377,6 +377,12 @@ public class Inno72MerchantTotalCountServiceImpl extends AbstractService<Inno72M
 			return Results.failure("商户没有任何的商家!");
 		}
 
+		Inno72Interact inno72Interact = inno72InteractMapper.selectByPrimaryKey(actId);
+		if (inno72Interact == null){
+			return Results.failure("活动错误!");
+		}
+
+
 		Map<String, Object> param = new HashMap<>();
 		param.put("activityId", actId);
 		param.put("merchantId", user.getMerchantId());
@@ -389,14 +395,14 @@ public class Inno72MerchantTotalCountServiceImpl extends AbstractService<Inno72M
 
 		Inno72MerchantTotalCountVo countVo = inno72MerchantTotalCountMapper.selectMaxMinTime(param);
 		if (countVo == null) {
-			return Results.failure("没有这个活动的配置!");
+			countVo = new Inno72MerchantTotalCountVo();
 		}
 
 		List<Inno72ActivityIndex> indexList = inno72ActivityIndexMapper.selectIndex(param);
 
 		countVo.setIndexList(indexList);
 
-		countVo.setActivityName(count.getActivityName());
+		countVo.setActivityName(inno72Interact.getName());
 		countVo.setActivityId(actId);
 		countVo.setMerchantId(user.getMerchantId());
 		countVo.setPv(count.getPv());
@@ -405,25 +411,19 @@ public class Inno72MerchantTotalCountServiceImpl extends AbstractService<Inno72M
 		countVo.setOrder(count.getOrder());
 		countVo.setGoodsNum(count.getShipment());
 
-		String startTime = countVo.getStartTime();
-		String endTime = countVo.getEndTime();
+		LocalDateTime startTime = countVo.getStartTimeLocal();
+		LocalDateTime endTime = countVo.getEndTimeLocal();
 
-		if (StringUtil.isNotEmpty(startTime) && StringUtil.isNotEmpty(endTime)) {
+		if (startTime != null && endTime != null) {
 
 			LOGGER.info("查询活动{},和商家{},的用户下{} 活动开始结束时间", actId, JSON.toJSONString(user), JSON.toJSONString(list),
 					JSON.toJSONString(countVo));
 
-			LocalDateTime startLocalTime = LocalDateTimeUtil.transfer(startTime,
-					DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
-			LocalDateTime endLocalTime = LocalDateTimeUtil.transfer(endTime,
-					DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
-
-
 			String status = "";
 
 			LocalDateTime now = LocalDateTime.now();
-			boolean before = startLocalTime.isBefore(now);
-			boolean before1 = now.isBefore(endLocalTime);
+			boolean before = startTime.isBefore(now);
+			boolean before1 = now.isBefore(endTime);
 			if (before && before1) {
 				status = "1";
 			}
@@ -433,17 +433,15 @@ public class Inno72MerchantTotalCountServiceImpl extends AbstractService<Inno72M
 			if (!before1) {
 				status = "0";
 			}
-			long totalTime = 0;
+			long totalTime;
 			if (status.equals("1")) {
-				totalTime = Duration.between(startLocalTime, now).toHours();
+				totalTime = Duration.between(startTime, now).toHours();
 			} else {
-				totalTime = Duration.between(startLocalTime, endLocalTime).toHours();
+				totalTime = Duration.between(startTime, endTime).toHours();
 			}
 
 			countVo.setTotalTime(totalTime + "");
 			countVo.setActivityStatus(status);
-			countVo.setStartTime(startLocalTime.toLocalDate().format(DateTimeFormatter.ofPattern("yyyy-MM-dd")));
-			countVo.setEndTime(endLocalTime.toLocalDate().format(DateTimeFormatter.ofPattern("yyyy-MM-dd")));
 
 		}
 
@@ -467,8 +465,8 @@ public class Inno72MerchantTotalCountServiceImpl extends AbstractService<Inno72M
 		String totalTime = between.toHours() + "";
 
 		Inno72MerchantTotalCountVo vo = new Inno72MerchantTotalCountVo();
-		vo.setStartTime(startDate.substring(0, 10));
-		vo.setEndTime(endTime.substring(0, 10));
+		vo.setStartTimeLocal(parseStart);
+		vo.setEndTimeLocal(parseEnd);
 		vo.setActivityStatus(status);
 		vo.setTotalTime(totalTime);
 		vo.setGoodsNum(53689);
@@ -483,15 +481,16 @@ public class Inno72MerchantTotalCountServiceImpl extends AbstractService<Inno72M
 		String endTime = "2018-12-20 23:59:59";
 		String status = "0";
 
-		Duration between = Duration.between(
-				LocalDateTime.parse(startDate, DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")),
-				LocalDateTime.parse(endTime, DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")));
+		LocalDateTime parseEnd = LocalDateTime.parse(endTime, DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
+		LocalDateTime parseStart = LocalDateTime.parse(startDate, DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
+
+		Duration between = Duration.between(parseStart, parseEnd);
 		String totalTime = between.toHours() + "";
 
 		Inno72MerchantTotalCountVo vo = new Inno72MerchantTotalCountVo();
 		vo.setActivityName("新芝华士备选活动");
-		vo.setStartTime(startDate.substring(0, 10));
-		vo.setEndTime(endTime.substring(0, 10));
+		vo.setStartTimeLocal(parseStart);
+		vo.setEndTimeLocal(parseEnd);
 		vo.setActivityStatus(status);
 		vo.setTotalTime(totalTime);
 		vo.setGoodsNum(53689);

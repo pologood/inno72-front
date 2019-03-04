@@ -4,6 +4,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -75,11 +76,15 @@ public class Inno72MerchantTotalCountByDayServiceImpl extends AbstractService<In
 		LocalDate startDateLocal = null;
 		LocalDate endDateLocal = null;
 		if (StringUtil.notEmpty(startDate) && StringUtil.notEmpty(endDate)) {
+			LOGGER.info("开始日期 startDateLocal - {} , endDateLocal - {}", startDateLocal, endDateLocal);
 			startDateLocal = LocalDateUtil.transfer(startDate, DateTimeFormatter.ofPattern("yyyy-MM-dd"));
 			endDateLocal = LocalDateUtil.transfer(endDate, DateTimeFormatter.ofPattern("yyyy-MM-dd"));
 			if (endDateLocal.getDayOfYear() - startDateLocal.getDayOfYear() > 90) {
 				return Results.failure("不能大于三个月!");
 			}
+		}else {
+			startDateLocal = LocalDate.now().plusMonths(-1);
+			endDateLocal = LocalDate.now();
 		}
 		List<Inno72MerchantTotalCountByDay> days = inno72MerchantTotalCountByDayMapper.selectList(activityId, city,
 				startDate, endDate, goods, merchantId);
@@ -332,12 +337,18 @@ public class Inno72MerchantTotalCountByDayServiceImpl extends AbstractService<In
 	private Map<String, Object> buildUser(List<Inno72MerchantTotalCountByDay> days, LocalDate startDateLocal,
 			LocalDate endDateLocal, String activityId, String merchantId) {
 
+		LOGGER.info("构建用户维度 - 参数 - List<Inno72MerchantTotalCountByDay> days - {}, LocalDate startDateLocal - {}"
+				+ "LocalDate endDateLocal - {} String activityId - {} String merchantId", days, startDateLocal,
+				endDateLocal, activityId, merchantId);
+
 		if (startDateLocal == null) {
 			Map<String, String> date = inno72MerchantTotalCountByDayMapper.findMinMaxDate(activityId, merchantId);
-			String min = date.get("min");
-			startDateLocal = LocalDate.parse(min, DateTimeFormatter.ofPattern("yyyy-MM-dd"));
-			String max = date.get("max");
-			endDateLocal = LocalDate.parse(max, DateTimeFormatter.ofPattern("yyyy-MM-dd"));
+			if (date != null){
+				String min = date.get("min");
+				startDateLocal = LocalDate.parse(min, DateTimeFormatter.ofPattern("yyyy-MM-dd"));
+				String max = date.get("max");
+				endDateLocal = LocalDate.parse(max, DateTimeFormatter.ofPattern("yyyy-MM-dd"));
+			}
 		}
 
 		Map<String, Object> result = new HashMap<>(2);
