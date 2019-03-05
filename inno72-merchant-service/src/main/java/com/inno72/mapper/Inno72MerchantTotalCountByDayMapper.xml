@@ -52,7 +52,7 @@
                                    WHERE merchant_account_id =
                                          (select id from inno72_merchant_user where merchant_id = #{merchantId}))
               AND ig.is_delete = 0
-        GROUP BY im.interact_id
+        GROUP BY im.interact_id, ig.id
     </select>
 
     <select id="findActivityByMerchantId" resultType="java.util.Map" parameterType="string">
