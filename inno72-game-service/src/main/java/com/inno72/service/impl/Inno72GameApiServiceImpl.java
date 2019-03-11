@@ -1017,7 +1017,7 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 		UserSessionVo userSessionVo = gameSessionRedisUtil.getSessionKey(sessionUuid);
 
 		//修改订单状态为完成
-		LOGGER.info("shipmentReport userSessionVo {}", userSessionVo);
+		LOGGER.info("shipmentReport userSessionVo {}", JSON.toJSONString(userSessionVo));
 
 		if (userSessionVo == null) {
 			return Results.failure("登录失效!");
