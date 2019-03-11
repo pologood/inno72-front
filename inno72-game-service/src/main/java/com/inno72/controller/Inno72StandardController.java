@@ -222,6 +222,15 @@ public class Inno72StandardController {
 							   String versionInno72, HttpSession session) {
 		return inno72MachineService.findGame(mid, planId, version, versionInno72);
 	}
+	/**
+	 * 获得活动信息
+	 * @return
+	 */
+	@ResponseBody
+	@RequestMapping(value = "/findActivityForApp", method = {RequestMethod.POST})
+	public Result findActivityForApp(@RequestParam(name = "machineId") String mid, Long _t) {
+		return inno72MachineService.findActivityForApp(mid, _t);
+	}
 
 	/**
 	 * polling 用户登录信息

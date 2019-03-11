@@ -1,13 +1,16 @@
 package com.inno72.service.impl;
 
+import java.time.Duration;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import javax.annotation.Resource;
 
+import com.inno72.common.datetime.LocalDateTimeUtil;
+import com.inno72.common.util.AesUtils;
 import com.inno72.mapper.*;
 import com.inno72.model.*;
 import com.inno72.service.Inno72InteractMachineTimeService;
@@ -28,8 +31,6 @@ import com.inno72.common.utils.StringUtil;
 import com.inno72.redis.IRedisUtil;
 import com.inno72.service.Inno72MachineService;
 import com.inno72.vo.Inno72MachineVo;
-import com.inno72.vo.MachineVo;
-import com.inno72.vo.QimenTmallFansAutomachineQureymachinesRequest;
 
 /**
  * Created by CodeGenerator on 2018/06/27.
@@ -282,6 +283,29 @@ public class Inno72MachineServiceImpl extends AbstractService<Inno72Machine> imp
 		}
 		return null;
 	}
+
+	@Override
+	public Result findActivityForApp(String mid, Long _t) {
+
+		String res = "";
+		try {
+			LocalDateTime now = LocalDateTime.now();
+
+			LocalDateTime localDateTime = LocalDateTimeUtil.long2LocalDateTime(_t);
+			Duration between = Duration.between(now, localDateTime);
+
+			long minutes = between.toMinutes();
+			if (minutes > 5){
+				return Results.failure(AesUtils.encrypt("请求过期"));
+			}
+		}catch (Exception e){
+			LOGGER.info("解析请求时间错误", e.getMessage());
+			return Results.failure(AesUtils.encrypt("请求错误"));
+		}
+		return Results.success(AesUtils.encrypt(inno72InteractService.findPlanCodeByMid(mid)));
+		
+	}
+
 	private Result<Inno72MachineVo> initDefaultGameFromRedis(String machineId) {
 
 		Inno72MachineVo inno72MachineVo = null;

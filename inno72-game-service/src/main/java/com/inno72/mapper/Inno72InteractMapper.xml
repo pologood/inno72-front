@@ -23,4 +23,13 @@
     <result column="plan_code" jdbcType="VARCHAR" property="planCode" />
     <result column="paiyang_type" jdbcType="INTEGER" property="paiyangType" />
   </resultMap>
+
+    <select id="findPlanCodeByMid" parameterType="string" resultType="string">
+        select i.plan_code from inno72.inno72_interact i
+            left join inno72.inno72_interact_machine im on im.interact_id = i.id
+            left join inno72_interact_machine_time imt on imt.interact_machine_id = im.id
+        where i.is_delete = 0 and im.state = 0 and now() BETWEEN imt.start_time and imt.end_time
+        and im.machine_code = #{mid}
+        limit 1
+    </select>
 </mapper>

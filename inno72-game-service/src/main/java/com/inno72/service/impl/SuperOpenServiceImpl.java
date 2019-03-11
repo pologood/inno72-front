@@ -114,8 +114,12 @@ public class SuperOpenServiceImpl implements SuperOpenService {
 		/** 标准查找活动接口 */
 		FINDACTIVITY_STANDARD("107", "standardFindActivity", "/api/standard/findActivity", "标准订单polling接口", "1.0.0"),
 
+		/** 标准查找活动接口APP */
+		FINDACTIVITY_STANDARD_APP("109", "standardActivityCodeForApp", "/api/standard/findActivityForApp", "标准获取游戏code接口", "1.0.0"),
+
 		/** 标准查找活动接口 */
 		POINT_LOG("108", "point", "/api/point", "标准埋点接口", "1.0.0"),
+
 		/** 标准查找活动接口 */
 		STANDARD_LOTTERY("110", "standardLottery", "/api/standard/lottery", "发送优惠券", "1.0.0"),
 		;
@@ -143,7 +147,7 @@ public class SuperOpenServiceImpl implements SuperOpenService {
 		}
 
 
-		private ADPTE_METHOD(String code, String serviceName, String path, String desc, String version) {
+		ADPTE_METHOD(String code, String serviceName, String path, String desc, String version) {
 			this.code = code;
 			this.serviceName = serviceName;
 			this.path = path;
