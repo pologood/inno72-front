@@ -1,5 +1,6 @@
 package com.inno72.service.impl;
 
+import com.alibaba.fastjson.JSON;
 import com.inno72.common.Inno72BizException;
 import com.inno72.common.RedisConstants;
 import com.inno72.common.Result;
@@ -193,6 +194,7 @@ public class Inno72UnStandardServiceImpl implements Inno72UnStandardService {
     @Override
     public void gamePointTime(String sessionUuid, Integer type) {
         UserSessionVo userSessionVo = new UserSessionVo(sessionUuid);
+        LOGGER.info("更新left表时间 的sessionVo - {}", JSON.toJSONString(userSessionVo));
         Inno72GameUserLife userLife = inno72GameUserLifeMapper.selectByUserChannelIdLast(userSessionVo.getUserId());
         if(type == Inno72GameUserLife.GAME_START_TIME_TYPE){
             userLife.setGameStartTime(LocalDateTime.now());
