@@ -21,10 +21,14 @@ public enum StandardLoginTypeEnum {
 	}
 
 	public static boolean isExist(Integer value) {
-
-		if (ALIBABA.getValue().equals(value) || NOLOGIN.getValue().equals(value)|| WEIXIN.getValue().equals(value)|| INNO72.getValue().equals(value)|| JD.getValue().equals(value)) {
-			return true;
+		StandardLoginTypeEnum[] values = StandardLoginTypeEnum.values();
+		for (StandardLoginTypeEnum v : values){
+			Integer value1 = v.getValue();
+			if (value.equals(value1)){
+				return true;
+			}
 		}
+
 		return false;
 	}
 
