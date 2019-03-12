@@ -7,6 +7,7 @@ import java.net.URLEncoder;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
+import java.util.Map;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
@@ -15,6 +16,8 @@ import javax.servlet.http.HttpSession;
 
 import com.inno72.common.CommonBean;
 import com.inno72.common.json.JsonUtil;
+import com.inno72.common.util.AesUtils;
+import com.inno72.common.util.FastJsonUtils;
 import com.inno72.mapper.Inno72CouponMapper;
 import com.inno72.model.Inno72Coupon;
 import com.inno72.model.Inno72MachineConnectionMsg;
@@ -29,6 +32,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -228,8 +232,21 @@ public class Inno72StandardController {
 	 */
 	@ResponseBody
 	@RequestMapping(value = "/findActivityForApp", method = {RequestMethod.POST})
-	public Result findActivityForApp(@RequestParam(name = "machineId") String mid, Long _t) {
-		return inno72MachineService.findActivityForApp(mid, _t);
+	public Result findActivityForApp(@RequestBody Map<String,Object> map) {
+
+		String data = map.get("data").toString();
+		String decryptData = AesUtils.decrypt(data);
+		String result = null;
+		try {
+			result =  new String(decryptData.getBytes("UTF-8"),"UTF-8");
+			String mid = FastJsonUtils.getString(result, "machineId");
+			Long _t = Long.parseLong(FastJsonUtils.getString(result, "_t"));
+
+			return inno72MachineService.findActivityForApp(mid, _t);
+		} catch (UnsupportedEncodingException e) {
+			e.printStackTrace();
+		}
+		return null;
 	}
 
 	/**
