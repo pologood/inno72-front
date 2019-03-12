@@ -1112,6 +1112,7 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 		String machineCode = req.getMachineCode();
 		String ext = req.getExt();
 		Integer operType = req.getOperType();
+		Integer loginType = req.getLoginType();
 		String sessionUuid = machineCode;
 
 		Inno72Machine inno72Machine = inno72MachineMapper.findMachineByCode(machineCode);
