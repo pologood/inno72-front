@@ -244,10 +244,10 @@ public class Inno72StandardController {
 	 * @return
 	 */
 	@ResponseBody
-	@RequestMapping(value = "/findActivityForApp", method = {RequestMethod.POST})
-	public Result findActivityForApp(@RequestBody Map<String,Object> map) {
+	@RequestMapping(value = "/findActivityForApp", method = {RequestMethod.POST}, produces="text/plain;charset=UTF-8")
+	public Result findActivityForApp(@RequestBody String data) {
 
-		String data = map.get("data").toString();
+//		String data = map.get("data").toString();
 		String decryptData = AesUtils.decrypt(data);
 		String result = null;
 		try {
@@ -259,9 +259,16 @@ public class Inno72StandardController {
 		} catch (UnsupportedEncodingException e) {
 			e.printStackTrace();
 		}
-		return null;
+		return Results.failure("参数解析错误!");
 	}
 
+	public static void main(String [] args){
+
+		String s = "afa77575d09f5677b7a84bc5ca8ddf065fd0400bd1031e1b66e5074fc9deb9fc88fe49703260c60ed43d28c935d1e663";
+
+		System.out.println(AesUtils.decrypt(s));
+
+	}
 	/**
 	 * polling 用户登录信息
 	 * @param sessionUuid
