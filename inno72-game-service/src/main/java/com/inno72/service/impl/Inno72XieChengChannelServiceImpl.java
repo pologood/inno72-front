@@ -11,6 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.alibaba.fastjson.JSON;
 import com.inno72.common.Inno72GameServiceProperties;
 import com.inno72.common.utils.StringUtil;
 import com.inno72.model.Inno72Machine;
@@ -38,6 +39,7 @@ public class Inno72XieChengChannelServiceImpl implements Inno72ChannelService {
 		if (StringUtil.notEmpty(phoneLoginUrl)){
 
 			String activityId = inno72MachineService.findActivityIdByMachineCode(inno72Machine.getMachineCode());
+			LOGGER.info("activityId - {}, phoneLoginUrl - {}, req - {}", activityId, phoneLoginUrl, JSON.toJSONString(req));
 
 			return wrapWechatUrl(String.format(phoneLoginUrl, "24") + "?sessionUuid=" + req.getMachineCode() + "&activityId="+activityId);
 		}
