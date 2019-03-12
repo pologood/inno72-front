@@ -14,6 +14,9 @@ import org.springframework.transaction.annotation.Transactional;
 import com.alibaba.fastjson.JSON;
 import com.inno72.common.Inno72GameServiceProperties;
 import com.inno72.common.utils.StringUtil;
+import com.inno72.mapper.Inno72ActivityMapper;
+import com.inno72.mapper.Inno72InteractMapper;
+import com.inno72.model.Inno72Interact;
 import com.inno72.model.Inno72Machine;
 import com.inno72.service.Inno72ChannelService;
 import com.inno72.service.Inno72MachineService;
@@ -31,6 +34,9 @@ public class Inno72XieChengChannelServiceImpl implements Inno72ChannelService {
 	@Autowired
 	private Inno72MachineService inno72MachineService;
 
+	@Autowired
+	private Inno72InteractMapper inno72InteractMapper;
+
     @Override
     public String buildQrContent(Inno72Machine inno72Machine, String sessionUuid, StandardPrepareLoginReqVo req){
 		//String phoneLoginUrl = "http://game.36solo.com/activity/24/mobile/auth.html?sessionUuid=19782745&activityId=755fb275e95b49dca0dabf24d5ecfa61";
@@ -39,9 +45,10 @@ public class Inno72XieChengChannelServiceImpl implements Inno72ChannelService {
 		if (StringUtil.notEmpty(phoneLoginUrl)){
 
 			String activityId = inno72MachineService.findActivityIdByMachineCode(inno72Machine.getMachineCode());
-			LOGGER.info("activityId - {}, phoneLoginUrl - {}, req - {}", activityId, phoneLoginUrl, JSON.toJSONString(req));
+			Inno72Interact inno72Interact = inno72InteractMapper.selectByPrimaryKey(activityId);
+			LOGGER.info("activityId - {}, phoneLoginUrl - {}, req - {}, inno72Interact - {}", activityId, phoneLoginUrl, JSON.toJSONString(req), JSON.toJSONString(inno72Interact));
 
-			return wrapWechatUrl(String.format(phoneLoginUrl, "24", inno72Machine.getMachineCode()) + "&activityId="+activityId);
+			return wrapWechatUrl(String.format(phoneLoginUrl, inno72Interact.getPlanCode(), inno72Machine.getMachineCode()) + "&activityId="+activityId);
 		}
 
         return phoneLoginUrl;
