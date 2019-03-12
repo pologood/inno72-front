@@ -41,7 +41,7 @@ public class Inno72XieChengChannelServiceImpl implements Inno72ChannelService {
 			String activityId = inno72MachineService.findActivityIdByMachineCode(inno72Machine.getMachineCode());
 			LOGGER.info("activityId - {}, phoneLoginUrl - {}, req - {}", activityId, phoneLoginUrl, JSON.toJSONString(req));
 
-			return wrapWechatUrl(String.format(phoneLoginUrl, "24") + "?sessionUuid=" + req.getMachineCode() + "&activityId="+activityId);
+			return wrapWechatUrl(String.format(phoneLoginUrl, "24", inno72Machine.getMachineCode()) + "&activityId="+activityId);
 		}
 
         return phoneLoginUrl;
