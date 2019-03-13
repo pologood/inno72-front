@@ -16,7 +16,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.io.UnsupportedEncodingException;
 import java.math.BigDecimal;
+import java.net.URLEncoder;
 import java.time.LocalDateTime;
 import java.util.*;
 
@@ -62,16 +64,57 @@ public class Inno72WeiXinChannelServiceImpl implements Inno72ChannelService {
     private Inno72GameApiService inno72GameApiService;
     @Autowired
     private PointService pointService;
+	@Autowired
+	private Inno72MachineService inno72MachineService;
+	@Autowired
+	private Inno72InteractMapper inno72InteractMapper;
 
     @Override
     public String buildQrContent(Inno72Machine inno72Machine,String sessionUuid,StandardPrepareLoginReqVo req) {
-        Inno72InteractMachine interactMachine = inno72InteractMachineTimeService.findActiveInteractMachine(inno72Machine.getMachineCode());
+
+		Inno72Merchant inno72Merchant = inno72MerchantMapper.selectByMachineCode(inno72Machine.getMachineCode());
+
+		if ( inno72Merchant != null && inno72Merchant.getMerchantName().contains("携程")){
+			return buildXieChengQrContent(inno72Machine, sessionUuid, req);
+		}
+
+		Inno72InteractMachine interactMachine = inno72InteractMachineTimeService.findActiveInteractMachine(inno72Machine.getMachineCode());
         if(interactMachine == null){
             LOGGER.info("此机器无派样活动配置machineCode={}",inno72Machine.getMachineCode());
             throw new Inno72BizException("此机器无派样活动配置machineCode="+inno72Machine.getMachineCode());
         }
         return buildParam(inno72Machine.getMachineCode(),interactMachine.getInteractId(),sessionUuid);
     }
+
+
+
+	public String buildXieChengQrContent(Inno72Machine inno72Machine, String sessionUuid, StandardPrepareLoginReqVo req){
+		//String phoneLoginUrl = "http://game.36solo.com/activity/24/mobile/auth.html?sessionUuid=19782745&activityId=755fb275e95b49dca0dabf24d5ecfa61";
+		String phoneLoginUrl = inno72GameServiceProperties.get("phoneLoginUrl");
+
+		if (StringUtil.notEmpty(phoneLoginUrl)){
+
+			String activityId = inno72MachineService.findActivityIdByMachineCode(inno72Machine.getMachineCode());
+			Inno72Interact inno72Interact = inno72InteractMapper.selectByPrimaryKey(activityId);
+			LOGGER.info("activityId - {}, phoneLoginUrl - {}, req - {}, inno72Interact - {}", activityId, phoneLoginUrl, JSON.toJSONString(req), JSON.toJSONString(inno72Interact));
+
+			return wrapWechatUrl(String.format(phoneLoginUrl, inno72Interact.getPlanCode(), inno72Machine.getMachineCode()) + "&activityId="+activityId);
+		}
+
+		return phoneLoginUrl;
+	}
+
+	private static String wrapWechatUrl(String redirectUrl){
+		String url = null;
+		try {
+			url = URLEncoder.encode(redirectUrl,"UTF-8");
+		} catch (UnsupportedEncodingException e) {
+			e.printStackTrace();
+		}
+		String retUrl = "https://open.weixin.qq.com/connect/oauth2/authorize?appid=wxd2d020e170a05549&redirect_uri="+url+"&response_type=code&scope=snsapi_userinfo&state=STATE#wechat_redirect";
+		LOGGER.info("wrapWechatUrl ={}",retUrl);
+		return retUrl;
+	}
 
     @Override
     public Result<Object> paiYangProcessBeforeLogged(String sessionUuid, UserSessionVo sessionVo, String authInfo, String traceId) {

@@ -26,5 +26,7 @@ public interface Inno72MerchantMapper extends Mapper<Inno72Merchant> {
 
 	Inno72Merchant findMerchantByActivityId(String activityId);
 
+	Inno72Merchant selectByMachineCode(String code);
+
     Inno72Merchant findByMerchantCode(@Param("merchantCode") String appId);
 }

@@ -236,8 +236,7 @@ public class Inno72OrderServiceImpl implements Inno72OrderService {
 		param.setPayTime(LocalDateTime.now());
 		inno72OrderMapper.updateByPrimaryKeySelective(param);
 		param = inno72OrderMapper.selectByPrimaryKey(orderId);
-		inno72OrderHistoryMapper.insert(new Inno72OrderHistory(param.getId(), param.getOrderNum(),
-				JSON.toJSONString(param), "支付成功"));
+		inno72OrderHistoryMapper.insert(new Inno72OrderHistory(param.getId(), param.getOrderNum(),JSON.toJSONString(param), "支付成功"));
 	}
 
 	@Override

@@ -24,6 +24,18 @@
                 typeHandler="org.apache.ibatis.type.LocalDateTimeTypeHandler"/>
     </resultMap>
 
+    <select id="selectByMachineCode" parameterType="string" resultMap="BaseResultMap">
+        select m.* from inno72_interact_machine im
+            join inno72_interact interact on im.interact_id = interact.id
+            join inno72_interact_machine_time imt on im.id=imt.interact_machine_id
+
+            left join inno72_interact_machine_goods img on img.interact_machine_id = im.id
+            left join inno72_goods ig on ig.id = img.goods_id
+            left join  inno72_merchant m on m.id = ig.seller_id
+        where interact.`status` = 1 and im.machine_code= #{code}  and
+              CURRENT_TIMESTAMP() BETWEEN imt.start_time and imt.end_time
+    </select>
+
     <select id="selectBoundNameByActivityId" resultType="string" parameterType="string">
       select brand_name from inno72_merchant a1
       left join inno72_activity a2 on a1.id = a2.seller_id
