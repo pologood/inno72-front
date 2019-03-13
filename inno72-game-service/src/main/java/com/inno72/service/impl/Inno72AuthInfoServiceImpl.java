@@ -175,12 +175,8 @@ public class Inno72AuthInfoServiceImpl implements Inno72AuthInfoService {
             return paiYangProcessBeforeLogged(sessionUuid,sessionVo,authInfo,traceId);
         }
 
-		String accessToken = FastJsonUtils.getString(authInfo, "access_token");
-		String userId = FastJsonUtils.getString(authInfo, "taobao_user_nick");
 
-		if (StringUtil.isEmpty(accessToken)) {
-			return Results.failure("accessToken 参数缺失！");
-		}
+
 
 		Inno72Machine inno72Machine = inno72MachineMapper.selectByPrimaryKey(mid);
 		if (inno72Machine == null) {
@@ -204,8 +200,7 @@ public class Inno72AuthInfoServiceImpl implements Inno72AuthInfoService {
 		if (inno72ActivityPlan == null) {
 			return Results.failure("当前没有活动排期！");
 		}
-		// 设置统计每个计划的已完次数
-		redisUtil.sadd(CommonBean.REDIS_ACTIVITY_PLAN_LOGIN_TIMES_KEY + inno72ActivityPlan.getId(), userId);
+
 		if (StringUtil.isEmpty(gameId)) {
 			return Results.failure("没有绑定的游戏！");
 		}
@@ -243,7 +238,26 @@ public class Inno72AuthInfoServiceImpl implements Inno72AuthInfoService {
 		playCode = inno72Activity.getCode();
 		LOGGER.info("sessionRedirect layCode is {}", playCode);
 
-		String nickName = inno72TopService.getMaskUserNick(sessionUuid, accessToken, inno72Merchant.getMerchantCode(), userId);
+		String accessToken = null;
+		String userId = null;
+		String nickName = null;
+
+		String channelT = FastJsonUtils.getString(authInfo, "channelType");
+		if (StringUtil.notEmpty(channelT) && channelT.equals("5")){
+			userId = FastJsonUtils.getString(authInfo, "openId");
+			accessToken = FastJsonUtils.getString(authInfo, "code");
+			nickName = FastJsonUtils.getString(authInfo, "nickname");
+		}else{
+			accessToken = FastJsonUtils.getString(authInfo, "access_token");
+			userId = FastJsonUtils.getString(authInfo, "taobao_user_nick");
+			nickName = inno72TopService.getMaskUserNick(sessionUuid, accessToken, inno72Merchant.getMerchantCode(), userId);
+		}
+		if (StringUtil.isEmpty(accessToken)) {
+			return Results.failure("accessToken 参数缺失！");
+		}
+
+		// 设置统计每个计划的已完次数
+		redisUtil.sadd(CommonBean.REDIS_ACTIVITY_PLAN_LOGIN_TIMES_KEY + inno72ActivityPlan.getId(), userId);
 
 		String channelId = inno72Merchant.getChannelId();
 
@@ -257,11 +271,11 @@ public class Inno72AuthInfoServiceImpl implements Inno72AuthInfoService {
 		if (userChannel == null) {
 			Inno72GameUser inno72GameUser = new Inno72GameUser();
 			inno72GameUserMapper.insert(inno72GameUser);
-			LOGGER.info("插入游戏用户表 完成 ===> {}", JSON.toJSONString(inno72GameUser));
+			LOGGER.info("新增插入游戏用户表 完成 ===> {}", JSON.toJSONString(inno72GameUser));
 			userChannel = new Inno72GameUserChannel(nickName, "", channelId, inno72GameUser.getId(),
-					inno72Channel.getChannelName(), userId, accessToken,StandardLoginTypeEnum.ALIBABA.getValue());
+					inno72Channel.getChannelName(), userId, accessToken,StandardLoginTypeEnum.WEIXIN.getValue());
 			inno72GameUserChannelMapper.insert(userChannel);
-			LOGGER.info("插入游戏用户渠道表 完成 ===> {}", JSON.toJSONString(userChannel));
+			LOGGER.info("新增插入游戏用户渠道表 完成 ===> {}", JSON.toJSONString(userChannel));
 
 		} else {
 			userChannel.setAccessToken(accessToken);
@@ -279,9 +293,9 @@ public class Inno72AuthInfoServiceImpl implements Inno72AuthInfoService {
 
 		boolean canOrder = false;
 
-		if (inno72Activity.getType() == Inno72Activity.ActivityType.PAIYANG.getType()) {
+		if (inno72Activity.getType().equals(Inno72Activity.ActivityType.PAIYANG.getType())) {
 			canOrder = inno72GameService.countSuccOrderPy(channelId, userId, inno72ActivityPlan.getId(), sessionVo.getGoodsId(), inno72Activity.getId());
-		} else if (inno72Activity.getType() == Inno72Activity.ActivityType.COMMON.getType()) {
+		} else if (inno72Activity.getType().equals(Inno72Activity.ActivityType.COMMON.getType())) {
 			canOrder = inno72GameService.countSuccOrder(channelId, userId,inno72ActivityPlan.getId(), inno72ActivityPlan.getActivityId());
 		}
 
