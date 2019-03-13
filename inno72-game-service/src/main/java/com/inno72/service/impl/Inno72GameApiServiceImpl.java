@@ -1698,7 +1698,7 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 		userSessionVo.setRefOrderStatus(inno72Order.getRefOrderStatus());
 //		gameSessionRedisUtil.setSession(sessionUuid, JSON.toJSONString(userSessionVo));
 
-		return rep.equals(Inno72Order.INNO72ORDER_REPETITION.REPETITION.getKey()) ? rep + "" : inno72Order.getId();
+		return inno72Order.getId();
 	}
 
 	/**
