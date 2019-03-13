@@ -1,6 +1,10 @@
 package com.inno72.common.util;
 
-import com.inno72.plugin.http.HttpClient;
+import java.io.UnsupportedEncodingException;
+import java.security.InvalidAlgorithmParameterException;
+import java.security.InvalidKeyException;
+import java.security.Key;
+import java.security.NoSuchAlgorithmException;
 
 import javax.crypto.BadPaddingException;
 import javax.crypto.Cipher;
@@ -8,11 +12,6 @@ import javax.crypto.IllegalBlockSizeException;
 import javax.crypto.NoSuchPaddingException;
 import javax.crypto.spec.IvParameterSpec;
 import javax.crypto.spec.SecretKeySpec;
-import java.io.UnsupportedEncodingException;
-import java.security.InvalidAlgorithmParameterException;
-import java.security.InvalidKeyException;
-import java.security.Key;
-import java.security.NoSuchAlgorithmException;
 
 
 /**
@@ -24,9 +23,12 @@ public class AesUtils {
 
     public static final String logalrithm = "AES/CBC/PKCS5Padding";
     public static final String bm = "utf-8";
-    private static byte[] keyValue = "02069578fbc54618".getBytes();
-    private static byte[] iv = "ad62dfa9dede426e".getBytes();
-
+	private static byte[] keyValue = new byte[]{
+			17, -35, -45, 25, 54, -55, -45, 40, 35, -45, 35, 26, -95, 25, -35, 76
+	};
+	private static byte[] iv = new byte[]{
+			-13, 35, -25, 22, 54, -87, 34, -15, -22, 55, 45, -66, 28, 5 - 4, 67, 43
+	};
     private static Key keySpec;
     private static IvParameterSpec ivSpec;
 
@@ -140,12 +142,12 @@ public class AesUtils {
         return encrypted;
     }
 
-    public static void main(String[] args) {
-       /* String userid = "897807300@qq.com";
-        String token = "8aa8690f65f080aee595d8781e7044a7eacda7a86520786db0838136554920b6";
-        System.out.println(encrypt(token));
-        System.out.println(decrypt(encrypt(token)));*/
-        String result = HttpClient.post("http://localhost:8881//sendMsgToClient/sendEvent/sendEvent", "");
-        System.out.println("调用发送结果是" + result);
-    }
+//    public static void main(String[] args) {
+//        String userid = "{\"_t\":\"1552384114075\",\"machineId\":\"18342592\"}";
+//        String token = "afa77575d09f5677b7a84bc5ca8ddf065fd0400bd1031e1b66e5074fc9deb9fc88fe49703260c60ed43d28c935d1e663";
+//		System.out.println(encrypt(userid));
+//        System.out.println(decrypt(token));
+//        String result = HttpClient.post("http://localhost:8881//sendMsgToClient/sendEvent/sendEvent", "");
+//        System.out.println("调用发送结果是" + result);
+//    }
 }
