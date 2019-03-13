@@ -360,42 +360,39 @@ public class Inno72OrderServiceImpl implements Inno72OrderService {
 	 * @param inno72SupplyChannels
 	 */
 	private void channelSort(List<Inno72SupplyChannel> inno72SupplyChannels) {
-		Collections.sort(inno72SupplyChannels, new Comparator<Inno72SupplyChannel>() {
-			@Override
-			public int compare(Inno72SupplyChannel o1, Inno72SupplyChannel o2) {
-				if (o1.getGoodsCount() == null)
-					o1.setGoodsCount(0);
-				if (o2.getGoodsCount() == null)
-					o2.setGoodsCount(0);
-				if (o1.getGoodsCount() > o2.getGoodsCount()) {
+		inno72SupplyChannels.sort((o1, o2) -> {
+			if (o1.getGoodsCount() == null)
+				o1.setGoodsCount(0);
+			if (o2.getGoodsCount() == null)
+				o2.setGoodsCount(0);
+			if (o1.getGoodsCount() > o2.getGoodsCount()) {
+				return -1;
+			}
+
+			if (o1.getGoodsCount() == o2.getGoodsCount()) {
+				Integer code1, code2 = 0;
+				try {
+					code1 = Integer.parseInt(o1.getCode());
+				} catch (Exception e) {
+					LOGGER.info("数据异常code={}非数字", o1.getCode());
+					code1 = 0;
+				}
+				try {
+					code2 = Integer.parseInt(o2.getCode());
+				} catch (Exception e) {
+					LOGGER.info("数据异常code={}非数字", o2.getCode());
+					code2 = 0;
+				}
+				if (code1 > code2) {
+					return 1;
+				}
+				if (code1 < code2) {
 					return -1;
 				}
-
-				if (o1.getGoodsCount() == o2.getGoodsCount()) {
-					Integer code1, code2 = 0;
-					try {
-						code1 = Integer.parseInt(o1.getCode());
-					} catch (Exception e) {
-						LOGGER.info("数据异常code={}非数字", o1.getCode());
-						code1 = 0;
-					}
-					try {
-						code2 = Integer.parseInt(o2.getCode());
-					} catch (Exception e) {
-						LOGGER.info("数据异常code={}非数字", o2.getCode());
-						code2 = 0;
-					}
-					if (code1 > code2) {
-						return 1;
-					}
-					if (code1 < code2) {
-						return -1;
-					}
-					return 0;
-				}
-
-				return 1;
+				return 0;
 			}
+
+			return 1;
 		});
 	}
 
