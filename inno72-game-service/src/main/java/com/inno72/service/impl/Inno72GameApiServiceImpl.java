@@ -613,10 +613,12 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 			return Results.failure("下商品订单机器信息错误!");
 		}
 		boolean paiyangflag = userSessionVo.findPaiyangFlag();
-		String inno72OrderId = null;
+		String inno72OrderId;
 		if(paiyangflag){
 			// 下单 inno72_Order TODO 商品下单 itemId 对应的类型？
-			inno72OrderId = genPaiyangInno72Order(userSessionVo,sessionUuid, userSessionVo.getCanOrder(),channelId, activityPlanId, machineId, goodsId, userSessionVo.getUserId(),
+			inno72OrderId = genPaiyangInno72Order(userSessionVo, sessionUuid, userSessionVo.getCanOrder(),
+					channelId, activityPlanId, machineId,
+					goodsId, userSessionVo.getUserId(),
 					Inno72Order.INNO72ORDER_GOODSTYPE.PRODUCT);
 		}else{
 			// 下单 inno72_Order TODO 商品下单 itemId 对应的类型？
@@ -687,6 +689,8 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 
 		return returnUrl;
 	}
+
+
 	@Override
 	public String genPaiyangInno72Order(UserSessionVo userSessionVo,String sessionUuid, boolean canOrder ,String channelId, String activityPlanId, String machineId, String goodsId, String channelUserKey, Inno72Order.INNO72ORDER_GOODSTYPE product) {
 		Inno72GameUserChannel userChannel = null;
