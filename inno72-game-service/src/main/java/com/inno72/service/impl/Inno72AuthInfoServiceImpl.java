@@ -243,10 +243,11 @@ public class Inno72AuthInfoServiceImpl implements Inno72AuthInfoService {
 		String nickName = null;
 
 		String channelT = FastJsonUtils.getString(authInfo, "channelType");
-		if (StringUtil.notEmpty(channelT) && channelT.equals("5")){
+		if (StringUtil.notEmpty(channelT) && channelT.equals("2")){
 			userId = FastJsonUtils.getString(authInfo, "openId");
 			accessToken = FastJsonUtils.getString(authInfo, "code");
 			nickName = FastJsonUtils.getString(authInfo, "nickname");
+			sessionVo.setScanned(true);
 		}else{
 			accessToken = FastJsonUtils.getString(authInfo, "access_token");
 			userId = FastJsonUtils.getString(authInfo, "taobao_user_nick");
