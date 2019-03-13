@@ -70,7 +70,7 @@ import tk.mybatis.mapper.entity.Condition;
 @RequestMapping(value = "/api/standard")
 public class Inno72StandardController {
 
-	private Logger logger = LoggerFactory.getLogger(this.getClass());
+	private static final Logger LOGGER = LoggerFactory.getLogger(Inno72StandardController.class);
 
 
 	@Resource
@@ -119,12 +119,12 @@ public class Inno72StandardController {
 	@RequestMapping(value = "/prepareLogin", method = {RequestMethod.POST})
 	public Result<Object> prepareLogin(StandardPrepareLoginReqVo req) {
 		if (StringUtils.isBlank(req.getMachineCode())) {
-			logger.warn("机器Code为空 " + req.toString());
+			LOGGER.warn("机器Code为空 " + req.toString());
 			return Results.failure("机器Code为空");
 		}
 
 		if (!StandardLoginTypeEnum.isExist(req.getLoginType())) {
-			logger.warn("登陆类型错误 " + req.toString());
+			LOGGER.warn("登陆类型错误 " + req.toString());
 			return Results.failure("登陆类型错误");
 		}
 
@@ -133,23 +133,6 @@ public class Inno72StandardController {
 		} else {
 			return inno72GameApiService.prepareLoginQrCode(req);
 		}
-	}
-
-	private static final Logger LOGGER = LoggerFactory.getLogger(Inno72StandardController.class);
-
-	/**
-	 * 测试埋点接口
-	 * @param req
-	 * @return
-	 */
-	@ResponseBody
-	@RequestMapping(value = "/logger", method = {RequestMethod.POST})
-	public void logger(StandardPrepareLoginReqVo req) {
-		new PointLogContext(LogType.POINT).machineCode("ceshimachinecode123")
-				.pointTime(LocalDateTimeUtil.transfer(LocalDateTime.now(),
-						DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")))
-				.type("31").detail("测试").tag("测试tag").bulid();
-		LOGGER.info("记录埋点数据 [测试]");
 	}
 
 	/**
@@ -207,7 +190,7 @@ public class Inno72StandardController {
 			return Results.failure(vo.getInteractId() + "不存在");
 		}
 		String prizeId = inno72Coupons.get(0).getId();
-		logger.info("lottery prizeId is {}", prizeId);
+		LOGGER.info("lottery prizeId is {}", prizeId);
 		return inno72GameApiService.lottery(userSessionVo, vo.getUa(), vo.getUmid(), prizeId);
 	}
 
