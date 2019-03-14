@@ -25,7 +25,7 @@
     </resultMap>
 
     <select id="selectByMachineCode" parameterType="string" resultMap="BaseResultMap">
-        select m.* from inno72_interact_machine im
+        select DISTINCT m.id, m.merchant_code, m.merchant_name, m.channel_id, m.merchant_account_id, m.channel_code from inno72_interact_machine im
             join inno72_interact interact on im.interact_id = interact.id
             join inno72_interact_machine_time imt on im.id=imt.interact_machine_id
 
