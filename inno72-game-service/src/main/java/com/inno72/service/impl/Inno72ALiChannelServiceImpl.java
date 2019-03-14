@@ -314,6 +314,9 @@ public class Inno72ALiChannelServiceImpl implements Inno72ChannelService {
                     inno72OrderAlipay.setActivityId(userSessionVo.getActivityId());
                     inno72OrderAlipay.setStatus(Inno72OrderAlipay.STATUS_ENUM.CREATE.getKey());
                     inno72OrderAlipayMapper.insert(inno72OrderAlipay);
+
+                    //开始获取订单支付状态
+					GetAliPayStatusThread.run(inno72OrderAlipay);
                 }
 
             } else {

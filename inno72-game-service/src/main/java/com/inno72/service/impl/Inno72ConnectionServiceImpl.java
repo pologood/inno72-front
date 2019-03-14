@@ -3,6 +3,7 @@ package com.inno72.service.impl;
 import com.inno72.common.Inno72GameServiceProperties;
 import com.inno72.common.Result;
 import com.inno72.common.json.JsonUtil;
+import com.inno72.common.util.HttpFormConnector;
 import com.inno72.mapper.Inno72MachineActivityImageMapper;
 import com.inno72.mapper.Inno72MachineConnectionMsgMapper;
 import com.inno72.model.Inno72MachineActivityImage;
@@ -19,6 +20,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.io.IOException;
+import java.io.UnsupportedEncodingException;
 import java.util.Date;
 
 @Service
@@ -88,6 +91,16 @@ public class Inno72ConnectionServiceImpl implements Inno72ConnectionService {
         String response = HttpClient.post(pushServerUrl,request);
         LOGGER.info("send msg response={}",response);
     }
+
+	@Override
+	public void sendMsg(Inno72MachineConnectionMsg msg) throws IOException {
+		String pushServerUrl = inno72GameServiceProperties.get("pushServerUrl")+"/pusher/push/one";
+		LOGGER.info("send msg url = {},data={}",pushServerUrl,msg.getMsg());
+		byte[] ret = HttpFormConnector
+				.doPost(pushServerUrl,msg.getMsg().getBytes("utf-8"),"application/json; charset=utf-8",10000);
+		String response = new String(ret, "utf-8");
+		LOGGER.info("send msg response={}",response);
+	}
 
     @Override
     public void callBack(String machineCode, String activityId, Integer type, Long version) {
