@@ -53,12 +53,12 @@ public class Inno72MachineServiceImpl extends AbstractService<Inno72Machine> imp
 	private Inno72ActivityMapper inno72ActivityMapper;
 	@Resource
 	private IRedisUtil redisUtil;
-	@Autowired
+	@Resource
 	private Inno72InteractMachineTimeService inno72InteractMachineTimeService;
-	@Autowired
+	@Resource
 	private Inno72InteractService inno72InteractService;
 
-	@Autowired
+	@Resource
 	private Inno72SupplyChannelMapper inno72SupplyChannelMapper;
 //	@Resource
 //	private InteractMachineTimeService interactMachineTimeService;
@@ -302,7 +302,7 @@ public class Inno72MachineServiceImpl extends AbstractService<Inno72Machine> imp
 			LOGGER.info("解析请求时间错误", e.getMessage());
 			return Results.failure(AesUtils.encrypt("请求错误"));
 		}
-		return Results.success(AesUtils.encrypt(inno72InteractService.findPlanCodeByMid(mid)));
+		return Results.success(AesUtils.encrypt(JSON.toJSONString(inno72InteractService.findPlanCodeByMid(mid))));
 		
 	}
 

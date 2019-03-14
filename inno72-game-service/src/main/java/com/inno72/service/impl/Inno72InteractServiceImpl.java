@@ -4,6 +4,7 @@ import com.inno72.common.AbstractService;
 import com.inno72.mapper.Inno72InteractMapper;
 import com.inno72.model.Inno72Interact;
 import com.inno72.service.Inno72InteractService;
+import com.inno72.vo.Inno72InteractVo;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -17,7 +18,7 @@ public class Inno72InteractServiceImpl extends AbstractService<Inno72Interact> i
 	private Inno72InteractMapper inno72InteractMapper;
 
 	@Override
-	public String findPlanCodeByMid(String mid) {
+	public Inno72InteractVo findPlanCodeByMid(String mid) {
 		return inno72InteractMapper.findPlanCodeByMid(mid);
 	}
 }

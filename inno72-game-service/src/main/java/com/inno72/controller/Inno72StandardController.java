@@ -245,13 +245,6 @@ public class Inno72StandardController {
 		return Results.failure("参数解析错误!");
 	}
 
-	public static void main(String [] args){
-
-		String s = "afa77575d09f5677b7a84bc5ca8ddf065fd0400bd1031e1b66e5074fc9deb9fc88fe49703260c60ed43d28c935d1e663";
-
-		System.out.println(AesUtils.decrypt(s));
-
-	}
 	/**
 	 * polling 用户登录信息
 	 * @param sessionUuid
