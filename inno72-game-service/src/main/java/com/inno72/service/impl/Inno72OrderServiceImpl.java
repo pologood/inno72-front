@@ -578,7 +578,7 @@ public class Inno72OrderServiceImpl implements Inno72OrderService {
 		inno72OrderHistoryMapper.insert(new Inno72OrderHistory(inno72Order.getId(), inno72Order.getOrderNum(),
 				JSON.toJSONString(inno72Order), "初始化插入订单!"));
 
-		return rep == 0 ? rep + "" : inno72Order.getId();
+		return inno72Order.getId();
 	}
 
 	/**
