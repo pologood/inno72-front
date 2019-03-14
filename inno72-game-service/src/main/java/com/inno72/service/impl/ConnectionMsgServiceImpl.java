@@ -8,12 +8,14 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.ApplicationContext;
+import org.springframework.stereotype.Service;
 
 import com.inno72.common.util.HttpFormConnector;
 import com.inno72.mapper.Inno72MachineConnectionMsgMapper;
 import com.inno72.model.Inno72MachineConnectionMsg;
 import com.inno72.service.ConnectionMsgService;
 
+@Service
 public class ConnectionMsgServiceImpl implements ConnectionMsgService {
 	private static final Logger LOGGER = LoggerFactory.getLogger(ConnectionMsgServiceImpl.class);
 
