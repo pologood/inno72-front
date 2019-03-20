@@ -53,7 +53,7 @@ public class DemoController {
 				result.put("min", curSize);
 				result.put("max", i);
 			}
-			logger.info("获取线程处理ID集合 ->", JSON.toJSONString(result));
+			logger.info("获取线程处理ID集合 -> {}", JSON.toJSONString(result));
 			redisUtil.set(rdm_max_id, result.get("max")+"");
 			return Results.success(result);
 		}

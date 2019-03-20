@@ -127,6 +127,7 @@
     </build>
 
     <modules>
+        <module>inno72-fcbox-service</module>
         <module>inno72-game-service</module>
         <module>inno72-alarm-service</module>
         <module>inno72-qy-service</module>
