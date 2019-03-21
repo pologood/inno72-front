@@ -45,6 +45,7 @@ public class DemoController {
 			Map<String, Long> result = new HashMap<>();
 
 			long fcBoxPointPlan = mongoOperations.count(new Query(), "FcBoxPointPlan-1");
+
 			if (fcBoxPointPlan - curSize <= 0){
 				return Results.warn("没有了，都处理完了。恭喜你完成任务!", 3);
 			}else if(fcBoxPointPlan < i){
