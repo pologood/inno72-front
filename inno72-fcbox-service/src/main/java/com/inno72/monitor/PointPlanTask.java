@@ -57,13 +57,13 @@ public class PointPlanTask {
 
 	static int no = 1;
 
-	private static final String response = "fcbox-response-country-all-1";
-	private static final String request = "fcbox-request-country-all-1";
-	private static final String fileName = "fcbox-country-all-1.xlsx";
+	private static final String response = "fcbox-response-country-all-500";
+	private static final String request = "fcbox-request-country-all-500";
+	private static final String fileName = "fcbox-country-all-500.xlsx";
 	// 范围内 检索半径 0.01 = 1000m
 	private static final Double km1 = 1d;
-	private static final Double km2 = 0.01141d;
-	private static final Double km3 = 0.00899d;
+	private static final Double km2 = 0.00570d;
+	private static final Double km3 = 0.00450d;
 
 	// 左上 经度 73.113659,53.238915
 	//	private static double latLeft = 53.238915;
@@ -90,19 +90,19 @@ public class PointPlanTask {
 			List<PointPlan> plans = new LinkedList<>();
 			while (cLongLeft < lonRight) {
 				i++;
-				plans.add(new PointPlan(i, latLeft, cLongLeft));
-				if (plans.size() >= 200){
+				PointPlan pointPlan = new PointPlan(i, latLeft, cLongLeft);
+				LOGGER.info("plan ----> {}", JSON.toJSONString(pointPlan));
+				plans.add(pointPlan);
+				if (plans.size() >= 500){
 					fixedThreadPool.execute(new CheckRunner(plans, mongoOperations));
 					plans = new LinkedList<>();
 				}
 				cLongLeft += km2;
 			}
-
 			if (plans.size() > 0){
 				fixedThreadPool.execute(new CheckRunner(plans, mongoOperations));
 				plans = new LinkedList<>();
 			}
-
 
 			latLeft -= km3;
 		}
@@ -110,125 +110,9 @@ public class PointPlanTask {
 		LOGGER.info("%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -- 重新循环 {} -- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%",
 				LocalDateTime.now());
 	}
-	//	public void test() {
 
-	//		LOGGER.info("开始执行 地区任务");
-	//
-	//		int i = 3071593;
-	//
-	//		while (latLeft  > latRight) {
-	//			Double cLongLeft = lonLeft;
-	//			while (cLongLeft < lonRight) {
-	//
-	//				Map<String, Double> neighDrugstore = findNeighDrugstore(cLongLeft, latLeft, km1);
-	//				i++;
-	//
-	//				fixedThreadPool.execute(new CheckRunner(new PointPlan(i, latLeft, cLongLeft), mongoOperations));
-	//
-	//				cLongLeft = neighDrugstore.get("maxlng");
-	//			}
-	//			Map<String, Double> neighDrugstore = findNeighDrugstore(lonLeft, latLeft, km1);
-	//			latLeft = neighDrugstore.get("minlat");
-	//			lonLeft = neighDrugstore.get("minlng");
-	//			params.put("minlat",minlat);//纬度底
-	//			params.put("maxlat",maxlat);//纬度顶
-	//			params.put("minlng",minlng);//经度底
-	//			params.put("maxlng",maxlng);//经度顶
-
-	//}
-
-
-
-
-	//		latLon();
-
-	//		LOGGER.info("执行完成 地区任务");
-
-	//		int t = 0;
-	//		for (Map<String, String> map : maps){
-	//			try {
-	//				t++;
-	//				getHttp(map);
-	//				if (t > 500){
-	//					Thread.sleep(10000l);
-	//					t = 0;
-	//				}
-	//			} catch (IOException e) {
-	//				e.printStackTrace();
-	//			} catch (InterruptedException e) {
-	//				e.printStackTrace();
-	//			}
-	//		}
-
-
-	//				}
-
-	//	private void checkAndSave(int i, Double cLongLeft) {
-	//		boolean pointInPolygon = MapsUtil.isInPolygon(cLongLeft, latLeft, 1);
-	//		LOGGER.info("坐标 - {},{} ，计算结果为 {}", cLongLeft, latLeft, pointInPolygon);
-	//		if (pointInPolygon){
-	//			try {
-	//						getHttp(map);
-	//				PointPlan pointPlan = new PointPlan();
-	//				pointPlan.setLat(latLeft);
-	//				pointPlan.setLon(cLongLeft);
-	//				pointPlan.setId(i);
-	//				mongoOperations.save(pointPlan, "FcBoxPointPlan");
-	//			} catch (Exception e) {
-	//				e.printStackTrace();
-	//			}
-	//		}
-	//	}
-
-
-	/**
-	 * 附近选择
-	 * @param longitude    经度
-	 * @param latitude 纬度
-	 * @param distance 搜索范围
-	 * @return 经纬度范围
-	 */
-	public static Map<String, Double> findNeighDrugstore(double longitude,double latitude, double distance) {
-
-		double minlat = 0;
-		double maxlat = 0;
-		double minlng = 0;
-		double maxlng = 0;
-
-		// 先计算查询点的经纬度范围
-		double r = 6371;// 地球半径千米
-		double dis = distance;// 距离(单位:千米)
-		double dlng = 2 * Math.asin(Math.sin(dis / (2 * r))
-				/ Math.cos(longitude * Math.PI / 180));
-		dlng = dlng * 180 / Math.PI;// 角度转为弧度
-		double dlat = dis / r;
-		dlat = dlat * 180 / Math.PI;
-		if (dlng < 0) {
-			minlng = longitude + dlng;
-			maxlng = longitude - dlng;
-		} else {
-			minlng = longitude - dlng;
-			maxlng = longitude + dlng;
-		}
-		if (dlat < 0) {
-			minlat = latitude + dlat;
-			maxlat = latitude - dlat;
-		} else {
-			minlat = latitude - dlat;
-			maxlat = latitude + dlat;
-		}
-		Map<String,Double> params=new HashMap<>();
-		params.put("minlat",minlat);//纬度底
-		params.put("maxlat",maxlat);//纬度顶
-		params.put("minlng",minlng);//经度底
-		params.put("maxlng",maxlng);//经度顶
-
-		LOGGER.info("位置 ################## {}, {}", longitude, latitude);
-		LOGGER.info("偏移后的位置 ########### {}", JSON.toJSONString(params));
-		return params;
-	}
 	public void test2() throws IOException {
-		long total = mongoOperations.count(new Query(), response);
+		long total = mongoOperations.count(new Query(Criteria.where("content").exists(true)), response);
 		int perPage = 10000;
 
 		long pageSize = total / perPage + (total % perPage != 0 ? 1 : 0);
@@ -239,6 +123,7 @@ public class PointPlanTask {
 
 
 		Query pointLogQuery = new Query();
+		pointLogQuery.addCriteria(Criteria.where("content").exists(true));
 		pointLogQuery.with(new Sort(Sort.Direction.ASC, "_id"));
 		pointLogQuery.limit(perPage);
 		int namesSize = names.size();

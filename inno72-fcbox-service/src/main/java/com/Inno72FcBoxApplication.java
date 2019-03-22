@@ -1,5 +1,7 @@
 package com;
 
+import java.io.IOException;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
@@ -50,7 +52,7 @@ public class Inno72FcBoxApplication extends SpringBootServletInitializer impleme
 	@Autowired
 	private PointPlanTask pointPlanTask;
 	@Override
-	public void run(String... args) {
-		test.test();
+	public void run(String... args) throws IOException {
+		pointPlanTask.test();
 	}
 }

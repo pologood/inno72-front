@@ -30,7 +30,6 @@ import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.stereotype.Component;
 
 import com.alibaba.fastjson.JSON;
-import com.alibaba.fastjson.JSONObject;
 import com.alibaba.fastjson.TypeReference;
 import com.inno72.common.util.FastJsonUtils;
 import com.inno72.common.util.UuidUtil;
@@ -53,7 +52,7 @@ public class Test {
 	private static final String response = "fcbox-response-country-all-1";
 	private static final String request = "fcbox-request-country-all-1";
 	private static final String fileName = "fcbox-country-all-1.xlsx";
-	private static final String pointPlan = "FcBoxPointPlan-1";
+	private static final String pointPlan = "FcBoxPointPlan-500";
 	// 范围内 检索半径 0.01 = 1000m
 	private static final Double km1 = 1d;
 
@@ -132,6 +131,12 @@ public class Test {
 					LocalDateTime.now());
 		}
 	}
+//	public static void main(String[] args) throws IOException {
+//		Map<String, String> map = new HashMap<>();
+//		map.put("lon", "93.22998");
+//		map.put("lat", "43.564471");
+//		getHttp(map);
+//	}
 
 	private void getHttp(Map<String, String> map) throws IOException {
 		String lon = map.get("lon");
@@ -141,7 +146,7 @@ public class Test {
 		String httpResp = getHttpResp(genFcBoxUrl(lon, lat, pageNo + "", ip), ip);
 
 		String id = StringUtil.uuid();
-		/**
+		/*
 		 * @Param requestId id
 		 * @param ip
 		 * @param lat
@@ -158,7 +163,7 @@ public class Test {
 				responseBody.setRequestId(id);
 				responseBody.setId(StringUtil.uuid());
 
-				saveBody(responseBody);
+//				saveBody(responseBody);
 
 				String totalCount = responseBody.getTotalCount();
 				if (StringUtil.notEmpty(totalCount)) {
@@ -207,7 +212,7 @@ public class Test {
 		mongoOperations.insert(body, response);
 	}
 
-	private String genFcBoxUrl(String lon, String lat, String pageNo, String ip) {
+	private static String genFcBoxUrl(String lon, String lat, String pageNo, String ip) {
 		return "https://www.fcbox.com/serviceNodeQuery/nearServiceNode?longitude=" + lon + "&latitude=" + lat
 				+ "&type=&pageNo=" + pageNo + "&_=1553148729330";
 	}
