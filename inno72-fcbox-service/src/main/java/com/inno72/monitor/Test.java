@@ -37,6 +37,7 @@ import com.inno72.common.utils.StringUtil;
 import com.inno72.model.PointPlan;
 import com.inno72.model.RequestBody;
 import com.inno72.model.ResponseBody;
+import com.inno72.redis.IRedisUtil;
 
 @Component
 public class Test {
@@ -46,11 +47,14 @@ public class Test {
 	@Resource
 	private MongoOperations mongoOperations;
 
+	@Resource
+	private IRedisUtil redisUtil;
+
 
 	static int no = 1;
 
-	private static final String response = "fcbox-response-country-all-1";
-	private static final String request = "fcbox-request-country-all-1";
+	private static final String response = "fcbox-response-country-all-500m";
+	private static final String request = "fcbox-request-country-all-500m";
 	private static final String fileName = "fcbox-country-all-1.xlsx";
 	private static final String pointPlan = "FcBoxPointPlan-500";
 	// 范围内 检索半径 0.01 = 1000m
@@ -65,9 +69,6 @@ public class Test {
 	private static double latRight = 3.710773;
 	// 右下 纬度
 	private static double lonRight = 135.340222;
-
-	@Resource
-	private MapsUtil mapsUtil;
 
 	private static ExecutorService fixedThreadPool = Executors.newFixedThreadPool(10);
 	private Semaphore semaphore = new Semaphore(10);
@@ -131,12 +132,6 @@ public class Test {
 					LocalDateTime.now());
 		}
 	}
-//	public static void main(String[] args) throws IOException {
-//		Map<String, String> map = new HashMap<>();
-//		map.put("lon", "93.22998");
-//		map.put("lat", "43.564471");
-//		getHttp(map);
-//	}
 
 	private void getHttp(Map<String, String> map) throws IOException {
 		String lon = map.get("lon");
@@ -163,7 +158,7 @@ public class Test {
 				responseBody.setRequestId(id);
 				responseBody.setId(StringUtil.uuid());
 
-//				saveBody(responseBody);
+				saveBody(responseBody);
 
 				String totalCount = responseBody.getTotalCount();
 				if (StringUtil.notEmpty(totalCount)) {
@@ -184,8 +179,8 @@ public class Test {
 	}
 
 	private void saveHeaders(RequestBody body) throws IOException {
-		String lat = body.getLat();
-		String lon = body.getLon();
+//		String lat = body.getLat();
+//		String lon = body.getLon();
 
 //		String json = Optional.ofNullable(getHttpResp(getGaodeUrl(lon + "," + lat), getRandomIp())).orElse("");
 //		String formatted_address = Optional.ofNullable(FastJsonUtils.getString(json, "formatted_address")).orElse("");
@@ -228,7 +223,7 @@ public class Test {
 		httpPost.addHeader("Content-Type", "application/json;charset=UTF-8");
 		httpPost.addHeader("x-forwarded-for", ip);
 		CloseableHttpResponse response = null;
-		String result = null;
+		String result;
 		try {
 			response = httpClient.execute(httpPost);
 			HttpEntity entity = response.getEntity();

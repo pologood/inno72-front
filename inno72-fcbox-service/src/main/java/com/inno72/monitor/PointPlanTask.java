@@ -45,6 +45,7 @@ import com.inno72.model.Content;
 import com.inno72.model.PointPlan;
 import com.inno72.model.RequestBody;
 import com.inno72.model.ResponseBody;
+import com.inno72.redis.IRedisUtil;
 
 @Component
 public class PointPlanTask {
@@ -54,12 +55,16 @@ public class PointPlanTask {
 	@Resource
 	private MongoOperations mongoOperations;
 
+	@Resource
+	private IRedisUtil redisUtil;
+
 
 	static int no = 1;
 
 	private static final String response = "fcbox-response-country-all-500";
 	private static final String request = "fcbox-request-country-all-500";
 	private static final String fileName = "fcbox-country-all-500.xlsx";
+	private static final String pointPlan = "FcBoxPointPlan-500";
 	// 范围内 检索半径 0.01 = 1000m
 	private static final Double km1 = 1d;
 	private static final Double km2 = 0.00570d;
@@ -84,7 +89,6 @@ public class PointPlanTask {
 	public void test() {
 		LOGGER.info("%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -- 开始执行 {} -- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%", LocalDateTime.now());
 		int i = 0;
-
 		while (latLeft  > latRight) {
 			Double cLongLeft = lonLeft;
 			List<PointPlan> plans = new LinkedList<>();
@@ -94,13 +98,13 @@ public class PointPlanTask {
 				LOGGER.info("plan ----> {}", JSON.toJSONString(pointPlan));
 				plans.add(pointPlan);
 				if (plans.size() >= 500){
-					fixedThreadPool.execute(new CheckRunner(plans, mongoOperations));
+					fixedThreadPool.execute(new CheckRunner(plans, mongoOperations, PointPlanTask.pointPlan));
 					plans = new LinkedList<>();
 				}
 				cLongLeft += km2;
 			}
 			if (plans.size() > 0){
-				fixedThreadPool.execute(new CheckRunner(plans, mongoOperations));
+				fixedThreadPool.execute(new CheckRunner(plans, mongoOperations, PointPlanTask.pointPlan));
 				plans = new LinkedList<>();
 			}
 

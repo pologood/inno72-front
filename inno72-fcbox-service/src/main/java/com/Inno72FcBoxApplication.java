@@ -53,6 +53,6 @@ public class Inno72FcBoxApplication extends SpringBootServletInitializer impleme
 	private PointPlanTask pointPlanTask;
 	@Override
 	public void run(String... args) throws IOException {
-		pointPlanTask.test();
+		test.test();
 	}
 }

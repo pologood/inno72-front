@@ -44,9 +44,8 @@ public class DemoController {
 			Long i = curSize + 6000;
 			Map<String, Long> result = new HashMap<>();
 
-			String rdm_fc_box_point = "runner:fc_box:runner_table";
 
-			long fcBoxPointPlan = mongoOperations.count(new Query(), redisUtil.get(rdm_fc_box_point));
+			long fcBoxPointPlan = mongoOperations.count(new Query(), "FcBoxPointPlan-500");
 
 			if (fcBoxPointPlan - curSize <= 0){
 				return Results.warn("没有了，都处理完了。恭喜你完成任务!", 3);

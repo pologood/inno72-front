@@ -1,23 +1,23 @@
 package com.inno72.monitor;
 
-import java.util.LinkedList;
 import java.util.List;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.mongodb.core.MongoOperations;
 
-import com.alibaba.fastjson.JSON;
 import com.inno72.model.PointPlan;
 
 public class CheckRunner implements Runnable{
 
-	private static final Logger LOGGER = LoggerFactory.getLogger(CheckRunner.class);
 	private MongoOperations mongoOperations;
 	private List<PointPlan> pointPlan;
-	CheckRunner(List<PointPlan> pointPlan, MongoOperations mongoOperations) {
+	private String tableName;
+	CheckRunner(List<PointPlan> pointPlan, MongoOperations mongoOperations, String tableName) {
 		this.mongoOperations = mongoOperations;
 		this.pointPlan = pointPlan;
+		this.tableName = tableName;
+
 	}
 
 	@Override
@@ -38,7 +38,7 @@ public class CheckRunner implements Runnable{
 //					mongoOperations.insert(save, "FcBoxPointPlan-1");
 //				}
 //			}
-			mongoOperations.insert(pointPlan, "FcBoxPointPlan-500");
+			mongoOperations.insert(pointPlan, tableName);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
