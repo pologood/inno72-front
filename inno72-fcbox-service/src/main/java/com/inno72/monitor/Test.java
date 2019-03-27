@@ -76,7 +76,6 @@ public class Test {
 	public void test() {
 		LOGGER.info("%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -- 开始执行 {} -- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%", LocalDateTime.now());
 		String url = "http://api.game.36solo.com/findExecuteIds";
-		String target = "0";
 		while (true){
 			try {
 				String httpResp = getHttpResp(url, "");
@@ -96,17 +95,11 @@ public class Test {
 				List<PointPlan> fcBoxPointPlan = mongoOperations.find(query, PointPlan.class, pointPlan);
 
 				if (fcBoxPointPlan.size() > 0){
-					int i = 0;
 					for (PointPlan pointPlan : fcBoxPointPlan){
 						semaphore.acquire();
 
 						Double lat = pointPlan.getLat();
 						Double lon = pointPlan.getLon();
-						i++;
-						if (i >= 1500){
-							Thread.sleep(1000);
-							i = 0;
-						}
 						fixedThreadPool.execute(() -> {
 							Map<String, String> reqMap = new HashMap<>();
 							reqMap.put("lon", lon+"");
@@ -138,26 +131,26 @@ public class Test {
 		String lat = map.get("lat");
 		int pageNo = Optional.ofNullable(map.get("pageNo")).map(Integer::parseInt).orElse(1);
 		String ip = getRandomIp();
-		String httpResp = getHttpResp(genFcBoxUrl(lon, lat, pageNo + "", ip), ip);
+		String url = genFcBoxUrl(lon, lat, pageNo + "", ip);
+		String httpResp = getHttpResp(url, ip);
 
 		String id = StringUtil.uuid();
-		/*
-		 * @Param requestId id
-		 * @param ip
-		 * @param lat
-		 * @param lon
-		 * @param page
-		 * @param responseBodies
-		 */
-		saveHeaders(new RequestBody(no += 1, id, ip, lon, lat, pageNo + ""));
+
 		// {"code":0,"engDesc":"success","chnDesc":"操作成功","detail":"getLocationNearService操作成功","content":null,"totalCount":null,"pageSize":10,"pageNo":1}
+		// {"code":1,"engDesc":null,"chnDesc":"查询服务点次数较为频繁，请稍后再试","detail":null,"content":null,"totalCount":null,"pageSize":null,"pageNo":null}
 		if (StringUtils.isNotEmpty(httpResp)) {
 			try {
 				ResponseBody responseBody = JSON.parseObject(httpResp, new TypeReference<ResponseBody>() {
 				});
+				while (responseBody.getCode() == 1){
+					ip = getRandomIp();
+					httpResp = getHttpResp(url, ip);
+					responseBody = JSON.parseObject(httpResp, new TypeReference<ResponseBody>() {
+					});
+				}
 				responseBody.setRequestId(id);
 				responseBody.setId(StringUtil.uuid());
-
+				saveHeaders(new RequestBody(no += 1, id, ip, lon, lat, pageNo + ""));
 				saveBody(responseBody);
 
 				String totalCount = responseBody.getTotalCount();
