@@ -28,6 +28,7 @@ import org.apache.http.util.EntityUtils;
 import org.apache.poi.ss.usermodel.Row;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.mongodb.core.MongoOperations;
 import org.springframework.data.mongodb.core.query.Criteria;
@@ -41,8 +42,10 @@ import com.inno72.common.util.FastJsonUtils;
 import com.inno72.common.util.UuidUtil;
 import com.inno72.common.util.excel.ExportExcel;
 import com.inno72.common.utils.StringUtil;
+import com.inno72.mapper.PointsMapper;
 import com.inno72.model.Content;
 import com.inno72.model.PointPlan;
+import com.inno72.model.Points;
 import com.inno72.model.RequestBody;
 import com.inno72.model.ResponseBody;
 import com.inno72.redis.IRedisUtil;
@@ -61,8 +64,8 @@ public class PointPlanTask {
 
 	static int no = 1;
 
-	private static final String response = "fcbox-response-country-all-500";
-	private static final String request = "fcbox-request-country-all-500";
+	private static final String response = "fcbox-response-country-all-500m";
+	private static final String request = "fcbox-request-country-all-500m";
 	private static final String fileName = "fcbox-country-all-500.xlsx";
 	private static final String pointPlan = "FcBoxPointPlan-500";
 	// 范围内 检索半径 0.01 = 1000m
@@ -115,9 +118,12 @@ public class PointPlanTask {
 				LocalDateTime.now());
 	}
 
-	public void test2() throws IOException {
+	@Autowired
+	private PointsMapper pointsMapper;
+
+	public void test2() {
 		long total = mongoOperations.count(new Query(Criteria.where("content").exists(true)), response);
-		int perPage = 10000;
+ 		int perPage = 10000;
 
 		long pageSize = total / perPage + (total % perPage != 0 ? 1 : 0);
 
@@ -131,13 +137,16 @@ public class PointPlanTask {
 		pointLogQuery.with(new Sort(Sort.Direction.ASC, "_id"));
 		pointLogQuery.limit(perPage);
 		int namesSize = names.size();
-		List<String> headerList = new ArrayList<String>();
-		headerList.add("服务类型");
-		headerList.add("地址");
-		headerList.add("服务时段");
-		headerList.add("所在经度");// 116
-		headerList.add("所在纬度");// 40
-		ExportExcel excelShop = new ExportExcel("", headerList);
+//		List<String> headerList = new ArrayList<String>();
+//		headerList.add("服务类型");
+//		headerList.add("地址");
+//		headerList.add("服务时段");
+//		headerList.add("所在经度");// 116
+//		headerList.add("所在纬度");// 40
+//		ExportExcel excelShop = new ExportExcel("", headerList);
+
+		Points points;
+		List<Points> pointss = new LinkedList<>();
 		for (int i = 0; i < pageSize; i++) {
 
 			pointLogQuery.skip(i * perPage);
@@ -154,12 +163,27 @@ public class PointPlanTask {
 						names.add(content.getServiceType() + content.getAddress());
 						int cNamesSize = names.size();
 						if (namesSize + 1 == cNamesSize) {
-							Row row = excelShop.addRow();
-							excelShop.addCell(row, 0, content.getServiceType());
-							excelShop.addCell(row, 1, content.getAddress());
-							excelShop.addCell(row, 2, content.getServiceTime());
-							excelShop.addCell(row, 3, content.getLongitude());
-							excelShop.addCell(row, 4, content.getLatitude());
+//							Row row = excelShop.addRow();
+//							excelShop.addCell(row, 0, content.getServiceType());
+//							excelShop.addCell(row, 1, content.getAddress());
+//							excelShop.addCell(row, 2, content.getServiceTime());
+//							excelShop.addCell(row, 3, content.getLongitude());
+//							excelShop.addCell(row, 4, content.getLatitude());
+							points = new Points();
+							points.setAddress(content.getAddress());
+							points.setTimes(content.getServiceTime());
+							points.setType(content.getServiceType());
+							points.setLat(content.getLatitude());
+							points.setLon(content.getLongitude());
+							points.setId(StringUtil.uuid());
+							pointss.add(points);
+
+							LOGGER.info("有效结果 -----------------------> \n              {}", JSON.toJSONString(points));
+
+							if (pointss.size() == 500){
+								pointsMapper.insertS(pointss);
+								pointss = new LinkedList<>();
+							}
 						}
 
 						namesSize = cNamesSize;
@@ -170,8 +194,10 @@ public class PointPlanTask {
 
 
 		}
-
-		excelShop.writeFile("/Users/zb.zhou/Desktop/" + fileName);
+		if (pointss.size() > 0){
+			pointsMapper.insertList(pointss);
+		}
+//		excelShop.writeFile("/Users/zb.zhou/Desktop/" + fileName);
 		int ffz = 0;
 		int kdg = 0;
 		int o = 0;
@@ -192,6 +218,52 @@ public class PointPlanTask {
 		System.out.println(o);
 		System.out.println(totleNum);
 		System.out.println(names.size());
+
+	}
+
+	public void test3() throws IOException {
+
+		LOGGER.info("########################################### start test3 ############################################");
+
+		List<Points> points = pointsMapper.selectAll();
+		List<String> headerList = new ArrayList<String>();
+		headerList.add("服务类型");
+		headerList.add("地址");
+		headerList.add("服务时段");
+		headerList.add("所在经度");// 116
+		headerList.add("所在纬度");// 40
+		ExportExcel excelShop = new ExportExcel("", headerList);
+		Map<String, List<Points>> result = new HashMap<>();
+		for (Points point : points){
+			String address = point.getAddress();
+			String substring = address.substring(0, 2);
+			if (substring.contains("重庆")){
+				substring = "重庆";
+			}
+			else if(substring.contains("上海")){
+				substring = "上海";
+			}
+			else if (substring.contains("北京")){
+				substring = "北京";
+			}
+			else if (substring.contains("宁夏")){
+				substring = "宁夏";
+			}
+			else if (substring.contains("天津")){
+				substring = "天津";
+			}
+
+			Row row = excelShop.addRow(substring);
+			excelShop.addCell(row, 0, point.getType());
+			excelShop.addCell(row, 1, point.getAddress());
+			excelShop.addCell(row, 2, point.getTimes());
+			excelShop.addCell(row, 3, point.getLon());
+			excelShop.addCell(row, 4, point.getLat());
+		}
+
+		excelShop.writeFile("/Users/zb.zhou/Desktop/" + fileName);
+
+		LOGGER.info("########################################### end test3 ############################################");
 
 	}
 

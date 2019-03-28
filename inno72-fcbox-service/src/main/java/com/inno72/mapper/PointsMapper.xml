@@ -8,6 +8,15 @@
         <id column="id" jdbcType="VARCHAR" property="id"/>
         <result column="lon" jdbcType="VARCHAR" property="lon"/>
         <result column="lat" jdbcType="VARCHAR" property="lat"/>
+        <result column="address" jdbcType="VARCHAR" property="address"/>
+        <result column="times" jdbcType="VARCHAR" property="times"/>
+        <result column="type" jdbcType="VARCHAR" property="type"/>
     </resultMap>
+    <insert id="insertS" parameterType="list">
+        INSERT INTO points  (id, lon,lat,address,times,type )  VALUES
+            <foreach collection="list" separator="," item="item">
+                ( #{item.id}, #{item.lon}, #{item.lat}, #{item.address}, #{item.times}, #{item.type} )
+            </foreach>
+    </insert>
 
 </mapper>

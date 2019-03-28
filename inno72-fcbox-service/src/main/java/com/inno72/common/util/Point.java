@@ -167,21 +167,21 @@ public class Point {
 
 		List<Points> r = new ArrayList<>();
 
-		for (int i = 0; i < points.size() - 1; i++){
-
-			Points cPoints = points.get(i);
-			Points cPoints1 = points.get(i+1);
-
-			Double lat1 = cPoints.getLat();
-			Double lon1 = cPoints.getLon();
-
-			int t1 = 0;
-
-			if ((lon1 < lon && lon1 > cPoints1.getLon())|| (lon1 > lon && lon1 < cPoints1.getLon())){
-				r.add(cPoints);
-			}
-
-		}
+//		for (int i = 0; i < points.size() - 1; i++){
+//
+//			Points cPoints = points.get(i);
+//			Points cPoints1 = points.get(i+1);
+//
+//			Double lat1 = cPoints.getLat();
+//			Double lon1 = cPoints.getLon();
+//
+//			int t1 = 0;
+//
+//			if ((lon1 < lon && lon1 > cPoints1.getLon())|| (lon1 > lon && lon1 < cPoints1.getLon())){
+//				r.add(cPoints);
+//			}
+//
+//		}
 
 		if (r.size() == 0){
 

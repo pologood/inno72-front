@@ -49,6 +49,12 @@ public class ExportExcel {
 	private XSSFSheet sheet;
 
 	/**
+	 * 工作表对象
+	 */
+	private Map<String, XSSFSheet> sheets;
+	private Map<String, Integer> rownums;
+
+	/**
 	 * 样式列表
 	 */
 	private Map<String, CellStyle> styles;
@@ -176,6 +182,8 @@ public class ExportExcel {
 	 * @param headerList 表头列表
 	 */
 	private void initialize(String title, List<String> headerList) {
+		this.sheets = new HashMap<>();
+		this.rownums = new HashMap<>();
 		this.wb = new XSSFWorkbook();
 		this.sheet = wb.createSheet("Export");
 		this.styles = createStyles(wb);
@@ -289,6 +297,24 @@ public class ExportExcel {
 	 */
 	public Row addRow() {
 		return sheet.createRow(rownum++);
+	}
+	/**
+	 * 添加一行
+	 * @return 行对象
+	 */
+	public Row addRow(String sheet) {
+		XSSFSheet xssfSheet = sheets.get(sheet);
+		if (xssfSheet == null){
+			xssfSheet = wb.createSheet(sheet);
+			sheets.put(sheet, xssfSheet);
+		}
+		Integer integer = rownums.get(sheet);
+		if (integer == null){
+			integer = 0;
+		}
+		integer++;
+		rownums.put(sheet, integer);
+		return xssfSheet.createRow(integer);
 	}
 
 

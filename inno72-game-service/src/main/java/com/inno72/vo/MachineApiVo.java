@@ -5,6 +5,10 @@ import java.util.List;
 public class MachineApiVo {
 
 	/**
+	 * 商品特殊出货逻辑类型
+	 */
+	private String goodsLogic;
+	/**
 	 * 游戏ID
 	 */
 	private String gameId;
@@ -211,5 +215,13 @@ public class MachineApiVo {
 
 	public void setDescribtion(List<String> describtion) {
 		this.describtion = describtion;
+	}
+
+	public String getGoodsLogic() {
+		return goodsLogic;
+	}
+
+	public void setGoodsLogic(String goodsLogic) {
+		this.goodsLogic = goodsLogic;
 	}
 }
