@@ -2,6 +2,8 @@ package com.inno72.service.impl;
 
 import java.io.IOException;
 import java.math.BigDecimal;
+import java.net.InetAddress;
+import java.net.UnknownHostException;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -11,12 +13,15 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
+import java.util.Random;
 
 import javax.annotation.Resource;
 
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
@@ -39,6 +44,7 @@ import com.inno72.common.util.FastJsonUtils;
 import com.inno72.common.util.GameSessionRedisUtil;
 import com.inno72.common.util.Inno72OrderNumGenUtil;
 import com.inno72.common.util.QrCodeUtil;
+import com.inno72.common.util.SignUtil;
 import com.inno72.common.util.UuidUtil;
 import com.inno72.common.utils.StringUtil;
 import com.inno72.mapper.Inno72ActivityMapper;
@@ -203,6 +209,9 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 	@Value("${machinealarm.uri}")
 	private String machinealarmUri;
 
+	@Autowired
+	private Inno72GameServiceProperties properties;
+
 	@Value("${env}")
 	private String env;
 
@@ -251,15 +260,22 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 		if (userSessionVo == null) {
 			return Results.failure("登录失效!");
 		}
-
+		//放入类型
+		if (StringUtil.notEmpty(vo.getGoodsLogic())){
+			userSessionVo.setGoodsLogic(vo.getGoodsLogic());
+		}
 		boolean paiyangFlag = userSessionVo.findPaiyangFlag();
 
+		// 转至派样逻辑
 		if(paiyangFlag){
 			return paiyangOrder(userSessionVo,vo);
 		}
 
 		List<Inno72ActivityPlanGameResult> planGameResults = this.getGameResults(vo, userSessionVo);
 		LOGGER.info("获取游戏结果 {}", JsonUtil.toJson(planGameResults));
+		if (planGameResults.size() == 0 ){
+			return Results.failure("没有可用的商品!");
+		}
 
 		LOGGER.debug("下单 userSessionVo ==> {}", JSON.toJSONString(userSessionVo));
 
@@ -318,6 +334,27 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 			orderCode = PRODUCT_NO_EXIST;
 		}
 
+		// 立顿互动需要提前下预支付订单
+		String payUrl = "";
+		if (vo.getGoodsLogic().equals(CommonBean.goodsLogic.LI_DUN)){
+			try {
+				//立顿逻辑 去下预支付订单
+				// {"code":0,"data":{"spId":"1001","outTradeNo":"8b4ed0b9e6a24ab08dfa4c31f3995171","type":2,"terminalType":6,"billId":"1111194802768118016","prepayId":null,"qrCode":"https://wx.tenpay.com/cgi-bin/mmpayweb-bin/checkmweb?prepay_id=wx28171434335967ba0ca3c07a2232894422&package=1069367431"},"msg":"ok"}
+				// {"code":50002,"data":null,"msg":"账单已经被创建"}
+				Result payResult = this.sendAdvancePayOrder(userSessionVo);
+				if (payResult.getCode() == Result.FAILURE){
+					return Results.failure(payResult.getMsg());
+				}
+				String data = payResult.getData().toString();
+				JSONObject jsonObject = JSON.parseObject(data);
+				String qrCode = jsonObject.getString("qrCode");
+				result.put("payUrl", qrCode);
+			} catch (Exception e) {
+				LOGGER.info(e.getMessage());
+				return Results.failure("支付下单错误！");
+			}
+		}
+
 		result.put("time", new Date().getTime());
 		result.put("lotteryResult", lotteryCode);
 		result.put("orderResult", orderCode);
@@ -327,6 +364,36 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 
 		LOGGER.info("standardOrder is {}", JsonUtil.toJson(result));
 		return Results.success(result);
+	}
+
+
+	//TODO 下预支付订单
+	private Result sendAdvancePayOrder(UserSessionVo userSessionVo) throws UnknownHostException {
+
+		Map<String,String> param = new HashMap<String,String>();
+		param.put("notifyUrl",properties.get("notifyUrl"));
+		param.put("outTradeNo",userSessionVo.getInno72OrderId());
+		param.put("qrTimeout",properties.get("qrTimeout"));
+		param.put("quantity","1");
+		param.put("spId",properties.get("spId"));
+		param.put("subject","北京点七二创意互动传媒文化有限公司");
+		param.put("terminalType","6");
+		param.put("extra",userSessionVo.getMachineCode());
+		BigDecimal temp = new BigDecimal(100);
+		param.put("totalFee",new BigDecimal("20").multiply(temp).longValue()+"");
+		param.put("transTimeout",properties.get("transTimeout"));
+		param.put("type", Inno72Order.INNO72ORDER_PAYTYPE.WECHAT.getKey() +"");
+		param.put("unitPrice",new BigDecimal("20").multiply(temp).longValue()+"");
+		String sign = SignUtil.genSign(param, properties.get("secureKey"));
+		param.put("sign",sign);
+
+		InetAddress address = InetAddress.getLocalHost();
+		param.put("clientIp", address.getHostAddress());
+		LOGGER.info("pay invoke param = {}",JsonUtil.toJson(param));
+		String respJson = HttpClient.form(properties.get("payServiceUrl"), param, null);
+		LOGGER.info("pay invoke response = {}",respJson);
+
+		return JSON.parseObject(respJson, Result.class);
 	}
 
 	private Result<Object> paiyangOrder(UserSessionVo userSessionVo, MachineApiVo vo) {
@@ -455,9 +522,7 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 
 			for (Inno72SupplyChannel inno72SupplyChannel : inno72SupplyChannels) {
 				Integer isDelete = inno72SupplyChannel.getIsDelete();
-				if (isDelete == 1) {
-					continue;
-				} else if (isDelete == 0) {
+				if (isDelete == 0) {
 					goodsCount += inno72SupplyChannel.getGoodsCount();
 				}
 			}
@@ -503,6 +568,11 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 				String goodsCode = inno72SupplyChannel.getGoodsCode();
 				String code = inno72SupplyChannel.getCode();
 				Integer goodsCount = inno72SupplyChannel.getGoodsCount();
+
+				if (userSessionVo.getGoodsLogic().equals(CommonBean.goodsLogic.LI_DUN)){
+					userSessionVo.setChannelCode(code);
+					userSessionVo.setGoodsCode(goodsCode);
+				}
 
 				GoodsVo goodsVo = goodsVoMap.get(goodsCode);
 
@@ -550,8 +620,8 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 		 * 商品特殊出货逻辑枚举
 		 */
 		switch (vo.getGoodsLogic()){
-			case "LI_DUN":
-				planGameResults = lidunResult(machineId, merchantId, activityId);
+			case CommonBean.goodsLogic.LI_DUN:
+				planGameResults = liDunResult(machineId, merchantId, activityId, activityType, userSessionVo);
 			default:
 				planGameResults = defaultResult(activityType, goodsId, activityPlanId, report);
 		}
@@ -578,18 +648,80 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 		}
 		return planGameResults;
 	}
-	private List<Inno72ActivityPlanGameResult> lidunResult(String machineId, String merchantId, String activityId){
-		List<Inno72ActivityPlanGameResult> planGameResults = new ArrayList<>();
+
+	/**
+	 * 立顿活动商品出货计算规则
+	 * @param machineId 机器ID
+	 * @param merchantId 商家ID
+	 * @param activityId 活动ID
+	 * @param userSessionVo
+	 * @return 可出商品的result
+	 */
+	private List<Inno72ActivityPlanGameResult> liDunResult(String machineId, String merchantId, String activityId,
+			Integer activityType, UserSessionVo userSessionVo){
 		Map<String, String> param = new HashMap<>(3);
 		param.put("machineId", machineId);
 		param.put("merchantId", merchantId);
 		param.put("activityId", activityId);
-		Map<String, String> totalMoney = inno72OrderMapper.findTotalMoney(param);
-		String money = totalMoney.get("totalMoneys");
-		String totalNum = totalMoney.get("totalNum");
+		//查询以玩次数的单个商品的总金额 单个商品总次数 和商品ID 返回： goodsId 商品ID countId 单个商品条数  PayPrice 支付金额
+		List<Map<String, String>> orders = inno72OrderMapper.findTotalMoney(param);
 
+		BigDecimal totalPayPrice = BigDecimal.ZERO;
+		BigDecimal totalRealPrice = BigDecimal.ZERO;
+		Map<String, BigDecimal> goodsPrice = new HashMap<>();
+		for (Map<String, String> order : orders){
+			totalPayPrice = totalPayPrice.add(new BigDecimal(order.get("PayPrice")));
+			String goodsId = order.get("goodsId");
+			BigDecimal realPrice = goodsPrice.get(goodsId);
+			if (realPrice == null){
+				Inno72Goods inno72Goods = inno72GoodsMapper.selectByPrimaryKey(goodsId);
+				realPrice = inno72Goods.getPrice();
+				goodsPrice.put(goodsId, realPrice);
+			}
+			totalRealPrice = totalRealPrice.add(realPrice.multiply(new BigDecimal(order.get("countId"))));
+		}
+		// 因固定6件商品价格为4块和45块。 用goodsProbability
+		String index = Optional.ofNullable(redisUtil.get(CommonBean.REDIS_ACTIVITY_LIDUN_GOODS_SHIPMENT_INDEX_KEY)).orElse("60");
+		// 商品概率 取100整数作为概率，如果当次可以出现高价商品，则还需要累计高价商品概率，最终结果 如果大于60 则出现随机高价商品，反之则出现随机底价商品
+		int result = 0;
+		// 1 出高价 0 低价
+		int resultTarget = 0;
+		// 如果当前机器以玩次数获得金额总数比加上下次可能出现的高价商品的45元的真是价格高，则满足出现高价商品的因素
+		if (totalPayPrice.compareTo(totalRealPrice.add(new BigDecimal(45))) > 0){
+			String s = redisUtil.get(CommonBean.REDIS_ACTIVITY_LIDUN_GOODS_PROBABILITY_KEY);
+			if (StringUtil.isEmpty(s)){s = "10";}
+			BigDecimal bs = new BigDecimal(s);
+			if (Integer.parseInt(s) % 10 == 0){
+				// 取随机数的概率值 大于60则会出现高价商品， 概率值会随每次可以出现高价商品但是随机失败的概率结果增加10 最高100
+				result = bs.divide(new BigDecimal(100), 2, BigDecimal.ROUND_HALF_DOWN).multiply(new BigDecimal(new Random().nextInt(100)+"")).intValue();
+			}else{
+				result = 100;
+			}
+			if (result >= Integer.parseInt(index)){
+				resultTarget = 1;
+				redisUtil.set(CommonBean.REDIS_ACTIVITY_LIDUN_GOODS_PROBABILITY_KEY, 10+"");
+			}else{
+				redisUtil.set(CommonBean.REDIS_ACTIVITY_LIDUN_GOODS_PROBABILITY_KEY, (bs.intValue() + 10 > 100 ? bs.intValue() : bs.intValue() + 10)+"");
+			}
+		}
+
+		Map<String, String> params = new HashMap<>(3);
+		params.put("probability", resultTarget+"");
+		params.put("machineId", machineId);
+		params.put("merchantId", merchantId);
+		params.put("activityId", activityId);
+		LOGGER.info("{}, 没有对应价位的商品，查询条件{}" + (resultTarget == 0 ? "立顿低价商品" : "立顿高价商品"), JSON.toJSONString(params));
+		List<Inno72ActivityPlanGameResult> planGameResults = inno72ActivityPlanGameResultMapper
+				.selectLiDunGoods(params);
+		if (planGameResults.size() == 0){
+			params.put("probability", params.get("probability").equals("0") ? "1" : "0");
+			LOGGER.info("{}, 没有对应价位的商品，重新查询条件{}" + (resultTarget == 0 ? "立顿低价商品" : "立顿高价商品"), JSON.toJSONString(params));
+			planGameResults = inno72ActivityPlanGameResultMapper
+					.selectLiDunGoods(params);
+		}
 		return planGameResults;
 	}
+
 
 	/**
 	 * 货道排序
@@ -807,8 +939,14 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 		inno72Order.setGoodsType(product.getKey());
 		inno72Order.setRepetition(rep);
 		inno72Order.setOrderStatus(Inno72Order.INNO72ORDER_ORDERSTATUS.WAIT.getKey());
-
 		inno72Order.setUserId(gameUserId);
+		//下单时放入
+		//TODO 整理代码
+		if (StringUtil.notEmpty(userSessionVo.getGoodsLogic()) && userSessionVo.getGoodsLogic().equals(CommonBean.goodsLogic.LI_DUN)){
+			inno72Order.setPayType(Inno72Order.INNO72ORDER_PAYTYPE.WECHAT.getKey());
+			inno72Order.setOrderPrice(new BigDecimal("20"));
+			inno72Order.setPayPrice(new BigDecimal("20"));
+		}
 
 		Inno72OrderGoods orderGoods = new Inno72OrderGoods();
 

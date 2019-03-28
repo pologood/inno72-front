@@ -407,9 +407,7 @@ public class Inno72AuthInfoServiceImpl implements Inno72AuthInfoService {
 			}
 		}
 
-
-
-		if(number!=null&&number!=-1){
+		if( number != null && number != -1){
 			key = String.format(RedisConstants.PAIYANG_ORDER_TIMES,interact.getId(),userId);
 			if(redisUtil.exists(key)){
 				Integer mytimes = Integer.parseInt(redisUtil.get(key));

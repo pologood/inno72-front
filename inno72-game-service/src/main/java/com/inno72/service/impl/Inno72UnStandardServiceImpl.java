@@ -6,6 +6,7 @@ import com.inno72.common.RedisConstants;
 import com.inno72.common.Result;
 import com.inno72.common.StandardLoginTypeEnum;
 import com.inno72.common.json.JsonUtil;
+import com.inno72.common.util.GameSessionRedisUtil;
 import com.inno72.common.util.Inno72OrderNumGenUtil;
 import com.inno72.common.utils.StringUtil;
 import com.inno72.mapper.Inno72ChannelMapper;
@@ -29,10 +30,15 @@ import java.security.SecureRandom;
 import java.time.LocalDateTime;
 import java.util.*;
 
+import javax.annotation.Resource;
+
 @Service
 @Transactional
 public class Inno72UnStandardServiceImpl implements Inno72UnStandardService {
     private Logger LOGGER = LoggerFactory.getLogger(this.getClass());
+
+	@Resource
+	private GameSessionRedisUtil gameSessionRedisUtil;
 
     @Autowired
     private MsgUtil msgUtil;
@@ -178,7 +184,11 @@ public class Inno72UnStandardServiceImpl implements Inno72UnStandardService {
         }
     }
     private void sendMsg(String sessionUuid,Integer type) {
-        UserSessionVo sessionVo = new UserSessionVo(sessionUuid);
+		UserSessionVo userSessionVo = gameSessionRedisUtil.getSessionKey(sessionUuid);
+		String channelCode = userSessionVo.getChannelCode();
+		String goodsCode = userSessionVo.getGoodsCode();
+
+		UserSessionVo sessionVo = new UserSessionVo(sessionUuid);
         Long version = System.currentTimeMillis();
         String machineCode = sessionVo.getMachineCode();
         String activityId = sessionVo.getActivityId();
@@ -188,6 +198,8 @@ public class Inno72UnStandardServiceImpl implements Inno72UnStandardService {
         inno72ConnectionScanVo.setMachineCode(machineCode);
         inno72ConnectionScanVo.setVersion(version);
         inno72ConnectionScanVo.setType(type);
+        inno72ConnectionScanVo.setGoodsCode(goodsCode);
+        inno72ConnectionScanVo.setChannelCode(channelCode);
         inno72ConnectionService.send(machineCode,activityId,version,type,JsonUtil.toJson(inno72ConnectionScanVo));
     }
 

@@ -77,4 +77,24 @@
             and r1.activity_plan_id = #{planId}
     </select>
 
+    <select id="selectLiDunGoods" resultMap="BaseResultMap" parameterType="map">
+
+        select r.* from inno72_interact_machine m
+            left join inno72_interact_machine_time mt on m.id = mt.interact_machine_id
+            join inno72_interact_machine_goods i on m.id = i.interact_machine_id
+            inner join inno72_goods g on i.goods_id = g.id
+                       <if test="probability == 0">and g.price  <![CDATA[ < ]]> 40</if>
+                       <if test="probability == 1">and g.price  <![CDATA[ > ]]> 40</if>
+                       and g.is_delete = 0
+            inner join inno72_supply_channel_goods cg on cg.goods_id = g.id and cg.is_delete = 0
+            inner join inno72_supply_channel c on cg.supply_channel_id = c.id and c.is_delete = 0 and c.is_remove = 0
+            right join inno72_activity_plan_game_result r on r.prize_id = g.id
+
+        where i.interact_machine_id = #{machineId}
+              and g.seller_id = #{merchantId}
+              and m.interact_id = #{activityId}
+              and CURRENT_TIMESTAMP() BETWEEN mt.start_time and mt.end_time
+        order by c.goods_count desc limit 1
+    </select>
+
 </mapper>

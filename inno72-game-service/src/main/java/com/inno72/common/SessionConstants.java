@@ -3,6 +3,7 @@ package com.inno72.common;
 public final class SessionConstants {
     // 操作标示 成功
     public final static String TRACEID = "traceId";
+    public final static String GOODSLOGIC = "goodsLogic";
     public final static String PLANCODE = "planCode";
     public final static String SELLERNAME = "sellerName";
     public final static String SHIPMENTNUM = "shipmentNum";
@@ -63,5 +64,5 @@ public final class SessionConstants {
     public final static String PHONE = "phone";
 
 
-
+	public final static String CHANNELCODE = "channelCode";
 }

@@ -45,6 +45,24 @@ public class CommonBean {
 
 
 	/**
+	 * 立顿活动 redis 高价商品出货率, 整数 百分之80填写为 80，
+	 * 计算规则：如果单个机器当次可以出货高价商品，概率计算后没有出货则增加百分之10，最高百分之70，如果概率计算后出货高价商品则调整概率为最低百分之10
+	 */
+	public static final String REDIS_ACTIVITY_LIDUN_GOODS_PROBABILITY_KEY = "game_service:activity_plan:goods:lidun:probability";
+	public static final String REDIS_ACTIVITY_LIDUN_GOODS_SHIPMENT_INDEX_KEY = "game_service:activity_plan:goods:lidun:shipment_index";
+
+
+	/**
+	 * 商品特殊出货逻辑类型
+	 */
+	public static class goodsLogic{
+		//立顿
+		public static final String LI_DUN = "LI_DUN";
+	}
+
+
+
+	/**
 	 * 护肤检测传入base64格式 以base64,开始
 	 */
 	public static final String PIC_BASE64_START_WITH = "base64,";

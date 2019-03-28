@@ -12,6 +12,15 @@ import javax.servlet.http.HttpSession;
 
 public class UserSessionVo {
 	private HttpSession httpSession;
+	/**
+	 * 商品特殊出货逻辑类型
+	 */
+	private String goodsLogic;
+	/**
+	 * 出货货道code
+	 */
+	private String channelCode;
+
 	private String traceId;
 	private String planCode;//TODO
 	private String sellerName;//TODO 品牌名称
@@ -209,6 +218,16 @@ public class UserSessionVo {
 		if(obj == null) return null;
 		return (String)obj ;
 	}
+	public void setChannelCode(String channelCode) {
+		this.channelCode = channelCode;
+		httpSession.setAttribute(SessionConstants.CHANNELCODE,channelCode);
+	}
+
+	public String getChannelCode() {
+		Object obj = httpSession.getAttribute(SessionConstants.CHANNELCODE);
+		if(obj == null) return null;
+		return (String)obj ;
+	}
 
 	public void setMachineId(String machineId) {
 		this.machineId = machineId;
@@ -318,6 +337,17 @@ public class UserSessionVo {
 	public void setPlanCode(String planCode) {
 		this.planCode = planCode;
 		httpSession.setAttribute(SessionConstants.PLANCODE,planCode);
+	}
+
+	public String getGoodsLogic() {
+		Object obj = httpSession.getAttribute(SessionConstants.GOODSLOGIC);
+		if(obj == null) return null;
+		return (String)obj ;
+	}
+
+	public void setGoodsLogic(String goodsLogic) {
+		this.goodsLogic = goodsLogic;
+		httpSession.setAttribute(SessionConstants.GOODSLOGIC,goodsLogic);
 	}
 
 	public String getSellerName() {

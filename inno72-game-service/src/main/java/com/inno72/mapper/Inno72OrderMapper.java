@@ -22,5 +22,5 @@ public interface Inno72OrderMapper extends Mapper<Inno72Order> {
 
     List<OrderVo> orderList(@Param("gameUserId") String gameUserId);
 
-	Map<String,String> findTotalMoney(Map<String, String> param);
+	List<Map<String, String>> findTotalMoney(Map<String, String> param);
 }

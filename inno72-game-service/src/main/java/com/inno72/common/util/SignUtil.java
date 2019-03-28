@@ -53,6 +53,13 @@ public class SignUtil {
 
     }
 
+	public static String genSign(Map<String,String> param, String secureKey) {
+		String paramStr =  SignUtil.createLinkString(param);
+		String sign = paramStr + "&" + secureKey;
+		sign = Encrypt.md5(sign);
+		return sign;
+	}
+
     public static String createLinkString(Map<String, String> params) {
 
         List<String> keys = new ArrayList<String>(params.keySet());

@@ -85,10 +85,13 @@
         where o.pay_status=1 and o.user_id =#{gameUserId}
         order by o.order_time
     </select>
-    <select id="findTotalMoney" resultType="java.util.Map" parameterType="map">
-        select sum(o.pay_price) as totalMoney, count(o.id) as totalNum from inno72_order o
+    <select id="findTotalMoney" resultType="map" parameterType="map">
+        select sum(o.pay_price) as payPrice, g.goods_id as goodsId, count(g.goods_id) as countId
+        from inno72_order o
+            join inno72_order_goods g on o.id = g.order_id
         where o.merchant_id = #{merhcantId} and o.machine_id = #{machineId} and o.inno72_activity_id = #{activityId}
-              and ( o.order_status = 20 or o.order_status = 30)
+              and o.order_status = 30
+        group by g.goods_id
     </select>
 
 </mapper>

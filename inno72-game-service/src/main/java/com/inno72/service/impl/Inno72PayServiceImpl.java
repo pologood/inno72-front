@@ -47,7 +47,7 @@ public class Inno72PayServiceImpl implements Inno72PayService {
         param.put("transTimeout",properties.get("transTimeout"));
         param.put("type",order.getPayType()+"");
         param.put("unitPrice",order.getOrderPrice().multiply(temp).longValue()+"");
-        String sign = genSign(param);
+		String sign = SignUtil.genSign(param, properties.get("secureKey"));
         param.put("sign",sign);
         String result = doInvoke(param);
         return manageResult(result);
@@ -85,14 +85,6 @@ public class Inno72PayServiceImpl implements Inno72PayService {
         String respJson = HttpClient.form(properties.get("payServiceUrl"), param, null);
         LOGGER.info("pay invoke response = {}",respJson);
         return respJson;
-    }
-
-    private String genSign(Map<String,String> param) {
-        String paramStr =  SignUtil.createLinkString(param);
-        String secureKey = properties.get("secureKey");
-        String sign = paramStr + "&" + secureKey;
-        sign = Encrypt.md5(sign);
-        return sign;
     }
 
 }
