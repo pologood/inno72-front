@@ -16,6 +16,7 @@ import com.inno72.vo.*;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -102,6 +103,9 @@ public class Inno72ALiChannelServiceImpl implements Inno72ChannelService {
 
     @Resource
     private Inno72NewretailService inno72NewretailService;
+
+	@Resource
+	private Inno72InteractMapper inno72InteractMapper;
 
     @Value("${env}")
     private String env;
@@ -262,7 +266,17 @@ public class Inno72ALiChannelServiceImpl implements Inno72ChannelService {
     public Result<Object> order(UserSessionVo userSessionVo, String itemId ,String inno72OrderId ) {
         String accessToken = userSessionVo.getAccessToken();
         String activityId = userSessionVo.getActivityId();
-        String machineCode = userSessionVo.getMachineCode();
+
+		Inno72Interact inno72Interact = inno72InteractMapper.selectByPrimaryKey(activityId);
+		if (inno72Interact != null) {
+			String name = inno72Interact.getName();
+			LOGGER.info("ali order activity name is {}" , name);
+			if (name.equals("三星活动")) {
+				return Results.failure("三星活动天猫不下单!");
+			}
+		}
+
+		String machineCode = userSessionVo.getMachineCode();
         String sessionUuid = userSessionVo.getSessionUuid();
         // todo gxg 非登录下单不需要调用聚石塔接口
         int loginType = userSessionVo.getLoginType();
