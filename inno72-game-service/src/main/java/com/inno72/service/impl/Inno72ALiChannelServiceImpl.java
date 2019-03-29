@@ -109,6 +109,9 @@ public class Inno72ALiChannelServiceImpl implements Inno72ChannelService {
     @Resource
     private Inno72OrderAlipayMapper inno72OrderAlipayMapper;
 
+	@Resource
+	private Inno72InteractMapper inno72InteractMapper;
+
     // todo gxg 使用枚举
     private static final String QRSTATUS_NORMAL = "0"; // 二维码正常
     private static final String QRSTATUS_INVALID = "-1"; // 二维码失效
@@ -262,6 +265,16 @@ public class Inno72ALiChannelServiceImpl implements Inno72ChannelService {
     public Result<Object> order(UserSessionVo userSessionVo, String itemId ,String inno72OrderId ) {
         String accessToken = userSessionVo.getAccessToken();
         String activityId = userSessionVo.getActivityId();
+
+		Inno72Interact inno72Interact = inno72InteractMapper.selectByPrimaryKey(activityId);
+		if (inno72Interact != null) {
+			String name = inno72Interact.getName();
+			LOGGER.info("ali order activity name is {}" , name);
+			if (name.equals("三星活动")) {
+				return Results.failure("三星活动天猫不下单!");
+			}
+		}
+
         String machineCode = userSessionVo.getMachineCode();
         String sessionUuid = userSessionVo.getSessionUuid();
         // todo gxg 非登录下单不需要调用聚石塔接口
