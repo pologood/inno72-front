@@ -656,71 +656,97 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 	 */
 	private String liDunResult( UserSessionVo userSessionVo){
 
+
+//		Map<String, String> param = new HashMap<>(3);
+//		param.put("machineId", machineId);
+//		param.put("merchantId", merchantId);
+//		param.put("activityId", activityId);
+//		//查询以玩次数的单个商品的总金额 单个商品总次数 和商品ID 返回： goodsId 商品ID countId 单个商品条数  PayPrice 支付金额
+//		List<Map<String, String>> orders = inno72OrderMapper.findTotalMoney(param);
+//
+//		BigDecimal totalPayPrice = BigDecimal.ZERO;
+//		BigDecimal totalRealPrice = BigDecimal.ZERO;
+//		Map<String, BigDecimal> goodsPrice = new HashMap<>();
+//		for (Map<String, String> order : orders){
+//			totalPayPrice = totalPayPrice.add(new BigDecimal(order.get("PayPrice")));
+//			String goodsId = order.get("goodsId");
+//			BigDecimal realPrice = goodsPrice.get(goodsId);
+//			if (realPrice == null){
+//				Inno72Goods inno72Goods = inno72GoodsMapper.selectByPrimaryKey(goodsId);
+//				realPrice = inno72Goods.getPrice();
+//				goodsPrice.put(goodsId, realPrice);
+//			}
+//			totalRealPrice = totalRealPrice.add(realPrice.multiply(new BigDecimal(order.get("countId"))));
+//		}
+//		// 因固定6件商品价格为4块和45块。 用goodsProbability
+//		String index = Optional.ofNullable(redisUtil.get(CommonBean.REDIS_ACTIVITY_LIDUN_GOODS_SHIPMENT_INDEX_KEY)).orElse("60");
+//		// 商品概率 取100整数作为概率，如果当次可以出现高价商品，则还需要累计高价商品概率，最终结果 如果大于60 则出现随机高价商品，反之则出现随机底价商品
+//		int result;
+//		// 1 出高价 0 低价
+//		int resultTarget = 0;
+//		// 如果当前机器以玩次数获得金额总数比加上下次可能出现的高价商品的45元的真是价格高，则满足出现高价商品的因素
+//		if (totalPayPrice.compareTo(totalRealPrice.add(new BigDecimal(45))) > 0){
+//			String s = redisUtil.get(CommonBean.REDIS_ACTIVITY_LIDUN_GOODS_PROBABILITY_KEY);
+//			if (StringUtil.isEmpty(s)){s = "10";}
+//			BigDecimal bs = new BigDecimal(s);
+//			if (Integer.parseInt(s) % 10 == 0){
+//				// 取随机数的概率值 大于60则会出现高价商品， 概率值会随每次可以出现高价商品但是随机失败的概率结果增加10 最高100
+//				result = bs.divide(new BigDecimal(100), 2, BigDecimal.ROUND_HALF_DOWN).multiply(new BigDecimal(new Random().nextInt(100)+"")).intValue();
+//			}else{
+//				result = 100;
+//			}
+//			if (result >= Integer.parseInt(index)){
+//				resultTarget = 1;
+//				redisUtil.set(CommonBean.REDIS_ACTIVITY_LIDUN_GOODS_PROBABILITY_KEY, 10+"");
+//			}else{
+//				redisUtil.set(CommonBean.REDIS_ACTIVITY_LIDUN_GOODS_PROBABILITY_KEY, (bs.intValue() + 10 > 100 ? bs.intValue() : bs.intValue() + 10)+"");
+//			}
+//		}
+//
+//
+
 		String machineId = userSessionVo.getMachineId();
 		String merchantId = userSessionVo.getChannelMerchantId();
 		String activityId = userSessionVo.getActivityId();
+		String resultTarget = "0";
 
-		Map<String, String> param = new HashMap<>(3);
-		param.put("machineId", machineId);
-		param.put("merchantId", merchantId);
-		param.put("activityId", activityId);
-		//查询以玩次数的单个商品的总金额 单个商品总次数 和商品ID 返回： goodsId 商品ID countId 单个商品条数  PayPrice 支付金额
-		List<Map<String, String>> orders = inno72OrderMapper.findTotalMoney(param);
-
-		BigDecimal totalPayPrice = BigDecimal.ZERO;
-		BigDecimal totalRealPrice = BigDecimal.ZERO;
-		Map<String, BigDecimal> goodsPrice = new HashMap<>();
-		for (Map<String, String> order : orders){
-			totalPayPrice = totalPayPrice.add(new BigDecimal(order.get("PayPrice")));
-			String goodsId = order.get("goodsId");
-			BigDecimal realPrice = goodsPrice.get(goodsId);
-			if (realPrice == null){
-				Inno72Goods inno72Goods = inno72GoodsMapper.selectByPrimaryKey(goodsId);
-				realPrice = inno72Goods.getPrice();
-				goodsPrice.put(goodsId, realPrice);
-			}
-			totalRealPrice = totalRealPrice.add(realPrice.multiply(new BigDecimal(order.get("countId"))));
-		}
-		// 因固定6件商品价格为4块和45块。 用goodsProbability
-		String index = Optional.ofNullable(redisUtil.get(CommonBean.REDIS_ACTIVITY_LIDUN_GOODS_SHIPMENT_INDEX_KEY)).orElse("60");
-		// 商品概率 取100整数作为概率，如果当次可以出现高价商品，则还需要累计高价商品概率，最终结果 如果大于60 则出现随机高价商品，反之则出现随机底价商品
-		int result;
-		// 1 出高价 0 低价
-		int resultTarget = 0;
-		// 如果当前机器以玩次数获得金额总数比加上下次可能出现的高价商品的45元的真是价格高，则满足出现高价商品的因素
-		if (totalPayPrice.compareTo(totalRealPrice.add(new BigDecimal(45))) > 0){
-			String s = redisUtil.get(CommonBean.REDIS_ACTIVITY_LIDUN_GOODS_PROBABILITY_KEY);
-			if (StringUtil.isEmpty(s)){s = "10";}
-			BigDecimal bs = new BigDecimal(s);
-			if (Integer.parseInt(s) % 10 == 0){
-				// 取随机数的概率值 大于60则会出现高价商品， 概率值会随每次可以出现高价商品但是随机失败的概率结果增加10 最高100
-				result = bs.divide(new BigDecimal(100), 2, BigDecimal.ROUND_HALF_DOWN).multiply(new BigDecimal(new Random().nextInt(100)+"")).intValue();
-			}else{
-				result = 100;
-			}
-			if (result >= Integer.parseInt(index)){
-				resultTarget = 1;
-				redisUtil.set(CommonBean.REDIS_ACTIVITY_LIDUN_GOODS_PROBABILITY_KEY, 10+"");
-			}else{
-				redisUtil.set(CommonBean.REDIS_ACTIVITY_LIDUN_GOODS_PROBABILITY_KEY, (bs.intValue() + 10 > 100 ? bs.intValue() : bs.intValue() + 10)+"");
-			}
-		}
 
 		Map<String, String> params = new HashMap<>(3);
-		params.put("probability", resultTarget+"");
+		params.put("probability", resultTarget);
 		params.put("machineId", machineId);
 		params.put("merchantId", merchantId);
 		params.put("activityId", activityId);
+
+		String index_key = redisUtil.get(CommonBean.REDIS_ACTIVITY_LIDUN_GOODS_SHIPMENT_INDEX_KEY+":"+machineId+":index");
+		if (StringUtil.isEmpty(index_key)){
+			index_key = "1";
+		}
+		String index_value = Optional.ofNullable(redisUtil.get(CommonBean.REDIS_ACTIVITY_LIDUN_GOODS_SHIPMENT_INDEX_KEY+":"+machineId+":"+index_key)).orElse("");
+
+		if (index_value.length() >= 3){
+			index_value = "";
+			index_key = (Integer.parseInt(index_key) + 1 + "");
+		}
+
+		if (!index_value.contains("1")){
+			resultTarget = (new Random().nextInt(2) + "");
+		}
+
 		String planGameResults = inno72ActivityPlanGameResultMapper.selectLiDunGoods(params);
-		if (StringUtil.isEmpty(planGameResults) && resultTarget == 1){
-			params.put("probability", "0");
+		if (StringUtil.isEmpty(planGameResults) && "1".equals(resultTarget)){
+			resultTarget = "0";
+			params.put("probability", resultTarget);
 			LOGGER.info("立顿[高价商品]没有对应价位的商品，开始查询低价条件{}", JSON.toJSONString(params));
 			planGameResults = inno72ActivityPlanGameResultMapper
 					.selectLiDunGoods(params);
 		}
+
+		index_value = index_value + resultTarget;
+		redisUtil.set(CommonBean.REDIS_ACTIVITY_LIDUN_GOODS_SHIPMENT_INDEX_KEY+":"+machineId+":index", index_key);
+		redisUtil.set(CommonBean.REDIS_ACTIVITY_LIDUN_GOODS_SHIPMENT_INDEX_KEY+":"+machineId+":"+index_key ,index_value );
+
 		return planGameResults;
 	}
-
 
 	/**
 	 * 货道排序
