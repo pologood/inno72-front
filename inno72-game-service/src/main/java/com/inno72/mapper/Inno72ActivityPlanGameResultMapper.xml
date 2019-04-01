@@ -89,8 +89,7 @@
             inner join inno72_supply_channel_goods cg on cg.goods_id = g.id and cg.is_delete = 0
             inner join inno72_supply_channel c on cg.supply_channel_id = c.id and c.is_delete = 0 and c.is_remove = 0
 
-        where i.interact_machine_id = #{machineId}
-              and g.seller_id = #{merchantId}
+        where m.machine_id = #{machineId}
               and m.interact_id = #{activityId}
               and CURRENT_TIMESTAMP() BETWEEN mt.start_time and mt.end_time
         order by c.goods_count desc limit 1

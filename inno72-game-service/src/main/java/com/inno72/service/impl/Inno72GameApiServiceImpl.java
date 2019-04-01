@@ -711,7 +711,7 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 		String resultTarget = "0";
 
 
-		Map<String, String> params = new HashMap<>(3);
+		Map<String, String> params = new HashMap<>(4);
 		params.put("probability", resultTarget);
 		params.put("machineId", machineId);
 		params.put("merchantId", merchantId);
