@@ -609,7 +609,7 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 		String activityPlanId = userSessionVo.getActivityPlanId();
 		String activityId = userSessionVo.getActivityId();
 		String goodsId = userSessionVo.getGoodsId();
-		int activityType = userSessionVo.getActivityType();
+		int activityType = userSessionVo.getInno72MachineVo().getActivityType();
 		String machineCode = userSessionVo.getMachineCode();
 		String machineId = userSessionVo.getMachineId();
 		String merchantId = userSessionVo.getChannelMerchantId();
