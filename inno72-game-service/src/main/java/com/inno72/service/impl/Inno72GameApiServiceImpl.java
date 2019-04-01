@@ -267,7 +267,7 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 		boolean paiyangFlag = userSessionVo.findPaiyangFlag();
 
 		// 转至派样逻辑
-		if(paiyangFlag){
+		if(paiyangFlag && StringUtil.isEmpty(userSessionVo.getGoodsLogic())){
 			return paiyangOrder(userSessionVo,vo);
 		}
 
