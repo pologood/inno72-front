@@ -366,8 +366,8 @@ public class Inno72GameApiServiceImpl implements Inno72GameApiService {
 		String sign = SignUtil.genSign(param, properties.get("secureKey"));
 		param.put("sign",sign);
 
-		InetAddress address = InetAddress.getLocalHost();
-		param.put("clientIp", address.getHostAddress());
+		InetAddress address = InetAddress.getLoopbackAddress();
+		param.put("clientIp", "106.38.37.132");
 		LOGGER.info("pay invoke param = {}",JsonUtil.toJson(param));
 		String respJson = HttpClient.form(properties.get("payServiceUrl"), param, null);
 		LOGGER.info("pay invoke response = {}",respJson);
